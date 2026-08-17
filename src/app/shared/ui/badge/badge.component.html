@@ -1,0 +1,11 @@
+<span
+  class="ui-badge"
+  [class.ui-badge--neutral]="variant() === 'neutral'"
+  [class.ui-badge--primary]="variant() === 'primary'"
+  [class.ui-badge--info]="variant() === 'info'"
+  [class.ui-badge--success]="variant() === 'success'"
+  [class.ui-badge--warning]="variant() === 'warning'"
+  [class.ui-badge--error]="variant() === 'error'"
+>
+  <ng-content></ng-content>
+</span>

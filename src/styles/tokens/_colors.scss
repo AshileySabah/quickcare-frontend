@@ -1,0 +1,71 @@
+@use 'sass:map';
+
+// Ramp teal (cor primária) — 50 (mais claro) a 900 (mais escuro)
+// 500 é a base de ação, 600 é o hover, fixados conforme design system.
+$teal: (
+  50: #E1F5EE,
+  100: #C3EBDE,
+  200: #96DBC7,
+  300: #69CBB0,
+  400: #3BB693,
+  500: #1D9E75,
+  600: #0F6E56,
+  700: #0B5643,
+  800: #073F31,
+  900: #04342C,
+);
+
+// Ramp neutra (cinza) — textos, bordas, superfícies e estado "neutro"/"pendente"
+$gray: (
+  50: #F9FAFB,
+  100: #F3F4F6,
+  200: #E5E7EB,
+  300: #D1D5DB,
+  400: #9CA3AF,
+  500: #6B7280,
+  600: #4B5563,
+  700: #374151,
+  800: #1F2937,
+  900: #111827,
+);
+
+$ramps: (
+  teal: $teal,
+  gray: $gray,
+);
+
+// Cores semânticas fixas (não fazem parte de nenhuma ramp)
+$semantic: (
+  success: #16A34A,
+  warning: #D97706,
+  error: #DC2626,
+  info: #2563EB,
+);
+
+/// Retorna um stop de uma ramp de cor. Ex.: color('teal', 500)
+@function color($ramp, $stop) {
+  $found-ramp: map.get($ramps, $ramp);
+
+  @if not $found-ramp {
+    @error "Ramp de cor desconhecida: '#{$ramp}'. Ramps disponíveis: #{map.keys($ramps)}.";
+  }
+
+  $found-color: map.get($found-ramp, $stop);
+
+  @if not $found-color {
+    @error "Stop '#{$stop}' não existe na ramp '#{$ramp}'. Stops disponíveis: #{map.keys($found-ramp)}.";
+  }
+
+  @return $found-color;
+}
+
+/// Retorna uma cor semântica fixa. Ex.: semantic('success')
+@function semantic($name) {
+  $found-color: map.get($semantic, $name);
+
+  @if not $found-color {
+    @error "Cor semântica desconhecida: '#{$name}'. Disponíveis: #{map.keys($semantic)}.";
+  }
+
+  @return $found-color;
+}

@@ -1,0 +1,21 @@
+@use 'sass:map';
+
+$radii: (
+  none: 0,
+  sm: 4px,
+  md: 8px,
+  lg: 12px,
+  xl: 16px,
+  full: 9999px,
+);
+
+/// Retorna um raio de borda da escala. Ex.: radius('md') => 8px
+@function radius($key) {
+  $found-value: map.get($radii, $key);
+
+  @if not $found-value and $key != 'none' {
+    @error "Raio desconhecido: '#{$key}'. Disponíveis: #{map.keys($radii)}.";
+  }
+
+  @return $found-value;
+}

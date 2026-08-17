@@ -1,0 +1,18 @@
+<div
+  class="ui-toast"
+  [class.ui-toast--success]="variant() === 'success'"
+  [class.ui-toast--error]="variant() === 'error'"
+  [class.ui-toast--warning]="variant() === 'warning'"
+  [class.ui-toast--info]="variant() === 'info'"
+  role="status"
+>
+  <span class="ui-toast__message">{{ message() }}</span>
+  <button
+    class="ui-toast__close"
+    type="button"
+    aria-label="Descartar notificação"
+    (click)="dismissed.emit()"
+  >
+    &times;
+  </button>
+</div>

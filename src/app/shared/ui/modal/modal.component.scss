@@ -1,0 +1,60 @@
+@use 'tokens' as tokens;
+
+.ui-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(4, 52, 44, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: tokens.space(4);
+  z-index: 1000;
+}
+
+.ui-modal__dialog {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background-color: #FFFFFF;
+  border-radius: tokens.radius('lg');
+  box-shadow: 0 8px 24px rgba(4, 52, 44, 0.2);
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+.ui-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(4);
+  padding: tokens.space(4) tokens.space(4) 0;
+}
+
+.ui-modal__title {
+  font-size: tokens.font-size('lg');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.ui-modal__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: tokens.radius('md');
+  background-color: transparent;
+  color: tokens.color('gray', 500);
+  font-size: tokens.font-size('xl');
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('gray', 100);
+  }
+}
+
+.ui-modal__body {
+  padding: tokens.space(4);
+}

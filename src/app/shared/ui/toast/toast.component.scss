@@ -1,0 +1,52 @@
+@use 'tokens' as tokens;
+
+.ui-toast {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+  min-width: 280px;
+  max-width: 360px;
+  padding: tokens.space(3) tokens.space(4);
+  border-radius: tokens.radius('md');
+  border-left: 4px solid transparent;
+  background-color: #FFFFFF;
+  box-shadow: 0 4px 16px rgba(4, 52, 44, 0.15);
+
+  &--success {
+    border-left-color: tokens.semantic('success');
+  }
+
+  &--error {
+    border-left-color: tokens.semantic('error');
+  }
+
+  &--warning {
+    border-left-color: tokens.semantic('warning');
+  }
+
+  &--info {
+    border-left-color: tokens.semantic('info');
+  }
+}
+
+.ui-toast__message {
+  flex: 1;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 900);
+}
+
+.ui-toast__close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: tokens.radius('sm');
+  background-color: transparent;
+  color: tokens.color('gray', 500);
+  font-size: tokens.font-size('lg');
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('gray', 100);
+  }
+}

@@ -1,0 +1,57 @@
+@use 'tokens' as tokens;
+
+.ui-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  width: 100%;
+}
+
+.ui-textarea__label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.ui-textarea__field {
+  padding: tokens.space(2) tokens.space(3);
+  border: 1px solid tokens.color('gray', 300);
+  border-radius: tokens.radius('md');
+  background-color: #FFFFFF;
+  font-family: tokens.$font-family-base;
+  font-size: tokens.font-size('base');
+  color: tokens.color('gray', 900);
+  resize: vertical;
+
+  &::placeholder {
+    color: tokens.color('gray', 400);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: tokens.color('gray', 400);
+  }
+
+  &:focus-visible {
+    border-color: tokens.color('teal', 500);
+  }
+
+  &:disabled {
+    background-color: tokens.color('gray', 100);
+    color: tokens.color('gray', 400);
+    cursor: not-allowed;
+  }
+
+  &--error {
+    border-color: tokens.semantic('error');
+  }
+}
+
+.ui-textarea__hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.ui-textarea__error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}

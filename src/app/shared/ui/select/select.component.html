@@ -1,0 +1,30 @@
+<div class="ui-select">
+  <label class="ui-select__label" [for]="selectId">
+    {{ label() }}
+    @if (required()) {
+      <span aria-hidden="true">*</span>
+    }
+  </label>
+  <select
+    class="ui-select__field"
+    [class.ui-select__field--error]="errorMessage()"
+    [id]="selectId"
+    [disabled]="disabled()"
+    [required]="required()"
+    [attr.aria-invalid]="errorMessage() ? true : null"
+    [attr.aria-describedby]="errorMessage() ? errorId : (hint() ? hintId : null)"
+    [value]="value()"
+    (change)="onSelectChange($event)"
+    (blur)="onBlur()"
+  >
+    <option value="" disabled>{{ placeholder() }}</option>
+    @for (option of options(); track option.value) {
+      <option [value]="option.value">{{ option.label }}</option>
+    }
+  </select>
+  @if (errorMessage()) {
+    <p class="ui-select__error" [id]="errorId" role="alert">{{ errorMessage() }}</p>
+  } @else if (hint()) {
+    <p class="ui-select__hint" [id]="hintId">{{ hint() }}</p>
+  }
+</div>

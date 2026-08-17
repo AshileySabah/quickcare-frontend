@@ -1,0 +1,33 @@
+@use 'tokens' as tokens;
+
+.ui-card {
+  background-color: #FFFFFF;
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('lg');
+
+  &--padding-none {
+    padding: 0;
+  }
+
+  &--padding-sm {
+    padding: tokens.space(3);
+  }
+
+  &--padding-md {
+    padding: tokens.space(4);
+  }
+
+  &--padding-lg {
+    padding: tokens.space(6);
+  }
+
+  &--interactive {
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      border-color: tokens.color('teal', 300);
+      box-shadow: 0 2px 8px rgba(4, 52, 44, 0.08);
+    }
+  }
+}

@@ -9,7 +9,6 @@ $radii: (
   full: 9999px,
 );
 
-/// Retorna um raio de borda da escala. Ex.: radius('md') => 8px
 @function radius($key) {
   $found-value: map.get($radii, $key);
 

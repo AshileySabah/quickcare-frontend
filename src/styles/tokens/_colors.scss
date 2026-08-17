@@ -1,7 +1,5 @@
 @use 'sass:map';
 
-// Ramp teal (cor primária) — 50 (mais claro) a 900 (mais escuro)
-// 500 é a base de ação, 600 é o hover, fixados conforme design system.
 $teal: (
   50: #E1F5EE,
   100: #C3EBDE,
@@ -15,7 +13,6 @@ $teal: (
   900: #04342C,
 );
 
-// Ramp neutra (cinza) — textos, bordas, superfícies e estado "neutro"/"pendente"
 $gray: (
   50: #F9FAFB,
   100: #F3F4F6,
@@ -30,11 +27,10 @@ $gray: (
 );
 
 $ramps: (
-  teal: $teal,
-  gray: $gray,
+  'teal': $teal,
+  'gray': $gray,
 );
 
-// Cores semânticas fixas (não fazem parte de nenhuma ramp)
 $semantic: (
   success: #16A34A,
   warning: #D97706,
@@ -42,7 +38,6 @@ $semantic: (
   info: #2563EB,
 );
 
-/// Retorna um stop de uma ramp de cor. Ex.: color('teal', 500)
 @function color($ramp, $stop) {
   $found-ramp: map.get($ramps, $ramp);
 
@@ -59,7 +54,6 @@ $semantic: (
   @return $found-color;
 }
 
-/// Retorna uma cor semântica fixa. Ex.: semantic('success')
 @function semantic($name) {
   $found-color: map.get($semantic, $name);
 

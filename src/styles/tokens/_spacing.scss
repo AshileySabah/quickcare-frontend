@@ -1,7 +1,5 @@
 @use 'sass:map';
 
-// Escala de espaçamento em múltiplos de 4px.
-// A chave é o múltiplo de 4px (ex.: 4 => 16px), exceto '0' e 'px' (ajuste fino de 1px).
 $spacing: (
   0: 0,
   px: 1px,
@@ -19,7 +17,6 @@ $spacing: (
   24: 96px,
 );
 
-/// Retorna um valor de espaçamento da escala. Ex.: space(4) => 16px
 @function space($key) {
   $found-value: map.get($spacing, $key);
 

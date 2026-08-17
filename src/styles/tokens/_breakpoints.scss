@@ -1,6 +1,5 @@
 @use 'sass:map';
 
-// Mobile-first: sm é o baseline (sem media query), os demais definem min-width.
 $breakpoints: (
   sm: 375px,
   md: 768px,
@@ -8,7 +7,6 @@ $breakpoints: (
   xl: 1280px,
 );
 
-/// Retorna o valor de um breakpoint. Ex.: breakpoint('md') => 768px
 @function breakpoint($key) {
   $found-value: map.get($breakpoints, $key);
 
@@ -19,8 +17,6 @@ $breakpoints: (
   @return $found-value;
 }
 
-/// Mixin mobile-first: aplica o conteúdo a partir do breakpoint informado.
-/// Uso: @include respond('md') { ... }
 @mixin respond($key) {
   @media (min-width: breakpoint($key)) {
     @content;

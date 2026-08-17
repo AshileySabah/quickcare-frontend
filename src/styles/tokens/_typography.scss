@@ -18,7 +18,6 @@ $font-sizes: (
 
 $line-height-base: 1.5;
 
-/// Retorna um tamanho de fonte da escala. Ex.: font-size('lg') => 18px
 @function font-size($key) {
   $found-value: map.get($font-sizes, $key);
 
@@ -29,7 +28,6 @@ $line-height-base: 1.5;
   @return $found-value;
 }
 
-/// Retorna um peso de fonte da escala. Ex.: font-weight('medium') => 500
 @function font-weight($key) {
   $found-value: map.get($font-weights, $key);
 

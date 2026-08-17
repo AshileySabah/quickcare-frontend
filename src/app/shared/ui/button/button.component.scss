@@ -1,0 +1,100 @@
+@use 'tokens' as tokens;
+
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: tokens.space(2);
+  border: 1px solid transparent;
+  border-radius: tokens.radius('md');
+  font-family: tokens.$font-family-base;
+  font-weight: tokens.font-weight('medium');
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+  white-space: nowrap;
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--sm {
+    height: 32px;
+    padding: 0 tokens.space(3);
+    font-size: tokens.font-size('sm');
+  }
+
+  &--md {
+    height: 40px;
+    padding: 0 tokens.space(4);
+    font-size: tokens.font-size('base');
+  }
+
+  &--lg {
+    height: 48px;
+    padding: 0 tokens.space(5);
+    font-size: tokens.font-size('lg');
+  }
+
+  &--primary {
+    background-color: tokens.color('teal', 500);
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background-color: tokens.color('teal', 600);
+    }
+  }
+
+  &--secondary {
+    background-color: transparent;
+    border-color: tokens.color('teal', 500);
+    color: tokens.color('teal', 600);
+
+    &:hover:not(:disabled) {
+      background-color: tokens.color('teal', 50);
+    }
+  }
+
+  &--ghost {
+    background-color: transparent;
+    color: tokens.color('gray', 700);
+
+    &:hover:not(:disabled) {
+      background-color: tokens.color('gray', 100);
+    }
+  }
+
+  &--danger {
+    background-color: tokens.semantic('error');
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      filter: brightness(0.9);
+    }
+  }
+}
+
+.ui-button__spinner {
+  width: 16px;
+  height: 16px;
+  border-radius: tokens.radius('full');
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #FFFFFF;
+  animation: ui-button-spin 0.6s linear infinite;
+}
+
+.ui-button--secondary .ui-button__spinner,
+.ui-button--ghost .ui-button__spinner {
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-top-color: tokens.color('gray', 700);
+}
+
+@keyframes ui-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

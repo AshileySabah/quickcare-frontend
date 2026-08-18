@@ -1,0 +1,52 @@
+<section class="patient-dashboard">
+  <header class="patient-dashboard__header">
+    <div>
+      <h1 class="patient-dashboard__title">Minhas solicitações</h1>
+      <p class="patient-dashboard__subtitle">Acompanhe os atendimentos em andamento.</p>
+    </div>
+    <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
+  </header>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <div class="patient-dashboard__list">
+        @for (i of [1, 2, 3]; track i) {
+          <ui-card>
+            <div class="patient-dashboard__skeleton-lines">
+              <ui-skeleton height="20px" width="60%"></ui-skeleton>
+              <ui-skeleton height="14px" width="40%"></ui-skeleton>
+              <ui-skeleton height="14px" width="80%"></ui-skeleton>
+            </div>
+          </ui-card>
+        }
+      </div>
+    }
+    @case ('empty') {
+      <ui-empty-state
+        title="Nenhuma solicitação em andamento"
+        message="Crie uma nova solicitação para encontrar um profissional de saúde."
+      >
+        <ui-button routerLink="/patient/novo">Criar solicitação</ui-button>
+      </ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="patient-dashboard__list">
+        @for (request of activeRequests(); track request.id) {
+          <a class="patient-dashboard__card-link" [routerLink]="['/patient/solicitacoes', request.id]">
+            <ui-card [interactive]="true">
+              <div class="patient-dashboard__card-header">
+                <span class="patient-dashboard__specialty">{{ specialtyName(request.specialtyId) }}</span>
+                <ui-status-badge [status]="request.status"></ui-status-badge>
+              </div>
+              <p class="patient-dashboard__description">{{ request.description }}</p>
+              <p class="patient-dashboard__date">Criada em {{ request.createdAt | date: 'dd/MM/yyyy' }}</p>
+            </ui-card>
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

@@ -1,0 +1,25 @@
+<ui-card class="ui-proposal-card">
+  <header class="ui-proposal-card__header">
+    <div class="ui-proposal-card__professional">
+      <span class="ui-proposal-card__name">{{ professionalName() }}</span>
+      @if (professionalValidationStatus()) {
+        <ui-verified-badge [status]="professionalValidationStatus()!"></ui-verified-badge>
+      }
+    </div>
+    <ui-status-badge [status]="proposal().status"></ui-status-badge>
+  </header>
+
+  @if (specialtyName()) {
+    <p class="ui-proposal-card__specialty">{{ specialtyName() }}</p>
+  }
+
+  <p class="ui-proposal-card__price">{{ proposal().price | currency: 'BRL' }}</p>
+
+  <p class="ui-proposal-card__approach">{{ proposal().approach }}</p>
+
+  <p class="ui-proposal-card__deadline">Prazo: {{ proposal().deadline | date: 'dd/MM/yyyy' }}</p>
+
+  <div class="ui-proposal-card__actions">
+    <ng-content select="[proposalActions]"></ng-content>
+  </div>
+</ui-card>

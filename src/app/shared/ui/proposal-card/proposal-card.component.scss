@@ -1,0 +1,57 @@
+@use 'tokens' as tokens;
+
+.ui-proposal-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(2);
+}
+
+.ui-proposal-card__professional {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(2);
+  flex-wrap: wrap;
+}
+
+.ui-proposal-card__name {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.ui-proposal-card__specialty {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(2);
+}
+
+.ui-proposal-card__price {
+  font-size: tokens.font-size('lg');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+  margin-bottom: tokens.space(2);
+}
+
+.ui-proposal-card__approach {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(3);
+}
+
+.ui-proposal-card__deadline {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(3);
+}
+
+.ui-proposal-card__actions {
+  display: flex;
+  gap: tokens.space(2);
+  flex-wrap: wrap;
+
+  &:empty {
+    display: none;
+  }
+}

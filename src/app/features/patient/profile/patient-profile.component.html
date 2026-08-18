@@ -1,0 +1,22 @@
+<section class="patient-profile">
+  <h1 class="patient-profile__title">Meu perfil</h1>
+
+  @if (patient(); as user) {
+    <ui-card>
+      <dl class="patient-profile__list">
+        <div>
+          <dt>Nome</dt>
+          <dd>{{ user.name }}</dd>
+        </div>
+        <div>
+          <dt>E-mail</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div>
+          <dt>Telefone</dt>
+          <dd>{{ user.phone }}</dd>
+        </div>
+      </dl>
+    </ui-card>
+  }
+</section>

@@ -1,0 +1,41 @@
+@use 'patterns/request-list' as list;
+
+.patient-dashboard__header {
+  @include list.header;
+}
+
+.patient-dashboard__title {
+  @include list.title;
+}
+
+.patient-dashboard__subtitle {
+  @include list.subtitle;
+}
+
+.patient-dashboard__list {
+  @include list.list;
+}
+
+.patient-dashboard__card-link {
+  @include list.card-link;
+}
+
+.patient-dashboard__card-header {
+  @include list.card-header;
+}
+
+.patient-dashboard__specialty {
+  @include list.specialty;
+}
+
+.patient-dashboard__description {
+  @include list.description;
+}
+
+.patient-dashboard__date {
+  @include list.date;
+}
+
+.patient-dashboard__skeleton-lines {
+  @include list.skeleton-lines;
+}

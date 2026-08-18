@@ -1,0 +1,46 @@
+<div class="auth-page">
+  <div class="auth-page__panel">
+    <h1 class="auth-page__title">Cadastro de paciente</h1>
+    <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
+
+    <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ui-input label="Nome completo" formControlName="name" [required]="true" [errorMessage]="fieldError('name')"></ui-input>
+
+      <ui-input
+        label="E-mail"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="fieldError('email')"
+      ></ui-input>
+
+      <ui-input
+        label="Telefone"
+        type="tel"
+        formControlName="phone"
+        [required]="true"
+        [errorMessage]="fieldError('phone')"
+      ></ui-input>
+
+      <ui-input
+        label="Senha"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="fieldError('password')"
+      ></ui-input>
+
+      <ui-input
+        label="Confirmar senha"
+        type="password"
+        formControlName="confirmPassword"
+        [required]="true"
+        [errorMessage]="confirmPasswordError"
+      ></ui-input>
+
+      <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
+    </form>
+
+    <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+  </div>
+</div>

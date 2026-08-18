@@ -20,6 +20,6 @@
   <p class="ui-proposal-card__deadline">Prazo: {{ proposal().deadline | date: 'dd/MM/yyyy' }}</p>
 
   <div class="ui-proposal-card__actions">
-    <ng-content select="[proposalActions]"></ng-content>
+    <ng-content select="[proposal-actions]"></ng-content>
   </div>
 </ui-card>

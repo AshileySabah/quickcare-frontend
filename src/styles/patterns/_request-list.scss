@@ -1,0 +1,65 @@
+@use '../tokens' as tokens;
+
+@mixin header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(5);
+}
+
+@mixin title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+@mixin subtitle {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  margin-top: tokens.space(1);
+}
+
+@mixin list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}
+
+@mixin card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+@mixin card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  margin-bottom: tokens.space(2);
+}
+
+@mixin specialty {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+}
+
+@mixin description {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(2);
+}
+
+@mixin date {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+@mixin skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}

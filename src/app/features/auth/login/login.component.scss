@@ -1,0 +1,25 @@
+@use 'patterns/auth-page' as authPage;
+
+.auth-page {
+  @include authPage.page;
+}
+
+.auth-page__panel {
+  @include authPage.panel;
+}
+
+.auth-page__title {
+  @include authPage.title;
+}
+
+.auth-page__subtitle {
+  @include authPage.subtitle;
+}
+
+.auth-page__form {
+  @include authPage.form;
+}
+
+.auth-page__footer {
+  @include authPage.footer;
+}

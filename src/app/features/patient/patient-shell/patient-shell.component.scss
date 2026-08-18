@@ -1,0 +1,84 @@
+@use 'tokens' as tokens;
+
+.patient-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: tokens.color('gray', 50);
+}
+
+.patient-shell__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  padding: tokens.space(3) tokens.space(4);
+  background-color: #FFFFFF;
+  border-bottom: 1px solid tokens.color('gray', 200);
+
+  @include tokens.respond('lg') {
+    flex-wrap: nowrap;
+  }
+}
+
+.patient-shell__brand {
+  font-size: tokens.font-size('lg');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+}
+
+.patient-shell__nav {
+  order: 3;
+  display: flex;
+  gap: tokens.space(4);
+  overflow-x: auto;
+  width: 100%;
+
+  @include tokens.respond('lg') {
+    order: 2;
+    width: auto;
+  }
+}
+
+.patient-shell__link {
+  padding: tokens.space(2) 0;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 600);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+
+  &--active {
+    color: tokens.color('teal', 600);
+    border-bottom-color: tokens.color('teal', 500);
+  }
+}
+
+.patient-shell__user {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+
+  @include tokens.respond('lg') {
+    order: 3;
+  }
+}
+
+.patient-shell__user-name {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+}
+
+.patient-shell__content {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: tokens.space(4);
+
+  @include tokens.respond('md') {
+    padding: tokens.space(6);
+  }
+}

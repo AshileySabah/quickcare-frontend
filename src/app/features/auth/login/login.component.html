@@ -1,0 +1,28 @@
+<div class="auth-page">
+  <div class="auth-page__panel">
+    <h1 class="auth-page__title">Entrar no QuickCare</h1>
+    <p class="auth-page__subtitle">Acesse sua conta para continuar.</p>
+
+    <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ui-input
+        label="E-mail"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="fieldError('email')"
+      ></ui-input>
+
+      <ui-input
+        label="Senha"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="fieldError('password')"
+      ></ui-input>
+
+      <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Entrar</ui-button>
+    </form>
+
+    <p class="auth-page__footer">Não tem conta? <a routerLink="/cadastro">Cadastre-se</a></p>
+  </div>
+</div>

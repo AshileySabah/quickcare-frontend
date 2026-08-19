@@ -1,0 +1,34 @@
+@use 'tokens' as tokens;
+@use 'patterns/auth-page' as authPage;
+
+.auth-page {
+  @include authPage.page;
+}
+
+.auth-page__panel {
+  @include authPage.panel;
+}
+
+.auth-page__title {
+  @include authPage.title;
+}
+
+.auth-page__subtitle {
+  @include authPage.subtitle;
+}
+
+.awaiting-validation__reason-label {
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(1);
+}
+
+.awaiting-validation__reason-text {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 900);
+}
+
+.awaiting-validation__logout {
+  margin-top: tokens.space(5);
+}

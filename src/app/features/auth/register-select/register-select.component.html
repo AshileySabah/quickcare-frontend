@@ -1,0 +1,26 @@
+<div class="auth-page">
+  <div class="auth-page__panel auth-page__panel--wide">
+    <h1 class="auth-page__title">Como você quer se cadastrar?</h1>
+    <p class="auth-page__subtitle">Escolha o tipo de conta para continuar.</p>
+
+    <div class="register-select__options">
+      <a class="register-select__option" routerLink="/cadastro/paciente">
+        <ui-card [interactive]="true">
+          <h2 class="register-select__option-title">Sou paciente</h2>
+          <p class="register-select__option-description">
+            Quero solicitar atendimento com um profissional de saúde.
+          </p>
+        </ui-card>
+      </a>
+
+      <a class="register-select__option" routerLink="/cadastro/profissional">
+        <ui-card [interactive]="true">
+          <h2 class="register-select__option-title">Sou profissional de saúde</h2>
+          <p class="register-select__option-description">Quero atender solicitações e enviar propostas.</p>
+        </ui-card>
+      </a>
+    </div>
+
+    <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+  </div>
+</div>

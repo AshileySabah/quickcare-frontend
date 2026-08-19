@@ -1,0 +1,77 @@
+<section class="request-form">
+  <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
+  <p class="request-form__subtitle">
+    {{
+      isEditMode
+        ? 'Atualize os dados da sua solicitação.'
+        : 'Descreva o que você precisa e receba propostas de profissionais.'
+    }}
+  </p>
+
+  @if (isLoading()) {
+    <div class="request-form__loading">
+      <ui-skeleton height="40px"></ui-skeleton>
+      <ui-skeleton height="100px"></ui-skeleton>
+      <ui-skeleton height="40px"></ui-skeleton>
+    </div>
+  } @else {
+    <form class="request-form__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ui-select
+        label="Especialidade"
+        [options]="specialtyOptions"
+        formControlName="specialtyId"
+        [required]="true"
+        [errorMessage]="fieldError('specialtyId')"
+      ></ui-select>
+
+      <ui-textarea
+        label="Descreva sua necessidade"
+        formControlName="description"
+        [rows]="5"
+        [required]="true"
+        [errorMessage]="fieldError('description')"
+        hint="Explique o que você busca para receber propostas mais precisas."
+      ></ui-textarea>
+
+      <ui-select
+        label="Modalidade"
+        [options]="modalityOptions"
+        formControlName="modality"
+        [required]="true"
+        [errorMessage]="fieldError('modality')"
+      ></ui-select>
+
+      @if (form.controls.modality.value === 'presencial') {
+        <ui-input
+          label="Endereço"
+          formControlName="street"
+          [required]="true"
+          [errorMessage]="fieldError('street')"
+        ></ui-input>
+
+        <div class="request-form__row">
+          <ui-input label="Cidade" formControlName="city" [required]="true" [errorMessage]="fieldError('city')"></ui-input>
+
+          <ui-input
+            label="Estado"
+            formControlName="state"
+            [required]="true"
+            [errorMessage]="fieldError('state')"
+          ></ui-input>
+        </div>
+      }
+
+      <ui-input
+        label="Prazo desejado"
+        type="date"
+        formControlName="desiredDeadline"
+        [required]="true"
+        [errorMessage]="fieldError('desiredDeadline')"
+      ></ui-input>
+
+      <ui-button type="submit" [loading]="isSubmitting()">
+        {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
+      </ui-button>
+    </form>
+  }
+</section>

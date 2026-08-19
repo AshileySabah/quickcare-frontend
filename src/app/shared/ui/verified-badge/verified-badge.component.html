@@ -1,0 +1,6 @@
+<ui-badge [variant]="presentation().variant">
+  @if (status() === 'aprovado') {
+    <span aria-hidden="true">&check;</span>
+  }
+  {{ presentation().label }}
+</ui-badge>

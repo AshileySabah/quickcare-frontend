@@ -1,0 +1,50 @@
+@use '../tokens' as tokens;
+
+@mixin page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: tokens.space(4);
+  background-color: tokens.color('gray', 50);
+}
+
+@mixin panel {
+  width: 100%;
+  max-width: 400px;
+  background-color: #FFFFFF;
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('lg');
+  padding: tokens.space(6);
+}
+
+@mixin title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+  margin-bottom: tokens.space(1);
+}
+
+@mixin subtitle {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(5);
+}
+
+@mixin form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+@mixin footer {
+  margin-top: tokens.space(5);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+  text-align: center;
+
+  a {
+    color: tokens.color('teal', 600);
+    font-weight: tokens.font-weight('medium');
+  }
+}

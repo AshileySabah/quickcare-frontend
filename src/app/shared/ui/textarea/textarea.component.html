@@ -1,0 +1,27 @@
+<div class="ui-textarea">
+  <label class="ui-textarea__label" [for]="textareaId">
+    {{ label() }}
+    @if (required()) {
+      <span aria-hidden="true">*</span>
+    }
+  </label>
+  <textarea
+    class="ui-textarea__field"
+    [class.ui-textarea__field--error]="errorMessage()"
+    [id]="textareaId"
+    [placeholder]="placeholder()"
+    [rows]="rows()"
+    [disabled]="disabled()"
+    [required]="required()"
+    [value]="value()"
+    [attr.aria-invalid]="errorMessage() ? true : null"
+    [attr.aria-describedby]="errorMessage() ? errorId : (hint() ? hintId : null)"
+    (input)="onInput($event)"
+    (blur)="onBlur()"
+  ></textarea>
+  @if (errorMessage()) {
+    <p class="ui-textarea__error" [id]="errorId" role="alert">{{ errorMessage() }}</p>
+  } @else if (hint()) {
+    <p class="ui-textarea__hint" [id]="hintId">{{ hint() }}</p>
+  }
+</div>

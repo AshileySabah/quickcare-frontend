@@ -1,0 +1,9 @@
+<div class="ui-empty-state">
+  <p class="ui-empty-state__title">{{ title() }}</p>
+  @if (message()) {
+    <p class="ui-empty-state__message">{{ message() }}</p>
+  }
+  <div class="ui-empty-state__action">
+    <ng-content></ng-content>
+  </div>
+</div>

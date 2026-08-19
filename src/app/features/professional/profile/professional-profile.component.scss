@@ -1,0 +1,32 @@
+@use 'tokens' as tokens;
+
+.professional-profile__header {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(5);
+}
+
+.professional-profile__title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.professional-profile__list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+
+  dt {
+    font-size: tokens.font-size('xs');
+    color: tokens.color('gray', 500);
+    margin-bottom: tokens.space(1);
+  }
+
+  dd {
+    font-size: tokens.font-size('base');
+    color: tokens.color('gray', 900);
+    margin: 0;
+  }
+}

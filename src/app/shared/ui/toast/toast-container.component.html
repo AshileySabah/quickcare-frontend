@@ -1,0 +1,9 @@
+<div class="ui-toast-container" aria-live="polite">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <ui-toast
+      [message]="toast.message"
+      [variant]="toast.variant"
+      (dismissed)="toastService.dismiss(toast.id)"
+    ></ui-toast>
+  }
+</div>

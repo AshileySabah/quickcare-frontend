@@ -1,0 +1,103 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <div class="admin-professional-detail__loading">
+      <ui-skeleton height="28px" width="50%"></ui-skeleton>
+      <ui-skeleton height="16px" width="30%"></ui-skeleton>
+      <ui-skeleton height="120px"></ui-skeleton>
+    </div>
+  }
+  @case ('not-found') {
+    <ui-empty-state
+      title="Profissional não encontrado"
+      message="Ele pode já ter sido avaliado ou o link está incorreto."
+    >
+      <ui-button routerLink="/admin">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (professional(); as user) {
+      <section class="admin-professional-detail">
+        <ui-card>
+          <h1 class="admin-professional-detail__name">{{ user.name }}</h1>
+          <p class="admin-professional-detail__specialty">{{ specialtyName(user.specialtyId) }}</p>
+
+          <dl class="admin-professional-detail__meta">
+            <div>
+              <dt>E-mail</dt>
+              <dd>{{ user.email }}</dd>
+            </div>
+            <div>
+              <dt>Telefone</dt>
+              <dd>{{ user.phone }}</dd>
+            </div>
+            <div>
+              <dt>Número de registro</dt>
+              <dd>{{ user.registrationNumber }}</dd>
+            </div>
+          </dl>
+        </ui-card>
+
+        <ui-card>
+          <h2 class="admin-professional-detail__document-title">Documento enviado</h2>
+
+          <div class="admin-professional-detail__document">
+            @if (canPreviewAsImage(user)) {
+              <img
+                class="admin-professional-detail__document-image"
+                [src]="user.validationDocument.previewUrl"
+                alt="Documento de registro profissional enviado"
+              />
+            } @else {
+              <div class="admin-professional-detail__document-placeholder" aria-hidden="true">
+                {{ user.validationDocument.fileType === 'application/pdf' ? 'PDF' : 'IMG' }}
+              </div>
+            }
+            <div class="admin-professional-detail__document-info">
+              <span class="admin-professional-detail__document-name">{{ user.validationDocument.fileName }}</span>
+              <span class="admin-professional-detail__document-meta">
+                {{ (user.validationDocument.fileSizeBytes / 1024 / 1024).toFixed(2) }} MB · Enviado em
+                {{ user.validationDocument.uploadedAt | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+          </div>
+        </ui-card>
+
+        @if (user.validationStatus === 'pendente') {
+          <div class="admin-professional-detail__actions">
+            <ui-button [loading]="isProcessing()" (click)="approve()">Aprovar</ui-button>
+            <ui-button variant="danger" (click)="openRejectModal()">Reprovar</ui-button>
+          </div>
+        } @else {
+          <ui-card>
+            <p class="admin-professional-detail__decision">
+              Este profissional já foi {{ user.validationStatus === 'aprovado' ? 'aprovado' : 'reprovado' }}.
+            </p>
+            @if (user.rejectionReason) {
+              <p class="admin-professional-detail__decision-reason">Motivo: {{ user.rejectionReason }}</p>
+            }
+          </ui-card>
+        }
+      </section>
+    }
+  }
+}
+
+<ui-modal [open]="isRejectModalOpen()" titleText="Reprovar profissional" (closed)="closeRejectModal()">
+  <form [formGroup]="rejectForm" (ngSubmit)="reject()">
+    <ui-textarea
+      label="Motivo da reprovação"
+      formControlName="reason"
+      [rows]="4"
+      [required]="true"
+      [errorMessage]="rejectReasonError()"
+    ></ui-textarea>
+
+    <div class="admin-professional-detail__modal-actions">
+      <ui-button variant="ghost" type="button" (click)="closeRejectModal()">Cancelar</ui-button>
+      <ui-button variant="danger" type="submit" [loading]="isProcessing()">Confirmar reprovação</ui-button>
+    </div>
+  </form>
+</ui-modal>

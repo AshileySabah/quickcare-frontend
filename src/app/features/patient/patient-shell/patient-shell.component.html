@@ -1,0 +1,33 @@
+<div class="patient-shell">
+  <header class="patient-shell__header">
+    <div class="patient-shell__brand">QuickCare</div>
+
+    <nav class="patient-shell__nav" aria-label="Navegação do paciente">
+      <a
+        class="patient-shell__link"
+        routerLink="/patient"
+        routerLinkActive="patient-shell__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Início</a
+      >
+      <a class="patient-shell__link" routerLink="/patient/novo" routerLinkActive="patient-shell__link--active"
+        >Nova solicitação</a
+      >
+      <a class="patient-shell__link" routerLink="/patient/historico" routerLinkActive="patient-shell__link--active"
+        >Histórico</a
+      >
+      <a class="patient-shell__link" routerLink="/patient/perfil" routerLinkActive="patient-shell__link--active"
+        >Perfil</a
+      >
+    </nav>
+
+    <div class="patient-shell__user">
+      <span class="patient-shell__user-name">{{ authService.currentUser()?.name }}</span>
+      <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+    </div>
+  </header>
+
+  <main class="patient-shell__content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

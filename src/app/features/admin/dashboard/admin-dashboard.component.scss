@@ -1,0 +1,50 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-dashboard__header {
+  @include list.header;
+}
+
+.admin-dashboard__title {
+  @include list.title;
+}
+
+.admin-dashboard__subtitle {
+  @include list.subtitle;
+}
+
+.admin-dashboard__list {
+  @include list.list;
+}
+
+.admin-dashboard__card-link {
+  @include list.card-link;
+}
+
+.admin-dashboard__card-header {
+  @include list.card-header;
+}
+
+.admin-dashboard__name {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.admin-dashboard__specialty {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+}
+
+.admin-dashboard__registration {
+  @include list.description;
+}
+
+.admin-dashboard__date {
+  @include list.date;
+}
+
+.admin-dashboard__skeleton-lines {
+  @include list.skeleton-lines;
+}

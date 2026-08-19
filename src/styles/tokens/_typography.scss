@@ -1,0 +1,39 @@
+@use 'sass:map';
+
+$font-family-base: ('Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+
+$font-weights: (
+  regular: 400,
+  medium: 500,
+);
+
+$font-sizes: (
+  xs: 12px,
+  sm: 14px,
+  base: 16px,
+  lg: 18px,
+  xl: 24px,
+  2xl: 32px,
+);
+
+$line-height-base: 1.5;
+
+@function font-size($key) {
+  $found-value: map.get($font-sizes, $key);
+
+  @if not $found-value {
+    @error "Tamanho de fonte desconhecido: '#{$key}'. Disponíveis: #{map.keys($font-sizes)}.";
+  }
+
+  @return $found-value;
+}
+
+@function font-weight($key) {
+  $found-value: map.get($font-weights, $key);
+
+  @if not $found-value {
+    @error "Peso de fonte desconhecido: '#{$key}'. Disponíveis: #{map.keys($font-weights)}.";
+  }
+
+  @return $found-value;
+}

@@ -1,0 +1,10 @@
+<div
+  class="ui-card"
+  [class.ui-card--padding-none]="padding() === 'none'"
+  [class.ui-card--padding-sm]="padding() === 'sm'"
+  [class.ui-card--padding-md]="padding() === 'md'"
+  [class.ui-card--padding-lg]="padding() === 'lg'"
+  [class.ui-card--interactive]="interactive()"
+>
+  <ng-content></ng-content>
+</div>

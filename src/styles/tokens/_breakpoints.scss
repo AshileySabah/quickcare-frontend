@@ -1,0 +1,24 @@
+@use 'sass:map';
+
+$breakpoints: (
+  sm: 375px,
+  md: 768px,
+  lg: 1024px,
+  xl: 1280px,
+);
+
+@function breakpoint($key) {
+  $found-value: map.get($breakpoints, $key);
+
+  @if not $found-value {
+    @error "Breakpoint desconhecido: '#{$key}'. Disponíveis: #{map.keys($breakpoints)}.";
+  }
+
+  @return $found-value;
+}
+
+@mixin respond($key) {
+  @media (min-width: breakpoint($key)) {
+    @content;
+  }
+}

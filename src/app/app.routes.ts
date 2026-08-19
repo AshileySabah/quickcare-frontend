@@ -125,5 +125,27 @@ export const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () =>
+      import('./features/admin/admin-shell/admin-shell.component').then((m) => m.AdminShellComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () =>
+          import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
+      },
+      {
+        path: 'profissionais/:id',
+        loadComponent: () =>
+          import('./features/admin/professional-detail/admin-professional-detail.component').then(
+            (m) => m.AdminProfessionalDetailComponent,
+          ),
+      },
+    ],
+  },
   { path: '**', redirectTo: 'login' },
 ];

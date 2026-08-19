@@ -1,0 +1,113 @@
+<div class="auth-page">
+  <div class="auth-page__panel">
+    <h1 class="auth-page__title">Cadastro de profissional</h1>
+    <p class="auth-page__subtitle">
+      Crie sua conta e envie seu documento de registro profissional para validação.
+    </p>
+
+    <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ui-input
+        label="Nome completo"
+        formControlName="name"
+        [required]="true"
+        [errorMessage]="fieldError('name')"
+      ></ui-input>
+
+      <ui-input
+        label="E-mail"
+        type="email"
+        formControlName="email"
+        [required]="true"
+        [errorMessage]="fieldError('email')"
+      ></ui-input>
+
+      <ui-input
+        label="Telefone"
+        type="tel"
+        formControlName="phone"
+        [required]="true"
+        [errorMessage]="fieldError('phone')"
+      ></ui-input>
+
+      <ui-select
+        label="Especialidade"
+        [options]="specialtyOptions"
+        formControlName="specialtyId"
+        [required]="true"
+        [errorMessage]="fieldError('specialtyId')"
+      ></ui-select>
+
+      <ui-input
+        label="Número de registro profissional"
+        formControlName="registrationNumber"
+        [required]="true"
+        [errorMessage]="fieldError('registrationNumber')"
+        hint="Ex.: CRN, CRP, CREFITO..."
+      ></ui-input>
+
+      <div class="professional-register__upload">
+        <label class="professional-register__upload-label" for="document-upload">
+          Documento de registro profissional <span aria-hidden="true">*</span>
+        </label>
+        <input
+          class="professional-register__upload-input"
+          id="document-upload"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          (change)="onFileSelected($event)"
+        />
+        <p class="professional-register__upload-hint">PDF, JPG ou PNG, até 5MB.</p>
+
+        @if (fileError()) {
+          <p class="professional-register__upload-error" role="alert">{{ fileError() }}</p>
+        }
+
+        @if (selectedFile(); as file) {
+          <div class="professional-register__preview">
+            @if (file.type.startsWith('image/')) {
+              <img
+                class="professional-register__preview-image"
+                [src]="filePreviewUrl()"
+                alt="Pré-visualização do documento enviado"
+              />
+            } @else {
+              <div class="professional-register__preview-file" aria-hidden="true">PDF</div>
+            }
+            <div class="professional-register__preview-info">
+              <span class="professional-register__preview-name">{{ file.name }}</span>
+              <span class="professional-register__preview-size">{{ (file.size / 1024 / 1024).toFixed(2) }} MB</span>
+            </div>
+            <button
+              type="button"
+              class="professional-register__preview-remove"
+              (click)="removeFile()"
+              aria-label="Remover documento"
+            >
+              &times;
+            </button>
+          </div>
+        }
+      </div>
+
+      <ui-input
+        label="Senha"
+        type="password"
+        formControlName="password"
+        [required]="true"
+        [errorMessage]="fieldError('password')"
+      ></ui-input>
+
+      <ui-input
+        label="Confirmar senha"
+        type="password"
+        formControlName="confirmPassword"
+        [required]="true"
+        [errorMessage]="confirmPasswordError"
+      ></ui-input>
+
+      <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
+    </form>
+
+    <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+  </div>
+</div>

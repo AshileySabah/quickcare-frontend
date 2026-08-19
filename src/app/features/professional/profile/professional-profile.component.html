@@ -1,0 +1,41 @@
+<section class="professional-profile">
+  <div class="professional-profile__header">
+    <h1 class="professional-profile__title">Meu perfil</h1>
+    @if (professional(); as user) {
+      <ui-verified-badge [status]="user.validationStatus"></ui-verified-badge>
+    }
+  </div>
+
+  @if (professional(); as user) {
+    <ui-card>
+      <dl class="professional-profile__list">
+        <div>
+          <dt>Nome</dt>
+          <dd>{{ user.name }}</dd>
+        </div>
+        <div>
+          <dt>E-mail</dt>
+          <dd>{{ user.email }}</dd>
+        </div>
+        <div>
+          <dt>Telefone</dt>
+          <dd>{{ user.phone }}</dd>
+        </div>
+        <div>
+          <dt>Especialidade</dt>
+          <dd>{{ specialtyName(user.specialtyId) }}</dd>
+        </div>
+        <div>
+          <dt>Número de registro</dt>
+          <dd>{{ user.registrationNumber }}</dd>
+        </div>
+        @if (user.bio) {
+          <div>
+            <dt>Sobre</dt>
+            <dd>{{ user.bio }}</dd>
+          </div>
+        }
+      </dl>
+    </ui-card>
+  }
+</section>

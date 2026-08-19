@@ -1,0 +1,53 @@
+<section class="professional-home">
+  <header class="professional-home__header">
+    <div>
+      <h1 class="professional-home__title">Solicitações abertas</h1>
+      <p class="professional-home__subtitle">
+        Solicitações de {{ specialtyName() }} aguardando propostas de profissionais.
+      </p>
+    </div>
+  </header>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <div class="professional-home__list">
+        @for (i of [1, 2, 3]; track i) {
+          <ui-card>
+            <div class="professional-home__skeleton-lines">
+              <ui-skeleton height="20px" width="60%"></ui-skeleton>
+              <ui-skeleton height="14px" width="40%"></ui-skeleton>
+              <ui-skeleton height="14px" width="80%"></ui-skeleton>
+            </div>
+          </ui-card>
+        }
+      </div>
+    }
+    @case ('empty') {
+      <ui-empty-state
+        title="Nenhuma solicitação aberta"
+        message="Assim que um paciente criar uma solicitação da sua especialidade, ela aparecerá aqui."
+      ></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="professional-home__list">
+        @for (request of requests(); track request.id) {
+          <a class="professional-home__card-link" [routerLink]="['/professional/solicitacoes', request.id]">
+            <ui-card [interactive]="true">
+              <div class="professional-home__card-header">
+                <span class="professional-home__modality">
+                  {{ request.modality === 'presencial' ? 'Presencial' : 'Online' }}
+                </span>
+                <ui-status-badge [status]="request.status"></ui-status-badge>
+              </div>
+              <p class="professional-home__description">{{ request.description }}</p>
+              <p class="professional-home__date">Prazo desejado: {{ request.desiredDeadline | date: 'dd/MM/yyyy' }}</p>
+            </ui-card>
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

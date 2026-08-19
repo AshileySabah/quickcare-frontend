@@ -1,0 +1,14 @@
+@use 'tokens' as tokens;
+
+.my-proposals__title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+  margin-bottom: tokens.space(5);
+}
+
+.my-proposals__list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}

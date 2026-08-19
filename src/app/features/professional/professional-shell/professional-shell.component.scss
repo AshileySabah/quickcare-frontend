@@ -1,22 +1,22 @@
 @use 'patterns/app-shell' as shell;
 
-.patient-shell {
+.professional-shell {
   @include shell.shell;
 }
 
-.patient-shell__header {
+.professional-shell__header {
   @include shell.header;
 }
 
-.patient-shell__brand {
+.professional-shell__brand {
   @include shell.brand;
 }
 
-.patient-shell__nav {
+.professional-shell__nav {
   @include shell.nav;
 }
 
-.patient-shell__link {
+.professional-shell__link {
   @include shell.link;
 
   &--active {
@@ -24,14 +24,14 @@
   }
 }
 
-.patient-shell__user {
+.professional-shell__user {
   @include shell.user;
 }
 
-.patient-shell__user-name {
+.professional-shell__user-name {
   @include shell.user-name;
 }
 
-.patient-shell__content {
+.professional-shell__content {
   @include shell.content;
 }

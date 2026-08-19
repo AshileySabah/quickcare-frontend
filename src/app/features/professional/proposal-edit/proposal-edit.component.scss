@@ -1,0 +1,27 @@
+@use 'tokens' as tokens;
+
+.proposal-edit__title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.proposal-edit__subtitle {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  margin-top: tokens.space(1);
+  margin-bottom: tokens.space(5);
+}
+
+.proposal-edit__loading {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+.proposal-edit__form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+  max-width: 480px;
+}

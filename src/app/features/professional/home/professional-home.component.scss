@@ -1,0 +1,41 @@
+@use 'patterns/request-list' as list;
+
+.professional-home__header {
+  @include list.header;
+}
+
+.professional-home__title {
+  @include list.title;
+}
+
+.professional-home__subtitle {
+  @include list.subtitle;
+}
+
+.professional-home__list {
+  @include list.list;
+}
+
+.professional-home__card-link {
+  @include list.card-link;
+}
+
+.professional-home__card-header {
+  @include list.card-header;
+}
+
+.professional-home__modality {
+  @include list.specialty;
+}
+
+.professional-home__description {
+  @include list.description;
+}
+
+.professional-home__date {
+  @include list.date;
+}
+
+.professional-home__skeleton-lines {
+  @include list.skeleton-lines;
+}

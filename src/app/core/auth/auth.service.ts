@@ -4,6 +4,7 @@ import { delay, tap } from 'rxjs/operators';
 import { Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
 import { ADMINS_MOCK, CREDENTIALS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { deleteCookie, setCookie } from '../interceptors/cookie.util';
+import { simulateNetwork } from '../services/simulate-network.util';
 
 export interface PatientRegistration {
   name: string;
@@ -109,6 +110,66 @@ export class AuthService {
         deleteCookie('csrf_token');
       }),
     );
+  }
+
+  listPendingProfessionals(simulateError = false): Observable<Professional[]> {
+    return simulateNetwork(
+      () =>
+        this.users().filter(
+          (user): user is Professional => user.role === 'professional' && user.validationStatus === 'pendente',
+        ),
+      { simulateError, errorMessage: 'Não foi possível carregar os profissionais pendentes.' },
+    );
+  }
+
+  getProfessionalById(id: string, simulateError = false): Observable<Professional | undefined> {
+    return simulateNetwork(
+      () => {
+        const user = this.users().find((candidate) => candidate.id === id);
+        return user && user.role === 'professional' ? user : undefined;
+      },
+      { simulateError, errorMessage: 'Não foi possível carregar o profissional.' },
+    );
+  }
+
+  approveProfessional(id: string): Observable<Professional> {
+    return simulateNetwork(() => {
+      const professional = this.findPendingProfessionalOrThrow(id);
+      const updated: Professional = { ...professional, validationStatus: 'aprovado', rejectionReason: undefined };
+      this.replaceUser(updated);
+      return updated;
+    });
+  }
+
+  rejectProfessional(id: string, reason: string): Observable<Professional> {
+    return simulateNetwork(() => {
+      const professional = this.findPendingProfessionalOrThrow(id);
+      const updated: Professional = { ...professional, validationStatus: 'reprovado', rejectionReason: reason };
+      this.replaceUser(updated);
+      return updated;
+    });
+  }
+
+  private findPendingProfessionalOrThrow(id: string): Professional {
+    const user = this.users().find((candidate) => candidate.id === id);
+
+    if (!user || user.role !== 'professional') {
+      throw new Error('Profissional não encontrado.');
+    }
+
+    if (user.validationStatus !== 'pendente') {
+      throw new Error('Este profissional já foi avaliado.');
+    }
+
+    return user;
+  }
+
+  private replaceUser(updated: User): void {
+    this.users.update((users) => users.map((user) => (user.id === updated.id ? updated : user)));
+
+    if (this.currentUserSignal()?.id === updated.id) {
+      this.currentUserSignal.set(updated);
+    }
   }
 
   private establishSession(user: User): void {

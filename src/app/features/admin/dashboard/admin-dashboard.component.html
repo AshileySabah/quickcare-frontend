@@ -1,0 +1,50 @@
+<section class="admin-dashboard">
+  <header class="admin-dashboard__header">
+    <div>
+      <h1 class="admin-dashboard__title">Profissionais pendentes</h1>
+      <p class="admin-dashboard__subtitle">Valide os documentos de registro profissional enviados.</p>
+    </div>
+  </header>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <div class="admin-dashboard__list">
+        @for (i of [1, 2, 3]; track i) {
+          <ui-card>
+            <div class="admin-dashboard__skeleton-lines">
+              <ui-skeleton height="20px" width="60%"></ui-skeleton>
+              <ui-skeleton height="14px" width="40%"></ui-skeleton>
+            </div>
+          </ui-card>
+        }
+      </div>
+    }
+    @case ('empty') {
+      <ui-empty-state
+        title="Nenhum profissional pendente"
+        message="Todos os cadastros enviados já foram avaliados."
+      ></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-dashboard__list">
+        @for (professional of pendingProfessionals(); track professional.id) {
+          <a class="admin-dashboard__card-link" [routerLink]="['/admin/profissionais', professional.id]">
+            <ui-card [interactive]="true">
+              <div class="admin-dashboard__card-header">
+                <span class="admin-dashboard__name">{{ professional.name }}</span>
+                <span class="admin-dashboard__specialty">{{ specialtyName(professional.specialtyId) }}</span>
+              </div>
+              <p class="admin-dashboard__registration">Registro: {{ professional.registrationNumber }}</p>
+              <p class="admin-dashboard__date">
+                Documento enviado em {{ professional.validationDocument.uploadedAt | date: 'dd/MM/yyyy' }}
+              </p>
+            </ui-card>
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

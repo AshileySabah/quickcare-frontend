@@ -1,0 +1,119 @@
+@use 'tokens' as tokens;
+@use 'patterns/auth-page' as authPage;
+
+.auth-page {
+  @include authPage.page;
+}
+
+.auth-page__panel {
+  @include authPage.panel;
+}
+
+.auth-page__title {
+  @include authPage.title;
+}
+
+.auth-page__subtitle {
+  @include authPage.subtitle;
+}
+
+.auth-page__form {
+  @include authPage.form;
+}
+
+.auth-page__footer {
+  @include authPage.footer;
+}
+
+.professional-register__upload {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+}
+
+.professional-register__upload-label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.professional-register__upload-input {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+}
+
+.professional-register__upload-hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.professional-register__upload-error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}
+
+.professional-register__preview {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+  margin-top: tokens.space(2);
+  padding: tokens.space(2) tokens.space(3);
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('md');
+}
+
+.professional-register__preview-image {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: tokens.radius('sm');
+}
+
+.professional-register__preview-file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: tokens.radius('sm');
+  background-color: tokens.color('gray', 100);
+  color: tokens.color('gray', 600);
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+}
+
+.professional-register__preview-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.professional-register__preview-name {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.professional-register__preview-size {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.professional-register__preview-remove {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: tokens.radius('sm');
+  background-color: transparent;
+  color: tokens.color('gray', 500);
+  font-size: tokens.font-size('lg');
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('gray', 100);
+  }
+}

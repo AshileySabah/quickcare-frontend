@@ -1,0 +1,102 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <div class="professional-request-detail__loading">
+      <ui-skeleton height="28px" width="50%"></ui-skeleton>
+      <ui-skeleton height="16px" width="30%"></ui-skeleton>
+      <ui-skeleton height="80px"></ui-skeleton>
+    </div>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Solicitação não encontrada" message="Ela pode ter sido removida ou o link está incorreto.">
+      <ui-button routerLink="/professional">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (request(); as currentRequest) {
+      <section class="professional-request-detail">
+        <ui-card>
+          <header class="professional-request-detail__header">
+            <div>
+              <span class="professional-request-detail__specialty">
+                {{ specialtyName(currentRequest.specialtyId) }}
+              </span>
+              <h1 class="professional-request-detail__title">Solicitação</h1>
+            </div>
+            <ui-status-badge [status]="currentRequest.status"></ui-status-badge>
+          </header>
+
+          <p class="professional-request-detail__description">{{ currentRequest.description }}</p>
+
+          <dl class="professional-request-detail__meta">
+            <div>
+              <dt>Modalidade</dt>
+              <dd>{{ currentRequest.modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
+            </div>
+            @if (currentRequest.address) {
+              <div>
+                <dt>Endereço</dt>
+                <dd>
+                  {{ currentRequest.address.street }}, {{ currentRequest.address.city }} -
+                  {{ currentRequest.address.state }}
+                </dd>
+              </div>
+            }
+            <div>
+              <dt>Prazo desejado</dt>
+              <dd>{{ currentRequest.desiredDeadline | date: 'dd/MM/yyyy' }}</dd>
+            </div>
+          </dl>
+        </ui-card>
+
+        @if (existingProposal(); as proposal) {
+          <ui-card>
+            <h2 class="professional-request-detail__form-title">Sua proposta</h2>
+            <div class="professional-request-detail__proposal-status">
+              <ui-status-badge [status]="proposal.status"></ui-status-badge>
+            </div>
+            <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
+            <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
+          </ui-card>
+        } @else if (currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') {
+          <ui-card>
+            <h2 class="professional-request-detail__form-title">Enviar proposta</h2>
+
+            <form class="professional-request-detail__form" [formGroup]="form" (ngSubmit)="submit()">
+              <ui-input
+                label="Preço (R$)"
+                type="number"
+                formControlName="price"
+                [required]="true"
+                [errorMessage]="fieldError('price')"
+              ></ui-input>
+
+              <ui-textarea
+                label="Abordagem"
+                formControlName="approach"
+                [rows]="4"
+                [required]="true"
+                [errorMessage]="fieldError('approach')"
+                hint="Explique como você pretende conduzir o atendimento."
+              ></ui-textarea>
+
+              <ui-input
+                label="Prazo estimado"
+                type="date"
+                formControlName="deadline"
+                [required]="true"
+                [errorMessage]="fieldError('deadline')"
+              ></ui-input>
+
+              <ui-button type="submit" [loading]="isSubmitting()">Enviar proposta</ui-button>
+            </form>
+          </ui-card>
+        } @else {
+          <ui-empty-state title="Esta solicitação não está mais recebendo propostas."></ui-empty-state>
+        }
+      </section>
+    }
+  }
+}

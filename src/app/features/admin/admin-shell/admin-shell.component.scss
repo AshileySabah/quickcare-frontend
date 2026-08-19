@@ -1,0 +1,37 @@
+@use 'patterns/app-shell' as shell;
+
+.admin-shell {
+  @include shell.shell;
+}
+
+.admin-shell__header {
+  @include shell.header;
+}
+
+.admin-shell__brand {
+  @include shell.brand;
+}
+
+.admin-shell__nav {
+  @include shell.nav;
+}
+
+.admin-shell__link {
+  @include shell.link;
+
+  &--active {
+    @include shell.link-active;
+  }
+}
+
+.admin-shell__user {
+  @include shell.user;
+}
+
+.admin-shell__user-name {
+  @include shell.user-name;
+}
+
+.admin-shell__content {
+  @include shell.content;
+}

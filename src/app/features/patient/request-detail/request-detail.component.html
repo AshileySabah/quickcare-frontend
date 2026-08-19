@@ -1,0 +1,118 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <div class="request-detail__loading">
+      <ui-skeleton height="28px" width="50%"></ui-skeleton>
+      <ui-skeleton height="16px" width="30%"></ui-skeleton>
+      <ui-skeleton height="80px"></ui-skeleton>
+    </div>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Solicitação não encontrada" message="Ela pode ter sido removida ou o link está incorreto.">
+      <ui-button routerLink="/patient/historico">Voltar ao histórico</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="loadRequest()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (request(); as currentRequest) {
+      <section class="request-detail">
+        <ui-card>
+          <header class="request-detail__header">
+            <div>
+              <span class="request-detail__specialty">{{ specialtyName(currentRequest.specialtyId) }}</span>
+              <h1 class="request-detail__title">Solicitação</h1>
+            </div>
+            <ui-status-badge [status]="currentRequest.status"></ui-status-badge>
+          </header>
+
+          <p class="request-detail__description">{{ currentRequest.description }}</p>
+
+          <dl class="request-detail__meta">
+            <div>
+              <dt>Modalidade</dt>
+              <dd>{{ currentRequest.modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
+            </div>
+            @if (currentRequest.address) {
+              <div>
+                <dt>Endereço</dt>
+                <dd>{{ currentRequest.address.street }}, {{ currentRequest.address.city }} - {{ currentRequest.address.state }}</dd>
+              </div>
+            }
+            <div>
+              <dt>Prazo desejado</dt>
+              <dd>{{ currentRequest.desiredDeadline | date: 'dd/MM/yyyy' }}</dd>
+            </div>
+          </dl>
+
+          <div class="request-detail__actions">
+            @if (canEdit(currentRequest)) {
+              <ui-button variant="secondary" [routerLink]="['/patient/solicitacoes', currentRequest.id, 'editar']">
+                Editar
+              </ui-button>
+            }
+            @if (canCancel(currentRequest)) {
+              <ui-button variant="danger" (click)="cancelRequest()">Cancelar solicitação</ui-button>
+            }
+          </div>
+        </ui-card>
+
+        <div class="request-detail__proposals">
+          <h2 class="request-detail__proposals-title">Propostas recebidas</h2>
+
+          @switch (proposalsState()) {
+            @case ('loading') {
+              <div class="request-detail__proposals-list">
+                @for (i of [1, 2]; track i) {
+                  <ui-card>
+                    <ui-skeleton height="20px" width="50%"></ui-skeleton>
+                    <ui-skeleton height="60px"></ui-skeleton>
+                  </ui-card>
+                }
+              </div>
+            }
+            @case ('error') {
+              <ui-error-state (retry)="loadProposals()"></ui-error-state>
+            }
+            @case ('empty') {
+              <ui-empty-state
+                title="Nenhuma proposta ainda"
+                message="Assim que um profissional enviar uma proposta, ela aparecerá aqui."
+              ></ui-empty-state>
+            }
+            @case ('filled') {
+              <div class="request-detail__proposals-list">
+                @for (proposal of proposals(); track proposal.id) {
+                  <ui-proposal-card
+                    [proposal]="proposal"
+                    [professionalName]="professionalName(proposal.professionalId)"
+                    [professionalValidationStatus]="professionalValidationStatus(proposal.professionalId)"
+                  >
+                    @if (proposal.status === 'pendente' && canEdit(currentRequest)) {
+                      <div proposal-actions>
+                        <ui-button (click)="askToAccept(proposal)">Aceitar proposta</ui-button>
+                      </div>
+                    }
+                  </ui-proposal-card>
+                }
+              </div>
+            }
+          }
+        </div>
+      </section>
+    }
+  }
+}
+
+<ui-modal [open]="proposalToAccept() !== null" titleText="Confirmar aceite" (closed)="closeAcceptModal()">
+  @if (proposalToAccept(); as proposal) {
+    <p class="request-detail__confirm-text">
+      Ao aceitar esta proposta, as demais propostas pendentes serão recusadas automaticamente e a solicitação entrará
+      em andamento.
+    </p>
+    <div class="request-detail__confirm-actions">
+      <ui-button variant="ghost" (click)="closeAcceptModal()">Cancelar</ui-button>
+      <ui-button [loading]="isAccepting()" (click)="confirmAccept()">Confirmar aceite</ui-button>
+    </div>
+  }
+</ui-modal>

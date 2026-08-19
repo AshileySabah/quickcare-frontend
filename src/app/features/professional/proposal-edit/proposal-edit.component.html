@@ -1,0 +1,40 @@
+<section class="proposal-edit">
+  <h1 class="proposal-edit__title">Editar proposta</h1>
+  <p class="proposal-edit__subtitle">Atualize os dados da sua proposta.</p>
+
+  @if (isLoading()) {
+    <div class="proposal-edit__loading">
+      <ui-skeleton height="40px"></ui-skeleton>
+      <ui-skeleton height="100px"></ui-skeleton>
+      <ui-skeleton height="40px"></ui-skeleton>
+    </div>
+  } @else {
+    <form class="proposal-edit__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ui-input
+        label="Preço (R$)"
+        type="number"
+        formControlName="price"
+        [required]="true"
+        [errorMessage]="fieldError('price')"
+      ></ui-input>
+
+      <ui-textarea
+        label="Abordagem"
+        formControlName="approach"
+        [rows]="4"
+        [required]="true"
+        [errorMessage]="fieldError('approach')"
+      ></ui-textarea>
+
+      <ui-input
+        label="Prazo estimado"
+        type="date"
+        formControlName="deadline"
+        [required]="true"
+        [errorMessage]="fieldError('deadline')"
+      ></ui-input>
+
+      <ui-button type="submit" [loading]="isSubmitting()">Salvar alterações</ui-button>
+    </form>
+  }
+</section>

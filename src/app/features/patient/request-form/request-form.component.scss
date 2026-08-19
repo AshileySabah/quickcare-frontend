@@ -1,0 +1,37 @@
+@use 'tokens' as tokens;
+
+.request-form__title {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.request-form__subtitle {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  margin-top: tokens.space(1);
+  margin-bottom: tokens.space(5);
+}
+
+.request-form__loading {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+.request-form__form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+  max-width: 560px;
+}
+
+.request-form__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: tokens.space(4);
+
+  @include tokens.respond('md') {
+    grid-template-columns: 1fr 1fr;
+  }
+}

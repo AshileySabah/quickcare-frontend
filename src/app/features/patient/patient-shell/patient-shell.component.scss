@@ -1,0 +1,37 @@
+@use 'patterns/app-shell' as shell;
+
+.patient-shell {
+  @include shell.shell;
+}
+
+.patient-shell__header {
+  @include shell.header;
+}
+
+.patient-shell__brand {
+  @include shell.brand;
+}
+
+.patient-shell__nav {
+  @include shell.nav;
+}
+
+.patient-shell__link {
+  @include shell.link;
+
+  &--active {
+    @include shell.link-active;
+  }
+}
+
+.patient-shell__user {
+  @include shell.user;
+}
+
+.patient-shell__user-name {
+  @include shell.user-name;
+}
+
+.patient-shell__content {
+  @include shell.content;
+}

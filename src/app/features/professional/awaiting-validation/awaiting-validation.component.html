@@ -1,0 +1,27 @@
+<div class="auth-page">
+  <div class="auth-page__panel">
+    @if (professional(); as user) {
+      @if (user.validationStatus === 'reprovado') {
+        <h1 class="auth-page__title">Cadastro não aprovado</h1>
+        <p class="auth-page__subtitle">Infelizmente seu documento de registro profissional não foi validado.</p>
+
+        @if (user.rejectionReason) {
+          <ui-card>
+            <p class="awaiting-validation__reason-label">Motivo</p>
+            <p class="awaiting-validation__reason-text">{{ user.rejectionReason }}</p>
+          </ui-card>
+        }
+      } @else {
+        <h1 class="auth-page__title">Cadastro em análise</h1>
+        <p class="auth-page__subtitle">
+          Recebemos seu documento de registro profissional e nossa equipe está validando suas informações. Você
+          receberá acesso assim que a validação for concluída.
+        </p>
+      }
+
+      <ui-button class="awaiting-validation__logout" [fullWidth]="true" variant="ghost" (click)="logout()">
+        Sair
+      </ui-button>
+    }
+  </div>
+</div>

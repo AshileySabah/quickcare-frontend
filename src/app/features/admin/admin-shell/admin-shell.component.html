@@ -1,0 +1,24 @@
+<div class="admin-shell">
+  <header class="admin-shell__header">
+    <div class="admin-shell__brand">QuickCare Admin</div>
+
+    <nav class="admin-shell__nav" aria-label="Navegação do admin">
+      <a
+        class="admin-shell__link"
+        routerLink="/admin"
+        routerLinkActive="admin-shell__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Pendentes</a
+      >
+    </nav>
+
+    <div class="admin-shell__user">
+      <span class="admin-shell__user-name">{{ authService.currentUser()?.name }}</span>
+      <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+    </div>
+  </header>
+
+  <main class="admin-shell__content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

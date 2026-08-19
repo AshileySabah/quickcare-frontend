@@ -1,0 +1,36 @@
+<div class="professional-shell">
+  <header class="professional-shell__header">
+    <div class="professional-shell__brand">QuickCare</div>
+
+    <nav class="professional-shell__nav" aria-label="Navegação do profissional">
+      <a
+        class="professional-shell__link"
+        routerLink="/professional"
+        routerLinkActive="professional-shell__link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Início</a
+      >
+      <a
+        class="professional-shell__link"
+        routerLink="/professional/propostas"
+        routerLinkActive="professional-shell__link--active"
+        >Minhas propostas</a
+      >
+      <a
+        class="professional-shell__link"
+        routerLink="/professional/perfil"
+        routerLinkActive="professional-shell__link--active"
+        >Perfil</a
+      >
+    </nav>
+
+    <div class="professional-shell__user">
+      <span class="professional-shell__user-name">{{ authService.currentUser()?.name }}</span>
+      <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+    </div>
+  </header>
+
+  <main class="professional-shell__content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

@@ -1,0 +1,37 @@
+@use 'patterns/app-shell' as shell;
+
+.professional-shell {
+  @include shell.shell;
+}
+
+.professional-shell__header {
+  @include shell.header;
+}
+
+.professional-shell__brand {
+  @include shell.brand;
+}
+
+.professional-shell__nav {
+  @include shell.nav;
+}
+
+.professional-shell__link {
+  @include shell.link;
+
+  &--active {
+    @include shell.link-active;
+  }
+}
+
+.professional-shell__user {
+  @include shell.user;
+}
+
+.professional-shell__user-name {
+  @include shell.user-name;
+}
+
+.professional-shell__content {
+  @include shell.content;
+}

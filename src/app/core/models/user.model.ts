@@ -13,6 +13,7 @@ export interface BaseUser {
 export interface Patient extends BaseUser {
   role: 'patient';
   phone: string;
+  cpf: string;
 }
 
 export interface ProfessionalDocument {
@@ -26,6 +27,7 @@ export interface ProfessionalDocument {
 export interface Professional extends BaseUser {
   role: 'professional';
   phone: string;
+  cpf: string;
   specialtyId: string;
   registrationNumber: string;
   bio?: string;

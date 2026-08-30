@@ -10,6 +10,7 @@ export interface PatientRegistration {
   name: string;
   email: string;
   phone: string;
+  cpf: string;
   password: string;
 }
 
@@ -17,6 +18,7 @@ export interface ProfessionalRegistration {
   name: string;
   email: string;
   phone: string;
+  cpf: string;
   specialtyId: string;
   registrationNumber: string;
   password: string;
@@ -63,6 +65,7 @@ export class AuthService {
       name: input.name,
       email: input.email,
       phone: input.phone,
+      cpf:input.cpf,
     };
 
     this.users.update((users) => [...users, patient]);
@@ -87,6 +90,7 @@ export class AuthService {
       name: input.name,
       email: input.email,
       phone: input.phone,
+      cpf: input.cpf,
       specialtyId: input.specialtyId,
       registrationNumber: input.registrationNumber,
       validationStatus: 'pendente',

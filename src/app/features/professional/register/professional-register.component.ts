@@ -55,6 +55,7 @@ export class ProfessionalRegisterComponent {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
+      cpf: ['', Validators.required],
       specialtyId: ['', Validators.required],
       registrationNumber: ['', Validators.required],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -64,7 +65,7 @@ export class ProfessionalRegisterComponent {
   );
 
   protected fieldError(
-    fieldName: 'name' | 'email' | 'phone' | 'specialtyId' | 'registrationNumber' | 'password',
+    fieldName: 'name' | 'email' | 'phone' | 'cpf' | 'specialtyId' | 'registrationNumber' | 'password',
   ): string | null {
     const control = this.form.controls[fieldName];
 
@@ -159,13 +160,14 @@ export class ProfessionalRegisterComponent {
     }
 
     this.isSubmitting.set(true);
-    const { name, email, phone, specialtyId, registrationNumber, password } = this.form.getRawValue();
+    const { name, email, phone, cpf, specialtyId, registrationNumber, password } = this.form.getRawValue();
 
     this.authService
       .registerProfessional({
         name,
         email,
         phone,
+        cpf,
         specialtyId,
         registrationNumber,
         password,

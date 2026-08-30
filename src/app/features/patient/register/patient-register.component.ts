@@ -41,13 +41,14 @@ export class PatientRegisterComponent {
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
+      cpf: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: passwordsMatchValidator() },
   );
 
-  protected fieldError(fieldName: 'name' | 'email' | 'phone' | 'password'): string | null {
+  protected fieldError(fieldName: 'name' | 'email' | 'phone' | 'cpf' | 'password'): string | null {
     const control = this.form.controls[fieldName];
 
     if (!control.touched) {
@@ -94,9 +95,9 @@ export class PatientRegisterComponent {
     }
 
     this.isSubmitting.set(true);
-    const { name, email, phone, password } = this.form.getRawValue();
+    const { name, email, phone, cpf, password } = this.form.getRawValue();
 
-    this.authService.registerPatient({ name, email, phone, password }).subscribe({
+    this.authService.registerPatient({ name, email, phone, cpf, password }).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.toastService.success('Cadastro realizado com sucesso!');

@@ -18,6 +18,7 @@ describe('ProposalService', () => {
     name: 'Profissional Teste',
     email: 'prof.teste@example.com',
     phone: '(11) 90000-0000',
+    cpf: '123.456.789-00',
     specialtyId: 'sp-nutricao',
     registrationNumber: 'CRN-TESTE',
     validationStatus: 'aprovado',

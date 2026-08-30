@@ -23,6 +23,13 @@
       ></ui-input>
 
       <ui-input
+        label="CPF"
+        formControlName="cpf"
+        [required]="true"
+        [errorMessage]="fieldError('cpf')"
+      ></ui-input>
+
+      <ui-input
         label="Senha"
         type="password"
         formControlName="password"

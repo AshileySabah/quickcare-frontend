@@ -1,10 +1,12 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { catchError, delay, map, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 import { Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
 import { ADMINS_MOCK, CREDENTIALS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
-import { deleteCookie, setCookie } from '../interceptors/cookie.util';
 import { simulateNetwork } from '../services/simulate-network.util';
+import { ApiErrorResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
 
 export interface PatientRegistration {
   name: string;
@@ -29,6 +31,8 @@ const MOCK_LATENCY_MS = 500;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private readonly http = inject(HttpClient);
+
   private readonly users = signal<User[]>([...PATIENTS_MOCK, ...PROFESSIONALS_MOCK, ...ADMINS_MOCK]);
   private readonly credentials = new Map(CREDENTIALS_MOCK.map((credential) => [credential.email.toLowerCase(), credential.password]));
 
@@ -38,18 +42,65 @@ export class AuthService {
   readonly role = computed<UserRole | null>(() => this.currentUserSignal()?.role ?? null);
 
   login(email: string, password: string): Observable<User> {
-    const normalizedEmail = email.trim().toLowerCase();
-    const user = this.users().find((candidate) => candidate.email.toLowerCase() === normalizedEmail);
-    const expectedPassword = this.credentials.get(normalizedEmail);
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/login`, { email, senha: password }, { withCredentials: true })
+      .pipe(
+        map((response) => this.mapLoginResponseToUser(response)),
+        tap((user) => this.establishSession(user)),
+        catchError((error: unknown) =>
+          throwError(() => this.normalizeError(error, 'Não foi possível entrar. Tente novamente.')),
+        ),
+      );
+  }
 
-    if (!user || !expectedPassword || expectedPassword !== password) {
-      return throwError(() => new Error('E-mail ou senha inválidos.')).pipe(delay(MOCK_LATENCY_MS));
+  private mapLoginResponseToUser(response: LoginApiResponse): User {
+    const prioridade: PerfilStatusApi['tipo'][] = ['PROFISSIONAL', 'PACIENTE'];
+    const perfilAtivo = prioridade
+      .map((tipo) => response.perfis.find((perfil) => perfil.tipo === tipo))
+      .find((perfil) => perfil?.status === 'ATIVO');
+
+    if (!perfilAtivo) {
+      throw new Error('Nenhum dos seus perfis está ativo no momento.');
     }
 
-    return of(user).pipe(
-      delay(MOCK_LATENCY_MS),
-      tap((loggedInUser) => this.establishSession(loggedInUser)),
-    );
+    const id = String(response.usuarioId);
+
+    if (perfilAtivo.tipo === 'PROFISSIONAL') {
+      const professional: Professional = {
+        id,
+        role: 'professional',
+        name: response.nome,
+        email: response.email,
+        phone: '',
+        specialtyId: '',
+        registrationNumber: '',
+        validationStatus: 'aprovado',
+        validationDocument: { fileName: '', fileType: '', fileSizeBytes: 0, uploadedAt: '', previewUrl: '' },
+      };
+      return professional;
+    }
+
+    const patient: Patient = {
+      id,
+      role: 'patient',
+      name: response.nome,
+      email: response.email,
+      phone: '',
+    };
+    return patient;
+  }
+
+  private normalizeError(error: unknown, defaultMessage: string): Error {
+    if (error instanceof HttpErrorResponse) {
+      const apiError = error.error as ApiErrorResponse | undefined;
+      return new Error(apiError?.message ?? defaultMessage);
+    }
+
+    if (error instanceof Error) {
+      return error;
+    }
+
+    return new Error(defaultMessage);
   }
 
   registerPatient(input: PatientRegistration): Observable<Patient> {
@@ -107,11 +158,11 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return of(undefined).pipe(
-      delay(200),
-      tap(() => {
+    return this.http.post<void>(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
+      tap(() => this.currentUserSignal.set(null)),
+      catchError(() => {
         this.currentUserSignal.set(null);
-        deleteCookie('csrf_token');
+        return of(undefined);
       }),
     );
   }
@@ -178,6 +229,5 @@ export class AuthService {
 
   private establishSession(user: User): void {
     this.currentUserSignal.set(user);
-    setCookie('csrf_token', crypto.randomUUID());
   }
 }

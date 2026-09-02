@@ -1,10 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
-import { ADMINS_MOCK, CREDENTIALS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
+import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
 import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
 
@@ -25,16 +25,17 @@ export interface ProfessionalRegistration {
   registrationNumber: string;
   password: string;
   document: ProfessionalDocument;
+  modalidadeAtendimento: 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
+  raioAtendimentoKm: number;
+  latitude: number;
+  longitude: number;
 }
-
-const MOCK_LATENCY_MS = 500;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
 
   private readonly users = signal<User[]>([...PATIENTS_MOCK, ...PROFESSIONALS_MOCK, ...ADMINS_MOCK]);
-  private readonly credentials = new Map(CREDENTIALS_MOCK.map((credential) => [credential.email.toLowerCase(), credential.password]));
 
   private readonly currentUserSignal = signal<User | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
@@ -120,33 +121,29 @@ export class AuthService {
       );
   }
 
-  registerProfessional(input: ProfessionalRegistration): Observable<Professional> {
-    const normalizedEmail = input.email.trim().toLowerCase();
-
-    if (this.users().some((user) => user.email.toLowerCase() === normalizedEmail)) {
-      return throwError(() => new Error('Já existe uma conta com este e-mail.')).pipe(delay(MOCK_LATENCY_MS));
-    }
-
-    const professional: Professional = {
-      id: `prof-${crypto.randomUUID()}`,
-      role: 'professional',
-      name: input.name,
-      email: input.email,
-      phone: input.phone,
-      cpf: input.cpf,
-      specialtyId: input.specialtyId,
-      registrationNumber: input.registrationNumber,
-      validationStatus: 'pendente',
-      validationDocument: input.document,
-    };
-
-    this.users.update((users) => [...users, professional]);
-    this.credentials.set(normalizedEmail, input.password);
-
-    return of(professional).pipe(
-      delay(MOCK_LATENCY_MS),
-      tap((registeredProfessional) => this.establishSession(registeredProfessional)),
-    );
+  registerProfessional(input: ProfessionalRegistration): Observable<User> {
+    return this.http
+      .post<CadastroApiResponse>(
+        `${environment.apiUrl}/usuarios/cadastro/profissional`,
+        {
+          nome: input.name,
+          email: input.email,
+          senha: input.password,
+          cpf: input.cpf,
+          telefone: input.phone,
+          modalidadeAtendimento: input.modalidadeAtendimento,
+          raioAtendimentoKm: input.raioAtendimentoKm,
+          latitude: input.latitude,
+          longitude: input.longitude,
+        },
+        { withCredentials: true },
+      )
+      .pipe(
+        switchMap(() => this.login(input.email, input.password)),
+        catchError((error: unknown) =>
+          throwError(() => this.normalizeError(error, 'Não foi possível concluir o cadastro. Tente novamente.')),
+        ),
+      );
   }
 
   logout(): Observable<void> {

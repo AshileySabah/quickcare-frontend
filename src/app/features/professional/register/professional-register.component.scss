@@ -25,6 +25,12 @@
   @include authPage.footer;
 }
 
+.professional-register__location {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}
+
 .professional-register__upload {
   display: flex;
   flex-direction: column;

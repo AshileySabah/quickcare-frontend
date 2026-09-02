@@ -1,12 +1,12 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, delay, map, tap } from 'rxjs/operators';
+import { catchError, delay, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
 import { ADMINS_MOCK, CREDENTIALS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
-import { ApiErrorResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
+import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
 
 export interface PatientRegistration {
   name: string;
@@ -72,6 +72,7 @@ export class AuthService {
         name: response.nome,
         email: response.email,
         phone: '',
+        cpf: '',
         specialtyId: '',
         registrationNumber: '',
         validationStatus: 'aprovado',
@@ -86,6 +87,7 @@ export class AuthService {
       name: response.nome,
       email: response.email,
       phone: '',
+      cpf: '',
     };
     return patient;
   }
@@ -103,29 +105,19 @@ export class AuthService {
     return new Error(defaultMessage);
   }
 
-  registerPatient(input: PatientRegistration): Observable<Patient> {
-    const normalizedEmail = input.email.trim().toLowerCase();
-
-    if (this.users().some((user) => user.email.toLowerCase() === normalizedEmail)) {
-      return throwError(() => new Error('Já existe uma conta com este e-mail.')).pipe(delay(MOCK_LATENCY_MS));
-    }
-
-    const patient: Patient = {
-      id: `pat-${crypto.randomUUID()}`,
-      role: 'patient',
-      name: input.name,
-      email: input.email,
-      phone: input.phone,
-      cpf:input.cpf,
-    };
-
-    this.users.update((users) => [...users, patient]);
-    this.credentials.set(normalizedEmail, input.password);
-
-    return of(patient).pipe(
-      delay(MOCK_LATENCY_MS),
-      tap((registeredPatient) => this.establishSession(registeredPatient)),
-    );
+  registerPatient(input: PatientRegistration): Observable<User> {
+    return this.http
+      .post<CadastroApiResponse>(
+        `${environment.apiUrl}/usuarios/cadastro/paciente`,
+        { nome: input.name, email: input.email, senha: input.password, cpf: input.cpf, telefone: input.phone },
+        { withCredentials: true },
+      )
+      .pipe(
+        switchMap(() => this.login(input.email, input.password)),
+        catchError((error: unknown) =>
+          throwError(() => this.normalizeError(error, 'Não foi possível concluir o cadastro. Tente novamente.')),
+        ),
+      );
   }
 
   registerProfessional(input: ProfessionalRegistration): Observable<Professional> {

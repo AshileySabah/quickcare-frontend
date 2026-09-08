@@ -17,6 +17,20 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'redefinir-senha',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent
+      ),
+  },
+  {
+    path: 'redefinir-senha/:token',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent
+      ),
+  },
+  {
     path: 'cadastro',
     loadComponent: () =>
       import('./features/auth/register-select/register-select.component').then((m) => m.RegisterSelectComponent),

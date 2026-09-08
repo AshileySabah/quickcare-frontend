@@ -2,10 +2,11 @@
   <div class="auth-page__panel">
     <h1 class="auth-page__title">Cadastro de profissional</h1>
     <p class="auth-page__subtitle">
-      Crie sua conta e envie seu documento de registro profissional para validação.
+      Crie sua conta para disponibilizar seus atendimentos no QuickCare.
     </p>
 
     <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
+
       <ui-input
         label="Nome completo"
         formControlName="name"
@@ -25,6 +26,7 @@
         label="Telefone"
         type="tel"
         formControlName="phone"
+        placeholder="(00) 00000-0000"
         [required]="true"
         [errorMessage]="fieldError('phone')"
       ></ui-input>
@@ -32,25 +34,40 @@
       <ui-input
         label="CPF"
         formControlName="cpf"
+        placeholder="000.000.000-00"
         [required]="true"
         [errorMessage]="fieldError('cpf')"
       ></ui-input>
 
       <ui-select
-        label="Especialidade"
-        [options]="specialtyOptions"
-        formControlName="specialtyId"
+        label="Tipo de profissional"
+        [options]="professionalTypeOptions"
+        formControlName="professionalType"
         [required]="true"
-        [errorMessage]="fieldError('specialtyId')"
+        [errorMessage]="fieldError('professionalType')"
       ></ui-select>
 
-      <ui-input
-        label="Número de registro profissional"
-        formControlName="registrationNumber"
-        [required]="true"
-        [errorMessage]="fieldError('registrationNumber')"
-        hint="Ex.: CRN, CRP, CREFITO..."
-      ></ui-input>
+      <!-- Exibido apenas para Médico e Enfermeiro -->
+      @if (needsSpecialty) {
+        <ui-select
+          label="Especialidade"
+          [options]="specialtyOptions"
+          formControlName="specialtyId"
+          [required]="true"
+          [errorMessage]="fieldError('specialtyId')"
+        ></ui-select>
+      }
+
+      <!-- Exibido para Médico, Enfermeiro e Técnico de Enfermagem -->
+      @if (needsRegistration) {
+        <ui-input
+          label="Número de registro profissional"
+          formControlName="registrationNumber"
+          [required]="true"
+          [errorMessage]="fieldError('registrationNumber')"
+          [hint]="registrationHint"
+        ></ui-input>
+      }
 
       <ui-select
         label="Modalidade de atendimento"
@@ -68,36 +85,60 @@
         [errorMessage]="fieldError('raioAtendimentoKm')"
       ></ui-input>
 
-      <div class="professional-register__location">
-        <ui-button type="button" variant="secondary" [loading]="locating()" (click)="useCurrentLocation()">
-          Usar minha localização atual
-        </ui-button>
+      <!-- Endereço com busca automática por CEP -->
+      <ui-input
+        label="CEP"
+        formControlName="cep"
+        placeholder="00000-000"
+        [required]="true"
+        [errorMessage]="fieldError('cep')"
+      ></ui-input>
 
-        @if (locationError()) {
-          <p class="professional-register__upload-error" role="alert">{{ locationError() }}</p>
-        }
+      <ui-input
+        label="Rua / Logradouro"
+        formControlName="street"
+        [required]="true"
+        [errorMessage]="fieldError('street')"
+      ></ui-input>
 
-        <ui-input
-          label="Latitude"
-          type="number"
-          formControlName="latitude"
-          [required]="true"
-          [errorMessage]="fieldError('latitude')"
-          hint="Preenchido automaticamente ou informe manualmente."
-        ></ui-input>
+      <ui-input
+        label="Bairro"
+        formControlName="neighborhood"
+        [required]="true"
+        [errorMessage]="fieldError('neighborhood')"
+      ></ui-input>
 
-        <ui-input
-          label="Longitude"
-          type="number"
-          formControlName="longitude"
-          [required]="true"
-          [errorMessage]="fieldError('longitude')"
-        ></ui-input>
-      </div>
+      <ui-input
+        label="Cidade"
+        formControlName="city"
+        [required]="true"
+        [errorMessage]="fieldError('city')"
+      ></ui-input>
 
+      <ui-input
+        label="Estado (UF)"
+        formControlName="state"
+        [required]="true"
+        [errorMessage]="fieldError('state')"
+      ></ui-input>
+
+      <ui-input
+        label="Número"
+        formControlName="number"
+        [required]="true"
+        [errorMessage]="fieldError('number')"
+      ></ui-input>
+
+      <ui-input
+        label="Complemento"
+        formControlName="complement"
+        [errorMessage]="fieldError('complement')"
+      ></ui-input>
+
+      <!-- Upload do Documento (Obrigatório) -->
       <div class="professional-register__upload">
         <label class="professional-register__upload-label" for="document-upload">
-          Documento de registro profissional <span aria-hidden="true">*</span>
+          {{ documentLabel }} <span aria-hidden="true">*</span>
         </label>
         <input
           class="professional-register__upload-input"

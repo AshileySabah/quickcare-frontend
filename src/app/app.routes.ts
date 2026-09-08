@@ -10,6 +10,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'recuperar-senha',
+    loadComponent: () =>
+      import('./features/auth/password-recovery/password-recovery.component').then(
+        (m) => m.PasswordRecoveryComponent
+      )
+  },
+  {
     path: 'cadastro',
     loadComponent: () =>
       import('./features/auth/register-select/register-select.component').then((m) => m.RegisterSelectComponent),

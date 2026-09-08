@@ -41,8 +41,8 @@ export class PatientRegisterComponent {
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
-      cpf: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: passwordsMatchValidator() },
@@ -64,7 +64,11 @@ export class PatientRegisterComponent {
     }
 
     if (fieldName === 'password' && control.hasError('minlength')) {
-      return 'Senha deve ter ao menos 6 caracteres.';
+      return 'Senha deve ter ao menos 8 caracteres.';
+    }
+
+    if (fieldName === 'cpf' && control.hasError('pattern')) {
+      return 'CPF deve conter 11 dígitos, sem pontuação.';
     }
 
     return null;

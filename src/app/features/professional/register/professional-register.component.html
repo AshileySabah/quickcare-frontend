@@ -52,6 +52,49 @@
         hint="Ex.: CRN, CRP, CREFITO..."
       ></ui-input>
 
+      <ui-select
+        label="Modalidade de atendimento"
+        [options]="modalidadeOptions"
+        formControlName="modalidadeAtendimento"
+        [required]="true"
+        [errorMessage]="fieldError('modalidadeAtendimento')"
+      ></ui-select>
+
+      <ui-input
+        label="Raio de atendimento (km)"
+        type="number"
+        formControlName="raioAtendimentoKm"
+        [required]="true"
+        [errorMessage]="fieldError('raioAtendimentoKm')"
+      ></ui-input>
+
+      <div class="professional-register__location">
+        <ui-button type="button" variant="secondary" [loading]="locating()" (click)="useCurrentLocation()">
+          Usar minha localização atual
+        </ui-button>
+
+        @if (locationError()) {
+          <p class="professional-register__upload-error" role="alert">{{ locationError() }}</p>
+        }
+
+        <ui-input
+          label="Latitude"
+          type="number"
+          formControlName="latitude"
+          [required]="true"
+          [errorMessage]="fieldError('latitude')"
+          hint="Preenchido automaticamente ou informe manualmente."
+        ></ui-input>
+
+        <ui-input
+          label="Longitude"
+          type="number"
+          formControlName="longitude"
+          [required]="true"
+          [errorMessage]="fieldError('longitude')"
+        ></ui-input>
+      </div>
+
       <div class="professional-register__upload">
         <label class="professional-register__upload-label" for="document-upload">
           Documento de registro profissional <span aria-hidden="true">*</span>

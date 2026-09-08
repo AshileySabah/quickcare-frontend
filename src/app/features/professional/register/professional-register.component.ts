@@ -46,26 +46,50 @@ export class ProfessionalRegisterComponent {
     label: specialty.name,
   }));
 
+  protected readonly modalidadeOptions: SelectOption[] = [
+    { value: 'PRESENCIAL', label: 'Presencial' },
+    { value: 'REMOTO', label: 'Remoto' },
+    { value: 'AMBOS', label: 'Ambos' },
+  ];
+
   protected readonly selectedFile = signal<File | null>(null);
   protected readonly filePreviewUrl = signal<string | null>(null);
   protected readonly fileError = signal<string | null>(null);
+
+  protected readonly locating = signal(false);
+  protected readonly locationError = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group(
     {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      cpf: ['', Validators.required],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
       specialtyId: ['', Validators.required],
       registrationNumber: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      modalidadeAtendimento: ['', Validators.required],
+      raioAtendimentoKm: [10, [Validators.required, Validators.min(1)]],
+      latitude: this.fb.control<number | null>(null, Validators.required),
+      longitude: this.fb.control<number | null>(null, Validators.required),
+      password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required],
     },
     { validators: passwordsMatchValidator() },
   );
 
   protected fieldError(
-    fieldName: 'name' | 'email' | 'phone' | 'cpf' | 'specialtyId' | 'registrationNumber' | 'password',
+    fieldName:
+      | 'name'
+      | 'email'
+      | 'phone'
+      | 'cpf'
+      | 'specialtyId'
+      | 'registrationNumber'
+      | 'modalidadeAtendimento'
+      | 'raioAtendimentoKm'
+      | 'latitude'
+      | 'longitude'
+      | 'password',
   ): string | null {
     const control = this.form.controls[fieldName];
 
@@ -82,10 +106,42 @@ export class ProfessionalRegisterComponent {
     }
 
     if (fieldName === 'password' && control.hasError('minlength')) {
-      return 'Senha deve ter ao menos 6 caracteres.';
+      return 'Senha deve ter ao menos 8 caracteres.';
+    }
+
+    if (fieldName === 'cpf' && control.hasError('pattern')) {
+      return 'CPF deve conter 11 dígitos, sem pontuação.';
+    }
+
+    if (fieldName === 'raioAtendimentoKm' && control.hasError('min')) {
+      return 'Informe um raio de atendimento válido.';
     }
 
     return null;
+  }
+
+  protected useCurrentLocation(): void {
+    if (!navigator.geolocation) {
+      this.locationError.set('Geolocalização não suportada neste navegador. Informe manualmente abaixo.');
+      return;
+    }
+
+    this.locating.set(true);
+    this.locationError.set(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.form.patchValue({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        this.locating.set(false);
+      },
+      () => {
+        this.locationError.set('Não foi possível obter sua localização automaticamente. Informe manualmente abaixo.');
+        this.locating.set(false);
+      },
+    );
   }
 
   protected get confirmPasswordError(): string | null {
@@ -160,7 +216,19 @@ export class ProfessionalRegisterComponent {
     }
 
     this.isSubmitting.set(true);
-    const { name, email, phone, cpf, specialtyId, registrationNumber, password } = this.form.getRawValue();
+    const {
+      name,
+      email,
+      phone,
+      cpf,
+      specialtyId,
+      registrationNumber,
+      modalidadeAtendimento,
+      raioAtendimentoKm,
+      latitude,
+      longitude,
+      password,
+    } = this.form.getRawValue();
 
     this.authService
       .registerProfessional({
@@ -171,6 +239,10 @@ export class ProfessionalRegisterComponent {
         specialtyId,
         registrationNumber,
         password,
+        modalidadeAtendimento: modalidadeAtendimento as 'PRESENCIAL' | 'REMOTO' | 'AMBOS',
+        raioAtendimentoKm,
+        latitude: latitude as number,
+        longitude: longitude as number,
         document: {
           fileName: file.name,
           fileType: file.type,
@@ -182,8 +254,8 @@ export class ProfessionalRegisterComponent {
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);
-          this.toastService.success('Cadastro enviado! Aguarde a validação do seu documento.');
-          this.router.navigateByUrl('/professional/aguardando-validacao');
+          this.toastService.success('Cadastro realizado com sucesso!');
+          this.router.navigateByUrl('/professional');
         },
         error: (error: Error) => {
           this.isSubmitting.set(false);

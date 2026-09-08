@@ -4,7 +4,28 @@
     <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
 
     <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
-      <ui-input label="Nome completo" formControlName="name" [required]="true" [errorMessage]="fieldError('name')"></ui-input>
+      <ui-input
+        label="Nome completo"
+        formControlName="name"
+        [required]="true"
+        [errorMessage]="fieldError('name')"
+      ></ui-input>
+
+      <ui-input
+        label="Data de Nascimento"
+        formControlName="dateOfBirth"
+        placeholder="dd/mm/aaaa"
+        [required]="true"
+        [errorMessage]="fieldError('dateOfBirth')"
+      ></ui-input>
+
+      <ui-input
+        label="CPF"
+        formControlName="cpf"
+        placeholder="000.000.000-00"
+        [required]="true"
+        [errorMessage]="fieldError('cpf')"
+      ></ui-input>
 
       <ui-input
         label="E-mail"
@@ -16,17 +37,75 @@
 
       <ui-input
         label="Telefone"
-        type="tel"
         formControlName="phone"
+        placeholder="(00) 00000-0000"
         [required]="true"
         [errorMessage]="fieldError('phone')"
       ></ui-input>
 
       <ui-input
-        label="CPF"
-        formControlName="cpf"
+        label="Contato de emergência (Nome)"
+        formControlName="emergencyContact"
+        placeholder="Nome do contato"
         [required]="true"
-        [errorMessage]="fieldError('cpf')"
+        [errorMessage]="fieldError('emergencyContact')"
+      ></ui-input>
+
+      <ui-input
+        label="Telefone de Emergência"
+        formControlName="emergencyPhone"
+        placeholder="(00) 00000-0000"
+        [required]="true"
+        [errorMessage]="fieldError('emergencyPhone')"
+      ></ui-input>
+
+      <ui-input
+        label="CEP"
+        formControlName="cep"
+        placeholder="00000-000"
+        [required]="true"
+        [errorMessage]="fieldError('cep')"
+      ></ui-input>
+
+      <ui-input
+        label="Rua / Logradouro"
+        formControlName="street"
+        [required]="true"
+        [errorMessage]="fieldError('street')"
+      ></ui-input>
+
+      <ui-input
+        label="Bairro"
+        formControlName="neighborhood"
+        [required]="true"
+        [errorMessage]="fieldError('neighborhood')"
+      ></ui-input>
+
+      <ui-input
+        label="Cidade"
+        formControlName="city"
+        [required]="true"
+        [errorMessage]="fieldError('city')"
+      ></ui-input>
+
+      <ui-input
+        label="Estado (UF)"
+        formControlName="state"
+        [required]="true"
+        [errorMessage]="fieldError('state')"
+      ></ui-input>
+
+      <ui-input
+        label="Número"
+        formControlName="number"
+        [required]="true"
+        [errorMessage]="fieldError('number')"
+      ></ui-input>
+
+      <ui-input
+        label="Complemento"
+        formControlName="complement"
+        [errorMessage]="fieldError('complement')"
       ></ui-input>
 
       <ui-input

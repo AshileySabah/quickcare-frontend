@@ -1,12 +1,17 @@
 import { HttpClient, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { switchMap } from 'rxjs/operators';
+import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { getCookie } from './cookie.util';
 
 const MUTATING_METHODS = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
-const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
 const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
+
+// The XSRF-TOKEN cookie is set on the backend's own domain, which JS running
+// on the frontend's (different) origin cannot read via document.cookie.
+// The backend also echoes the token in this endpoint's JSON body so it can be
+// read cross-origin and sent back as a header instead.
+let cachedToken$: Observable<string> | null = null;
 
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
   const httpClient = inject(HttpClient);
@@ -16,15 +21,16 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
     return next(outgoingReq);
   }
 
-  const existingToken = getCookie(CSRF_COOKIE_NAME);
-
-  if (existingToken) {
-    return next(outgoingReq.clone({ setHeaders: { [CSRF_HEADER_NAME]: existingToken } }));
+  if (!cachedToken$) {
+    cachedToken$ = httpClient
+      .get<{ token: string }>(`${environment.apiUrl}/auth/csrf`, { withCredentials: true })
+      .pipe(
+        map((response) => response.token),
+        shareReplay(1),
+      );
   }
 
-  return httpClient.get(`${environment.apiUrl}/actuator/health`, { withCredentials: true }).pipe(
-    switchMap(() =>
-      next(outgoingReq.clone({ setHeaders: { [CSRF_HEADER_NAME]: getCookie(CSRF_COOKIE_NAME) ?? '' } })),
-    ),
+  return cachedToken$.pipe(
+    switchMap((token) => next(outgoingReq.clone({ setHeaders: { [CSRF_HEADER_NAME]: token } }))),
   );
 };

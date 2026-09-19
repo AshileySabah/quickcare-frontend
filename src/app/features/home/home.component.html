@@ -1,0 +1,142 @@
+<div class="home">
+  <header class="home__band home__band--brand">
+    <div class="home__header">
+      <span class="home__brand">QuickCare</span>
+      <div class="home__header-actions">
+        <a class="home__header-link" routerLink="/login">Entrar</a>
+        <ui-button variant="inverse" routerLink="/cadastro">Cadastre-se</ui-button>
+      </div>
+    </div>
+  </header>
+
+  <div class="home__band home__band--dark">
+    <section class="home__hero">
+      <h1 class="home__hero-title">Atendimento de saúde sob demanda, sem enrolação</h1>
+      <p class="home__hero-subtitle">
+        O QuickCare conecta quem precisa de cuidado a profissionais de saúde disponíveis perto de você. Descreva o
+        que precisa, receba propostas e escolha quem vai te atender — tudo em poucos minutos.
+      </p>
+      <div class="home__hero-actions">
+        <ui-button size="lg" variant="inverse" routerLink="/cadastro/paciente">Quero ser atendido</ui-button>
+        <ui-button size="lg" variant="inverse-outline" routerLink="/cadastro/profissional">Quero atender</ui-button>
+      </div>
+    </section>
+  </div>
+
+  <div class="home__band">
+    <section class="home__section">
+      <h2 class="home__section-title">O que é o QuickCare?</h2>
+      <p class="home__section-lead">
+        É uma plataforma que aproxima pacientes e profissionais de saúde independentes. Em vez de ligar em clínicas,
+        esperar retorno ou não saber quem está disponível, o paciente publica sua solicitação e profissionais
+        qualificados enviam propostas de atendimento — com preço, prazo e forma de atendimento já claros.
+      </p>
+    </section>
+  </div>
+
+  <div class="home__band home__band--tint">
+    <section class="home__section">
+      <h2 class="home__section-title">O que o QuickCare resolve</h2>
+      <div class="home__grid">
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Demora para conseguir atendimento</h3>
+          <p class="home__card-text">
+            Sem filas de espera por telefone: a solicitação fica visível para vários profissionais ao mesmo tempo, e
+            as propostas chegam rápido.
+          </p>
+        </ui-card>
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Falta de transparência</h3>
+          <p class="home__card-text">
+            O paciente compara propostas antes de decidir, com informações claras sobre o profissional e o
+            atendimento oferecido.
+          </p>
+        </ui-card>
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Agenda ociosa do profissional</h3>
+          <p class="home__card-text">
+            Profissionais de saúde encontram solicitações reais da sua especialidade e preenchem horários livres com
+            novos atendimentos.
+          </p>
+        </ui-card>
+      </div>
+    </section>
+  </div>
+
+  <div class="home__band">
+    <section class="home__section home__section--split">
+      <div class="home__split-col">
+        <h2 class="home__section-title">Por que é bom para o paciente</h2>
+        <ul class="home__list">
+          <li>Solicita atendimento em minutos, sem precisar ligar em vários lugares.</li>
+          <li>Recebe propostas de diferentes profissionais e escolhe a melhor opção.</li>
+          <li>Acompanha o histórico de todos os atendimentos em um só lugar.</li>
+          <li>Sabe com quem está falando antes de confirmar, com perfil e validação do profissional.</li>
+        </ul>
+      </div>
+      <div class="home__split-col">
+        <h2 class="home__section-title">Por que é bom para o profissional</h2>
+        <ul class="home__list">
+          <li>Acesso a solicitações reais de pacientes da sua especialidade.</li>
+          <li>Liberdade para definir suas próprias propostas, prazos e valores.</li>
+          <li>Gestão simples das propostas enviadas e dos atendimentos em andamento.</li>
+          <li>Mais visibilidade e novos pacientes sem depender só de indicação.</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="home__band home__band--dark">
+    <section class="home__section">
+      <h2 class="home__section-title home__section-title--inverse">Segurança em primeiro lugar</h2>
+      <div class="home__grid">
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Profissionais validados</h3>
+          <p class="home__card-text">
+            Cadastros de profissionais passam por validação antes de poderem enviar propostas na plataforma.
+          </p>
+        </ui-card>
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Dados protegidos</h3>
+          <p class="home__card-text">
+            Suas informações de saúde e de contato são tratadas com cuidado e usadas apenas para viabilizar o
+            atendimento.
+          </p>
+        </ui-card>
+        <ui-card padding="lg">
+          <h3 class="home__card-title">Histórico rastreável</h3>
+          <p class="home__card-text">
+            Toda solicitação, proposta e atendimento fica registrado, garantindo transparência para paciente e
+            profissional.
+          </p>
+        </ui-card>
+      </div>
+    </section>
+  </div>
+
+  <div class="home__band home__band--tint">
+    <section class="home__cta">
+      <h2 class="home__cta-title">Pronto para começar?</h2>
+      <p class="home__cta-subtitle">Crie sua conta gratuitamente e comece a usar o QuickCare hoje mesmo.</p>
+      <div class="home__cta-actions">
+        <a class="home__cta-option" routerLink="/cadastro/paciente">
+          <ui-card [interactive]="true">
+            <h3 class="home__card-title">Sou paciente</h3>
+            <p class="home__card-text">Quero solicitar atendimento com um profissional de saúde.</p>
+          </ui-card>
+        </a>
+        <a class="home__cta-option" routerLink="/cadastro/profissional">
+          <ui-card [interactive]="true">
+            <h3 class="home__card-title">Sou profissional de saúde</h3>
+            <p class="home__card-text">Quero atender solicitações e enviar propostas.</p>
+          </ui-card>
+        </a>
+      </div>
+      <p class="home__cta-footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    </section>
+  </div>
+
+  <footer class="home__band home__band--brand home__footer">
+    <span>© 2026 QuickCare</span>
+  </footer>
+</div>

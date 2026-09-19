@@ -76,6 +76,26 @@
       filter: brightness(0.9);
     }
   }
+
+  &--inverse {
+    background-color: #FFFFFF;
+    color: tokens.color('teal', 700);
+
+    &:hover:not(:disabled) {
+      background-color: tokens.color('teal', 50);
+    }
+  }
+
+  &--inverse-outline {
+    background-color: transparent;
+    border-color: rgba(255, 255, 255, 0.6);
+    color: #FFFFFF;
+
+    &:hover:not(:disabled) {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: #FFFFFF;
+    }
+  }
 }
 
 .ui-button__spinner {

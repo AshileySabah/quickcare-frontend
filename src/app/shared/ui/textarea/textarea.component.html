@@ -14,6 +14,7 @@
     [disabled]="disabled()"
     [required]="required()"
     [value]="value()"
+    [attr.maxlength]="maxLength()"
     [attr.aria-invalid]="errorMessage() ? true : null"
     [attr.aria-describedby]="errorMessage() ? errorId : (hint() ? hintId : null)"
     (input)="onInput($event)"

@@ -30,6 +30,8 @@ export class AvatarUploadComponent {
   private readonly zoomRange = viewChild<ElementRef<HTMLInputElement>>('zoomRange');
   private cropper: Cropper | null = null;
   private sourceUrl: string | null = null;
+  private minZoom = 0;
+  private maxZoom = Infinity;
 
   protected triggerFileInput(): void {
     this.fileInput()?.nativeElement.click();
@@ -122,6 +124,28 @@ export class AvatarUploadComponent {
         center: false,
         highlight: false,
         ready: () => this.onCropperReady(),
+        // Wheel/pinch zooming bypasses the slider's own min/max entirely (it isn't
+        // an <input>, so nothing about the DOM element constrains it), so the same
+        // bounds have to be enforced here too. Each wheel tick changes the ratio by
+        // a fixed multiplicative step, so simply *cancelling* the one tick that
+        // would overshoot leaves the actual zoom stuck a bit short of the boundary
+        // — clamping to the exact limit and re-issuing that instead is what lets
+        // the wheel reach precisely as far as the slider does.
+        zoom: (event: CustomEvent<{ ratio: number }>) => {
+          const ratio = event.detail.ratio;
+          const clamped = Math.min(Math.max(ratio, this.minZoom), this.maxZoom);
+
+          if (clamped !== ratio) {
+            event.preventDefault();
+            this.cropper?.zoomTo(clamped);
+            return;
+          }
+
+          const range = this.zoomRange()?.nativeElement;
+          if (range) {
+            range.value = String(ratio);
+          }
+        },
       });
     };
 
@@ -180,8 +204,11 @@ export class AvatarUploadComponent {
       top: finalCropBoxData.top - (canvasData.height - finalCropBoxData.height) / 2,
     });
 
-    range.min = String(coverRatio);
-    range.max = String(coverRatio * MAX_ZOOM_MULTIPLIER);
+    this.minZoom = coverRatio;
+    this.maxZoom = coverRatio * MAX_ZOOM_MULTIPLIER;
+
+    range.min = String(this.minZoom);
+    range.max = String(this.maxZoom);
     range.step = String(coverRatio / 100);
     range.value = String(coverRatio);
   }
@@ -228,6 +255,8 @@ export class AvatarUploadComponent {
     this.cropperOpen.set(false);
     this.cropper?.destroy();
     this.cropper = null;
+    this.minZoom = 0;
+    this.maxZoom = Infinity;
     this.cropperStage()?.nativeElement.replaceChildren();
 
     if (this.sourceUrl) {

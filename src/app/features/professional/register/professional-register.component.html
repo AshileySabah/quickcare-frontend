@@ -34,7 +34,9 @@
         <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
           <ui-grid>
             <ui-grid-item [xs]="12">
-              <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+              <ui-avatar-upload
+                (avatarChange)="onAvatarChange($event)"
+              ></ui-avatar-upload>
             </ui-grid-item>
 
             <ui-grid-item [xs]="12">
@@ -85,7 +87,7 @@
 
             <ui-grid-item [xs]="12" [sm]="6">
               <ui-input
-                label="CNPJ (opcional)"
+                label="CNPJ"
                 formControlName="cnpj"
                 mask="cnpj"
                 autocomplete="off"
@@ -118,13 +120,23 @@
             </ui-grid-item>
 
             <ui-grid-item [xs]="12">
-              <h2 class="auth-page__section-title">Modalidade de atendimento</h2>
+              <h2 class="auth-page__section-title">
+                Modalidade de atendimento
+              </h2>
               <div class="professional-register__modalities">
-                <ui-checkbox label="Atendo presencialmente" formControlName="attendsPresencial"></ui-checkbox>
-                <ui-checkbox label="Atendo remotamente" formControlName="attendsRemoto"></ui-checkbox>
+                <ui-checkbox
+                  label="Atendo presencialmente"
+                  formControlName="attendsPresencial"
+                ></ui-checkbox>
+                <ui-checkbox
+                  label="Atendo remotamente"
+                  formControlName="attendsRemoto"
+                ></ui-checkbox>
               </div>
               @if (modalityError) {
-                <p class="professional-register__modalities-error" role="alert">{{ modalityError }}</p>
+                <p class="professional-register__modalities-error" role="alert">
+                  {{ modalityError }}
+                </p>
               }
             </ui-grid-item>
 

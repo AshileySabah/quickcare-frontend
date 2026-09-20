@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
+import { Address, Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
 import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
 import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
@@ -14,6 +14,7 @@ export interface PatientRegistration {
   phone: string;
   cpf: string;
   password: string;
+  address: Address;
 }
 
 export interface ProfessionalRegistration {
@@ -21,14 +22,14 @@ export interface ProfessionalRegistration {
   email: string;
   phone: string;
   cpf: string;
-  specialtyId: string;
+  cnpj?: string;
+  specialtyIds: string[];
   registrationNumber: string;
   password: string;
   document: ProfessionalDocument;
   modalidadeAtendimento: 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
-  raioAtendimentoKm: number;
-  latitude: number;
-  longitude: number;
+  raioAtendimentoKm?: number;
+  address: Address;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -65,6 +66,7 @@ export class AuthService {
     }
 
     const id = String(response.usuarioId);
+    const emptyAddress: Address = { cep: '', street: '', number: '', neighborhood: '', city: '', state: '' };
 
     if (perfilAtivo.tipo === 'PROFISSIONAL') {
       const professional: Professional = {
@@ -74,8 +76,9 @@ export class AuthService {
         email: response.email,
         phone: '',
         cpf: '',
-        specialtyId: '',
+        specialtyIds: [],
         registrationNumber: '',
+        address: emptyAddress,
         validationStatus: 'aprovado',
         validationDocument: { fileName: '', fileType: '', fileSizeBytes: 0, uploadedAt: '', previewUrl: '' },
       };
@@ -89,6 +92,7 @@ export class AuthService {
       email: response.email,
       phone: '',
       cpf: '',
+      address: emptyAddress,
     };
     return patient;
   }
@@ -110,7 +114,20 @@ export class AuthService {
     return this.http
       .post<CadastroApiResponse>(
         `${environment.apiUrl}/usuarios/cadastro/paciente`,
-        { nome: input.name, email: input.email, senha: input.password, cpf: input.cpf, telefone: input.phone },
+        {
+          nome: input.name,
+          email: input.email,
+          senha: input.password,
+          cpf: input.cpf,
+          telefone: input.phone,
+          cep: input.address.cep,
+          logradouro: input.address.street,
+          numero: input.address.number,
+          complemento: input.address.complement || undefined,
+          bairro: input.address.neighborhood,
+          cidade: input.address.city,
+          uf: input.address.state,
+        },
         { withCredentials: true },
       )
       .pipe(
@@ -131,10 +148,18 @@ export class AuthService {
           senha: input.password,
           cpf: input.cpf,
           telefone: input.phone,
+          cnpj: input.cnpj || undefined,
+          especialidadeIds: input.specialtyIds.map((id) => Number(id)),
+          registroProfissional: input.registrationNumber,
           modalidadeAtendimento: input.modalidadeAtendimento,
           raioAtendimentoKm: input.raioAtendimentoKm,
-          latitude: input.latitude,
-          longitude: input.longitude,
+          cep: input.address.cep,
+          logradouro: input.address.street,
+          numero: input.address.number,
+          complemento: input.address.complement || undefined,
+          bairro: input.address.neighborhood,
+          cidade: input.address.city,
+          uf: input.address.state,
         },
         { withCredentials: true },
       )

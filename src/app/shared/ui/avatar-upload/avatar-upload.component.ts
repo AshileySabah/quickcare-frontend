@@ -1,4 +1,11 @@
-import { Component, ElementRef, input, output, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  input,
+  output,
+  signal,
+  viewChild,
+} from '@angular/core';
 import Cropper from 'cropperjs';
 import { ButtonComponent } from '../button/button.component';
 import { ModalComponent } from '../modal/modal.component';
@@ -25,9 +32,12 @@ export class AvatarUploadComponent {
   protected readonly dragOver = signal(false);
   protected readonly cropperOpen = signal(false);
 
-  private readonly cropperStage = viewChild<ElementRef<HTMLDivElement>>('cropperStage');
-  private readonly fileInput = viewChild<ElementRef<HTMLInputElement>>('fileInput');
-  private readonly zoomRange = viewChild<ElementRef<HTMLInputElement>>('zoomRange');
+  private readonly cropperStage =
+    viewChild<ElementRef<HTMLDivElement>>('cropperStage');
+  private readonly fileInput =
+    viewChild<ElementRef<HTMLInputElement>>('fileInput');
+  private readonly zoomRange =
+    viewChild<ElementRef<HTMLInputElement>>('zoomRange');
   private cropper: Cropper | null = null;
   private sourceUrl: string | null = null;
   private minZoom = 0;
@@ -78,17 +88,9 @@ export class AvatarUploadComponent {
     this.sourceUrl = URL.createObjectURL(file);
     this.cropperOpen.set(true);
 
-    // The stage <div> only exists once the modal's `@if` renders it, so mount the
-    // cropper right after that DOM update instead of inside this same tick.
     setTimeout(() => this.mountCropper(), 0);
   }
 
-  /**
-   * Cropper.js clones the <img> it's given and hides the original via a CSS class
-   * from cropper.css. To not depend on that stylesheet being loaded (and to keep
-   * Angular from ever touching this subtree once the library owns it), the image
-   * is created imperatively here and forced invisible with an inline style too.
-   */
   private mountCropper(): void {
     const stage = this.cropperStage()?.nativeElement;
 
@@ -113,24 +115,12 @@ export class AvatarUploadComponent {
         autoCropArea: 1,
         responsive: true,
         zoomOnWheel: true,
-        // Cropper.js has a built-in rule (see `renderCropBox`): once the crop box's
-        // size reaches the container's, it automatically switches the box's drag
-        // action from "resize/move the box" to "pan the image underneath it" — this
-        // is exactly the avatar-cropper behavior we want, and it only engages when
-        // the box is movable, even though it never actually leaves the container.
         cropBoxMovable: true,
         cropBoxResizable: false,
         guides: false,
         center: false,
         highlight: false,
         ready: () => this.onCropperReady(),
-        // Wheel/pinch zooming bypasses the slider's own min/max entirely (it isn't
-        // an <input>, so nothing about the DOM element constrains it), so the same
-        // bounds have to be enforced here too. Each wheel tick changes the ratio by
-        // a fixed multiplicative step, so simply *cancelling* the one tick that
-        // would overshoot leaves the actual zoom stuck a bit short of the boundary
-        // — clamping to the exact limit and re-issuing that instead is what lets
-        // the wheel reach precisely as far as the slider does.
         zoom: (event: CustomEvent<{ ratio: number }>) => {
           const ratio = event.detail.ratio;
           const clamped = Math.min(Math.max(ratio, this.minZoom), this.maxZoom);
@@ -153,16 +143,6 @@ export class AvatarUploadComponent {
     image.src = this.sourceUrl;
   }
 
-  /**
-   * By default Cropper sizes the crop box relative to the *image's own auto-fit
-   * canvas* (`autoCropArea`), not the container — for a non-square image that
-   * canvas is already letterboxed, so the box ends up smaller than the stage too,
-   * leaving a dark margin around it. Forcing the box to the container's exact
-   * pixel size, then scaling+centering the image to fully cover that box (like CSS
-   * `object-fit: cover`), removes that margin regardless of the photo's own shape.
-   * That cover ratio also becomes the zoom-out floor: going below it would reopen
-   * the gap.
-   */
   private onCropperReady(): void {
     const cropper = this.cropper;
     const range = this.zoomRange()?.nativeElement;
@@ -174,17 +154,18 @@ export class AvatarUploadComponent {
     const containerData = cropper.getContainerData();
     const boxSize = Math.min(containerData.width, containerData.height);
 
-    // Zoom the canvas to cover the box *before* resizing the box itself. Cropper
-    // only ever recomputes the crop box's own min/max size once, during its first
-    // (letterboxed) layout — asking for a bigger box beforehand gets silently
-    // clamped straight back to those stale limits.
     const { naturalWidth, naturalHeight } = cropper.getImageData();
-    const coverRatio = Math.max(boxSize / naturalWidth, boxSize / naturalHeight);
+    const coverRatio = Math.max(
+      boxSize / naturalWidth,
+      boxSize / naturalHeight,
+    );
     cropper.zoomTo(coverRatio);
 
-    // No public API re-triggers that size-limit recalculation after the canvas has
-    // grown, so the stale limits are widened directly before resizing the box.
-    const cropBoxData = (cropper as unknown as { cropBoxData: { maxWidth: number; maxHeight: number } }).cropBoxData;
+    const cropBoxData = (
+      cropper as unknown as {
+        cropBoxData: { maxWidth: number; maxHeight: number };
+      }
+    ).cropBoxData;
     cropBoxData.maxWidth = containerData.width;
     cropBoxData.maxHeight = containerData.height;
 
@@ -195,13 +176,14 @@ export class AvatarUploadComponent {
       height: boxSize,
     });
 
-    // Re-center the (now oversized) canvas under the box; zoomTo alone anchors on
-    // the box's pre-resize position, which is no longer accurate.
     const finalCropBoxData = cropper.getCropBoxData();
     const canvasData = cropper.getCanvasData();
     cropper.setCanvasData({
-      left: finalCropBoxData.left - (canvasData.width - finalCropBoxData.width) / 2,
-      top: finalCropBoxData.top - (canvasData.height - finalCropBoxData.height) / 2,
+      left:
+        finalCropBoxData.left - (canvasData.width - finalCropBoxData.width) / 2,
+      top:
+        finalCropBoxData.top -
+        (canvasData.height - finalCropBoxData.height) / 2,
     });
 
     this.minZoom = coverRatio;

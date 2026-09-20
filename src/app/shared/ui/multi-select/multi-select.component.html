@@ -1,0 +1,73 @@
+<div class="ui-multi-select">
+  <label class="ui-multi-select__label" [id]="labelId">
+    {{ label() }}
+    @if (required()) {
+      <span aria-hidden="true">*</span>
+    }
+  </label>
+
+  <div
+    class="ui-multi-select__control"
+    [class.ui-multi-select__control--error]="errorMessage()"
+    [class.ui-multi-select__control--open]="open()"
+    tabindex="0"
+    role="combobox"
+    aria-haspopup="listbox"
+    [attr.aria-expanded]="open()"
+    [attr.aria-labelledby]="labelId"
+    (click)="toggleOpen()"
+    (keydown.enter)="toggleOpen(); $event.preventDefault()"
+    (keydown.space)="toggleOpen(); $event.preventDefault()"
+  >
+    @if (selectedOptions().length === 0) {
+      <span class="ui-multi-select__placeholder">{{ placeholder() }}</span>
+    } @else {
+      <div class="ui-multi-select__chips">
+        @for (option of selectedOptions(); track option.value) {
+          <span class="ui-multi-select__chip">
+            {{ option.label }}
+            <button
+              type="button"
+              class="ui-multi-select__chip-remove"
+              (click)="removeOption(option.value, $event)"
+              [attr.aria-label]="'Remover ' + option.label"
+            >
+              &times;
+            </button>
+          </span>
+        }
+      </div>
+    }
+    <span class="ui-multi-select__chevron" aria-hidden="true">▾</span>
+  </div>
+
+  @if (open()) {
+    <ul class="ui-multi-select__panel" role="listbox" aria-multiselectable="true">
+      @for (option of options(); track option.value) {
+        <li
+          class="ui-multi-select__option"
+          role="option"
+          [class.ui-multi-select__option--selected]="isSelected(option.value)"
+          [attr.aria-selected]="isSelected(option.value)"
+          (click)="toggleOption(option.value)"
+        >
+          <span
+            class="ui-multi-select__checkbox"
+            [class.ui-multi-select__checkbox--checked]="isSelected(option.value)"
+          >
+            @if (isSelected(option.value)) {
+              ✓
+            }
+          </span>
+          {{ option.label }}
+        </li>
+      }
+    </ul>
+  }
+
+  @if (errorMessage()) {
+    <p class="ui-multi-select__error" role="alert">{{ errorMessage() }}</p>
+  } @else if (hint()) {
+    <p class="ui-multi-select__hint">{{ hint() }}</p>
+  }
+</div>

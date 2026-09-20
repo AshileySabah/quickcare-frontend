@@ -9,32 +9,43 @@
       <ui-skeleton height="40px"></ui-skeleton>
     </div>
   } @else {
-    <form class="proposal-edit__form" [formGroup]="form" (ngSubmit)="submit()">
-      <ui-input
-        label="Preço (R$)"
-        type="number"
-        formControlName="price"
-        [required]="true"
-        [errorMessage]="fieldError('price')"
-      ></ui-input>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <ui-grid>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Preço (R$)"
+            type="number"
+            formControlName="price"
+            [required]="true"
+            [errorMessage]="fieldError('price')"
+          ></ui-input>
+        </ui-grid-item>
 
-      <ui-textarea
-        label="Abordagem"
-        formControlName="approach"
-        [rows]="4"
-        [required]="true"
-        [errorMessage]="fieldError('approach')"
-      ></ui-textarea>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Prazo estimado"
+            type="date"
+            formControlName="deadline"
+            [required]="true"
+            [errorMessage]="fieldError('deadline')"
+          ></ui-input>
+        </ui-grid-item>
 
-      <ui-input
-        label="Prazo estimado"
-        type="date"
-        formControlName="deadline"
-        [required]="true"
-        [errorMessage]="fieldError('deadline')"
-      ></ui-input>
+        <ui-grid-item [xs]="12">
+          <ui-textarea
+            label="Abordagem"
+            formControlName="approach"
+            [rows]="4"
+            [required]="true"
+            [maxLength]="1000"
+            [errorMessage]="fieldError('approach')"
+          ></ui-textarea>
+        </ui-grid-item>
 
-      <ui-button type="submit" [loading]="isSubmitting()">Salvar alterações</ui-button>
+        <ui-grid-item [xs]="12">
+          <ui-button type="submit" [loading]="isSubmitting()">Salvar alterações</ui-button>
+        </ui-grid-item>
+      </ui-grid>
     </form>
   }
 </section>

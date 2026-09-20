@@ -1,0 +1,22 @@
+<label class="ui-checkbox" [class.ui-checkbox--disabled]="disabled()" [for]="inputId">
+  <input
+    class="ui-checkbox__input"
+    [id]="inputId"
+    type="checkbox"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    (change)="onInput($event)"
+    (blur)="onBlur()"
+  />
+  <span class="ui-checkbox__box" aria-hidden="true">
+    @if (checked()) {
+      ✓
+    }
+  </span>
+  <span class="ui-checkbox__label">
+    {{ label() }}
+    @if (hint()) {
+      <span class="ui-checkbox__hint">{{ hint() }}</span>
+    }
+  </span>
+</label>

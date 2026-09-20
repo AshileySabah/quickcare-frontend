@@ -1,0 +1,60 @@
+@use 'tokens' as tokens;
+
+.ui-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.space(2);
+  cursor: pointer;
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+}
+
+.ui-checkbox__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+
+  &:focus-visible + .ui-checkbox__box {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+}
+
+.ui-checkbox__box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: tokens.radius('sm');
+  border: 1px solid tokens.color('gray', 300);
+  background-color: #FFFFFF;
+  color: transparent;
+  font-size: 12px;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.ui-checkbox__input:checked + .ui-checkbox__box {
+  background-color: tokens.color('teal', 500);
+  border-color: tokens.color('teal', 500);
+  color: #FFFFFF;
+}
+
+.ui-checkbox__label {
+  display: flex;
+  flex-direction: column;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+}
+
+.ui-checkbox__hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}

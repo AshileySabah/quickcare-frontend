@@ -1,11 +1,63 @@
+@use 'tokens' as tokens;
 @use 'patterns/auth-page' as authPage;
 
 .auth-page {
-  @include authPage.page;
+  @include authPage.split;
+}
+
+.auth-page__side {
+  @include authPage.side;
+}
+
+.auth-page__side-brand {
+  @include authPage.side-brand;
+}
+
+.auth-page__side-title {
+  @include authPage.side-title;
+}
+
+.auth-page__side-text {
+  @include authPage.side-text;
+}
+
+.auth-page__side-list {
+  @include authPage.side-list;
+}
+
+.auth-page__side-note {
+  @include authPage.side-note;
+}
+
+.auth-page__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.auth-page__mobile-brand {
+  @include authPage.mobile-brand;
+}
+
+.auth-page__content {
+  @include authPage.content;
+  align-items: flex-start;
+  padding-top: tokens.space(10);
 }
 
 .auth-page__panel {
-  @include authPage.panel;
+  @include authPage.bare(640px);
+}
+
+.auth-page__back {
+  display: inline-block;
+  margin-bottom: tokens.space(4);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+
+  &:hover {
+    color: tokens.color('teal', 600);
+  }
 }
 
 .auth-page__title {
@@ -16,10 +68,18 @@
   @include authPage.subtitle;
 }
 
-.auth-page__form {
-  @include authPage.form;
+.auth-page__section-title {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(3);
 }
 
 .auth-page__footer {
   @include authPage.footer;
+  margin-top: tokens.space(2);
+
+  &:first-of-type {
+    margin-top: tokens.space(5);
+  }
 }

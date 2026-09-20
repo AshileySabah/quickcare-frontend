@@ -9,6 +9,8 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
+import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { ModalComponent } from '../../../shared/ui/modal/modal.component';
 import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
 import { TextareaComponent } from '../../../shared/ui/textarea/textarea.component';
@@ -27,6 +29,8 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
+    GridComponent,
+    GridItemComponent,
     ModalComponent,
     SkeletonComponent,
     TextareaComponent,
@@ -73,8 +77,10 @@ export class AdminProfessionalDetailComponent {
     });
   }
 
-  protected specialtyName(specialtyId: string): string {
-    return SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
+  protected specialtyNames(specialtyIds: string[]): string {
+    return specialtyIds
+      .map((specialtyId) => SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
+      .join(', ');
   }
 
   protected canPreviewAsImage(professional: Professional): boolean {

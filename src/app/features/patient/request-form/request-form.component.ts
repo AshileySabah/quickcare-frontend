@@ -5,6 +5,8 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
 import { SPECIALTIES_MOCK } from '../../../mocks';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
 import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
@@ -17,7 +19,16 @@ type FieldName = 'specialtyId' | 'description' | 'modality' | 'street' | 'city' 
 @Component({
   selector: 'app-request-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, InputComponent, SelectComponent, SkeletonComponent, TextareaComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    GridComponent,
+    GridItemComponent,
+    InputComponent,
+    SelectComponent,
+    SkeletonComponent,
+    TextareaComponent,
+  ],
   templateUrl: './request-form.component.html',
   styleUrl: './request-form.component.scss',
 })

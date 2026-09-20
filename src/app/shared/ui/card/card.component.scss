@@ -1,9 +1,46 @@
 @use 'tokens' as tokens;
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 .ui-card {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background-color: #FFFFFF;
   border: 1px solid tokens.color('gray', 200);
-  border-radius: tokens.radius('lg');
+  border-radius: tokens.radius('xl');
+  box-shadow: 0 1px 2px rgba(4, 52, 44, 0.04), 0 8px 24px rgba(4, 52, 44, 0.05);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, tokens.color('teal', 300), tokens.color('teal', 600));
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 140px;
+    height: 140px;
+    border-radius: tokens.radius('full');
+    background: radial-gradient(circle, rgba(29, 158, 117, 0.08), rgba(29, 158, 117, 0) 70%);
+    pointer-events: none;
+  }
 
   &--padding-none {
     padding: 0;
@@ -23,11 +60,15 @@
 
   &--interactive {
     cursor: pointer;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 
     &:hover {
       border-color: tokens.color('teal', 300);
-      box-shadow: 0 2px 8px rgba(4, 52, 44, 0.08);
+      box-shadow: 0 6px 16px rgba(4, 52, 44, 0.08), 0 20px 40px rgba(4, 52, 44, 0.12);
+      transform: translateY(-3px);
+
+      &::before {
+        opacity: 1;
+      }
     }
   }
 }

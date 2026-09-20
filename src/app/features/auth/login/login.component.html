@@ -1,28 +1,61 @@
 <div class="auth-page">
-  <div class="auth-page__panel">
-    <h1 class="auth-page__title">Entrar no QuickCare</h1>
-    <p class="auth-page__subtitle">Acesse sua conta para continuar.</p>
+  <aside class="auth-page__side">
+    <a class="auth-page__side-brand" routerLink="/">QuickCare</a>
+    <h2 class="auth-page__side-title">Atendimento de saúde sob demanda, sem enrolação</h2>
+    <p class="auth-page__side-text">
+      Acompanhe suas solicitações, propostas e atendimentos em um só lugar, com profissionais validados e prontos
+      para te atender.
+    </p>
+    <ul class="auth-page__side-list">
+      <li>Propostas de profissionais validados em minutos</li>
+      <li>Histórico completo dos seus atendimentos</li>
+      <li>Seus dados protegidos do início ao fim</li>
+    </ul>
+    <span class="auth-page__side-note">Novo por aqui? Crie sua conta gratuitamente em segundos.</span>
+  </aside>
 
-    <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
-      <ui-input
-        label="E-mail"
-        type="email"
-        formControlName="email"
-        [required]="true"
-        [errorMessage]="fieldError('email')"
-      ></ui-input>
+  <div class="auth-page__main">
+    <a class="auth-page__mobile-brand" routerLink="/">QuickCare</a>
 
-      <ui-input
-        label="Senha"
-        type="password"
-        formControlName="password"
-        [required]="true"
-        [errorMessage]="fieldError('password')"
-      ></ui-input>
+    <div class="auth-page__content">
+      <div class="auth-page__panel">
+        <h1 class="auth-page__title">Entrar no QuickCare</h1>
+        <p class="auth-page__subtitle">Acesse sua conta para continuar.</p>
 
-      <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Entrar</ui-button>
-    </form>
+        <form [formGroup]="form" (ngSubmit)="submit()">
+          <ui-grid>
+            <ui-grid-item [xs]="12">
+              <ui-input
+                label="E-mail"
+                type="email"
+                formControlName="email"
+                autocomplete="username"
+                [required]="true"
+                [maxLength]="150"
+                [errorMessage]="fieldError('email')"
+              ></ui-input>
+            </ui-grid-item>
 
-    <p class="auth-page__footer">Não tem conta? <a routerLink="/cadastro">Cadastre-se</a></p>
+            <ui-grid-item [xs]="12">
+              <ui-input
+                label="Senha"
+                type="password"
+                formControlName="password"
+                autocomplete="current-password"
+                [required]="true"
+                [maxLength]="72"
+                [errorMessage]="fieldError('password')"
+              ></ui-input>
+            </ui-grid-item>
+
+            <ui-grid-item [xs]="12">
+              <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Entrar</ui-button>
+            </ui-grid-item>
+          </ui-grid>
+        </form>
+
+        <p class="auth-page__footer">Não tem conta? <a routerLink="/cadastro">Cadastre-se</a></p>
+      </div>
+    </div>
   </div>
 </div>

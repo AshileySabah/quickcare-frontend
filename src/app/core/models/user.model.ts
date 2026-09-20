@@ -14,6 +14,7 @@ export interface Patient extends BaseUser {
   role: 'patient';
   phone: string;
   cpf: string;
+  address: Address;
 }
 
 export interface ProfessionalDocument {
@@ -24,12 +25,24 @@ export interface ProfessionalDocument {
   previewUrl: string;
 }
 
+export interface Address {
+  cep: string;
+  street: string;
+  number: string;
+  complement?: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+}
+
 export interface Professional extends BaseUser {
   role: 'professional';
   phone: string;
   cpf: string;
-  specialtyId: string;
+  cnpj?: string;
+  specialtyIds: string[];
   registrationNumber: string;
+  address: Address;
   bio?: string;
   validationStatus: ProfessionalValidationStatus;
   validationDocument: ProfessionalDocument;

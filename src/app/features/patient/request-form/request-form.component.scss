@@ -19,19 +19,7 @@
   gap: tokens.space(4);
 }
 
-.request-form__form {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(4);
-  max-width: 560px;
-}
-
-.request-form__row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: tokens.space(4);
-
-  @include tokens.respond('md') {
-    grid-template-columns: 1fr 1fr;
-  }
+form {
+  display: block;
+  max-width: 640px;
 }

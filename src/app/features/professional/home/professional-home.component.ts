@@ -29,7 +29,10 @@ export class ProfessionalHomeComponent {
 
   protected readonly specialtyName = computed(() => {
     const professional = this.authService.currentUser() as Professional | null;
-    return SPECIALTIES_MOCK.find((specialty) => specialty.id === professional?.specialtyId)?.name ?? '';
+    const names = SPECIALTIES_MOCK.filter((specialty) => professional?.specialtyIds.includes(specialty.id)).map(
+      (specialty) => specialty.name,
+    );
+    return names.join(', ');
   });
 
   constructor() {
@@ -45,7 +48,7 @@ export class ProfessionalHomeComponent {
 
     this.viewState.set('loading');
 
-    this.requestService.listOpenForSpecialty(professional.specialtyId).subscribe({
+    this.requestService.listOpenForSpecialties(professional.specialtyIds).subscribe({
       next: (requests) => {
         this.requests.set(requests);
         this.viewState.set(requests.length === 0 ? 'empty' : 'filled');

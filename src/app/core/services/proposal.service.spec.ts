@@ -19,8 +19,16 @@ describe('ProposalService', () => {
     email: 'prof.teste@example.com',
     phone: '(11) 90000-0000',
     cpf: '123.456.789-00',
-    specialtyId: 'sp-nutricao',
+    specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-TESTE',
+    address: {
+      cep: '01310-100',
+      street: 'Avenida Paulista',
+      number: '1000',
+      neighborhood: 'Bela Vista',
+      city: 'São Paulo',
+      state: 'SP',
+    },
     validationStatus: 'aprovado',
     validationDocument: {
       fileName: 'doc.pdf',
@@ -40,7 +48,7 @@ describe('ProposalService', () => {
   const wrongSpecialtyProfessional: Professional = {
     ...approvedProfessional,
     id: 'prof-test-wrong-specialty',
-    specialtyId: 'sp-psicologia',
+    specialtyIds: ['sp-psicologia'],
   };
 
   beforeEach(() => {

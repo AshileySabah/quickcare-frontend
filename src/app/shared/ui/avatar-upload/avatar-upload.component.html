@@ -1,0 +1,62 @@
+<div class="avatar-upload">
+  <span class="avatar-upload__label">{{ label() }}</span>
+
+  <div class="avatar-upload__row">
+    <button
+      type="button"
+      class="avatar-upload__dropzone"
+      [class.avatar-upload__dropzone--over]="dragOver()"
+      (click)="triggerFileInput()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onFileDrop($event)"
+      aria-label="Selecionar foto de perfil"
+    >
+      @if (previewUrl()) {
+        <img class="avatar-upload__preview" [src]="previewUrl()" alt="Foto de perfil selecionada" />
+      } @else {
+        <span class="avatar-upload__placeholder-icon" aria-hidden="true">📷</span>
+      }
+    </button>
+
+    <input
+      #fileInput
+      class="avatar-upload__input"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      (change)="onFileSelected($event)"
+    />
+
+    <div class="avatar-upload__actions">
+      <p class="avatar-upload__hint">JPG, PNG ou WEBP, até 5MB. A foto será recortada em formato quadrado.</p>
+      <div class="avatar-upload__buttons">
+        <ui-button type="button" size="sm" variant="secondary" (click)="triggerFileInput()">
+          {{ previewUrl() ? 'Trocar foto' : 'Escolher foto' }}
+        </ui-button>
+        @if (previewUrl()) {
+          <ui-button type="button" size="sm" variant="ghost" (click)="removeAvatar()">Remover</ui-button>
+        }
+      </div>
+      @if (error()) {
+        <p class="avatar-upload__error" role="alert">{{ error() }}</p>
+      }
+    </div>
+  </div>
+</div>
+
+<ui-modal [open]="cropperOpen()" titleText="Ajustar foto de perfil" (closed)="closeCropper()">
+  <div class="avatar-upload__cropper-wrap">
+    <div class="avatar-upload__cropper-stage" #cropperStage></div>
+
+    <div class="avatar-upload__zoom">
+      <span aria-hidden="true">－</span>
+      <input #zoomRange type="range" min="0.1" max="3" step="0.01" value="1" (input)="onZoomChange($event)" aria-label="Zoom da imagem" />
+      <span aria-hidden="true">＋</span>
+    </div>
+
+    <div class="avatar-upload__cropper-actions">
+      <ui-button type="button" variant="ghost" (click)="closeCropper()">Cancelar</ui-button>
+      <ui-button type="button" (click)="confirmCrop()">Aplicar</ui-button>
+    </div>
+  </div>
+</ui-modal>

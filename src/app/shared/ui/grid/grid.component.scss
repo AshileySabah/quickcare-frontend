@@ -1,0 +1,27 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: start;
+}
+
+:host(.ui-grid--spacing-none) {
+  gap: 0;
+}
+
+:host(.ui-grid--spacing-sm) {
+  gap: tokens.space(2);
+}
+
+:host(.ui-grid--spacing-md) {
+  gap: tokens.space(4);
+}
+
+:host(.ui-grid--spacing-lg) {
+  gap: tokens.space(6);
+}
+
+:host(.ui-grid--spacing-xl) {
+  gap: tokens.space(8);
+}

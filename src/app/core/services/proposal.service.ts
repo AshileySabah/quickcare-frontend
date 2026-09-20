@@ -61,7 +61,7 @@ export class ProposalService {
         throw new Error('Apenas profissionais validados podem enviar propostas.');
       }
 
-      if (input.professional.specialtyId !== input.request.specialtyId) {
+      if (!input.professional.specialtyIds.includes(input.request.specialtyId)) {
         throw new Error('Você só pode enviar propostas para solicitações da sua especialidade.');
       }
 

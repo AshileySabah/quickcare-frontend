@@ -40,7 +40,9 @@ export class AdminDashboardComponent {
     });
   }
 
-  protected specialtyName(specialtyId: string): string {
-    return SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
+  protected specialtyNames(specialtyIds: string[]): string {
+    return specialtyIds
+      .map((specialtyId) => SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
+      .join(', ');
   }
 }

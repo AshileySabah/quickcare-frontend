@@ -1,0 +1,125 @@
+@use 'tokens' as tokens;
+
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}
+
+.avatar-upload__label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.avatar-upload__row {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(4);
+}
+
+.avatar-upload__dropzone {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  padding: 0;
+  border: 2px dashed tokens.color('gray', 300);
+  border-radius: tokens.radius('full');
+  background-color: tokens.color('gray', 50);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+
+  &:hover {
+    border-color: tokens.color('teal', 400);
+  }
+
+  &--over {
+    border-color: tokens.color('teal', 500);
+    background-color: tokens.color('teal', 50);
+  }
+}
+
+.avatar-upload__placeholder-icon {
+  font-size: tokens.font-size('xl');
+  opacity: 0.5;
+}
+
+.avatar-upload__preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-upload__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.avatar-upload__actions {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}
+
+.avatar-upload__hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.avatar-upload__buttons {
+  display: flex;
+  gap: tokens.space(2);
+}
+
+.avatar-upload__error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}
+
+.avatar-upload__cropper-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: tokens.space(4);
+  width: min(90vw, 420px);
+}
+
+.avatar-upload__cropper-stage {
+  position: relative;
+  width: min(80vw, 320px);
+  height: min(80vw, 320px);
+  background-color: tokens.color('gray', 900);
+  border-radius: tokens.radius('md');
+  overflow: hidden;
+}
+
+.avatar-upload__zoom,
+.avatar-upload__cropper-actions {
+  width: 100%;
+}
+
+.avatar-upload__zoom {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+  color: tokens.color('gray', 500);
+
+  input[type='range'] {
+    flex: 1;
+    accent-color: tokens.color('teal', 500);
+  }
+}
+
+.avatar-upload__cropper-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.space(2);
+}

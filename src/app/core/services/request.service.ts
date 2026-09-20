@@ -52,11 +52,11 @@ export class RequestService {
     );
   }
 
-  listOpenForSpecialty(specialtyId: string, simulateError = false): Observable<ServiceRequest[]> {
+  listOpenForSpecialties(specialtyIds: string[], simulateError = false): Observable<ServiceRequest[]> {
     return simulateNetwork(
       () =>
         this.requestsSignal().filter(
-          (request) => request.specialtyId === specialtyId && this.canReceiveProposals(request),
+          (request) => specialtyIds.includes(request.specialtyId) && this.canReceiveProposals(request),
         ),
       { simulateError, errorMessage: 'Não foi possível carregar as solicitações disponíveis.' },
     );

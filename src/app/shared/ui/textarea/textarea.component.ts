@@ -23,6 +23,7 @@ export class TextareaComponent implements ControlValueAccessor {
   errorMessage = input<string | null>(null);
   required = input(false);
   rows = input(4);
+  maxLength = input<number | null>(null);
 
   protected readonly textareaId = `ui-textarea-${nextId++}`;
   protected readonly hintId = `${this.textareaId}-hint`;

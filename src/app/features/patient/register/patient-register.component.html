@@ -1,53 +1,105 @@
 <div class="auth-page">
-  <div class="auth-page__panel">
-    <h1 class="auth-page__title">Cadastro de paciente</h1>
-    <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
+  <aside class="auth-page__side">
+    <a class="auth-page__side-brand" routerLink="/">QuickCare</a>
+    <h2 class="auth-page__side-title">Cuidado com saúde, do seu jeito</h2>
+    <p class="auth-page__side-text">
+      Publique sua solicitação, compare propostas de profissionais validados e escolha quem vai te atender — tudo em
+      poucos minutos.
+    </p>
+    <ul class="auth-page__side-list">
+      <li>Solicite atendimento sem sair de casa</li>
+      <li>Compare propostas antes de decidir</li>
+      <li>Acompanhe tudo em um só lugar</li>
+    </ul>
+    <span class="auth-page__side-note">Já tem conta? Entre e continue de onde parou.</span>
+  </aside>
 
-    <form class="auth-page__form" [formGroup]="form" (ngSubmit)="submit()">
-      <ui-input label="Nome completo" formControlName="name" [required]="true" [errorMessage]="fieldError('name')"></ui-input>
+  <div class="auth-page__main">
+    <a class="auth-page__mobile-brand" routerLink="/">QuickCare</a>
 
-      <ui-input
-        label="E-mail"
-        type="email"
-        formControlName="email"
-        [required]="true"
-        [errorMessage]="fieldError('email')"
-      ></ui-input>
+    <div class="auth-page__content">
+      <div class="auth-page__panel">
+        <a class="auth-page__back" routerLink="/">← Voltar para o início</a>
 
-      <ui-input
-        label="Telefone"
-        type="tel"
-        formControlName="phone"
-        [required]="true"
-        [errorMessage]="fieldError('phone')"
-      ></ui-input>
+        <h1 class="auth-page__title">Cadastro de paciente</h1>
+        <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
 
-      <ui-input
-        label="CPF"
-        formControlName="cpf"
-        [required]="true"
-        [errorMessage]="fieldError('cpf')"
-      ></ui-input>
+        <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+          <ui-grid>
+            <ui-grid-item [xs]="12">
+              <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+            </ui-grid-item>
 
-      <ui-input
-        label="Senha"
-        type="password"
-        formControlName="password"
-        [required]="true"
-        [errorMessage]="fieldError('password')"
-      ></ui-input>
+            <ui-grid-item [xs]="12">
+              <ui-input
+                label="Nome completo"
+                formControlName="name"
+                autocomplete="name"
+                [required]="true"
+                [maxLength]="150"
+                [errorMessage]="fieldError('name')"
+              ></ui-input>
+            </ui-grid-item>
 
-      <ui-input
-        label="Confirmar senha"
-        type="password"
-        formControlName="confirmPassword"
-        [required]="true"
-        [errorMessage]="confirmPasswordError"
-      ></ui-input>
+            <ui-grid-item [xs]="12">
+              <ui-input
+                label="E-mail"
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                [required]="true"
+                [maxLength]="150"
+                [errorMessage]="fieldError('email')"
+              ></ui-input>
+            </ui-grid-item>
 
-      <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
-    </form>
+            <ui-grid-item [xs]="12" [sm]="6">
+              <ui-input
+                label="Telefone"
+                type="tel"
+                formControlName="phone"
+                mask="phone"
+                autocomplete="tel"
+                [required]="true"
+                [errorMessage]="fieldError('phone')"
+              ></ui-input>
+            </ui-grid-item>
 
-    <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+            <ui-grid-item [xs]="12" [sm]="6">
+              <ui-input
+                label="CPF"
+                formControlName="cpf"
+                mask="cpf"
+                autocomplete="off"
+                [required]="true"
+                [errorMessage]="fieldError('cpf')"
+              ></ui-input>
+            </ui-grid-item>
+
+            <ui-grid-item [xs]="12">
+              <h2 class="auth-page__section-title">Endereço</h2>
+              <ui-address [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address>
+            </ui-grid-item>
+
+            <ui-grid-item [xs]="12">
+              <ui-password-fields
+                [group]="form"
+                [passwordError]="passwordError"
+                [confirmPasswordError]="confirmPasswordError"
+              ></ui-password-fields>
+            </ui-grid-item>
+
+            <ui-grid-item [xs]="12">
+              <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
+            </ui-grid-item>
+          </ui-grid>
+        </form>
+
+        <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+        <p class="auth-page__footer">
+          Errou o perfil? <a routerLink="/cadastro/profissional">Cadastre-se como profissional</a>
+        </p>
+      </div>
+    </div>
   </div>
 </div>

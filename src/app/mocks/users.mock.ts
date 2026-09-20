@@ -1,4 +1,14 @@
-import { Admin, Patient, Professional } from '../core/models';
+import { Address, Admin, Patient, Professional } from '../core/models';
+
+const SAMPLE_ADDRESS: Address = {
+  cep: '01310-100',
+  street: 'Avenida Paulista',
+  number: '1578',
+  complement: 'Apto 92',
+  neighborhood: 'Bela Vista',
+  city: 'São Paulo',
+  state: 'SP',
+};
 
 export const PATIENTS_MOCK: Patient[] = [
   {
@@ -8,6 +18,7 @@ export const PATIENTS_MOCK: Patient[] = [
     email: 'ana.souza@email.com',
     phone: '(11) 98765-4321',
     cpf: '111.222.333-44',
+    address: SAMPLE_ADDRESS,
   },
   {
     id: 'pat-2',
@@ -16,6 +27,7 @@ export const PATIENTS_MOCK: Patient[] = [
     email: 'carlos.lima@email.com',
     phone: '(11) 91234-5678',
     cpf: '222.333.444-55',
+    address: SAMPLE_ADDRESS,
   },
 ];
 
@@ -27,8 +39,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'mariana.alves@email.com',
     phone: '(11) 99876-5432',
     cpf: '333.444.555-66',
-    specialtyId: 'sp-nutricao',
+    specialtyIds: ['sp-nutricao', 'sp-educacao-fisica'],
     registrationNumber: 'CRN-3 12345',
+    address: SAMPLE_ADDRESS,
     bio: 'Nutricionista especializada em reeducação alimentar e emagrecimento saudável.',
     validationStatus: 'aprovado',
     validationDocument: {
@@ -46,8 +59,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'joao.santos@email.com',
     phone: '(11) 98123-4567',
     cpf: '444.555.666-77',
-    specialtyId: 'sp-psicologia',
+    specialtyIds: ['sp-psicologia'],
     registrationNumber: 'CRP 06/98765',
+    address: SAMPLE_ADDRESS,
     bio: 'Psicólogo clínico com abordagem cognitivo-comportamental.',
     validationStatus: 'aprovado',
     validationDocument: {
@@ -65,8 +79,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'fernanda.costa@email.com',
     phone: '(11) 97654-3210',
     cpf: '555.666.777-88',
-    specialtyId: 'sp-fisioterapia',
+    specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 54321',
+    address: SAMPLE_ADDRESS,
     bio: 'Fisioterapeuta ortopédica, atendimento domiciliar e em clínica.',
     validationStatus: 'pendente',
     validationDocument: {
@@ -84,8 +99,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'ricardo.nunes@email.com',
     phone: '(11) 96543-2109',
     cpf: '666.777.888-99',
-    specialtyId: 'sp-nutricao',
+    specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-3 00000',
+    address: SAMPLE_ADDRESS,
     validationStatus: 'reprovado',
     validationDocument: {
       fileName: 'documento-ricardo-nunes.png',
@@ -103,8 +119,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'beatriz.martins@email.com',
     phone: '(11) 95432-1098',
     cpf: '777.888.999-00',
-    specialtyId: 'sp-fonoaudiologia',
+    specialtyIds: ['sp-fonoaudiologia'],
     registrationNumber: 'CREFONO 8 11223',
+    address: SAMPLE_ADDRESS,
     validationStatus: 'pendente',
     validationDocument: {
       fileName: 'crefono-beatriz-martins.pdf',
@@ -121,8 +138,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'joao.ramos@email.com',
     phone: '(11) 94321-0987',
     cpf: '888.999.000-11',
-    specialtyId: 'sp-psicologia',
+    specialtyIds: ['sp-psicologia'],
     registrationNumber: 'CRP 06/45678',
+    address: SAMPLE_ADDRESS,
     bio: 'Psicólogo com foco em ansiedade e terapia de casal.',
     validationStatus: 'aprovado',
     validationDocument: {
@@ -140,8 +158,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'camila.duarte@email.com',
     phone: '(11) 93210-9876',
     cpf: '999.000.111-22',
-    specialtyId: 'sp-fisioterapia',
+    specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 67890',
+    address: SAMPLE_ADDRESS,
     bio: 'Fisioterapeuta esportiva.',
     validationStatus: 'aprovado',
     validationDocument: {
@@ -159,8 +178,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'lucas.pereira@email.com',
     phone: '(11) 92109-8765',
     cpf: '000.111.222-33',
-    specialtyId: 'sp-fisioterapia',
+    specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 13579',
+    address: SAMPLE_ADDRESS,
     validationStatus: 'aprovado',
     validationDocument: {
       fileName: 'crefito-lucas-pereira.pdf',
@@ -177,8 +197,9 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     email: 'juliana.ferreira@email.com',
     phone: '(11) 91098-7654',
     cpf: '123.456.789-00',
-    specialtyId: 'sp-fonoaudiologia',
+    specialtyIds: ['sp-fonoaudiologia'],
     registrationNumber: 'CREFONO 8 33445',
+    address: SAMPLE_ADDRESS,
     validationStatus: 'aprovado',
     validationDocument: {
       fileName: 'crefono-juliana-ferreira.pdf',

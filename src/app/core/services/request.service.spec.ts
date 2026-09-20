@@ -111,18 +111,18 @@ describe('RequestService', () => {
     expect(updated.status).toBe('cancelada');
   }));
 
-  it('listOpenForSpecialty retorna só solicitações abertas/recebendo propostas da especialidade', fakeAsync(() => {
+  it('listOpenForSpecialties retorna só solicitações abertas/recebendo propostas da especialidade', fakeAsync(() => {
     const request = createRequest();
 
     let results: ServiceRequest[] = [];
-    service.listOpenForSpecialty('sp-nutricao').subscribe((requests) => (results = requests));
+    service.listOpenForSpecialties(['sp-nutricao']).subscribe((requests) => (results = requests));
     tick(1000);
 
     expect(results.some((item) => item.id === request.id)).toBe(true);
 
     service.markInProgress(request.id, 'prop-fake');
 
-    service.listOpenForSpecialty('sp-nutricao').subscribe((requests) => (results = requests));
+    service.listOpenForSpecialties(['sp-nutricao']).subscribe((requests) => (results = requests));
     tick(1000);
 
     expect(results.some((item) => item.id === request.id)).toBe(false);

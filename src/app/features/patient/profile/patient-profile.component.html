@@ -16,6 +16,16 @@
           <dt>Telefone</dt>
           <dd>{{ user.phone }}</dd>
         </div>
+        <div>
+          <dt>Endereço</dt>
+          <dd>
+            {{ user.address.street }}, {{ user.address.number }}
+            @if (user.address.complement) {
+              - {{ user.address.complement }}
+            }
+            — {{ user.address.neighborhood }}, {{ user.address.city }}/{{ user.address.state }}
+          </dd>
+        </div>
       </dl>
     </ui-card>
   }

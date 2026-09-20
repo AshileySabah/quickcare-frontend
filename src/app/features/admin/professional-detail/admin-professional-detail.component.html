@@ -22,7 +22,7 @@
       <section class="admin-professional-detail">
         <ui-card>
           <h1 class="admin-professional-detail__name">{{ user.name }}</h1>
-          <p class="admin-professional-detail__specialty">{{ specialtyName(user.specialtyId) }}</p>
+          <p class="admin-professional-detail__specialty">{{ specialtyNames(user.specialtyIds) }}</p>
 
           <dl class="admin-professional-detail__meta">
             <div>
@@ -87,17 +87,24 @@
 
 <ui-modal [open]="isRejectModalOpen()" titleText="Reprovar profissional" (closed)="closeRejectModal()">
   <form [formGroup]="rejectForm" (ngSubmit)="reject()">
-    <ui-textarea
-      label="Motivo da reprovação"
-      formControlName="reason"
-      [rows]="4"
-      [required]="true"
-      [errorMessage]="rejectReasonError()"
-    ></ui-textarea>
+    <ui-grid>
+      <ui-grid-item [xs]="12">
+        <ui-textarea
+          label="Motivo da reprovação"
+          formControlName="reason"
+          [rows]="4"
+          [required]="true"
+          [maxLength]="500"
+          [errorMessage]="rejectReasonError()"
+        ></ui-textarea>
+      </ui-grid-item>
 
-    <div class="admin-professional-detail__modal-actions">
-      <ui-button variant="ghost" type="button" (click)="closeRejectModal()">Cancelar</ui-button>
-      <ui-button variant="danger" type="submit" [loading]="isProcessing()">Confirmar reprovação</ui-button>
-    </div>
+      <ui-grid-item [xs]="12">
+        <div class="admin-professional-detail__modal-actions">
+          <ui-button variant="ghost" type="button" (click)="closeRejectModal()">Cancelar</ui-button>
+          <ui-button variant="danger" type="submit" [loading]="isProcessing()">Confirmar reprovação</ui-button>
+        </div>
+      </ui-grid-item>
+    </ui-grid>
   </form>
 </ui-modal>

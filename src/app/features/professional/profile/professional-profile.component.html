@@ -22,12 +22,28 @@
           <dd>{{ user.phone }}</dd>
         </div>
         <div>
-          <dt>Especialidade</dt>
-          <dd>{{ specialtyName(user.specialtyId) }}</dd>
+          <dt>Especialidades</dt>
+          <dd>{{ specialtyNames(user.specialtyIds) }}</dd>
         </div>
         <div>
           <dt>Número de registro</dt>
           <dd>{{ user.registrationNumber }}</dd>
+        </div>
+        @if (user.cnpj) {
+          <div>
+            <dt>CNPJ</dt>
+            <dd>{{ user.cnpj }}</dd>
+          </div>
+        }
+        <div>
+          <dt>Endereço</dt>
+          <dd>
+            {{ user.address.street }}, {{ user.address.number }}
+            @if (user.address.complement) {
+              - {{ user.address.complement }}
+            }
+            — {{ user.address.neighborhood }}, {{ user.address.city }}/{{ user.address.state }}
+          </dd>
         </div>
         @if (user.bio) {
           <div>

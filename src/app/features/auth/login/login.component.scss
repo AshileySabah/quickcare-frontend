@@ -1,7 +1,45 @@
 @use 'patterns/auth-page' as authPage;
 
 .auth-page {
-  @include authPage.page;
+  @include authPage.split;
+}
+
+.auth-page__side {
+  @include authPage.side;
+}
+
+.auth-page__side-brand {
+  @include authPage.side-brand;
+}
+
+.auth-page__side-title {
+  @include authPage.side-title;
+}
+
+.auth-page__side-text {
+  @include authPage.side-text;
+}
+
+.auth-page__side-list {
+  @include authPage.side-list;
+}
+
+.auth-page__side-note {
+  @include authPage.side-note;
+}
+
+.auth-page__main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.auth-page__mobile-brand {
+  @include authPage.mobile-brand;
+}
+
+.auth-page__content {
+  @include authPage.content;
 }
 
 .auth-page__panel {
@@ -14,10 +52,6 @@
 
 .auth-page__subtitle {
   @include authPage.subtitle;
-}
-
-.auth-page__form {
-  @include authPage.form;
 }
 
 .auth-page__footer {

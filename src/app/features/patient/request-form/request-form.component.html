@@ -15,63 +15,88 @@
       <ui-skeleton height="40px"></ui-skeleton>
     </div>
   } @else {
-    <form class="request-form__form" [formGroup]="form" (ngSubmit)="submit()">
-      <ui-select
-        label="Especialidade"
-        [options]="specialtyOptions"
-        formControlName="specialtyId"
-        [required]="true"
-        [errorMessage]="fieldError('specialtyId')"
-      ></ui-select>
-
-      <ui-textarea
-        label="Descreva sua necessidade"
-        formControlName="description"
-        [rows]="5"
-        [required]="true"
-        [errorMessage]="fieldError('description')"
-        hint="Explique o que você busca para receber propostas mais precisas."
-      ></ui-textarea>
-
-      <ui-select
-        label="Modalidade"
-        [options]="modalityOptions"
-        formControlName="modality"
-        [required]="true"
-        [errorMessage]="fieldError('modality')"
-      ></ui-select>
-
-      @if (form.controls.modality.value === 'presencial') {
-        <ui-input
-          label="Endereço"
-          formControlName="street"
-          [required]="true"
-          [errorMessage]="fieldError('street')"
-        ></ui-input>
-
-        <div class="request-form__row">
-          <ui-input label="Cidade" formControlName="city" [required]="true" [errorMessage]="fieldError('city')"></ui-input>
-
-          <ui-input
-            label="Estado"
-            formControlName="state"
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <ui-grid>
+        <ui-grid-item [xs]="12">
+          <ui-select
+            label="Especialidade"
+            [options]="specialtyOptions"
+            formControlName="specialtyId"
             [required]="true"
-            [errorMessage]="fieldError('state')"
+            [errorMessage]="fieldError('specialtyId')"
+          ></ui-select>
+        </ui-grid-item>
+
+        <ui-grid-item [xs]="12">
+          <ui-textarea
+            label="Descreva sua necessidade"
+            formControlName="description"
+            [rows]="5"
+            [required]="true"
+            [maxLength]="1000"
+            [errorMessage]="fieldError('description')"
+            hint="Explique o que você busca para receber propostas mais precisas."
+          ></ui-textarea>
+        </ui-grid-item>
+
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-select
+            label="Modalidade"
+            [options]="modalityOptions"
+            formControlName="modality"
+            [required]="true"
+            [errorMessage]="fieldError('modality')"
+          ></ui-select>
+        </ui-grid-item>
+
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Prazo desejado"
+            type="date"
+            formControlName="desiredDeadline"
+            [required]="true"
+            [errorMessage]="fieldError('desiredDeadline')"
           ></ui-input>
-        </div>
-      }
+        </ui-grid-item>
 
-      <ui-input
-        label="Prazo desejado"
-        type="date"
-        formControlName="desiredDeadline"
-        [required]="true"
-        [errorMessage]="fieldError('desiredDeadline')"
-      ></ui-input>
+        @if (form.controls.modality.value === 'presencial') {
+          <ui-grid-item [xs]="12">
+            <ui-input
+              label="Endereço"
+              formControlName="street"
+              [required]="true"
+              [maxLength]="150"
+              [errorMessage]="fieldError('street')"
+            ></ui-input>
+          </ui-grid-item>
 
-      <ui-button type="submit" [loading]="isSubmitting()">
-        {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
-      </ui-button>
+          <ui-grid-item [xs]="12" [sm]="6">
+            <ui-input
+              label="Cidade"
+              formControlName="city"
+              [required]="true"
+              [maxLength]="100"
+              [errorMessage]="fieldError('city')"
+            ></ui-input>
+          </ui-grid-item>
+
+          <ui-grid-item [xs]="12" [sm]="6">
+            <ui-input
+              label="Estado"
+              formControlName="state"
+              [required]="true"
+              [maxLength]="2"
+              [errorMessage]="fieldError('state')"
+            ></ui-input>
+          </ui-grid-item>
+        }
+
+        <ui-grid-item [xs]="12">
+          <ui-button type="submit" [loading]="isSubmitting()">
+            {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
+          </ui-button>
+        </ui-grid-item>
+      </ui-grid>
     </form>
   }
 </section>

@@ -1,0 +1,32 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: block;
+  min-width: 0;
+  box-sizing: border-box;
+  grid-column: span var(--ui-grid-xs, 12);
+}
+
+@include tokens.respond('sm') {
+  :host {
+    grid-column: span var(--ui-grid-sm, var(--ui-grid-xs, 12));
+  }
+}
+
+@include tokens.respond('md') {
+  :host {
+    grid-column: span var(--ui-grid-md, var(--ui-grid-sm, var(--ui-grid-xs, 12)));
+  }
+}
+
+@include tokens.respond('lg') {
+  :host {
+    grid-column: span var(--ui-grid-lg, var(--ui-grid-md, var(--ui-grid-sm, var(--ui-grid-xs, 12))));
+  }
+}
+
+@include tokens.respond('xl') {
+  :host {
+    grid-column: span var(--ui-grid-xl, var(--ui-grid-lg, var(--ui-grid-md, var(--ui-grid-sm, var(--ui-grid-xs, 12)))));
+  }
+}

@@ -81,9 +81,7 @@
   color: tokens.color('gray', 700);
 }
 
-.professional-request-detail__form {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(4);
-  max-width: 480px;
+form {
+  display: block;
+  max-width: 560px;
 }

@@ -11,6 +11,8 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
+import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
 import { StatusBadgeComponent } from '../../../shared/ui/status-badge/status-badge.component';
@@ -32,6 +34,8 @@ type FieldName = 'price' | 'approach' | 'deadline';
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
+    GridComponent,
+    GridItemComponent,
     InputComponent,
     SkeletonComponent,
     StatusBadgeComponent,

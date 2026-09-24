@@ -40,9 +40,26 @@ export class AdminDashboardComponent {
     });
   }
 
-  protected specialtyNames(specialtyIds: string[]): string {
-    return specialtyIds
+  protected specialtyNames(professional: Professional): string {
+    return professional.specialtyIds
       .map((specialtyId) => SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
       .join(', ');
+  }
+
+  protected registrationSummary(professional: Professional): string {
+    return professional.registrationNumber ? `${this.categoryLabel(professional)}: ${professional.registrationNumber}` : 'Sem registro profissional';
+  }
+
+  protected categoryLabel(professional: Professional): string {
+    switch (professional.category) {
+      case 'MEDICO':
+        return 'CRM';
+      case 'ENFERMEIRO':
+        return 'COREN';
+      case 'CUIDADOR':
+        return 'Cuidador(a)';
+      default:
+        return 'Registro';
+    }
   }
 }

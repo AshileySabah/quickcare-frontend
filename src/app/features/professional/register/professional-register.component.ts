@@ -1,14 +1,8 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { ProfessionalCategory, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { AddressComponent } from '../../../shared/ui/address/address.component';
 import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
@@ -19,10 +13,18 @@ import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { MultiSelectComponent, MultiSelectOption } from '../../../shared/ui/multi-select/multi-select.component';
 import { PasswordFieldsComponent } from '../../../shared/ui/password-fields/password-fields.component';
+import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
 
 const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+const CATEGORY_OPTIONS: SelectOption[] = [
+  { value: 'MEDICO', label: 'Médico(a)' },
+  { value: 'ENFERMEIRO', label: 'Enfermeiro(a)' },
+  { value: 'OUTRO', label: 'Outros profissionais' },
+  { value: 'CUIDADOR', label: 'Cuidador(a)' },
+];
 
 function passwordsMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -54,7 +56,9 @@ type FieldName =
   | 'phone'
   | 'cpf'
   | 'cnpj'
+  | 'category'
   | 'specialtyIds'
+  | 'specialtySingle'
   | 'registrationNumber'
   | 'raioAtendimentoKm'
   | 'password';
@@ -76,6 +80,7 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     InputComponent,
     MultiSelectComponent,
     PasswordFieldsComponent,
+    SelectComponent,
   ],
   templateUrl: './professional-register.component.html',
   styleUrl: './professional-register.component.scss',
@@ -88,7 +93,6 @@ export class ProfessionalRegisterComponent implements OnInit {
   private readonly toastService = inject(ToastService);
 
   protected readonly isSubmitting = signal(false);
-  protected readonly specialtyOptions = signal<MultiSelectOption[]>([]);
   protected readonly avatarBlob = signal<Blob | null>(null);
 
   protected onAvatarChange(blob: Blob | null): void {
@@ -100,6 +104,17 @@ export class ProfessionalRegisterComponent implements OnInit {
   protected readonly fileError = signal<string | null>(null);
   protected readonly dragOver = signal(false);
 
+  protected readonly categoryOptions = CATEGORY_OPTIONS;
+
+  private readonly specialties = signal<Specialty[]>([]);
+  private readonly selectedCategory = signal<ProfessionalCategory | ''>('');
+
+  protected readonly specialtyOptions = computed<MultiSelectOption[]>(() =>
+    this.specialties()
+      .filter((specialty) => specialty.category === this.selectedCategory())
+      .map((specialty) => ({ value: specialty.id, label: specialty.name })),
+  );
+
   protected readonly form = this.fb.nonNullable.group(
     {
       name: ['', Validators.required],
@@ -107,8 +122,10 @@ export class ProfessionalRegisterComponent implements OnInit {
       phone: ['', Validators.required],
       cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
       cnpj: ['', [Validators.pattern(/^\d{14}$/)]],
+      category: this.fb.nonNullable.control<ProfessionalCategory | ''>('', Validators.required),
       specialtyIds: this.fb.nonNullable.control<string[]>([], Validators.required),
-      registrationNumber: ['', Validators.required],
+      specialtySingle: [''],
+      registrationNumber: [''],
       attendsPresencial: [false],
       attendsRemoto: [false],
       raioAtendimentoKm: [10, [Validators.min(1)]],
@@ -139,12 +156,47 @@ export class ProfessionalRegisterComponent implements OnInit {
 
       raioControl.updateValueAndValidity();
     });
+
+    // Registration belongs to the professional's own council (CRM, COREN...), not to
+    // each specialty. Cuidadores have no regulating council, so they carry no
+    // registration number at all — this toggles the field's required-ness and resets
+    // the specialty selection whenever the category changes.
+    this.form.controls.category.valueChanges.subscribe((category) => {
+      this.selectedCategory.set(category);
+      this.form.controls.specialtyIds.setValue([]);
+      this.form.controls.specialtySingle.setValue('');
+
+      const registrationControl = this.form.controls.registrationNumber;
+      if (category === 'CUIDADOR' || category === '') {
+        registrationControl.clearValidators();
+      } else {
+        registrationControl.setValidators([Validators.required, Validators.maxLength(50)]);
+      }
+      registrationControl.updateValueAndValidity();
+    });
+
+    // Category "Outros profissionais" is single-specialty, so its picker writes into
+    // a dedicated control that mirrors into the shared specialtyIds array.
+    this.form.controls.specialtySingle.valueChanges.subscribe((specialtyId) => {
+      if (this.form.controls.category.value === 'OUTRO') {
+        this.form.controls.specialtyIds.setValue(specialtyId ? [specialtyId] : []);
+      }
+    });
   }
 
   ngOnInit(): void {
     this.specialtyService.list().subscribe((specialties) => {
-      this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name })));
+      this.specialties.set(specialties);
     });
+  }
+
+  protected get isOutro(): boolean {
+    return this.form.controls.category.value === 'OUTRO';
+  }
+
+  protected get requiresRegistration(): boolean {
+    const category = this.form.controls.category.value;
+    return category !== '' && category !== 'CUIDADOR';
   }
 
   protected get modalityError(): string | null {
@@ -160,7 +212,16 @@ export class ProfessionalRegisterComponent implements OnInit {
     }
 
     if (control.hasError('required')) {
-      return fieldName === 'specialtyIds' ? 'Selecione ao menos uma especialidade.' : 'Campo obrigatório.';
+      if (fieldName === 'specialtyIds' || fieldName === 'specialtySingle') {
+        return 'Selecione ao menos uma especialidade.';
+      }
+      if (fieldName === 'category') {
+        return 'Selecione uma categoria profissional.';
+      }
+      if (fieldName === 'registrationNumber') {
+        return 'Informe o número de registro profissional.';
+      }
+      return 'Campo obrigatório.';
     }
 
     if (fieldName === 'email' && control.hasError('email')) {
@@ -306,6 +367,7 @@ export class ProfessionalRegisterComponent implements OnInit {
       phone,
       cpf,
       cnpj,
+      category,
       specialtyIds,
       registrationNumber,
       attendsPresencial,
@@ -325,8 +387,9 @@ export class ProfessionalRegisterComponent implements OnInit {
         phone,
         cpf,
         cnpj: cnpj || undefined,
+        category: category as ProfessionalCategory,
         specialtyIds,
-        registrationNumber,
+        registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
         password,
         modalidadeAtendimento,
         raioAtendimentoKm: attendsPresencial ? raioAtendimentoKm : undefined,

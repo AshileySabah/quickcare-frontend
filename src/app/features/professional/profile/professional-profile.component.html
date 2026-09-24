@@ -22,13 +22,23 @@
           <dd>{{ user.phone }}</dd>
         </div>
         <div>
-          <dt>Especialidades</dt>
-          <dd>{{ specialtyNames(user.specialtyIds) }}</dd>
+          <dt>Categoria</dt>
+          <dd>{{ categoryLabel(user) }}</dd>
         </div>
         <div>
-          <dt>Número de registro</dt>
-          <dd>{{ user.registrationNumber }}</dd>
+          <dt>Especialidades</dt>
+          <dd>
+            @for (specialtyId of user.specialtyIds; track specialtyId) {
+              <span>{{ specialtyName(specialtyId) }}</span>
+            }
+          </dd>
         </div>
+        @if (user.registrationNumber) {
+          <div>
+            <dt>{{ registrationLabel(user) }}</dt>
+            <dd>{{ user.registrationNumber }}</dd>
+          </div>
+        }
         @if (user.cnpj) {
           <div>
             <dt>CNPJ</dt>

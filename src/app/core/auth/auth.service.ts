@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Address, Patient, Professional, ProfessionalDocument, User, UserRole } from '../models';
+import { Address, Patient, Professional, ProfessionalCategory, ProfessionalDocument, User, UserRole } from '../models';
 import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
 import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
@@ -23,8 +23,9 @@ export interface ProfessionalRegistration {
   phone: string;
   cpf: string;
   cnpj?: string;
+  category: ProfessionalCategory;
   specialtyIds: string[];
-  registrationNumber: string;
+  registrationNumber?: string;
   password: string;
   document: ProfessionalDocument;
   modalidadeAtendimento: 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
@@ -76,8 +77,8 @@ export class AuthService {
         email: response.email,
         phone: '',
         cpf: '',
+        category: 'OUTRO',
         specialtyIds: [],
-        registrationNumber: '',
         address: emptyAddress,
         validationStatus: 'aprovado',
         validationDocument: { fileName: '', fileType: '', fileSizeBytes: 0, uploadedAt: '', previewUrl: '' },
@@ -149,8 +150,9 @@ export class AuthService {
           cpf: input.cpf,
           telefone: input.phone,
           cnpj: input.cnpj || undefined,
-          especialidadeIds: input.specialtyIds.map((id) => Number(id)),
-          registroProfissional: input.registrationNumber,
+          categoria: input.category,
+          especialidadeIds: input.specialtyIds.map(Number),
+          registroProfissional: input.registrationNumber || undefined,
           modalidadeAtendimento: input.modalidadeAtendimento,
           raioAtendimentoKm: input.raioAtendimentoKm,
           cep: input.address.cep,

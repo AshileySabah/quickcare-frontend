@@ -2,8 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Professional } from '../../../core/models';
-import { SPECIALTIES_MOCK } from '../../../mocks';
+import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { SpecialtyService } from '../../../core/services/specialty.service';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
@@ -20,11 +20,16 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 })
 export class AdminDashboardComponent {
   private readonly authService = inject(AuthService);
+  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly pendingProfessionals = signal<Professional[]>([]);
+  private readonly specialties = signal<Specialty[]>([]);
+  private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   constructor() {
+    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
+    this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
     this.load();
   }
 
@@ -42,24 +47,24 @@ export class AdminDashboardComponent {
 
   protected specialtyNames(professional: Professional): string {
     return professional.specialtyIds
-      .map((specialtyId) => SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
+      .map((specialtyId) => this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
       .join(', ');
   }
 
   protected registrationSummary(professional: Professional): string {
-    return professional.registrationNumber ? `${this.categoryLabel(professional)}: ${professional.registrationNumber}` : 'Sem registro profissional';
+    return professional.registrationNumber
+      ? `${this.registrationLabel(professional)}: ${professional.registrationNumber}`
+      : 'Sem registro profissional';
   }
 
   protected categoryLabel(professional: Professional): string {
-    switch (professional.category) {
-      case 'MEDICO':
-        return 'CRM';
-      case 'ENFERMEIRO':
-        return 'COREN';
-      case 'CUIDADOR':
-        return 'Cuidador(a)';
-      default:
-        return 'Registro';
-    }
+    return this.categories().find((category) => category.value === professional.category)?.label ?? professional.category;
+  }
+
+  private registrationLabel(professional: Professional): string {
+    return (
+      this.categories().find((category) => category.value === professional.category)?.registrationLabel ??
+      'Registro profissional'
+    );
   }
 }

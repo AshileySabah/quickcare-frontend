@@ -3,7 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
-import { SPECIALTIES_MOCK } from '../../../mocks';
+import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/grid/grid.component';
@@ -39,6 +39,7 @@ export class RequestFormComponent {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
+  private readonly specialtyService = inject(SpecialtyService);
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
 
@@ -46,10 +47,7 @@ export class RequestFormComponent {
   protected readonly isLoading = signal(this.isEditMode);
   protected readonly isSubmitting = signal(false);
 
-  protected readonly specialtyOptions: SelectOption[] = SPECIALTIES_MOCK.map((specialty) => ({
-    value: specialty.id,
-    label: specialty.name,
-  }));
+  protected readonly specialtyOptions = signal<SelectOption[]>([]);
 
   protected readonly modalityOptions: SelectOption[] = [
     { value: 'online', label: 'Online' },
@@ -67,6 +65,10 @@ export class RequestFormComponent {
   });
 
   constructor() {
+    this.specialtyService.list().subscribe((specialties) => {
+      this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name })));
+    });
+
     this.form.controls.modality.valueChanges.subscribe((modality) => this.applyModalityValidators(modality));
 
     if (this.editingId) {

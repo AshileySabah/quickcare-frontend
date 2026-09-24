@@ -2,7 +2,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ProfessionalCategory, Specialty } from '../../../core/models';
+import { ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { AddressComponent } from '../../../shared/ui/address/address.component';
 import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
@@ -13,18 +13,11 @@ import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { MultiSelectComponent, MultiSelectOption } from '../../../shared/ui/multi-select/multi-select.component';
 import { PasswordFieldsComponent } from '../../../shared/ui/password-fields/password-fields.component';
-import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
+import { SelectComponent } from '../../../shared/ui/select/select.component';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
 
 const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-
-const CATEGORY_OPTIONS: SelectOption[] = [
-  { value: 'MEDICO', label: 'Médico(a)' },
-  { value: 'ENFERMEIRO', label: 'Enfermeiro(a)' },
-  { value: 'OUTRO', label: 'Outros profissionais' },
-  { value: 'CUIDADOR', label: 'Cuidador(a)' },
-];
 
 function passwordsMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -104,7 +97,7 @@ export class ProfessionalRegisterComponent implements OnInit {
   protected readonly fileError = signal<string | null>(null);
   protected readonly dragOver = signal(false);
 
-  protected readonly categoryOptions = CATEGORY_OPTIONS;
+  protected readonly categoryOptions = signal<ProfessionalCategoryInfo[]>([]);
 
   private readonly specialties = signal<Specialty[]>([]);
   private readonly selectedCategory = signal<ProfessionalCategory | ''>('');
@@ -188,6 +181,10 @@ export class ProfessionalRegisterComponent implements OnInit {
     this.specialtyService.list().subscribe((specialties) => {
       this.specialties.set(specialties);
     });
+
+    this.specialtyService.listCategories().subscribe((categories) => {
+      this.categoryOptions.set(categories);
+    });
   }
 
   protected get isOutro(): boolean {
@@ -197,6 +194,11 @@ export class ProfessionalRegisterComponent implements OnInit {
   protected get requiresRegistration(): boolean {
     const category = this.form.controls.category.value;
     return category !== '' && category !== 'CUIDADOR';
+  }
+
+  protected get registrationLabel(): string {
+    const category = this.form.controls.category.value;
+    return this.categoryOptions().find((option) => option.value === category)?.registrationLabel ?? 'Registro profissional';
   }
 
   protected get modalityError(): string | null {

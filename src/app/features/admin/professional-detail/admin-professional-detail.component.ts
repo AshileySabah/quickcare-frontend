@@ -3,8 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-import { Professional } from '../../../core/models';
-import { SPECIALTIES_MOCK } from '../../../mocks';
+import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
@@ -44,6 +44,7 @@ export class AdminProfessionalDetailComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
+  private readonly specialtyService = inject(SpecialtyService);
 
   private readonly professionalId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -51,12 +52,16 @@ export class AdminProfessionalDetailComponent {
   protected readonly professional = signal<Professional | null>(null);
   protected readonly isProcessing = signal(false);
   protected readonly isRejectModalOpen = signal(false);
+  private readonly specialties = signal<Specialty[]>([]);
+  private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   protected readonly rejectForm = this.fb.nonNullable.group({
     reason: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   constructor() {
+    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
+    this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
     this.load();
   }
 
@@ -78,31 +83,18 @@ export class AdminProfessionalDetailComponent {
   }
 
   protected specialtyName(specialtyId: string): string {
-    return SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
+    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
   }
 
   protected categoryLabel(professional: Professional): string {
-    switch (professional.category) {
-      case 'MEDICO':
-        return 'Médico(a)';
-      case 'ENFERMEIRO':
-        return 'Enfermeiro(a)';
-      case 'CUIDADOR':
-        return 'Cuidador(a)';
-      default:
-        return 'Outros profissionais';
-    }
+    return this.categories().find((category) => category.value === professional.category)?.label ?? professional.category;
   }
 
   protected registrationLabel(professional: Professional): string {
-    switch (professional.category) {
-      case 'MEDICO':
-        return 'CRM';
-      case 'ENFERMEIRO':
-        return 'COREN';
-      default:
-        return 'Registro profissional';
-    }
+    return (
+      this.categories().find((category) => category.value === professional.category)?.registrationLabel ??
+      'Registro profissional'
+    );
   }
 
   protected canPreviewAsImage(professional: Professional): boolean {

@@ -3,8 +3,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Professional, ServiceRequest } from '../../../core/models';
-import { SPECIALTIES_MOCK } from '../../../mocks';
+import { SpecialtyService } from '../../../core/services/specialty.service';
+import { Professional, ServiceRequest, Specialty } from '../../../core/models';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
@@ -23,20 +23,23 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 export class ProfessionalHomeComponent {
   private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
+  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
+  private readonly specialties = signal<Specialty[]>([]);
 
   protected readonly specialtyName = computed(() => {
     const professional = this.authService.currentUser() as Professional | null;
     const specialtyIds = professional?.specialtyIds ?? [];
-    const names = SPECIALTIES_MOCK.filter((specialty) => specialtyIds.includes(specialty.id)).map(
-      (specialty) => specialty.name,
-    );
+    const names = this.specialties()
+      .filter((specialty) => specialtyIds.includes(specialty.id))
+      .map((specialty) => specialty.name);
     return names.join(', ');
   });
 
   constructor() {
+    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 

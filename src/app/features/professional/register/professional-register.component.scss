@@ -84,6 +84,12 @@
   }
 }
 
+.professional-register__specialty-hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(3);
+}
+
 .professional-register__modalities {
   display: flex;
   flex-wrap: wrap;

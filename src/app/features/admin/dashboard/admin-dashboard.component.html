@@ -35,9 +35,9 @@
             <ui-card [interactive]="true">
               <div class="admin-dashboard__card-header">
                 <span class="admin-dashboard__name">{{ professional.name }}</span>
-                <span class="admin-dashboard__specialty">{{ specialtyNames(professional.specialtyIds) }}</span>
+                <span class="admin-dashboard__specialty">{{ specialtyNames(professional) }}</span>
               </div>
-              <p class="admin-dashboard__registration">Registro: {{ professional.registrationNumber }}</p>
+              <p class="admin-dashboard__registration">{{ registrationSummary(professional) }}</p>
               <p class="admin-dashboard__date">
                 Documento enviado em {{ professional.validationDocument.uploadedAt | date: 'dd/MM/yyyy' }}
               </p>

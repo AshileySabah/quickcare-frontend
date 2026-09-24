@@ -22,7 +22,6 @@
       <section class="admin-professional-detail">
         <ui-card>
           <h1 class="admin-professional-detail__name">{{ user.name }}</h1>
-          <p class="admin-professional-detail__specialty">{{ specialtyNames(user.specialtyIds) }}</p>
 
           <dl class="admin-professional-detail__meta">
             <div>
@@ -33,9 +32,25 @@
               <dt>Telefone</dt>
               <dd>{{ user.phone }}</dd>
             </div>
+          </dl>
+
+          <h2 class="admin-professional-detail__document-title">Categoria e especialidades</h2>
+          <dl class="admin-professional-detail__meta">
             <div>
-              <dt>Número de registro</dt>
-              <dd>{{ user.registrationNumber }}</dd>
+              <dt>Categoria</dt>
+              <dd>{{ categoryLabel(user) }}</dd>
+            </div>
+            <div>
+              <dt>Especialidades</dt>
+              <dd>
+                @for (specialtyId of user.specialtyIds; track specialtyId) {
+                  <span>{{ specialtyName(specialtyId) }}</span>
+                }
+              </dd>
+            </div>
+            <div>
+              <dt>{{ registrationLabel(user) }}</dt>
+              <dd>{{ user.registrationNumber ?? 'Sem registro profissional' }}</dd>
             </div>
           </dl>
         </ui-card>

@@ -35,13 +35,16 @@ export interface Address {
   state: string;
 }
 
+export type ProfessionalCategory = 'MEDICO' | 'ENFERMEIRO' | 'CUIDADOR' | 'OUTRO';
+
 export interface Professional extends BaseUser {
   role: 'professional';
   phone: string;
   cpf: string;
   cnpj?: string;
+  category: ProfessionalCategory;
   specialtyIds: string[];
-  registrationNumber: string;
+  registrationNumber?: string;
   address: Address;
   bio?: string;
   validationStatus: ProfessionalValidationStatus;

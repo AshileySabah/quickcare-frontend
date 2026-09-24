@@ -96,28 +96,53 @@
               ></ui-input>
             </ui-grid-item>
 
-            <ui-grid-item [xs]="12" [sm]="6">
-              <ui-input
-                label="Número de registro profissional"
-                formControlName="registrationNumber"
-                autocomplete="off"
+            <ui-grid-item [xs]="12">
+              <ui-select
+                label="Categoria profissional"
+                formControlName="category"
+                [options]="categoryOptions"
                 [required]="true"
-                [maxLength]="50"
-                [errorMessage]="fieldError('registrationNumber')"
-                hint="Ex.: CRN, CRP, CREFITO..."
-              ></ui-input>
+                placeholder="Selecione sua categoria"
+                [errorMessage]="fieldError('category')"
+              ></ui-select>
             </ui-grid-item>
 
-            <ui-grid-item [xs]="12">
-              <ui-multi-select
-                label="Especialidades"
-                formControlName="specialtyIds"
-                [options]="specialtyOptions()"
-                [required]="true"
-                placeholder="Selecione uma ou mais especialidades"
-                [errorMessage]="fieldError('specialtyIds')"
-              ></ui-multi-select>
-            </ui-grid-item>
+            @if (form.controls.category.value) {
+              <ui-grid-item [xs]="12">
+                @if (isOutro) {
+                  <ui-select
+                    label="Especialidade"
+                    formControlName="specialtySingle"
+                    [options]="specialtyOptions()"
+                    [required]="true"
+                    placeholder="Selecione sua especialidade"
+                    [errorMessage]="fieldError('specialtyIds')"
+                  ></ui-select>
+                } @else {
+                  <ui-multi-select
+                    label="Especialidades"
+                    formControlName="specialtyIds"
+                    [options]="specialtyOptions()"
+                    [required]="true"
+                    placeholder="Selecione uma ou mais especialidades"
+                    [errorMessage]="fieldError('specialtyIds')"
+                  ></ui-multi-select>
+                }
+              </ui-grid-item>
+            }
+
+            @if (requiresRegistration) {
+              <ui-grid-item [xs]="12" [sm]="6">
+                <ui-input
+                  [label]="form.controls.category.value === 'MEDICO' ? 'CRM' : form.controls.category.value === 'ENFERMEIRO' ? 'COREN' : 'Registro profissional'"
+                  formControlName="registrationNumber"
+                  autocomplete="off"
+                  [required]="true"
+                  [maxLength]="50"
+                  [errorMessage]="fieldError('registrationNumber')"
+                ></ui-input>
+              </ui-grid-item>
+            }
 
             <ui-grid-item [xs]="12">
               <h2 class="auth-page__section-title">

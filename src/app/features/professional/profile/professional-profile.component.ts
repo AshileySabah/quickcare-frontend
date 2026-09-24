@@ -17,9 +17,31 @@ export class ProfessionalProfileComponent {
 
   protected readonly professional = computed(() => this.authService.currentUser() as Professional | null);
 
-  protected specialtyNames(specialtyIds: string[]): string {
-    return specialtyIds
-      .map((specialtyId) => SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
-      .join(', ');
+  protected specialtyName(specialtyId: string): string {
+    return SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
+  }
+
+  protected categoryLabel(professional: Professional): string {
+    switch (professional.category) {
+      case 'MEDICO':
+        return 'Médico(a)';
+      case 'ENFERMEIRO':
+        return 'Enfermeiro(a)';
+      case 'CUIDADOR':
+        return 'Cuidador(a)';
+      default:
+        return 'Outros profissionais';
+    }
+  }
+
+  protected registrationLabel(professional: Professional): string {
+    switch (professional.category) {
+      case 'MEDICO':
+        return 'CRM';
+      case 'ENFERMEIRO':
+        return 'COREN';
+      default:
+        return 'Registro profissional';
+    }
   }
 }

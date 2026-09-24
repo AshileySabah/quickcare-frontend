@@ -19,6 +19,7 @@ describe('ProposalService', () => {
     email: 'prof.teste@example.com',
     phone: '(11) 90000-0000',
     cpf: '123.456.789-00',
+    category: 'OUTRO',
     specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-TESTE',
     address: {
@@ -49,6 +50,7 @@ describe('ProposalService', () => {
     ...approvedProfessional,
     id: 'prof-test-wrong-specialty',
     specialtyIds: ['sp-psicologia'],
+    registrationNumber: 'CRP-TESTE',
   };
 
   beforeEach(() => {

@@ -5,3 +5,9 @@ export interface Specialty {
   name: string;
   category: ProfessionalCategory;
 }
+
+export interface ProfessionalCategoryInfo {
+  value: ProfessionalCategory;
+  label: string;
+  registrationLabel: string | null;
+}

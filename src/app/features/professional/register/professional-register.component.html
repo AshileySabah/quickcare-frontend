@@ -100,7 +100,7 @@
               <ui-select
                 label="Categoria profissional"
                 formControlName="category"
-                [options]="categoryOptions"
+                [options]="categoryOptions()"
                 [required]="true"
                 placeholder="Selecione sua categoria"
                 [errorMessage]="fieldError('category')"
@@ -134,7 +134,7 @@
             @if (requiresRegistration) {
               <ui-grid-item [xs]="12" [sm]="6">
                 <ui-input
-                  [label]="form.controls.category.value === 'MEDICO' ? 'CRM' : form.controls.category.value === 'ENFERMEIRO' ? 'COREN' : 'Registro profissional'"
+                  [label]="registrationLabel"
                   formControlName="registrationNumber"
                   autocomplete="off"
                   [required]="true"

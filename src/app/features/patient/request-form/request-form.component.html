@@ -20,7 +20,7 @@
         <ui-grid-item [xs]="12">
           <ui-select
             label="Especialidade"
-            [options]="specialtyOptions"
+            [options]="specialtyOptions()"
             formControlName="specialtyId"
             [required]="true"
             [errorMessage]="fieldError('specialtyId')"

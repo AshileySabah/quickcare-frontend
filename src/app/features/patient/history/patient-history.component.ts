@@ -3,8 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
-import { ServiceRequest } from '../../../core/models';
-import { SPECIALTIES_MOCK } from '../../../mocks';
+import { ServiceRequest, Specialty } from '../../../core/models';
+import { SpecialtyService } from '../../../core/services/specialty.service';
 import { CardComponent } from '../../../shared/ui/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
@@ -23,11 +23,14 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 export class PatientHistoryComponent {
   private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
+  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
+  private readonly specialties = signal<Specialty[]>([]);
 
   constructor() {
+    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 
@@ -51,6 +54,6 @@ export class PatientHistoryComponent {
   }
 
   protected specialtyName(specialtyId: string): string {
-    return SPECIALTIES_MOCK.find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
+    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
   }
 }

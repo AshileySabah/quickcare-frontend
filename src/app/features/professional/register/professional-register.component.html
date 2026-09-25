@@ -34,248 +34,42 @@
         <form class="professional-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
           <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
 
-          <ui-card>
-            <h2 class="auth-page__section-title">Informações básicas</h2>
-            <ui-grid>
-              <ui-grid-item [xs]="12">
-                <ui-input
-                  label="Nome completo"
-                  formControlName="name"
-                  autocomplete="name"
-                  [required]="true"
-                  [maxLength]="150"
-                  [errorMessage]="fieldError('name')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-basic-info-card [group]="form" [fieldError]="fieldError" [showCnpj]="true"></ui-basic-info-card>
 
-              <ui-grid-item [xs]="12">
-                <ui-input
-                  label="E-mail"
-                  type="email"
-                  formControlName="email"
-                  autocomplete="email"
-                  [required]="true"
-                  [maxLength]="150"
-                  [errorMessage]="fieldError('email')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-professional-practice-card
+            [group]="form"
+            [fieldError]="fieldError"
+            [categoryOptions]="categoryOptions()"
+            [specialtyOptions]="specialtyOptions()"
+            [isOutro]="isOutro"
+            [requiresRegistration]="requiresRegistration"
+            [registrationLabel]="registrationLabel"
+            [modalityError]="modalityError"
+          ></ui-professional-practice-card>
 
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-input
-                  label="Telefone"
-                  type="tel"
-                  formControlName="phone"
-                  mask="phone"
-                  autocomplete="tel"
-                  [required]="true"
-                  [errorMessage]="fieldError('phone')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
 
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-input
-                  label="CPF"
-                  formControlName="cpf"
-                  mask="cpf"
-                  autocomplete="off"
-                  [required]="true"
-                  [errorMessage]="fieldError('cpf')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-documents-card
+            label="Documentos que comprovam suas informações"
+            [typeOptions]="documentTypeOptions()"
+            [errorMessage]="documentsError()"
+            (documentsChange)="onDocumentsChange($event)"
+          ></ui-documents-card>
 
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-input
-                  label="CNPJ"
-                  formControlName="cnpj"
-                  mask="cnpj"
-                  autocomplete="off"
-                  hint="Preencha se atender como pessoa jurídica."
-                  [errorMessage]="fieldError('cnpj')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
 
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-input
-                  label="Data de nascimento"
-                  type="date"
-                  formControlName="birthDate"
-                  [required]="true"
-                  [errorMessage]="fieldError('birthDate')"
-                ></ui-input>
-              </ui-grid-item>
+          <ui-password-card
+            [group]="form"
+            [passwordError]="passwordError"
+            [confirmPasswordError]="confirmPasswordError"
+          ></ui-password-card>
 
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-select
-                  label="Gênero"
-                  formControlName="gender"
-                  [options]="genderOptions"
-                  [required]="true"
-                  placeholder="Selecione"
-                  [errorMessage]="fieldError('gender')"
-                ></ui-select>
-              </ui-grid-item>
-            </ui-grid>
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Atuação profissional</h2>
-            <ui-grid>
-              <ui-grid-item [xs]="12" [sm]="6">
-                <ui-select
-                  label="Categoria profissional"
-                  formControlName="category"
-                  [options]="categoryOptions()"
-                  [required]="true"
-                  placeholder="Selecione sua categoria"
-                  [errorMessage]="fieldError('category')"
-                ></ui-select>
-              </ui-grid-item>
-
-              @if (requiresRegistration) {
-                <ui-grid-item [xs]="12" [sm]="6">
-                  <ui-input
-                    [label]="registrationLabel"
-                    formControlName="registrationNumber"
-                    autocomplete="off"
-                    [required]="true"
-                    [maxLength]="50"
-                    [errorMessage]="fieldError('registrationNumber')"
-                  ></ui-input>
-                </ui-grid-item>
-              }
-
-              @if (form.controls.category.value) {
-                <ui-grid-item [xs]="12">
-                  @if (isOutro) {
-                    <ui-select
-                      label="Especialidade"
-                      formControlName="specialtySingle"
-                      [options]="specialtyOptions()"
-                      [required]="true"
-                      placeholder="Selecione sua especialidade"
-                      [errorMessage]="fieldError('specialtyIds')"
-                    ></ui-select>
-                  } @else {
-                    <ui-multi-select
-                      label="Especialidades"
-                      formControlName="specialtyIds"
-                      [options]="specialtyOptions()"
-                      [required]="true"
-                      placeholder="Selecione uma ou mais especialidades"
-                      [errorMessage]="fieldError('specialtyIds')"
-                    ></ui-multi-select>
-                  }
-                </ui-grid-item>
-              }
-
-              <ui-grid-item [xs]="12">
-                <span class="professional-register__inline-title">Modalidade de atendimento</span>
-                <div class="professional-register__modalities">
-                  <ui-checkbox label="Atendo presencialmente" formControlName="attendsPresencial"></ui-checkbox>
-                  <ui-checkbox label="Atendo remotamente" formControlName="attendsRemoto"></ui-checkbox>
-                </div>
-                @if (modalityError) {
-                  <p class="professional-register__modalities-error" role="alert">{{ modalityError }}</p>
-                }
-              </ui-grid-item>
-
-              @if (form.controls.attendsPresencial.value) {
-                <ui-grid-item [xs]="12" [sm]="6">
-                  <ui-input
-                    label="Raio de atendimento (km)"
-                    type="number"
-                    formControlName="raioAtendimentoKm"
-                    [required]="true"
-                    [errorMessage]="fieldError('raioAtendimentoKm')"
-                  ></ui-input>
-                </ui-grid-item>
-              }
-            </ui-grid>
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Contato de emergência (opcional)</h2>
-            <p class="professional-register__specialty-hint">Alguém que possa ser contatado em caso de urgência.</p>
-
-            <div formArrayName="emergencyContacts">
-              @for (contact of emergencyContacts.controls; track contact; let i = $index) {
-                <div class="professional-register__contact-row" [formGroupName]="i">
-                  <ui-input
-                    label="Nome"
-                    formControlName="name"
-                    autocomplete="off"
-                    [required]="true"
-                    [errorMessage]="emergencyContactFieldError(i, 'name')"
-                  ></ui-input>
-                  <ui-input
-                    label="Telefone"
-                    type="tel"
-                    formControlName="phone"
-                    mask="phone"
-                    autocomplete="off"
-                    [required]="true"
-                    [errorMessage]="emergencyContactFieldError(i, 'phone')"
-                  ></ui-input>
-                  <button
-                    type="button"
-                    class="professional-register__contact-remove"
-                    (click)="removeEmergencyContact(i)"
-                    aria-label="Remover contato"
-                  >
-                    &times;
-                  </button>
-                </div>
-              }
-            </div>
-
-            <ui-button type="button" variant="ghost" (click)="addEmergencyContact()">+ Adicionar contato</ui-button>
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Documentos</h2>
-            <ui-document-uploader
-              label="Documentos que comprovam suas informações"
-              [typeOptions]="documentTypeOptions()"
-              [errorMessage]="documentsError()"
-              (documentsChange)="onDocumentsChange($event)"
-            ></ui-document-uploader>
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Declarações</h2>
+          <ui-declarations-card [group]="form" [fieldError]="fieldError">
             <ui-checkbox
               label="Possuo seguro de responsabilidade civil profissional"
               formControlName="hasLiabilityInsurance"
             ></ui-checkbox>
-            <ui-checkbox
-              label="Confirmo que as informações fornecidas são verdadeiras"
-              formControlName="infoConfirmedTrue"
-            ></ui-checkbox>
-            @if (fieldError('infoConfirmedTrue')) {
-              <p class="professional-register__modalities-error" role="alert">{{ fieldError('infoConfirmedTrue') }}</p>
-            }
-            <ui-checkbox
-              label="Consinto com o tratamento dos meus dados pessoais conforme a LGPD"
-              formControlName="lgpdConsent"
-            ></ui-checkbox>
-            @if (fieldError('lgpdConsent')) {
-              <p class="professional-register__modalities-error" role="alert">{{ fieldError('lgpdConsent') }}</p>
-            }
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Endereço</h2>
-            <ui-address [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address>
-          </ui-card>
-
-          <ui-card>
-            <h2 class="auth-page__section-title">Senha de acesso</h2>
-            <ui-password-fields
-              [group]="form"
-              [passwordError]="passwordError"
-              [confirmPasswordError]="confirmPasswordError"
-            ></ui-password-fields>
-          </ui-card>
+          </ui-declarations-card>
 
           <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
         </form>

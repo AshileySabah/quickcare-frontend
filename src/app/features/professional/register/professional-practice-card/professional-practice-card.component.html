@@ -1,0 +1,77 @@
+<ui-card>
+  <h2 class="professional-practice-card__title">Atuação profissional</h2>
+  <div [formGroup]="group()">
+    <ui-grid>
+      <ui-grid-item [xs]="12" [sm]="6">
+        <ui-select
+          label="Categoria profissional"
+          formControlName="category"
+          [options]="categoryOptions()"
+          [required]="true"
+          placeholder="Selecione sua categoria"
+          [errorMessage]="fieldError()('category')"
+        ></ui-select>
+      </ui-grid-item>
+
+      @if (requiresRegistration()) {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            [label]="registrationLabel()"
+            formControlName="registrationNumber"
+            autocomplete="off"
+            [required]="true"
+            [maxLength]="50"
+            [errorMessage]="fieldError()('registrationNumber')"
+          ></ui-input>
+        </ui-grid-item>
+      }
+
+      @if (categorySelected) {
+        <ui-grid-item [xs]="12">
+          @if (isOutro()) {
+            <ui-select
+              label="Especialidade"
+              formControlName="specialtySingle"
+              [options]="specialtyOptions()"
+              [required]="true"
+              placeholder="Selecione sua especialidade"
+              [errorMessage]="fieldError()('specialtyIds')"
+            ></ui-select>
+          } @else {
+            <ui-multi-select
+              label="Especialidades"
+              formControlName="specialtyIds"
+              [options]="specialtyOptions()"
+              [required]="true"
+              placeholder="Selecione uma ou mais especialidades"
+              [errorMessage]="fieldError()('specialtyIds')"
+            ></ui-multi-select>
+          }
+        </ui-grid-item>
+      }
+
+      <ui-grid-item [xs]="12">
+        <span class="professional-practice-card__inline-title">Modalidade de atendimento</span>
+        <div class="professional-practice-card__modalities">
+          <ui-checkbox label="Atendo presencialmente" formControlName="attendsPresencial"></ui-checkbox>
+          <ui-checkbox label="Atendo remotamente" formControlName="attendsRemoto"></ui-checkbox>
+        </div>
+        @if (modalityError()) {
+          <p class="professional-practice-card__error" role="alert">{{ modalityError() }}</p>
+        }
+      </ui-grid-item>
+
+      @if (attendsPresencial) {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Raio de atendimento (km)"
+            type="number"
+            formControlName="raioAtendimentoKm"
+            [required]="true"
+            [errorMessage]="fieldError()('raioAtendimentoKm')"
+          ></ui-input>
+        </ui-grid-item>
+      }
+    </ui-grid>
+  </div>
+</ui-card>

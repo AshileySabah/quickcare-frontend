@@ -1,0 +1,30 @@
+<ui-card>
+  <h2 class="emergency-contacts-card__title">Contato de emergência (opcional)</h2>
+  <p class="emergency-contacts-card__hint">Alguém que possa ser contatado em caso de urgência.</p>
+
+  @for (contact of formArray().controls; track contact; let i = $index) {
+    <div class="emergency-contacts-card__row" [formGroup]="contact">
+      <ui-input
+        label="Nome"
+        formControlName="name"
+        autocomplete="off"
+        [required]="true"
+        [errorMessage]="fieldError(i, 'name')"
+      ></ui-input>
+      <ui-input
+        label="Telefone"
+        type="tel"
+        formControlName="phone"
+        mask="phone"
+        autocomplete="off"
+        [required]="true"
+        [errorMessage]="fieldError(i, 'phone')"
+      ></ui-input>
+      <button type="button" class="emergency-contacts-card__remove" (click)="remove(i)" aria-label="Remover contato">
+        &times;
+      </button>
+    </div>
+  }
+
+  <ui-button type="button" variant="ghost" (click)="add()">+ Adicionar contato</ui-button>
+</ui-card>

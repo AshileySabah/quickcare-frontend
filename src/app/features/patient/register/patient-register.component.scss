@@ -74,49 +74,6 @@
   @include authPage.subtitle;
 }
 
-.auth-page__section-title {
-  font-size: tokens.font-size('sm');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 700);
-  margin-bottom: tokens.space(3);
-}
-
-.patient-register__hint {
-  font-size: tokens.font-size('xs');
-  color: tokens.color('gray', 500);
-  margin-bottom: tokens.space(3);
-}
-
-.patient-register__consent-error {
-  margin-top: tokens.space(2);
-  font-size: tokens.font-size('xs');
-  color: tokens.semantic('error');
-}
-
-.patient-register__contact-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: tokens.space(3);
-  align-items: flex-end;
-  margin-bottom: tokens.space(3);
-}
-
-.patient-register__contact-remove {
-  height: 40px;
-  width: 40px;
-  border: none;
-  border-radius: tokens.radius('sm');
-  background-color: tokens.color('gray', 100);
-  color: tokens.color('gray', 600);
-  font-size: tokens.font-size('lg');
-  line-height: 1;
-  cursor: pointer;
-
-  &:hover {
-    background-color: tokens.color('gray', 200);
-  }
-}
-
 .auth-page__footer {
   @include authPage.footer;
   margin-top: tokens.space(2);

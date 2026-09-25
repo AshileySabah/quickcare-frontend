@@ -1,0 +1,5 @@
+@use 'patterns/auth-page' as authPage;
+
+.basic-info-card__title {
+  @include authPage.section-title;
+}

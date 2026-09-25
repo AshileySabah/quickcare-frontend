@@ -49,6 +49,25 @@
   margin-bottom: tokens.space(5);
 }
 
+@mixin section-title {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(3);
+}
+
+@mixin hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(3);
+}
+
+@mixin field-error {
+  margin-top: tokens.space(2);
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}
+
 @mixin footer {
   margin-top: tokens.space(5);
   font-size: tokens.font-size('sm');

@@ -1,0 +1,34 @@
+@use 'tokens' as tokens;
+@use 'patterns/auth-page' as authPage;
+
+.emergency-contacts-card__title {
+  @include authPage.section-title;
+}
+
+.emergency-contacts-card__hint {
+  @include authPage.hint;
+}
+
+.emergency-contacts-card__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: tokens.space(3);
+  align-items: flex-end;
+  margin-bottom: tokens.space(3);
+}
+
+.emergency-contacts-card__remove {
+  height: 40px;
+  width: 40px;
+  border: none;
+  border-radius: tokens.radius('sm');
+  background-color: tokens.color('gray', 100);
+  color: tokens.color('gray', 600);
+  font-size: tokens.font-size('lg');
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('gray', 200);
+  }
+}

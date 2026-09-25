@@ -1,0 +1,24 @@
+@use 'tokens' as tokens;
+@use 'patterns/auth-page' as authPage;
+
+.professional-practice-card__title {
+  @include authPage.section-title;
+}
+
+.professional-practice-card__inline-title {
+  display: block;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(2);
+}
+
+.professional-practice-card__modalities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(4);
+}
+
+.professional-practice-card__error {
+  @include authPage.field-error;
+}

@@ -1,37 +1,21 @@
 import { Component, inject, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormArray,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  ValidatorFn,
-  Validators,
-} from '@angular/forms';
+import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, PatientRegistration } from '../../../core/auth/auth.service';
 import { DocumentType } from '../../../core/models';
-import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { AddressComponent } from '../../../shared/ui/address/address.component';
+import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
+import { AddressCardComponent } from '../../../shared/ui/address-card/address-card.component';
 import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
+import { BasicInfoCardComponent } from '../../../shared/ui/basic-info-card/basic-info-card.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent } from '../../../shared/ui/card/card.component';
-import { CheckboxComponent } from '../../../shared/ui/checkbox/checkbox.component';
-import { DocumentUploaderComponent, UploadedDocument } from '../../../shared/ui/document-uploader/document-uploader.component';
-import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/input/input.component';
-import { PasswordFieldsComponent } from '../../../shared/ui/password-fields/password-fields.component';
-import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
-import { TextareaComponent } from '../../../shared/ui/textarea/textarea.component';
+import { DeclarationsCardComponent } from '../../../shared/ui/declarations-card/declarations-card.component';
+import { DocumentsCardComponent } from '../../../shared/ui/documents-card/documents-card.component';
+import { UploadedDocument } from '../../../shared/ui/document-uploader/document-uploader.component';
+import { EmergencyContactsCardComponent } from '../../../shared/ui/emergency-contacts-card/emergency-contacts-card.component';
+import { HealthInfoCardComponent } from './health-info-card/health-info-card.component';
+import { PasswordCardComponent } from '../../../shared/ui/password-card/password-card.component';
+import { SelectOption } from '../../../shared/ui/select/select.component';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
-
-const GENDER_OPTIONS: SelectOption[] = [
-  { value: 'FEMININO', label: 'Feminino' },
-  { value: 'MASCULINO', label: 'Masculino' },
-  { value: 'OUTRO', label: 'Outro' },
-  { value: 'PREFIRO_NAO_INFORMAR', label: 'Prefiro não informar' },
-];
 
 const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
@@ -63,18 +47,15 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
   imports: [
     ReactiveFormsModule,
     RouterLink,
-    AddressComponent,
+    AddressCardComponent,
     AvatarUploadComponent,
+    BasicInfoCardComponent,
     ButtonComponent,
-    CardComponent,
-    CheckboxComponent,
-    DocumentUploaderComponent,
-    GridComponent,
-    GridItemComponent,
-    InputComponent,
-    PasswordFieldsComponent,
-    SelectComponent,
-    TextareaComponent,
+    DeclarationsCardComponent,
+    DocumentsCardComponent,
+    EmergencyContactsCardComponent,
+    HealthInfoCardComponent,
+    PasswordCardComponent,
   ],
   templateUrl: './patient-register.component.html',
   styleUrl: './patient-register.component.scss',
@@ -87,7 +68,6 @@ export class PatientRegisterComponent {
 
   protected readonly isSubmitting = signal(false);
   protected readonly avatarBlob = signal<Blob | null>(null);
-  protected readonly genderOptions = GENDER_OPTIONS;
   protected readonly documentTypeOptions = DOCUMENT_TYPE_OPTIONS;
 
   protected readonly documents = signal<UploadedDocument[]>([]);
@@ -133,30 +113,8 @@ export class PatientRegisterComponent {
     { validators: passwordsMatchValidator() },
   );
 
-  protected get emergencyContacts(): FormArray {
-    return this.form.controls.emergencyContacts;
-  }
-
-  protected addEmergencyContact(): void {
-    this.emergencyContacts.push(buildEmergencyContactGroup(this.fb));
-  }
-
-  protected removeEmergencyContact(index: number): void {
-    this.emergencyContacts.removeAt(index);
-  }
-
-  protected emergencyContactFieldError(index: number, fieldName: 'name' | 'phone'): string | null {
-    const control = this.emergencyContacts.at(index).get(fieldName);
-
-    if (!control || !control.touched || !control.hasError('required')) {
-      return null;
-    }
-
-    return 'Campo obrigatório.';
-  }
-
-  protected fieldError = (fieldName: FieldName): string | null => {
-    const control = this.form.controls[fieldName];
+  protected fieldError = (fieldName: string): string | null => {
+    const control = this.form.controls[fieldName as FieldName];
 
     if (!control.touched) {
       return null;

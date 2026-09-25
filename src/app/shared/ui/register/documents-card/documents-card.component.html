@@ -1,0 +1,8 @@
+<ui-card>
+  <h2 class="documents-card__title">Documentos</h2>
+  <ui-document-uploader
+    [typeOptions]="typeOptions()"
+    [errorMessage]="errorMessage()"
+    (documentsChange)="documentsChange.emit($event)"
+  ></ui-document-uploader>
+</ui-card>

@@ -7,8 +7,8 @@ import {
   viewChild,
 } from '@angular/core';
 import Cropper from 'cropperjs';
-import { ButtonComponent } from '../button/button.component';
-import { ModalComponent } from '../modal/modal.component';
+import { ButtonComponent } from '../../button/button.component';
+import { ModalComponent } from '../../layout/modal/modal.component';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];

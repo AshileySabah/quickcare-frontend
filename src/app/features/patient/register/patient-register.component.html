@@ -24,75 +24,32 @@
         <h1 class="auth-page__title">Cadastro de paciente</h1>
         <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
 
-        <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
-          <ui-grid>
-            <ui-grid-item [xs]="12">
-              <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
-            </ui-grid-item>
+        <form class="patient-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+          <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
 
-            <ui-grid-item [xs]="12">
-              <ui-input
-                label="Nome completo"
-                formControlName="name"
-                autocomplete="name"
-                [required]="true"
-                [maxLength]="150"
-                [errorMessage]="fieldError('name')"
-              ></ui-input>
-            </ui-grid-item>
+          <ui-basic-info-card [group]="form" [fieldError]="fieldError"></ui-basic-info-card>
 
-            <ui-grid-item [xs]="12">
-              <ui-input
-                label="E-mail"
-                type="email"
-                formControlName="email"
-                autocomplete="email"
-                [required]="true"
-                [maxLength]="150"
-                [errorMessage]="fieldError('email')"
-              ></ui-input>
-            </ui-grid-item>
+          <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
 
-            <ui-grid-item [xs]="12" [sm]="6">
-              <ui-input
-                label="Telefone"
-                type="tel"
-                formControlName="phone"
-                mask="phone"
-                autocomplete="tel"
-                [required]="true"
-                [errorMessage]="fieldError('phone')"
-              ></ui-input>
-            </ui-grid-item>
+          <ui-health-info-card [group]="form"></ui-health-info-card>
 
-            <ui-grid-item [xs]="12" [sm]="6">
-              <ui-input
-                label="CPF"
-                formControlName="cpf"
-                mask="cpf"
-                autocomplete="off"
-                [required]="true"
-                [errorMessage]="fieldError('cpf')"
-              ></ui-input>
-            </ui-grid-item>
+          <ui-documents-card
+            [typeOptions]="documentTypeOptions"
+            [errorMessage]="documentsError()"
+            (documentsChange)="onDocumentsChange($event)"
+          ></ui-documents-card>
 
-            <ui-grid-item [xs]="12">
-              <h2 class="auth-page__section-title">Endereço</h2>
-              <ui-address [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address>
-            </ui-grid-item>
+          <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
 
-            <ui-grid-item [xs]="12">
-              <ui-password-fields
-                [group]="form"
-                [passwordError]="passwordError"
-                [confirmPasswordError]="confirmPasswordError"
-              ></ui-password-fields>
-            </ui-grid-item>
+          <ui-password-card
+            [group]="form"
+            [passwordError]="passwordError"
+            [confirmPasswordError]="confirmPasswordError"
+          ></ui-password-card>
 
-            <ui-grid-item [xs]="12">
-              <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
-            </ui-grid-item>
-          </ui-grid>
+          <ui-declarations-card [group]="form" [fieldError]="fieldError"></ui-declarations-card>
+
+          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
         </form>
 
         <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>

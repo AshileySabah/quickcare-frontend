@@ -1,0 +1,9 @@
+@use 'patterns/auth-page' as authPage;
+
+.health-info-card__title {
+  @include authPage.section-title;
+}
+
+.health-info-card__hint {
+  @include authPage.hint;
+}

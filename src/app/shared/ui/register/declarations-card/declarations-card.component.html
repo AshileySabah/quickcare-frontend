@@ -1,0 +1,22 @@
+<ui-card>
+  <h2 class="declarations-card__title">Declarações</h2>
+  <div [formGroup]="group()">
+    <ng-content></ng-content>
+
+    <ui-checkbox
+      label="Confirmo que as informações fornecidas são verdadeiras"
+      formControlName="infoConfirmedTrue"
+    ></ui-checkbox>
+    @if (fieldError()('infoConfirmedTrue')) {
+      <p class="declarations-card__error" role="alert">{{ fieldError()('infoConfirmedTrue') }}</p>
+    }
+
+    <ui-checkbox
+      label="Consinto com o tratamento dos meus dados pessoais conforme a LGPD"
+      formControlName="lgpdConsent"
+    ></ui-checkbox>
+    @if (fieldError()('lgpdConsent')) {
+      <p class="declarations-card__error" role="alert">{{ fieldError()('lgpdConsent') }}</p>
+    }
+  </div>
+</ui-card>

@@ -22,6 +22,12 @@ describe('ProposalService', () => {
     category: 'OUTRO',
     specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-TESTE',
+    birthDate: '1990-01-01',
+    gender: 'PREFIRO_NAO_INFORMAR',
+    emergencyContacts: [{ name: 'Contato Teste', phone: '(11) 90000-0000' }],
+    infoConfirmedTrue: true,
+    lgpdConsent: true,
+    hasLiabilityInsurance: false,
     address: {
       cep: '01310-100',
       street: 'Avenida Paulista',

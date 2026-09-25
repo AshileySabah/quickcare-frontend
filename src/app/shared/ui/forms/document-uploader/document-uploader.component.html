@@ -1,0 +1,73 @@
+<div class="ui-document-uploader">
+  @if (requiredStatus().length > 0) {
+    <ul class="ui-document-uploader__checklist" aria-live="polite">
+      @for (requirement of requiredStatus(); track requirement.value) {
+        <li class="ui-document-uploader__checklist-item" [class.ui-document-uploader__checklist-item--met]="requirement.met">
+          <span
+            class="ui-document-uploader__checklist-icon"
+            [class.ui-document-uploader__checklist-icon--met]="requirement.met"
+          >
+            {{ requirement.met ? '✓' : '!' }}
+          </span>
+          {{ requirement.label }}
+        </li>
+      }
+    </ul>
+  }
+
+  <label class="ui-document-uploader__add-button" [for]="inputId">
+    + Adicionar documento
+    <input
+      class="ui-document-uploader__input"
+      [id]="inputId"
+      type="file"
+      accept=".pdf,.jpg,.jpeg,.png"
+      multiple
+      (change)="onFilesSelected($event)"
+    />
+  </label>
+  <p class="ui-document-uploader__hint">{{ hint() }}</p>
+
+  @if (entries().length > 0) {
+    <div class="ui-document-uploader__grid">
+      @for (entry of entries(); track entry.id) {
+        <div class="ui-document-uploader__card">
+          <button
+            type="button"
+            class="ui-document-uploader__remove"
+            (click)="removeEntry(entry.id)"
+            aria-label="Remover documento"
+          >
+            &times;
+          </button>
+
+          @if (entry.previewUrl) {
+            <img class="ui-document-uploader__thumb" [src]="entry.previewUrl" alt="" />
+          } @else {
+            <div class="ui-document-uploader__thumb ui-document-uploader__thumb--file" aria-hidden="true">PDF</div>
+          }
+
+          <span class="ui-document-uploader__filename">{{ entry.file.name }}</span>
+
+          <select
+            class="ui-document-uploader__type-select"
+            [class.ui-document-uploader__type-select--empty]="!entry.type"
+            [value]="entry.type"
+            (change)="updateType(entry.id, $any($event.target).value)"
+          >
+            @if (!entry.type) {
+              <option value="" disabled selected>Selecione o tipo</option>
+            }
+            @for (option of typeOptions(); track option.value) {
+              <option [value]="option.value">{{ option.label }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+  }
+
+  @if (localError() || errorMessage()) {
+    <p class="ui-document-uploader__error" role="alert">{{ localError() ?? errorMessage() }}</p>
+  }
+</div>

@@ -4,10 +4,10 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
-import { CardComponent } from '../../../shared/ui/card/card.component';
-import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
-import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
-import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 

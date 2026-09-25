@@ -3,9 +3,10 @@ import { Component, DestroyRef, OnInit, inject, input, signal } from '@angular/c
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { catchError, debounceTime, distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
-import { GridItemComponent } from '../grid/grid-item.component';
-import { GridComponent } from '../grid/grid.component';
-import { InputComponent } from '../input/input.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { GridItemComponent } from '../../layout/grid/grid-item.component';
+import { GridComponent } from '../../layout/grid/grid.component';
+import { InputComponent } from '../../forms/input/input.component';
 
 interface ViaCepResponse {
   logradouro: string;
@@ -15,26 +16,16 @@ interface ViaCepResponse {
   erro?: boolean;
 }
 
-export interface AddressFormGroup {
-  cep: string | null;
-  street: string | null;
-  number: string | null;
-  complement: string | null;
-  neighborhood: string | null;
-  city: string | null;
-  state: string | null;
-}
-
 const AUTO_FILLED_FIELDS = ['street', 'neighborhood', 'city', 'state'] as const;
 
 @Component({
-  selector: 'ui-address',
+  selector: 'ui-address-card',
   standalone: true,
-  imports: [ReactiveFormsModule, GridComponent, GridItemComponent, InputComponent],
-  templateUrl: './address.component.html',
-  styleUrl: './address.component.scss',
+  imports: [ReactiveFormsModule, CardComponent, GridComponent, GridItemComponent, InputComponent],
+  templateUrl: './address-card.component.html',
+  styleUrl: './address-card.component.scss',
 })
-export class AddressComponent implements OnInit {
+export class AddressCardComponent implements OnInit {
   private readonly http = inject(HttpClient);
   private readonly destroyRef = inject(DestroyRef);
 

@@ -1,0 +1,86 @@
+<ui-card>
+  <h2 class="basic-info-card__title">Informações básicas</h2>
+  <div [formGroup]="group()">
+    <ui-grid>
+      <ui-grid-item [xs]="12">
+        <ui-input
+          label="Nome completo"
+          formControlName="name"
+          autocomplete="name"
+          [required]="true"
+          [maxLength]="150"
+          [errorMessage]="fieldError()('name')"
+        ></ui-input>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12">
+        <ui-input
+          label="E-mail"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          [required]="true"
+          [maxLength]="150"
+          [errorMessage]="fieldError()('email')"
+        ></ui-input>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12" [sm]="6">
+        <ui-input
+          label="Telefone"
+          type="tel"
+          formControlName="phone"
+          mask="phone"
+          autocomplete="tel"
+          [required]="true"
+          [errorMessage]="fieldError()('phone')"
+        ></ui-input>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12" [sm]="6">
+        <ui-input
+          label="CPF"
+          formControlName="cpf"
+          mask="cpf"
+          autocomplete="off"
+          [required]="true"
+          [errorMessage]="fieldError()('cpf')"
+        ></ui-input>
+      </ui-grid-item>
+
+      @if (showCnpj()) {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="CNPJ"
+            formControlName="cnpj"
+            mask="cnpj"
+            autocomplete="off"
+            hint="Preencha se atender como pessoa jurídica."
+            [errorMessage]="fieldError()('cnpj')"
+          ></ui-input>
+        </ui-grid-item>
+      }
+
+      <ui-grid-item [xs]="12" [sm]="6">
+        <ui-input
+          label="Data de nascimento"
+          type="date"
+          formControlName="birthDate"
+          [required]="true"
+          [errorMessage]="fieldError()('birthDate')"
+        ></ui-input>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12" [sm]="6">
+        <ui-select
+          label="Gênero"
+          formControlName="gender"
+          [options]="genderOptions"
+          [required]="true"
+          placeholder="Selecione"
+          [errorMessage]="fieldError()('gender')"
+        ></ui-select>
+      </ui-grid-item>
+    </ui-grid>
+  </div>
+</ui-card>

@@ -1,0 +1,31 @@
+<ui-card>
+  <h2 class="health-info-card__title">Informações de saúde (opcional)</h2>
+  <p class="health-info-card__hint">
+    Ajuda o profissional a se preparar antes do atendimento. Você pode deixar em branco.
+  </p>
+  <div [formGroup]="group()">
+    <ui-grid>
+      <ui-grid-item [xs]="12" [sm]="4">
+        <ui-textarea label="Alergias" formControlName="allergies" [rows]="3" [maxLength]="500"></ui-textarea>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12" [sm]="4">
+        <ui-textarea
+          label="Condições de saúde"
+          formControlName="healthConditions"
+          [rows]="3"
+          [maxLength]="500"
+        ></ui-textarea>
+      </ui-grid-item>
+
+      <ui-grid-item [xs]="12" [sm]="4">
+        <ui-textarea
+          label="Medicamentos em uso"
+          formControlName="medicationsInUse"
+          [rows]="3"
+          [maxLength]="500"
+        ></ui-textarea>
+      </ui-grid-item>
+    </ui-grid>
+  </div>
+</ui-card>

@@ -4,10 +4,10 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { User } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/input/input.component';
-import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { InputComponent } from '../../../shared/ui/forms/input/input.component';
+import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
 @Component({
   selector: 'app-login',

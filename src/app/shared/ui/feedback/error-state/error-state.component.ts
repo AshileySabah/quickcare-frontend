@@ -1,5 +1,5 @@
 import { Component, input, output } from '@angular/core';
-import { ButtonComponent } from '../button/button.component';
+import { ButtonComponent } from '../../button/button.component';
 
 @Component({
   selector: 'ui-error-state',

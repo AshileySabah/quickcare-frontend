@@ -1,8 +1,8 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { CardComponent } from '../card/card.component';
-import { StatusBadgeComponent } from '../status-badge/status-badge.component';
-import { VerifiedBadgeComponent } from '../verified-badge/verified-badge.component';
+import { CardComponent } from '../layout/card/card.component';
+import { StatusBadgeComponent } from '../feedback/status-badge/status-badge.component';
+import { VerifiedBadgeComponent } from '../feedback/verified-badge/verified-badge.component';
 import { ProfessionalValidationStatus, Proposal } from '../../../core/models';
 
 @Component({

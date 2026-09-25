@@ -3,7 +3,17 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { Address, Patient, Professional, ProfessionalCategory, ProfessionalDocument, User, UserRole } from '../models';
+import {
+  Address,
+  EmergencyContact,
+  Gender,
+  Patient,
+  Professional,
+  ProfessionalCategory,
+  RegistrationDocument,
+  User,
+  UserRole,
+} from '../models';
 import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
 import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
@@ -13,8 +23,17 @@ export interface PatientRegistration {
   email: string;
   phone: string;
   cpf: string;
+  birthDate: string;
+  gender: Gender;
+  emergencyContacts: EmergencyContact[];
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+  allergies?: string;
+  healthConditions?: string;
+  medicationsInUse?: string;
   password: string;
   address: Address;
+  documents: RegistrationDocument[];
 }
 
 export interface ProfessionalRegistration {
@@ -26,11 +45,17 @@ export interface ProfessionalRegistration {
   category: ProfessionalCategory;
   specialtyIds: string[];
   registrationNumber?: string;
+  birthDate: string;
+  gender: Gender;
+  emergencyContacts: EmergencyContact[];
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+  hasLiabilityInsurance: boolean;
   password: string;
-  document: ProfessionalDocument;
   modalidadeAtendimento: 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
   raioAtendimentoKm?: number;
   address: Address;
+  documents: RegistrationDocument[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -79,6 +104,12 @@ export class AuthService {
         cpf: '',
         category: 'OUTRO',
         specialtyIds: [],
+        birthDate: '',
+        gender: 'PREFIRO_NAO_INFORMAR',
+        emergencyContacts: [],
+        infoConfirmedTrue: true,
+        lgpdConsent: true,
+        hasLiabilityInsurance: false,
         address: emptyAddress,
         validationStatus: 'aprovado',
         validationDocument: { fileName: '', fileType: '', fileSizeBytes: 0, uploadedAt: '', previewUrl: '' },
@@ -93,6 +124,11 @@ export class AuthService {
       email: response.email,
       phone: '',
       cpf: '',
+      birthDate: '',
+      gender: 'PREFIRO_NAO_INFORMAR',
+      emergencyContacts: [],
+      infoConfirmedTrue: true,
+      lgpdConsent: true,
       address: emptyAddress,
     };
     return patient;
@@ -112,25 +148,39 @@ export class AuthService {
   }
 
   registerPatient(input: PatientRegistration): Observable<User> {
+    const dados = {
+      nome: input.name,
+      email: input.email,
+      senha: input.password,
+      cpf: input.cpf,
+      telefone: input.phone,
+      dataNascimento: input.birthDate,
+      genero: input.gender,
+      contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
+      confirmacaoInformacoesVerdadeiras: input.infoConfirmedTrue,
+      consentimentoLgpd: input.lgpdConsent,
+      alergias: input.allergies || undefined,
+      condicoesSaude: input.healthConditions || undefined,
+      medicamentosEmUso: input.medicationsInUse || undefined,
+      cep: input.address.cep,
+      logradouro: input.address.street,
+      numero: input.address.number,
+      complemento: input.address.complement || undefined,
+      bairro: input.address.neighborhood,
+      cidade: input.address.city,
+      uf: input.address.state,
+    };
+
+    const formData = new FormData();
+    formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));
+
+    for (const document of input.documents) {
+      formData.append('documentos', document.file, document.file.name);
+      formData.append('tiposDocumento', document.type);
+    }
+
     return this.http
-      .post<CadastroApiResponse>(
-        `${environment.apiUrl}/usuarios/cadastro/paciente`,
-        {
-          nome: input.name,
-          email: input.email,
-          senha: input.password,
-          cpf: input.cpf,
-          telefone: input.phone,
-          cep: input.address.cep,
-          logradouro: input.address.street,
-          numero: input.address.number,
-          complemento: input.address.complement || undefined,
-          bairro: input.address.neighborhood,
-          cidade: input.address.city,
-          uf: input.address.state,
-        },
-        { withCredentials: true },
-      )
+      .post<CadastroApiResponse>(`${environment.apiUrl}/usuarios/cadastro/paciente`, formData, { withCredentials: true })
       .pipe(
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>
@@ -140,31 +190,43 @@ export class AuthService {
   }
 
   registerProfessional(input: ProfessionalRegistration): Observable<User> {
+    const dados = {
+      nome: input.name,
+      email: input.email,
+      senha: input.password,
+      cpf: input.cpf,
+      telefone: input.phone,
+      cnpj: input.cnpj || undefined,
+      categoria: input.category,
+      especialidadeIds: input.specialtyIds.map(Number),
+      registroProfissional: input.registrationNumber || undefined,
+      dataNascimento: input.birthDate,
+      genero: input.gender,
+      contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
+      confirmacaoInformacoesVerdadeiras: input.infoConfirmedTrue,
+      consentimentoLgpd: input.lgpdConsent,
+      possuiSeguroResponsabilidadeCivil: input.hasLiabilityInsurance,
+      modalidadeAtendimento: input.modalidadeAtendimento,
+      raioAtendimentoKm: input.raioAtendimentoKm,
+      cep: input.address.cep,
+      logradouro: input.address.street,
+      numero: input.address.number,
+      complemento: input.address.complement || undefined,
+      bairro: input.address.neighborhood,
+      cidade: input.address.city,
+      uf: input.address.state,
+    };
+
+    const formData = new FormData();
+    formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));
+
+    for (const document of input.documents) {
+      formData.append('documentos', document.file, document.file.name);
+      formData.append('tiposDocumento', document.type);
+    }
+
     return this.http
-      .post<CadastroApiResponse>(
-        `${environment.apiUrl}/usuarios/cadastro/profissional`,
-        {
-          nome: input.name,
-          email: input.email,
-          senha: input.password,
-          cpf: input.cpf,
-          telefone: input.phone,
-          cnpj: input.cnpj || undefined,
-          categoria: input.category,
-          especialidadeIds: input.specialtyIds.map(Number),
-          registroProfissional: input.registrationNumber || undefined,
-          modalidadeAtendimento: input.modalidadeAtendimento,
-          raioAtendimentoKm: input.raioAtendimentoKm,
-          cep: input.address.cep,
-          logradouro: input.address.street,
-          numero: input.address.number,
-          complemento: input.address.complement || undefined,
-          bairro: input.address.neighborhood,
-          cidade: input.address.city,
-          uf: input.address.state,
-        },
-        { withCredentials: true },
-      )
+      .post<CadastroApiResponse>(`${environment.apiUrl}/usuarios/cadastro/profissional`, formData, { withCredentials: true })
       .pipe(
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>

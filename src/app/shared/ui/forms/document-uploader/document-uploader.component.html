@@ -1,6 +1,4 @@
 <div class="ui-document-uploader">
-  <span class="ui-document-uploader__label">{{ label() }}</span>
-
   @if (requiredStatus().length > 0) {
     <ul class="ui-document-uploader__checklist" aria-live="polite">
       @for (requirement of requiredStatus(); track requirement.value) {

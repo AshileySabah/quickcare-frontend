@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Professional } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent } from '../../../shared/ui/card/card.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 
 @Component({
   selector: 'app-awaiting-validation',

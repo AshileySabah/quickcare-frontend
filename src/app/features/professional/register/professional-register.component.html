@@ -31,10 +31,21 @@
           validação.
         </p>
 
-        <form class="professional-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
-          <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+        <form
+          class="professional-register__sections"
+          [formGroup]="form"
+          (ngSubmit)="submit()"
+          autocomplete="off"
+        >
+          <ui-avatar-upload
+            (avatarChange)="onAvatarChange($event)"
+          ></ui-avatar-upload>
 
-          <ui-basic-info-card [group]="form" [fieldError]="fieldError" [showCnpj]="true"></ui-basic-info-card>
+          <ui-basic-info-card
+            [group]="form"
+            [fieldError]="fieldError"
+            [showCnpj]="true"
+          ></ui-basic-info-card>
 
           <ui-professional-practice-card
             [group]="form"
@@ -47,16 +58,20 @@
             [modalityError]="modalityError"
           ></ui-professional-practice-card>
 
-          <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
+          <ui-emergency-contacts-card
+            [formArray]="form.controls.emergencyContacts"
+          ></ui-emergency-contacts-card>
 
           <ui-documents-card
-            label="Documentos que comprovam suas informações"
             [typeOptions]="documentTypeOptions()"
             [errorMessage]="documentsError()"
             (documentsChange)="onDocumentsChange($event)"
           ></ui-documents-card>
 
-          <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
+          <ui-address-card
+            [group]="form.controls.address"
+            [fieldError]="addressFieldError"
+          ></ui-address-card>
 
           <ui-password-card
             [group]="form"
@@ -71,7 +86,9 @@
             ></ui-checkbox>
           </ui-declarations-card>
 
-          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
+          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()"
+            >Criar conta</ui-button
+          >
         </form>
 
         <p class="auth-page__footer">

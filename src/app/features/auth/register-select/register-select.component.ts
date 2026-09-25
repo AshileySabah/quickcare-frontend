@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CardComponent } from '../../../shared/ui/card/card.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 
 @Component({
   selector: 'app-register-select',

@@ -34,7 +34,6 @@
           <ui-health-info-card [group]="form"></ui-health-info-card>
 
           <ui-documents-card
-            label="Documento que valide sua identidade (CPF)"
             [typeOptions]="documentTypeOptions"
             [errorMessage]="documentsError()"
             (documentsChange)="onDocumentsChange($event)"

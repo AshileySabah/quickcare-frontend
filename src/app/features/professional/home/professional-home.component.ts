@@ -5,11 +5,11 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { Professional, ServiceRequest, Specialty } from '../../../core/models';
-import { CardComponent } from '../../../shared/ui/card/card.component';
-import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
-import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
-import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
-import { StatusBadgeComponent } from '../../../shared/ui/status-badge/status-badge.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 

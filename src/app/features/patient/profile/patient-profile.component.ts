@@ -1,7 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Patient } from '../../../core/models';
-import { CardComponent } from '../../../shared/ui/card/card.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 
 @Component({
   selector: 'app-patient-profile',

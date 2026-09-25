@@ -3,12 +3,12 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/input/input.component';
-import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
-import { TextareaComponent } from '../../../shared/ui/textarea/textarea.component';
-import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { InputComponent } from '../../../shared/ui/forms/input/input.component';
+import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
+import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
 type FieldName = 'price' | 'approach' | 'deadline';
 

@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { CardComponent } from '../card/card.component';
-import { PasswordFieldsComponent } from '../password-fields/password-fields.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { PasswordFieldsComponent } from '../../forms/password-fields/password-fields.component';
 
 @Component({
   selector: 'ui-password-card',

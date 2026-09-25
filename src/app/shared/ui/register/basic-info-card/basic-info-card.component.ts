@@ -1,10 +1,10 @@
 import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CardComponent } from '../card/card.component';
-import { GridItemComponent } from '../grid/grid-item.component';
-import { GridComponent } from '../grid/grid.component';
-import { InputComponent } from '../input/input.component';
-import { SelectComponent, SelectOption } from '../select/select.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { GridItemComponent } from '../../layout/grid/grid-item.component';
+import { GridComponent } from '../../layout/grid/grid.component';
+import { InputComponent } from '../../forms/input/input.component';
+import { SelectComponent, SelectOption } from '../../forms/select/select.component';
 
 const GENDER_OPTIONS: SelectOption[] = [
   { value: 'FEMININO', label: 'Feminino' },

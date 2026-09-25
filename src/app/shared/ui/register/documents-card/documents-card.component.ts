@@ -1,7 +1,7 @@
 import { Component, input, output } from '@angular/core';
-import { CardComponent } from '../card/card.component';
-import { DocumentUploaderComponent, UploadedDocument } from '../document-uploader/document-uploader.component';
-import { SelectOption } from '../select/select.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { DocumentUploaderComponent, UploadedDocument } from '../../forms/document-uploader/document-uploader.component';
+import { SelectOption } from '../../forms/select/select.component';
 
 @Component({
   selector: 'ui-documents-card',
@@ -11,7 +11,6 @@ import { SelectOption } from '../select/select.component';
   styleUrl: './documents-card.component.scss',
 })
 export class DocumentsCardComponent {
-  label = input.required<string>();
   typeOptions = input.required<SelectOption[]>();
   errorMessage = input<string | null>(null);
 

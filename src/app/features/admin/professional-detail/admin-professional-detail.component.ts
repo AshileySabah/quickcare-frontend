@@ -6,15 +6,15 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent } from '../../../shared/ui/card/card.component';
-import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
-import { ErrorStateComponent } from '../../../shared/ui/error-state/error-state.component';
-import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/grid/grid.component';
-import { ModalComponent } from '../../../shared/ui/modal/modal.component';
-import { SkeletonComponent } from '../../../shared/ui/skeleton/skeleton.component';
-import { TextareaComponent } from '../../../shared/ui/textarea/textarea.component';
-import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
+import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
+import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 

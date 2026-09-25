@@ -2,8 +2,8 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
-import { CardComponent } from '../../../shared/ui/card/card.component';
-import { VerifiedBadgeComponent } from '../../../shared/ui/verified-badge/verified-badge.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { VerifiedBadgeComponent } from '../../../shared/ui/feedback/verified-badge/verified-badge.component';
 
 @Component({
   selector: 'app-professional-profile',

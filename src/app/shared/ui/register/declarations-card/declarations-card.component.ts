@@ -1,7 +1,7 @@
 import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { CardComponent } from '../card/card.component';
-import { CheckboxComponent } from '../checkbox/checkbox.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { CheckboxComponent } from '../../forms/checkbox/checkbox.component';
 
 @Component({
   selector: 'ui-declarations-card',

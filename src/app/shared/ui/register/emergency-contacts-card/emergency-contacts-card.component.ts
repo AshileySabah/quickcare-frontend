@@ -1,9 +1,9 @@
 import { Component, inject, input } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { ButtonComponent } from '../button/button.component';
-import { CardComponent } from '../card/card.component';
-import { InputComponent } from '../input/input.component';
+import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../../core/forms/emergency-contact-form';
+import { ButtonComponent } from '../../button/button.component';
+import { CardComponent } from '../../layout/card/card.component';
+import { InputComponent } from '../../forms/input/input.component';
 
 @Component({
   selector: 'ui-emergency-contacts-card',

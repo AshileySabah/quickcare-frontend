@@ -1,13 +1,13 @@
 import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ProfessionalCategoryInfo } from '../../../../core/models';
-import { CardComponent } from '../../../../shared/ui/card/card.component';
-import { CheckboxComponent } from '../../../../shared/ui/checkbox/checkbox.component';
-import { GridItemComponent } from '../../../../shared/ui/grid/grid-item.component';
-import { GridComponent } from '../../../../shared/ui/grid/grid.component';
-import { InputComponent } from '../../../../shared/ui/input/input.component';
-import { MultiSelectComponent, MultiSelectOption } from '../../../../shared/ui/multi-select/multi-select.component';
-import { SelectComponent } from '../../../../shared/ui/select/select.component';
+import { CardComponent } from '../../../../shared/ui/layout/card/card.component';
+import { CheckboxComponent } from '../../../../shared/ui/forms/checkbox/checkbox.component';
+import { GridItemComponent } from '../../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../../shared/ui/layout/grid/grid.component';
+import { InputComponent } from '../../../../shared/ui/forms/input/input.component';
+import { MultiSelectComponent, MultiSelectOption } from '../../../../shared/ui/forms/multi-select/multi-select.component';
+import { SelectComponent } from '../../../../shared/ui/forms/select/select.component';
 
 @Component({
   selector: 'ui-professional-practice-card',

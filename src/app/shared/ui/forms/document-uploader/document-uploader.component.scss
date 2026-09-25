@@ -6,13 +6,6 @@
   width: 100%;
 }
 
-.ui-document-uploader__label {
-  font-size: tokens.font-size('sm');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 700);
-  margin-bottom: tokens.space(2);
-}
-
 .ui-document-uploader__checklist {
   display: flex;
   flex-direction: column;

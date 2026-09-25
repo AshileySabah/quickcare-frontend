@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
-import { ProposalStatus, RequestStatus } from '../../../core/models';
+import { ProposalStatus, RequestStatus } from '../../../../core/models';
 
 export type DomainStatus = RequestStatus | ProposalStatus;
 

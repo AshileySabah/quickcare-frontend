@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
-import { ProfessionalValidationStatus } from '../../../core/models';
+import { ProfessionalValidationStatus } from '../../../../core/models';
 
 interface VerifiedPresentation {
   label: string;

@@ -26,7 +26,6 @@ let nextInputId = 0;
   styleUrl: './document-uploader.component.scss',
 })
 export class DocumentUploaderComponent {
-  label = input.required<string>();
   hint = input<string>('PDF, JPG ou PNG, até 5MB cada.');
   typeOptions = input.required<SelectOption[]>();
   errorMessage = input<string | null>(null);

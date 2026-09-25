@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
-import { CardComponent } from '../../shared/ui/card/card.component';
+import { CardComponent } from '../../shared/ui/layout/card/card.component';
 
 @Component({
   selector: 'app-home',

@@ -4,18 +4,18 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService, PatientRegistration } from '../../../core/auth/auth.service';
 import { DocumentType } from '../../../core/models';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { AddressCardComponent } from '../../../shared/ui/address-card/address-card.component';
-import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
-import { BasicInfoCardComponent } from '../../../shared/ui/basic-info-card/basic-info-card.component';
+import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
+import { AvatarUploadComponent } from '../../../shared/ui/forms/avatar-upload/avatar-upload.component';
+import { BasicInfoCardComponent } from '../../../shared/ui/register/basic-info-card/basic-info-card.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { DeclarationsCardComponent } from '../../../shared/ui/declarations-card/declarations-card.component';
-import { DocumentsCardComponent } from '../../../shared/ui/documents-card/documents-card.component';
-import { UploadedDocument } from '../../../shared/ui/document-uploader/document-uploader.component';
-import { EmergencyContactsCardComponent } from '../../../shared/ui/emergency-contacts-card/emergency-contacts-card.component';
+import { DeclarationsCardComponent } from '../../../shared/ui/register/declarations-card/declarations-card.component';
+import { DocumentsCardComponent } from '../../../shared/ui/register/documents-card/documents-card.component';
+import { UploadedDocument } from '../../../shared/ui/forms/document-uploader/document-uploader.component';
+import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { HealthInfoCardComponent } from './health-info-card/health-info-card.component';
-import { PasswordCardComponent } from '../../../shared/ui/password-card/password-card.component';
-import { SelectOption } from '../../../shared/ui/select/select.component';
-import { ToastService } from '../../../shared/ui/toast/toast.service';
+import { PasswordCardComponent } from '../../../shared/ui/register/password-card/password-card.component';
+import { SelectOption } from '../../../shared/ui/forms/select/select.component';
+import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
 const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },

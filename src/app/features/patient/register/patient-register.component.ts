@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import {
   AbstractControl,
+  FormArray,
   FormBuilder,
   ReactiveFormsModule,
   ValidationErrors,
@@ -8,15 +9,34 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService, PatientRegistration } from '../../../core/auth/auth.service';
+import { DocumentType } from '../../../core/models';
+import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { AddressComponent } from '../../../shared/ui/address/address.component';
 import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent } from '../../../shared/ui/card/card.component';
+import { CheckboxComponent } from '../../../shared/ui/checkbox/checkbox.component';
+import { DocumentUploaderComponent, UploadedDocument } from '../../../shared/ui/document-uploader/document-uploader.component';
 import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { PasswordFieldsComponent } from '../../../shared/ui/password-fields/password-fields.component';
+import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
+import { TextareaComponent } from '../../../shared/ui/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
+
+const GENDER_OPTIONS: SelectOption[] = [
+  { value: 'FEMININO', label: 'Feminino' },
+  { value: 'MASCULINO', label: 'Masculino' },
+  { value: 'OUTRO', label: 'Outro' },
+  { value: 'PREFIRO_NAO_INFORMAR', label: 'Prefiro não informar' },
+];
+
+const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
+  { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
+  { value: 'OUTRO', label: 'Outro' },
+];
 
 function passwordsMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -34,7 +54,7 @@ function strongPasswordValidator(): ValidatorFn {
   };
 }
 
-type FieldName = 'name' | 'email' | 'phone' | 'cpf' | 'password';
+type FieldName = 'name' | 'email' | 'phone' | 'cpf' | 'birthDate' | 'gender' | 'infoConfirmedTrue' | 'lgpdConsent' | 'password';
 type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
@@ -46,10 +66,15 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     AddressComponent,
     AvatarUploadComponent,
     ButtonComponent,
+    CardComponent,
+    CheckboxComponent,
+    DocumentUploaderComponent,
     GridComponent,
     GridItemComponent,
     InputComponent,
     PasswordFieldsComponent,
+    SelectComponent,
+    TextareaComponent,
   ],
   templateUrl: './patient-register.component.html',
   styleUrl: './patient-register.component.scss',
@@ -62,9 +87,21 @@ export class PatientRegisterComponent {
 
   protected readonly isSubmitting = signal(false);
   protected readonly avatarBlob = signal<Blob | null>(null);
+  protected readonly genderOptions = GENDER_OPTIONS;
+  protected readonly documentTypeOptions = DOCUMENT_TYPE_OPTIONS;
+
+  protected readonly documents = signal<UploadedDocument[]>([]);
+  protected readonly documentsError = signal<string | null>(null);
 
   protected onAvatarChange(blob: Blob | null): void {
     this.avatarBlob.set(blob);
+  }
+
+  protected onDocumentsChange(documents: UploadedDocument[]): void {
+    this.documents.set(documents);
+    if (documents.length > 0) {
+      this.documentsError.set(null);
+    }
   }
 
   protected readonly form = this.fb.nonNullable.group(
@@ -73,6 +110,14 @@ export class PatientRegisterComponent {
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
       cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+      birthDate: ['', [Validators.required]],
+      gender: ['', [Validators.required]],
+      emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
+      allergies: [''],
+      healthConditions: [''],
+      medicationsInUse: [''],
+      infoConfirmedTrue: [false, [Validators.requiredTrue]],
+      lgpdConsent: [false, [Validators.requiredTrue]],
       address: this.fb.nonNullable.group({
         cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
         street: ['', Validators.required],
@@ -87,6 +132,28 @@ export class PatientRegisterComponent {
     },
     { validators: passwordsMatchValidator() },
   );
+
+  protected get emergencyContacts(): FormArray {
+    return this.form.controls.emergencyContacts;
+  }
+
+  protected addEmergencyContact(): void {
+    this.emergencyContacts.push(buildEmergencyContactGroup(this.fb));
+  }
+
+  protected removeEmergencyContact(index: number): void {
+    this.emergencyContacts.removeAt(index);
+  }
+
+  protected emergencyContactFieldError(index: number, fieldName: 'name' | 'phone'): string | null {
+    const control = this.emergencyContacts.at(index).get(fieldName);
+
+    if (!control || !control.touched || !control.hasError('required')) {
+      return null;
+    }
+
+    return 'Campo obrigatório.';
+  }
 
   protected fieldError = (fieldName: FieldName): string | null => {
     const control = this.form.controls[fieldName];
@@ -109,6 +176,10 @@ export class PatientRegisterComponent {
 
     if (fieldName === 'cpf' && control.hasError('pattern')) {
       return 'CPF deve conter 11 dígitos, sem pontuação.';
+    }
+
+    if ((fieldName === 'infoConfirmedTrue' || fieldName === 'lgpdConsent') && control.hasError('required')) {
+      return 'Esta confirmação é obrigatória.';
     }
 
     return null;
@@ -159,13 +230,35 @@ export class PatientRegisterComponent {
   }
 
   protected submit(): void {
-    if (this.form.invalid) {
+    const documents = this.documents();
+    const hasCpfDocument = documents.some((document) => document.type === 'VALIDACAO_CPF');
+
+    if (!hasCpfDocument) {
+      this.documentsError.set('Envie um documento que valide seu CPF.');
+    }
+
+    if (this.form.invalid || !hasCpfDocument) {
       this.form.markAllAsTouched();
       return;
     }
 
     this.isSubmitting.set(true);
-    const { name, email, phone, cpf, password, address } = this.form.getRawValue();
+    const {
+      name,
+      email,
+      phone,
+      cpf,
+      birthDate,
+      gender,
+      emergencyContacts,
+      allergies,
+      healthConditions,
+      medicationsInUse,
+      infoConfirmedTrue,
+      lgpdConsent,
+      password,
+      address,
+    } = this.form.getRawValue();
 
     this.authService
       .registerPatient({
@@ -173,6 +266,14 @@ export class PatientRegisterComponent {
         email,
         phone,
         cpf,
+        birthDate,
+        gender: gender as PatientRegistration['gender'],
+        emergencyContacts,
+        infoConfirmedTrue,
+        lgpdConsent,
+        allergies: allergies || undefined,
+        healthConditions: healthConditions || undefined,
+        medicationsInUse: medicationsInUse || undefined,
         password,
         address: {
           cep: address.cep,
@@ -183,6 +284,7 @@ export class PatientRegisterComponent {
           city: address.city,
           state: address.state,
         },
+        documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
       })
       .subscribe({
         next: () => {

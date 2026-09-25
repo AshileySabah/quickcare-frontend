@@ -1,23 +1,30 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.service';
+import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
+import { DocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { AddressComponent } from '../../../shared/ui/address/address.component';
 import { AvatarUploadComponent } from '../../../shared/ui/avatar-upload/avatar-upload.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent } from '../../../shared/ui/card/card.component';
 import { CheckboxComponent } from '../../../shared/ui/checkbox/checkbox.component';
+import { DocumentUploaderComponent, UploadedDocument } from '../../../shared/ui/document-uploader/document-uploader.component';
 import { GridItemComponent } from '../../../shared/ui/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/input/input.component';
 import { MultiSelectComponent, MultiSelectOption } from '../../../shared/ui/multi-select/multi-select.component';
 import { PasswordFieldsComponent } from '../../../shared/ui/password-fields/password-fields.component';
-import { SelectComponent } from '../../../shared/ui/select/select.component';
+import { SelectComponent, SelectOption } from '../../../shared/ui/select/select.component';
 import { ToastService } from '../../../shared/ui/toast/toast.service';
 
-const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const GENDER_OPTIONS: SelectOption[] = [
+  { value: 'FEMININO', label: 'Feminino' },
+  { value: 'MASCULINO', label: 'Masculino' },
+  { value: 'OUTRO', label: 'Outro' },
+  { value: 'PREFIRO_NAO_INFORMAR', label: 'Prefiro não informar' },
+];
 
 function passwordsMatchValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
@@ -53,6 +60,10 @@ type FieldName =
   | 'specialtyIds'
   | 'specialtySingle'
   | 'registrationNumber'
+  | 'birthDate'
+  | 'gender'
+  | 'infoConfirmedTrue'
+  | 'lgpdConsent'
   | 'raioAtendimentoKm'
   | 'password';
 
@@ -67,7 +78,9 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     AddressComponent,
     AvatarUploadComponent,
     ButtonComponent,
+    CardComponent,
     CheckboxComponent,
+    DocumentUploaderComponent,
     GridComponent,
     GridItemComponent,
     InputComponent,
@@ -87,26 +100,48 @@ export class ProfessionalRegisterComponent implements OnInit {
 
   protected readonly isSubmitting = signal(false);
   protected readonly avatarBlob = signal<Blob | null>(null);
+  protected readonly genderOptions = GENDER_OPTIONS;
 
   protected onAvatarChange(blob: Blob | null): void {
     this.avatarBlob.set(blob);
   }
 
-  protected readonly selectedFile = signal<File | null>(null);
-  protected readonly filePreviewUrl = signal<string | null>(null);
-  protected readonly fileError = signal<string | null>(null);
-  protected readonly dragOver = signal(false);
-
   protected readonly categoryOptions = signal<ProfessionalCategoryInfo[]>([]);
 
   private readonly specialties = signal<Specialty[]>([]);
   private readonly selectedCategory = signal<ProfessionalCategory | ''>('');
+  private readonly hasCnpj = signal(false);
 
   protected readonly specialtyOptions = computed<MultiSelectOption[]>(() =>
     this.specialties()
       .filter((specialty) => specialty.category === this.selectedCategory())
       .map((specialty) => ({ value: specialty.id, label: specialty.name })),
   );
+
+  protected readonly documentTypeOptions = computed<SelectOption[]>(() => {
+    const options: SelectOption[] = [{ value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' }];
+
+    if (this.hasCnpj()) {
+      options.push({ value: 'VALIDACAO_CNPJ', label: 'CNPJ' });
+    }
+
+    if (this.selectedCategory() !== '' && this.selectedCategory() !== 'CUIDADOR') {
+      options.push({ value: 'REGISTRO_PROFISSIONAL', label: this.registrationLabel });
+    }
+
+    options.push({ value: 'OUTRO', label: 'Outro' });
+    return options;
+  });
+
+  protected readonly documents = signal<UploadedDocument[]>([]);
+  protected readonly documentsError = signal<string | null>(null);
+
+  protected onDocumentsChange(documents: UploadedDocument[]): void {
+    this.documents.set(documents);
+    if (documents.length > 0) {
+      this.documentsError.set(null);
+    }
+  }
 
   protected readonly form = this.fb.nonNullable.group(
     {
@@ -119,6 +154,12 @@ export class ProfessionalRegisterComponent implements OnInit {
       specialtyIds: this.fb.nonNullable.control<string[]>([], Validators.required),
       specialtySingle: [''],
       registrationNumber: [''],
+      birthDate: ['', Validators.required],
+      gender: ['', Validators.required],
+      emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
+      infoConfirmedTrue: [false, Validators.requiredTrue],
+      lgpdConsent: [false, Validators.requiredTrue],
+      hasLiabilityInsurance: [false],
       attendsPresencial: [false],
       attendsRemoto: [false],
       raioAtendimentoKm: [10, [Validators.min(1)]],
@@ -136,6 +177,28 @@ export class ProfessionalRegisterComponent implements OnInit {
     },
     { validators: [passwordsMatchValidator(), atLeastOneModalityValidator()] },
   );
+
+  protected get emergencyContacts(): FormArray {
+    return this.form.controls.emergencyContacts;
+  }
+
+  protected addEmergencyContact(): void {
+    this.emergencyContacts.push(buildEmergencyContactGroup(this.fb));
+  }
+
+  protected removeEmergencyContact(index: number): void {
+    this.emergencyContacts.removeAt(index);
+  }
+
+  protected emergencyContactFieldError(index: number, fieldName: 'name' | 'phone'): string | null {
+    const control = this.emergencyContacts.at(index).get(fieldName);
+
+    if (!control || !control.touched || !control.hasError('required')) {
+      return null;
+    }
+
+    return 'Campo obrigatório.';
+  }
 
   constructor() {
     this.form.controls.attendsPresencial.valueChanges.subscribe((presencial) => {
@@ -175,6 +238,8 @@ export class ProfessionalRegisterComponent implements OnInit {
         this.form.controls.specialtyIds.setValue(specialtyId ? [specialtyId] : []);
       }
     });
+
+    this.form.controls.cnpj.valueChanges.subscribe((value) => this.hasCnpj.set(!!value));
   }
 
   ngOnInit(): void {
@@ -194,6 +259,10 @@ export class ProfessionalRegisterComponent implements OnInit {
   protected get requiresRegistration(): boolean {
     const category = this.form.controls.category.value;
     return category !== '' && category !== 'CUIDADOR';
+  }
+
+  protected get requiresCnpjDocument(): boolean {
+    return !!this.form.controls.cnpj.value;
   }
 
   protected get registrationLabel(): string {
@@ -222,6 +291,9 @@ export class ProfessionalRegisterComponent implements OnInit {
       }
       if (fieldName === 'registrationNumber') {
         return 'Informe o número de registro profissional.';
+      }
+      if (fieldName === 'infoConfirmedTrue' || fieldName === 'lgpdConsent') {
+        return 'Esta confirmação é obrigatória.';
       }
       return 'Campo obrigatório.';
     }
@@ -293,71 +365,30 @@ export class ProfessionalRegisterComponent implements OnInit {
     return null;
   }
 
-  protected onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.handleFile(input.files?.[0] ?? null);
-    input.value = '';
-  }
-
-  protected onFileDrop(event: DragEvent): void {
-    event.preventDefault();
-    this.dragOver.set(false);
-    this.handleFile(event.dataTransfer?.files?.[0] ?? null);
-  }
-
-  protected onDragOver(event: DragEvent): void {
-    event.preventDefault();
-    this.dragOver.set(true);
-  }
-
-  protected onDragLeave(): void {
-    this.dragOver.set(false);
-  }
-
-  private handleFile(file: File | null): void {
-    if (!file) {
-      return;
-    }
-
-    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      this.fileError.set('Formato inválido. Envie um arquivo PDF, JPG ou PNG.');
-      this.selectedFile.set(null);
-      this.filePreviewUrl.set(null);
-      return;
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      this.fileError.set('O arquivo deve ter no máximo 5MB.');
-      this.selectedFile.set(null);
-      this.filePreviewUrl.set(null);
-      return;
-    }
-
-    this.fileError.set(null);
-    this.selectedFile.set(file);
-    this.filePreviewUrl.set(URL.createObjectURL(file));
-  }
-
-  protected removeFile(): void {
-    const currentPreview = this.filePreviewUrl();
-
-    if (currentPreview) {
-      URL.revokeObjectURL(currentPreview);
-    }
-
-    this.selectedFile.set(null);
-    this.filePreviewUrl.set(null);
-    this.fileError.set(null);
-  }
-
   protected submit(): void {
-    const file = this.selectedFile();
+    const documents = this.documents();
+    const hasCpfDocument = documents.some((document) => document.type === 'VALIDACAO_CPF');
+    const hasCnpjDocument = documents.some((document) => document.type === 'VALIDACAO_CNPJ');
+    const hasRegistrationDocument = documents.some((document) => document.type === 'REGISTRO_PROFISSIONAL');
 
-    if (!file) {
-      this.fileError.set('Envie o documento de registro profissional.');
+    let documentsValid = true;
+
+    if (!hasCpfDocument) {
+      this.documentsError.set('Envie um documento que valide seu CPF.');
+      documentsValid = false;
     }
 
-    if (this.form.invalid || !file) {
+    if (this.requiresCnpjDocument && !hasCnpjDocument) {
+      this.documentsError.set('Envie um documento que valide o CNPJ informado.');
+      documentsValid = false;
+    }
+
+    if (this.requiresRegistration && !hasRegistrationDocument) {
+      this.documentsError.set('Envie um documento que valide seu registro profissional.');
+      documentsValid = false;
+    }
+
+    if (this.form.invalid || !documentsValid) {
       this.form.markAllAsTouched();
       return;
     }
@@ -372,6 +403,12 @@ export class ProfessionalRegisterComponent implements OnInit {
       category,
       specialtyIds,
       registrationNumber,
+      birthDate,
+      gender,
+      emergencyContacts,
+      infoConfirmedTrue,
+      lgpdConsent,
+      hasLiabilityInsurance,
       attendsPresencial,
       attendsRemoto,
       raioAtendimentoKm,
@@ -392,6 +429,12 @@ export class ProfessionalRegisterComponent implements OnInit {
         category: category as ProfessionalCategory,
         specialtyIds,
         registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
+        birthDate,
+        gender: gender as ProfessionalRegistration['gender'],
+        emergencyContacts,
+        infoConfirmedTrue,
+        lgpdConsent,
+        hasLiabilityInsurance,
         password,
         modalidadeAtendimento,
         raioAtendimentoKm: attendsPresencial ? raioAtendimentoKm : undefined,
@@ -404,13 +447,7 @@ export class ProfessionalRegisterComponent implements OnInit {
           city: address.city,
           state: address.state,
         },
-        document: {
-          fileName: file.name,
-          fileType: file.type,
-          fileSizeBytes: file.size,
-          uploadedAt: new Date().toISOString(),
-          previewUrl: this.filePreviewUrl() ?? '',
-        },
+        documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
       })
       .subscribe({
         next: () => {

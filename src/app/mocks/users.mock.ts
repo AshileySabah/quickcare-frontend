@@ -10,6 +10,23 @@ const SAMPLE_ADDRESS: Address = {
   state: 'SP',
 };
 
+const COMMON_PATIENT_FIELDS = {
+  birthDate: '1990-01-01',
+  gender: 'PREFIRO_NAO_INFORMAR' as const,
+  emergencyContacts: [{ name: 'Contato de Emergência', phone: '(11) 90000-0000' }],
+  infoConfirmedTrue: true,
+  lgpdConsent: true,
+};
+
+const COMMON_PROFESSIONAL_FIELDS = {
+  birthDate: '1990-01-01',
+  gender: 'PREFIRO_NAO_INFORMAR' as const,
+  emergencyContacts: [{ name: 'Contato de Emergência', phone: '(11) 90000-0000' }],
+  infoConfirmedTrue: true,
+  lgpdConsent: true,
+  hasLiabilityInsurance: false,
+};
+
 export const PATIENTS_MOCK: Patient[] = [
   {
     id: 'pat-1',
@@ -18,6 +35,7 @@ export const PATIENTS_MOCK: Patient[] = [
     email: 'ana.souza@email.com',
     phone: '(11) 98765-4321',
     cpf: '111.222.333-44',
+    ...COMMON_PATIENT_FIELDS,
     address: SAMPLE_ADDRESS,
   },
   {
@@ -27,6 +45,7 @@ export const PATIENTS_MOCK: Patient[] = [
     email: 'carlos.lima@email.com',
     phone: '(11) 91234-5678',
     cpf: '222.333.444-55',
+    ...COMMON_PATIENT_FIELDS,
     address: SAMPLE_ADDRESS,
   },
 ];
@@ -42,6 +61,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-3 12345',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     bio: 'Nutricionista especializada em reeducação alimentar e emagrecimento saudável.',
     validationStatus: 'aprovado',
@@ -63,6 +83,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-psicologia'],
     registrationNumber: 'CRP 06/98765',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     bio: 'Psicólogo clínico com abordagem cognitivo-comportamental.',
     validationStatus: 'aprovado',
@@ -84,6 +105,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 54321',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     bio: 'Fisioterapeuta ortopédica, atendimento domiciliar e em clínica.',
     validationStatus: 'pendente',
@@ -105,6 +127,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-nutricao'],
     registrationNumber: 'CRN-3 00000',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     validationStatus: 'reprovado',
     validationDocument: {
@@ -126,6 +149,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-fonoaudiologia'],
     registrationNumber: 'CREFONO 8 11223',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     validationStatus: 'pendente',
     validationDocument: {
@@ -146,6 +170,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-psicologia'],
     registrationNumber: 'CRP 06/45678',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     bio: 'Psicólogo com foco em ansiedade e terapia de casal.',
     validationStatus: 'aprovado',
@@ -167,6 +192,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 67890',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     bio: 'Fisioterapeuta esportiva.',
     validationStatus: 'aprovado',
@@ -188,6 +214,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-fisioterapia'],
     registrationNumber: 'CREFITO-3 13579',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     validationStatus: 'aprovado',
     validationDocument: {
@@ -208,6 +235,7 @@ export const PROFESSIONALS_MOCK: Professional[] = [
     category: 'OUTRO',
     specialtyIds: ['sp-fonoaudiologia'],
     registrationNumber: 'CREFONO 8 33445',
+    ...COMMON_PROFESSIONAL_FIELDS,
     address: SAMPLE_ADDRESS,
     validationStatus: 'aprovado',
     validationDocument: {

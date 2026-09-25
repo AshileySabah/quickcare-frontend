@@ -2,6 +2,20 @@ export type UserRole = 'patient' | 'professional' | 'admin';
 
 export type ProfessionalValidationStatus = 'pendente' | 'aprovado' | 'reprovado';
 
+export type Gender = 'MASCULINO' | 'FEMININO' | 'OUTRO' | 'PREFIRO_NAO_INFORMAR';
+
+export interface EmergencyContact {
+  name: string;
+  phone: string;
+}
+
+export type DocumentType = 'VALIDACAO_CPF' | 'VALIDACAO_CNPJ' | 'REGISTRO_PROFISSIONAL' | 'OUTRO';
+
+export interface RegistrationDocument {
+  file: File;
+  type: DocumentType;
+}
+
 export interface BaseUser {
   id: string;
   name: string;
@@ -14,6 +28,14 @@ export interface Patient extends BaseUser {
   role: 'patient';
   phone: string;
   cpf: string;
+  birthDate: string;
+  gender: Gender;
+  emergencyContacts: EmergencyContact[];
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+  allergies?: string;
+  healthConditions?: string;
+  medicationsInUse?: string;
   address: Address;
 }
 
@@ -45,6 +67,12 @@ export interface Professional extends BaseUser {
   category: ProfessionalCategory;
   specialtyIds: string[];
   registrationNumber?: string;
+  birthDate: string;
+  gender: Gender;
+  emergencyContacts: EmergencyContact[];
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+  hasLiabilityInsurance: boolean;
   address: Address;
   bio?: string;
   validationStatus: ProfessionalValidationStatus;

@@ -1,0 +1,19 @@
+@use 'tokens' as tokens;
+
+.ui-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: tokens.radius('full');
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.ui-avatar--initials {
+  background-color: tokens.color('teal', 100);
+  color: tokens.color('teal', 700);
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+}

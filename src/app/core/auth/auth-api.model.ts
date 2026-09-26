@@ -7,6 +7,7 @@ export interface LoginApiResponse {
   usuarioId: number;
   nome: string;
   email: string;
+  avatarUrl: string | null;
   perfis: PerfilStatusApi[];
 }
 

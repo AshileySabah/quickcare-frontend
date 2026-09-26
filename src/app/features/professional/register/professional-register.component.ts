@@ -54,6 +54,7 @@ type FieldName =
   | 'specialtyIds'
   | 'specialtySingle'
   | 'registrationNumber'
+  | 'registrationUf'
   | 'birthDate'
   | 'gender'
   | 'infoConfirmedTrue'
@@ -145,6 +146,7 @@ export class ProfessionalRegisterComponent implements OnInit {
       specialtyIds: this.fb.nonNullable.control<string[]>([], Validators.required),
       specialtySingle: [''],
       registrationNumber: [''],
+      registrationUf: ['', [Validators.pattern(/^[A-Za-z]{2}$/)]],
       birthDate: ['', Validators.required],
       gender: ['', Validators.required],
       emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
@@ -192,12 +194,16 @@ export class ProfessionalRegisterComponent implements OnInit {
       this.form.controls.specialtySingle.setValue('');
 
       const registrationControl = this.form.controls.registrationNumber;
+      const registrationUfControl = this.form.controls.registrationUf;
       if (category === 'CUIDADOR' || category === '') {
         registrationControl.clearValidators();
+        registrationUfControl.setValidators([Validators.pattern(/^[A-Za-z]{2}$/)]);
       } else {
         registrationControl.setValidators([Validators.required, Validators.maxLength(50)]);
+        registrationUfControl.setValidators([Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]);
       }
       registrationControl.updateValueAndValidity();
+      registrationUfControl.updateValueAndValidity();
     });
 
     // Category "Outros profissionais" is single-specialty, so its picker writes into
@@ -212,12 +218,16 @@ export class ProfessionalRegisterComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.specialtyService.list().subscribe((specialties) => {
-      this.specialties.set(specialties);
+    this.specialtyService.list().subscribe({
+      next: (specialties) => this.specialties.set(specialties),
+      error: () =>
+        this.toastService.error('Não foi possível carregar as especialidades. Recarregue a página e tente novamente.'),
     });
 
-    this.specialtyService.listCategories().subscribe((categories) => {
-      this.categoryOptions.set(categories);
+    this.specialtyService.listCategories().subscribe({
+      next: (categories) => this.categoryOptions.set(categories),
+      error: () =>
+        this.toastService.error('Não foi possível carregar as categorias profissionais. Recarregue a página e tente novamente.'),
     });
   }
 
@@ -372,6 +382,7 @@ export class ProfessionalRegisterComponent implements OnInit {
       category,
       specialtyIds,
       registrationNumber,
+      registrationUf,
       birthDate,
       gender,
       emergencyContacts,
@@ -398,6 +409,7 @@ export class ProfessionalRegisterComponent implements OnInit {
         category: category as ProfessionalCategory,
         specialtyIds,
         registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
+        registrationUf: this.requiresRegistration ? registrationUf : undefined,
         birthDate,
         gender: gender as ProfessionalRegistration['gender'],
         emergencyContacts,
@@ -417,6 +429,7 @@ export class ProfessionalRegisterComponent implements OnInit {
           state: address.state,
         },
         documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
+        avatar: this.avatarBlob() ?? undefined,
       })
       .subscribe({
         next: () => {

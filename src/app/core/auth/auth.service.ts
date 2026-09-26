@@ -34,6 +34,7 @@ export interface PatientRegistration {
   password: string;
   address: Address;
   documents: RegistrationDocument[];
+  avatar?: Blob;
 }
 
 export interface ProfessionalRegistration {
@@ -45,6 +46,7 @@ export interface ProfessionalRegistration {
   category: ProfessionalCategory;
   specialtyIds: string[];
   registrationNumber?: string;
+  registrationUf?: string;
   birthDate: string;
   gender: Gender;
   emergencyContacts: EmergencyContact[];
@@ -56,6 +58,7 @@ export interface ProfessionalRegistration {
   raioAtendimentoKm?: number;
   address: Address;
   documents: RegistrationDocument[];
+  avatar?: Blob;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -100,6 +103,7 @@ export class AuthService {
         role: 'professional',
         name: response.nome,
         email: response.email,
+        avatarUrl: response.avatarUrl ?? undefined,
         phone: '',
         cpf: '',
         category: 'OUTRO',
@@ -122,6 +126,7 @@ export class AuthService {
       role: 'patient',
       name: response.nome,
       email: response.email,
+      avatarUrl: response.avatarUrl ?? undefined,
       phone: '',
       cpf: '',
       birthDate: '',
@@ -179,6 +184,10 @@ export class AuthService {
       formData.append('tiposDocumento', document.type);
     }
 
+    if (input.avatar) {
+      formData.append('avatar', input.avatar, 'avatar.jpg');
+    }
+
     return this.http
       .post<CadastroApiResponse>(`${environment.apiUrl}/usuarios/cadastro/paciente`, formData, { withCredentials: true })
       .pipe(
@@ -200,6 +209,7 @@ export class AuthService {
       categoria: input.category,
       especialidadeIds: input.specialtyIds.map(Number),
       registroProfissional: input.registrationNumber || undefined,
+      registroProfissionalUf: input.registrationUf || undefined,
       dataNascimento: input.birthDate,
       genero: input.gender,
       contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
@@ -223,6 +233,10 @@ export class AuthService {
     for (const document of input.documents) {
       formData.append('documentos', document.file, document.file.name);
       formData.append('tiposDocumento', document.type);
+    }
+
+    if (input.avatar) {
+      formData.append('avatar', input.avatar, 'avatar.jpg');
     }
 
     return this.http

@@ -243,6 +243,7 @@ export class PatientRegisterComponent {
           state: address.state,
         },
         documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
+        avatar: this.avatarBlob() ?? undefined,
       })
       .subscribe({
         next: () => {

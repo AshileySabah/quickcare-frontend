@@ -25,6 +25,7 @@
     </nav>
 
     <div class="professional-shell__user">
+      <ui-avatar [name]="authService.currentUser()?.name ?? ''" [imageUrl]="authService.currentUser()?.avatarUrl"></ui-avatar>
       <span class="professional-shell__user-name">{{ authService.currentUser()?.name }}</span>
       <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
     </div>

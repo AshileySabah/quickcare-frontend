@@ -65,8 +65,11 @@ export class RequestFormComponent {
   });
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => {
-      this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name })));
+    this.specialtyService.list().subscribe({
+      next: (specialties) =>
+        this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name }))),
+      error: () =>
+        this.toastService.error('Não foi possível carregar as especialidades. Recarregue a página e tente novamente.'),
     });
 
     this.form.controls.modality.valueChanges.subscribe((modality) => this.applyModalityValidators(modality));

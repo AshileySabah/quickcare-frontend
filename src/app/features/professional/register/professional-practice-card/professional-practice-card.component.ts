@@ -7,7 +7,7 @@ import { GridItemComponent } from '../../../../shared/ui/layout/grid/grid-item.c
 import { GridComponent } from '../../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../../shared/ui/forms/input/input.component';
 import { MultiSelectComponent, MultiSelectOption } from '../../../../shared/ui/forms/multi-select/multi-select.component';
-import { SelectComponent } from '../../../../shared/ui/forms/select/select.component';
+import { SelectComponent, SelectOption } from '../../../../shared/ui/forms/select/select.component';
 
 @Component({
   selector: 'ui-professional-practice-card',
@@ -31,6 +31,7 @@ export class ProfessionalPracticeCardComponent {
 
   categoryOptions = input.required<ProfessionalCategoryInfo[]>();
   specialtyOptions = input.required<MultiSelectOption[]>();
+  ufOptions = input.required<SelectOption[]>();
   isOutro = input.required<boolean>();
   requiresRegistration = input.required<boolean>();
   registrationLabel = input.required<string>();

@@ -91,7 +91,7 @@ describe('PatientDashboardComponent', () => {
 
   it('filtra por busca sem diferenciar acentos', () => {
     const component = fixture.componentInstance as unknown as { filters: { patchValue(value: object): void } };
-    component.filters.patchValue({ search: 'nutricao', status: 'todas' });
+    component.filters.patchValue({ search: 'nutricao' });
     fixture.detectChanges();
 
     expect(cardIds()).toEqual(['#2']);

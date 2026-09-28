@@ -1,20 +1,31 @@
-import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RequestStatus, ServiceRequest } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
-import { ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
-import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
-import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { RequestCardComponent } from '../request-card/request-card.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
+
+/** Solicitações encerradas; as ativas ficam na home. */
+const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 
 @Component({
   selector: 'app-patient-history',
   standalone: true,
-  imports: [DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, SkeletonComponent, StatusBadgeComponent],
+  imports: [
+    CardComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    GridComponent,
+    GridItemComponent,
+    RequestCardComponent,
+    SkeletonComponent,
+  ],
   templateUrl: './patient-history.component.html',
   styleUrl: './patient-history.component.scss',
 })
@@ -33,12 +44,12 @@ export class PatientHistoryComponent {
 
     this.requestService.list().subscribe({
       next: (requests) => {
-        this.requests.set(requests);
-        this.viewState.set(requests.length === 0 ? 'empty' : 'filled');
+        // O back já devolve das mais recentes para as mais antigas.
+        const closed = requests.filter((request) => CLOSED_STATUSES.includes(request.status));
+        this.requests.set(closed);
+        this.viewState.set(closed.length === 0 ? 'empty' : 'filled');
       },
       error: () => this.viewState.set('error'),
     });
   }
-
-  protected readonly professionalsSummary = requestedProfessionalsSummary;
 }

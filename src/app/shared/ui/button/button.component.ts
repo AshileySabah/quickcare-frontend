@@ -1,6 +1,14 @@
 import { Component, input } from '@angular/core';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'inverse' | 'inverse-outline';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'danger-outline'
+  | 'info-outline'
+  | 'inverse'
+  | 'inverse-outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 @Component({

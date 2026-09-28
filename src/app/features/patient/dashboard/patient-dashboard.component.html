@@ -2,7 +2,7 @@
   <header class="patient-dashboard__header">
     <div>
       <h1 class="patient-dashboard__title">Minhas solicitações</h1>
-      <p class="patient-dashboard__subtitle">Acompanhe prazos, status e propostas dos seus atendimentos.</p>
+      <p class="patient-dashboard__subtitle">Acompanhe prazos, status e propostas das suas solicitações ativas.</p>
     </div>
     <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
   </header>
@@ -23,10 +23,11 @@
     }
     @case ('empty') {
       <ui-empty-state
-        title="Você ainda não tem solicitações"
-        message="Crie uma solicitação para receber propostas de profissionais de saúde."
+        title="Nenhuma solicitação ativa"
+        message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
       >
         <ui-button routerLink="/patient/novo">Criar solicitação</ui-button>
+        <ui-button variant="ghost" routerLink="/patient/historico">Ver histórico</ui-button>
       </ui-empty-state>
     }
     @case ('error') {
@@ -34,22 +35,24 @@
     }
     @case ('filled') {
       <ui-card padding="sm">
-        <form class="patient-dashboard__filters" [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
-          <div class="patient-dashboard__filter patient-dashboard__filter--search">
-            <ui-input label="Buscar" formControlName="search" placeholder="Descrição, especialidade, bairro..."></ui-input>
-          </div>
-          <div class="patient-dashboard__filter">
-            <ui-select label="Status" formControlName="status" [options]="statusOptions" placeholder="Status"></ui-select>
-          </div>
-          <div class="patient-dashboard__filter">
-            <ui-select label="Modalidade" formControlName="modality" [options]="modalityOptions" placeholder="Todas"></ui-select>
-          </div>
-          <div class="patient-dashboard__filter">
-            <ui-select label="Categoria" formControlName="category" [options]="categoryOptions()" placeholder="Todas"></ui-select>
-          </div>
-          <div class="patient-dashboard__filter">
-            <ui-select label="Ordenar por" formControlName="sort" [options]="sortOptions" placeholder="Ordenar"></ui-select>
-          </div>
+        <form [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
+          <ui-grid spacing="sm">
+            <ui-grid-item [xs]="12" [lg]="4">
+              <ui-input label="Buscar" formControlName="search" placeholder="Descrição, especialidade, bairro..."></ui-input>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Status" formControlName="status" [options]="statusOptions" placeholder="Status"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Modalidade" formControlName="modality" [options]="modalityOptions" placeholder="Todas"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Categoria" formControlName="category" [options]="categoryOptions()" placeholder="Todas"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Ordenar por" formControlName="sort" [options]="sortOptions" placeholder="Ordenar"></ui-select>
+            </ui-grid-item>
+          </ui-grid>
         </form>
         <div class="patient-dashboard__filters-footer">
           <span class="patient-dashboard__count">
@@ -67,17 +70,19 @@
           <ui-button variant="secondary" (click)="clearFilters()">Limpar filtros</ui-button>
         </ui-empty-state>
       } @else {
-        <div class="patient-dashboard__list">
+        <ui-grid>
           @for (request of filteredRequests(); track request.id) {
-            <app-request-card
-              [request]="request"
-              [proposalCount]="proposalCount(request)"
-              [canEdit]="canEdit(request)"
-              [canCancel]="canCancel(request)"
-              (cancel)="askToCancel($event)"
-            ></app-request-card>
+            <ui-grid-item [xs]="12">
+              <app-request-card
+                [request]="request"
+                [proposalCount]="proposalCount(request)"
+                [canEdit]="canEdit(request)"
+                [canCancel]="canCancel(request)"
+                (cancel)="askToCancel($event)"
+              ></app-request-card>
+            </ui-grid-item>
           }
-        </div>
+        </ui-grid>
       }
     }
   }

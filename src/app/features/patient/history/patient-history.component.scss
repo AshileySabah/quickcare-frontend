@@ -12,30 +12,6 @@
   @include list.subtitle;
 }
 
-.patient-history__list {
-  @include list.list;
-}
-
-.patient-history__card-link {
-  @include list.card-link;
-}
-
-.patient-history__card-header {
-  @include list.card-header;
-}
-
-.patient-history__specialty {
-  @include list.specialty;
-}
-
-.patient-history__description {
-  @include list.description;
-}
-
-.patient-history__date {
-  @include list.date;
-}
-
 .patient-history__skeleton-lines {
   @include list.skeleton-lines;
 }

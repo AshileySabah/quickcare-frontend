@@ -14,13 +14,16 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
-import { RequestCardComponent } from './request-card/request-card.component';
+import { RequestCardComponent } from '../request-card/request-card.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
-type StatusFilter = 'ativas' | 'todas' | RequestStatus;
+type StatusFilter = 'ativas' | RequestStatus;
 type SortOrder = 'recentes' | 'antigas' | 'prazo';
 
+/** A home só lista solicitações ativas; as encerradas ficam no histórico. */
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
 const DEFAULT_FILTERS = {
@@ -33,7 +36,7 @@ const DEFAULT_FILTERS = {
 
 /** Minúsculas e sem acento, para a busca ignorar "Nutrição" vs "nutricao". */
 function normalize(text: string): string {
-  return text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 }
 
 @Component({
@@ -46,6 +49,8 @@ function normalize(text: string): string {
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
+    GridComponent,
+    GridItemComponent,
     InputComponent,
     ModalComponent,
     RequestCardComponent,
@@ -73,13 +78,10 @@ export class PatientDashboardComponent {
   });
 
   protected readonly statusOptions: SelectOption[] = [
-    { value: 'ativas', label: 'Ativas' },
-    { value: 'todas', label: 'Todas' },
+    { value: 'ativas', label: 'Todas as ativas' },
     { value: 'aberta', label: 'Aberta' },
     { value: 'recebendo_propostas', label: 'Recebendo propostas' },
     { value: 'em_andamento', label: 'Em andamento' },
-    { value: 'concluida', label: 'Concluída' },
-    { value: 'cancelada', label: 'Cancelada' },
   ];
 
   protected readonly modalityOptions: SelectOption[] = [
@@ -121,8 +123,7 @@ export class PatientDashboardComponent {
     const term = normalize(search.trim());
 
     const filtered = this.requests().filter((request) => {
-      if (status === 'ativas' && !ACTIVE_STATUSES.includes(request.status)) return false;
-      if (status !== 'ativas' && status !== 'todas' && request.status !== status) return false;
+      if (status !== 'ativas' && request.status !== status) return false;
       if (modality && request.modality !== modality) return false;
       if (category && !request.professionals.some((professional) => professional.category === category)) return false;
       return !term || normalize(this.searchableText(request)).includes(term);
@@ -151,8 +152,9 @@ export class PatientDashboardComponent {
 
     this.requestService.list().subscribe({
       next: (requests) => {
-        this.requests.set(requests);
-        this.viewState.set(requests.length === 0 ? 'empty' : 'filled');
+        const active = requests.filter((request) => ACTIVE_STATUSES.includes(request.status));
+        this.requests.set(active);
+        this.viewState.set(active.length === 0 ? 'empty' : 'filled');
       },
       error: () => this.viewState.set('error'),
     });
@@ -195,10 +197,13 @@ export class PatientDashboardComponent {
 
     this.requestService.cancel(request.id).subscribe({
       next: (updated) => {
-        this.requests.update((requests) => requests.map((item) => (item.id === updated.id ? updated : item)));
+        // Cancelada = encerrada: sai da home e passa a aparecer no histórico.
+        const remaining = this.requests().filter((item) => item.id !== updated.id);
+        this.requests.set(remaining);
+        this.viewState.set(remaining.length === 0 ? 'empty' : 'filled');
         this.isCancelling.set(false);
         this.requestToCancel.set(null);
-        this.toastService.info('Solicitação cancelada.');
+        this.toastService.info('Solicitação cancelada. Ela agora aparece no histórico.');
       },
       error: (error: Error) => {
         this.isCancelling.set(false);

@@ -29,31 +29,6 @@
   @include list.skeleton-lines;
 }
 
-// Celular: um filtro por linha; tablet: 2 colunas; desktop: busca larga + 4 selects.
-.patient-dashboard__filters {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: tokens.space(3);
-
-  @include tokens.respond('md') {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include tokens.respond('lg') {
-    grid-template-columns: 2fr repeat(4, 1fr);
-  }
-}
-
-.patient-dashboard__filter--search {
-  @include tokens.respond('md') {
-    grid-column: 1 / -1;
-  }
-
-  @include tokens.respond('lg') {
-    grid-column: auto;
-  }
-}
-
 .patient-dashboard__filters-footer {
   display: flex;
   align-items: center;

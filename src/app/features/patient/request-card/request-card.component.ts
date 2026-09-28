@@ -1,11 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ServiceRequest, requestedSpecialtyNames } from '../../../../core/models';
-import { ButtonComponent } from '../../../../shared/ui/button/button.component';
-import { BadgeComponent } from '../../../../shared/ui/feedback/badge/badge.component';
-import { StatusBadgeComponent } from '../../../../shared/ui/feedback/status-badge/status-badge.component';
-import { CardComponent } from '../../../../shared/ui/layout/card/card.component';
+import { ServiceRequest, requestedSpecialtyNames } from '../../../core/models';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
+import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
+import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
+import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const URGENT_DEADLINE_DAYS = 3;
@@ -26,7 +29,17 @@ function parseLocalDate(isoDate: string): Date {
 @Component({
   selector: 'app-request-card',
   standalone: true,
-  imports: [DatePipe, RouterLink, BadgeComponent, ButtonComponent, CardComponent, StatusBadgeComponent],
+  imports: [
+    DatePipe,
+    RouterLink,
+    BadgeComponent,
+    ButtonComponent,
+    CardComponent,
+    GridComponent,
+    GridItemComponent,
+    IconComponent,
+    StatusBadgeComponent,
+  ],
   templateUrl: './request-card.component.html',
   styleUrl: './request-card.component.scss',
 })

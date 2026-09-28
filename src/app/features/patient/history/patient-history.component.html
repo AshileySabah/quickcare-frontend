@@ -2,48 +2,43 @@
   <header class="patient-history__header">
     <div>
       <h1 class="patient-history__title">Histórico de solicitações</h1>
-      <p class="patient-history__subtitle">Todas as suas solicitações, independentemente do status.</p>
+      <p class="patient-history__subtitle">Solicitações encerradas: concluídas ou canceladas.</p>
     </div>
   </header>
 
   @switch (viewState()) {
     @case ('loading') {
-      <div class="patient-history__list">
+      <ui-grid>
         @for (i of [1, 2, 3]; track i) {
-          <ui-card>
-            <div class="patient-history__skeleton-lines">
-              <ui-skeleton height="20px" width="60%"></ui-skeleton>
-              <ui-skeleton height="14px" width="40%"></ui-skeleton>
-              <ui-skeleton height="14px" width="80%"></ui-skeleton>
-            </div>
-          </ui-card>
+          <ui-grid-item [xs]="12">
+            <ui-card>
+              <div class="patient-history__skeleton-lines">
+                <ui-skeleton height="20px" width="40%"></ui-skeleton>
+                <ui-skeleton height="16px" width="70%"></ui-skeleton>
+                <ui-skeleton height="64px"></ui-skeleton>
+              </div>
+            </ui-card>
+          </ui-grid-item>
         }
-      </div>
+      </ui-grid>
     }
     @case ('empty') {
       <ui-empty-state
-        title="Nenhuma solicitação encontrada"
-        message="Suas solicitações aparecerão aqui assim que forem criadas."
+        title="Nenhuma solicitação encerrada"
+        message="Solicitações concluídas ou canceladas aparecerão aqui."
       ></ui-empty-state>
     }
     @case ('error') {
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
-      <div class="patient-history__list">
+      <ui-grid>
         @for (request of requests(); track request.id) {
-          <a class="patient-history__card-link" [routerLink]="['/patient/solicitacoes', request.id]">
-            <ui-card [interactive]="true">
-              <div class="patient-history__card-header">
-                <span class="patient-history__specialty">{{ professionalsSummary(request) }}</span>
-                <ui-status-badge [status]="request.status"></ui-status-badge>
-              </div>
-              <p class="patient-history__description">{{ request.description }}</p>
-              <p class="patient-history__date">Criada em {{ request.createdAt | date: 'dd/MM/yyyy' }}</p>
-            </ui-card>
-          </a>
+          <ui-grid-item [xs]="12">
+            <app-request-card [request]="request"></app-request-card>
+          </ui-grid-item>
         }
-      </div>
+      </ui-grid>
     }
   }
 </section>

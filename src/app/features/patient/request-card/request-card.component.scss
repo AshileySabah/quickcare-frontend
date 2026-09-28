@@ -65,17 +65,6 @@
   overflow: hidden;
 }
 
-.request-card__facts {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: tokens.space(2);
-  margin: 0;
-
-  @include tokens.respond('md') {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .request-card__fact {
   display: flex;
   flex-direction: column;
@@ -85,29 +74,28 @@
   background-color: tokens.color('gray', 50);
   border: 1px solid tokens.color('gray', 100);
 
-  dt {
-    font-size: tokens.font-size('xs');
-    color: tokens.color('gray', 500);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  dd {
-    margin: 0;
-    font-size: tokens.font-size('lg');
-    font-weight: tokens.font-weight('medium');
-    color: tokens.color('gray', 900);
-  }
-
   &--urgent {
     background-color: rgba(tokens.semantic('warning'), 0.08);
     border-color: rgba(tokens.semantic('warning'), 0.3);
 
-    dd,
+    .request-card__fact-value,
     .request-card__fact-hint {
       color: tokens.semantic('warning');
     }
   }
+}
+
+.request-card__fact-label {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.request-card__fact-value {
+  font-size: tokens.font-size('lg');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
 }
 
 .request-card__fact-hint {

@@ -1,12 +1,20 @@
 <section class="request-form">
-  <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
-  <p class="request-form__subtitle">
-    {{
-      isEditMode
-        ? 'Atualize os dados da sua solicitação.'
-        : 'Descreva o que você precisa e receba propostas de profissionais.'
-    }}
-  </p>
+  @if (readOnlyRequest(); as request) {
+    <div class="request-form__title-row">
+      <h1 class="request-form__title">Solicitação #{{ request.id }}</h1>
+      <ui-status-badge [status]="request.status"></ui-status-badge>
+    </div>
+    <p class="request-form__subtitle">Esta solicitação não pode mais ser editada; os dados abaixo são só para consulta.</p>
+  } @else {
+    <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
+    <p class="request-form__subtitle">
+      {{
+        isEditMode
+          ? 'Atualize os dados da sua solicitação.'
+          : 'Descreva o que você precisa e receba propostas de profissionais.'
+      }}
+    </p>
+  }
 
   @if (isLoading()) {
     <div class="request-form__loading">
@@ -20,6 +28,7 @@
         [formArray]="form.controls.professionals"
         [categories]="categories()"
         [specialties]="specialties()"
+        [readOnly]="readOnlyRequest() !== null"
       ></app-requested-professionals-card>
 
       <ui-card>
@@ -63,10 +72,13 @@
         <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
       }
 
-      <div>
-        <ui-button type="submit" [loading]="isSubmitting()">
-          {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
-        </ui-button>
+      <div class="request-form__actions">
+        <ui-button variant="ghost" routerLink="/patient">Voltar</ui-button>
+        @if (readOnlyRequest() === null) {
+          <ui-button type="submit" [loading]="isSubmitting()">
+            {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
+          </ui-button>
+        }
       </div>
     </form>
   }

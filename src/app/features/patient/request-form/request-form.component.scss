@@ -30,3 +30,16 @@
   gap: tokens.space(4);
   max-width: 760px;
 }
+
+.request-form__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(3);
+}
+
+.request-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(2);
+}

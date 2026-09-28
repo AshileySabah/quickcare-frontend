@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { buildRequestedProfessionalGroup } from '../../../core/forms/requested-professional-form';
 import { ProfessionalCategory, ProfessionalCategoryInfo, ServiceRequest, Specialty } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
@@ -12,6 +12,7 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
 import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
@@ -33,8 +34,10 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     GridItemComponent,
     InputComponent,
     RequestedProfessionalsCardComponent,
+    RouterLink,
     SelectComponent,
     SkeletonComponent,
+    StatusBadgeComponent,
     TextareaComponent,
   ],
   templateUrl: './request-form.component.html',
@@ -53,6 +56,8 @@ export class RequestFormComponent {
   protected readonly isEditMode = this.editingId !== null;
   protected readonly isLoading = signal(this.isEditMode);
   protected readonly isSubmitting = signal(false);
+  /** Solicitação que já não pode ser editada (em andamento, concluída...) abre só para visualização. */
+  protected readonly readOnlyRequest = signal<ServiceRequest | null>(null);
 
   protected readonly categories = signal<ProfessionalCategoryInfo[]>([]);
   protected readonly specialties = signal<Specialty[]>([]);
@@ -104,18 +109,24 @@ export class RequestFormComponent {
   private loadRequestToEdit(id: string): void {
     this.requestService.getById(id).subscribe({
       next: (request) => {
-        if (!request || !this.requestService.canEdit(request)) {
-          this.toastService.error('Esta solicitação não pode mais ser editada.');
-          this.router.navigateByUrl(`/patient/solicitacoes/${id}`);
+        if (!request) {
+          this.toastService.error('Solicitação não encontrada.');
+          this.router.navigateByUrl('/patient');
           return;
         }
 
         this.fillForm(request);
+
+        if (!this.requestService.canEdit(request)) {
+          this.readOnlyRequest.set(request);
+          this.form.disable();
+        }
+
         this.isLoading.set(false);
       },
       error: () => {
         this.toastService.error('Não foi possível carregar a solicitação.');
-        this.router.navigateByUrl('/patient/historico');
+        this.router.navigateByUrl('/patient');
       },
     });
   }
@@ -217,10 +228,10 @@ export class RequestFormComponent {
     const request$ = this.editingId ? this.requestService.update(this.editingId, input) : this.requestService.create(input);
 
     request$.subscribe({
-      next: (request) => {
+      next: () => {
         this.isSubmitting.set(false);
         this.toastService.success(this.editingId ? 'Solicitação atualizada com sucesso!' : 'Solicitação criada com sucesso!');
-        this.router.navigateByUrl(`/patient/solicitacoes/${request.id}`);
+        this.router.navigateByUrl('/patient');
       },
       error: (error: Error) => {
         this.isSubmitting.set(false);

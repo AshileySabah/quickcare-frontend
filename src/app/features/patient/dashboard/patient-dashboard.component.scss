@@ -1,7 +1,15 @@
+@use 'tokens' as tokens;
 @use 'patterns/request-list' as list;
+
+.patient-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
 
 .patient-dashboard__header {
   @include list.header;
+  margin-bottom: 0;
 }
 
 .patient-dashboard__title {
@@ -14,28 +22,60 @@
 
 .patient-dashboard__list {
   @include list.list;
-}
-
-.patient-dashboard__card-link {
-  @include list.card-link;
-}
-
-.patient-dashboard__card-header {
-  @include list.card-header;
-}
-
-.patient-dashboard__specialty {
-  @include list.specialty;
-}
-
-.patient-dashboard__description {
-  @include list.description;
-}
-
-.patient-dashboard__date {
-  @include list.date;
+  gap: tokens.space(4);
 }
 
 .patient-dashboard__skeleton-lines {
   @include list.skeleton-lines;
+}
+
+// Celular: um filtro por linha; tablet: 2 colunas; desktop: busca larga + 4 selects.
+.patient-dashboard__filters {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: tokens.space(3);
+
+  @include tokens.respond('md') {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include tokens.respond('lg') {
+    grid-template-columns: 2fr repeat(4, 1fr);
+  }
+}
+
+.patient-dashboard__filter--search {
+  @include tokens.respond('md') {
+    grid-column: 1 / -1;
+  }
+
+  @include tokens.respond('lg') {
+    grid-column: auto;
+  }
+}
+
+.patient-dashboard__filters-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  min-height: 32px;
+  margin-top: tokens.space(2);
+}
+
+.patient-dashboard__count {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+}
+
+.patient-dashboard__confirm-text {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(4);
+}
+
+.patient-dashboard__confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: tokens.space(2);
 }

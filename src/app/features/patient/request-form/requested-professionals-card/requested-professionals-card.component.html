@@ -31,7 +31,7 @@
         [required]="true"
         [errorMessage]="fieldError(i, 'quantity')"
       ></ui-input>
-      @if (formArray().length > 1) {
+      @if (formArray().length > 1 && !readOnly()) {
         <button
           type="button"
           class="requested-professionals-card__remove"
@@ -47,7 +47,9 @@
   }
 
   <div class="requested-professionals-card__footer">
-    <ui-button type="button" variant="ghost" [disabled]="!canAdd()" (click)="add()">+ Adicionar profissional</ui-button>
+    @if (!readOnly()) {
+      <ui-button type="button" variant="ghost" [disabled]="!canAdd()" (click)="add()">+ Adicionar profissional</ui-button>
+    }
     <span class="requested-professionals-card__total">
       Total: {{ totalProfessionals() }} {{ totalProfessionals() === 1 ? 'profissional' : 'profissionais' }}
     </span>

@@ -30,6 +30,8 @@ export class RequestedProfessionalsCardComponent implements OnInit {
   formArray = input.required<FormArray<RequestedProfessionalGroup>>();
   categories = input.required<ProfessionalCategoryInfo[]>();
   specialties = input.required<Specialty[]>();
+  /** Só visualização: esconde adicionar/remover (os campos já vêm desabilitados pelo form). */
+  readOnly = input(false);
 
   private readonly rows = signal<RowValue[]>([]);
 

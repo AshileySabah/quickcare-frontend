@@ -1,0 +1,70 @@
+<ui-card>
+  <article class="request-card">
+    <header class="request-card__header">
+      <div class="request-card__tags">
+        <ui-badge [variant]="request().modality === 'presencial' ? 'primary' : 'info'">
+          {{ request().modality === 'presencial' ? 'Presencial' : 'Online' }}
+        </ui-badge>
+        <ui-status-badge [status]="request().status"></ui-status-badge>
+      </div>
+      <span class="request-card__id">#{{ request().id }}</span>
+    </header>
+
+    <ul class="request-card__professionals">
+      @for (professional of request().professionals; track $index) {
+        <li class="request-card__professional">
+          <span class="request-card__quantity">{{ professional.quantity }}×</span>
+          <span class="request-card__category">{{ professional.categoryLabel }}</span>
+          <span class="request-card__specialties">{{ specialtyNames(professional) }}</span>
+        </li>
+      }
+    </ul>
+
+    <p class="request-card__description">{{ request().description }}</p>
+
+    <dl class="request-card__facts">
+      <div class="request-card__fact">
+        <dt>Criada em</dt>
+        <dd>{{ request().createdAt | date: 'dd/MM/yyyy' }}</dd>
+        <span class="request-card__fact-hint">{{ createdHint() }}</span>
+      </div>
+      <div class="request-card__fact" [class.request-card__fact--urgent]="deadlineUrgent()">
+        <dt>Prazo desejado</dt>
+        <!-- 'UTC': a data vem sem hora (yyyy-MM-dd); sem isso o fuso de Brasília mostra o dia anterior. -->
+        <dd>{{ request().desiredDeadline | date: 'dd/MM/yyyy' : 'UTC' }}</dd>
+        <span class="request-card__fact-hint">{{ deadlineHint() }}</span>
+      </div>
+      <div class="request-card__fact">
+        <dt>Propostas</dt>
+        <dd>
+          @if (proposalCount() > 0) {
+            <a class="request-card__proposals-link" [routerLink]="proposalsLink()">{{ proposalCount() }}</a>
+          } @else {
+            0
+          }
+          <span class="request-card__fact-total">/ {{ totalRequested() }}</span>
+        </dd>
+        <span class="request-card__fact-hint">
+          {{ proposalCount() === 1 ? 'profissional respondeu' : 'profissionais responderam' }}
+        </span>
+      </div>
+    </dl>
+
+    @if (request().address; as address) {
+      <p class="request-card__location">
+        <span class="request-card__location-label">Local:</span>
+        {{ address.street }}, {{ address.number }} — {{ address.neighborhood }}, {{ address.city }}/{{ address.state }}
+      </p>
+    }
+
+    <footer class="request-card__actions">
+      <ui-button variant="secondary" size="sm" [routerLink]="formLink()">Visualizar</ui-button>
+      @if (canEdit()) {
+        <ui-button variant="secondary" size="sm" [routerLink]="formLink()">Editar</ui-button>
+      }
+      @if (canCancel()) {
+        <ui-button variant="danger" size="sm" (click)="cancel.emit(request())">Cancelar</ui-button>
+      }
+    </footer>
+  </article>
+</ui-card>

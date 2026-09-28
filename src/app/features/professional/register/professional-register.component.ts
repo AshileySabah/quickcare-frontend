@@ -5,6 +5,7 @@ import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.s
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { DocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
+import { UfService } from '../../../core/services/uf.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { AvatarUploadComponent } from '../../../shared/ui/forms/avatar-upload/avatar-upload.component';
 import { BasicInfoCardComponent } from '../../../shared/ui/register/basic-info-card/basic-info-card.component';
@@ -88,6 +89,7 @@ export class ProfessionalRegisterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly specialtyService = inject(SpecialtyService);
+  private readonly ufService = inject(UfService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
 
@@ -99,6 +101,7 @@ export class ProfessionalRegisterComponent implements OnInit {
   }
 
   protected readonly categoryOptions = signal<ProfessionalCategoryInfo[]>([]);
+  protected readonly ufOptions = signal<SelectOption[]>([]);
 
   private readonly specialties = signal<Specialty[]>([]);
   private readonly selectedCategory = signal<ProfessionalCategory | ''>('');
@@ -228,6 +231,11 @@ export class ProfessionalRegisterComponent implements OnInit {
       next: (categories) => this.categoryOptions.set(categories),
       error: () =>
         this.toastService.error('Não foi possível carregar as categorias profissionais. Recarregue a página e tente novamente.'),
+    });
+
+    this.ufService.list().subscribe({
+      next: (ufs) => this.ufOptions.set(ufs),
+      error: () => this.toastService.error('Não foi possível carregar as UFs. Recarregue a página e tente novamente.'),
     });
   }
 

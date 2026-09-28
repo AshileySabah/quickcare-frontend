@@ -1,11 +1,12 @@
-import { Injectable, signal } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, inject, signal } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { ApiErrorResponse } from '../auth/auth-api.model';
 import { RequestAddress, RequestStatus, ServiceModality, ServiceRequest } from '../models';
-import { SERVICE_REQUESTS_MOCK } from '../../mocks';
-import { simulateNetwork } from './simulate-network.util';
 
 export interface CreateRequestInput {
-  patientId: string;
   specialtyId: string;
   description: string;
   modality: ServiceModality;
@@ -13,12 +14,23 @@ export interface CreateRequestInput {
   desiredDeadline: string;
 }
 
-export interface UpdateRequestInput {
-  specialtyId?: string;
-  description?: string;
-  modality?: ServiceModality;
-  address?: RequestAddress;
-  desiredDeadline?: string;
+export type UpdateRequestInput = CreateRequestInput;
+
+type ModalidadeApi = 'PRESENCIAL' | 'ONLINE';
+type StatusApi = 'ABERTA' | 'RECEBENDO_PROPOSTAS' | 'EM_ANDAMENTO' | 'CONCLUIDA' | 'CANCELADA';
+
+interface SolicitacaoApiResponse {
+  id: number;
+  pacienteId: number;
+  especialidadeId: number;
+  especialidadeNome: string;
+  descricao: string;
+  modalidade: ModalidadeApi;
+  endereco: { logradouro: string; cidade: string; uf: string } | null;
+  prazoDesejado: string;
+  status: StatusApi;
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
@@ -27,7 +39,14 @@ const RECEIVING_PROPOSALS_STATUSES: RequestStatus[] = ['aberta', 'recebendo_prop
 
 @Injectable({ providedIn: 'root' })
 export class RequestService {
-  private readonly requestsSignal = signal<ServiceRequest[]>([...SERVICE_REQUESTS_MOCK]);
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/solicitacoes`;
+
+  /**
+   * Cache local das solicitações já carregadas. Enquanto o back-end de propostas
+   * não existe, o ProposalService (mock) move o status das solicitações por aqui.
+   */
+  private readonly requestsSignal = signal<ServiceRequest[]>([]);
   readonly requests = this.requestsSignal.asReadonly();
 
   canEdit(request: ServiceRequest): boolean {
@@ -42,110 +61,75 @@ export class RequestService {
     return RECEIVING_PROPOSALS_STATUSES.includes(request.status);
   }
 
-  list(filter?: { patientId?: string }, simulateError = false): Observable<ServiceRequest[]> {
-    return simulateNetwork(
-      () => {
-        const all = this.requestsSignal();
-        return filter?.patientId ? all.filter((request) => request.patientId === filter.patientId) : all;
-      },
-      { simulateError, errorMessage: 'Não foi possível carregar as solicitações.' },
+  /** Solicitações do paciente logado. */
+  list(): Observable<ServiceRequest[]> {
+    return this.http.get<SolicitacaoApiResponse[]>(this.baseUrl).pipe(
+      map((response) => response.map(toServiceRequest)),
+      tap((requests) => requests.forEach((request) => this.cache(request))),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível carregar as solicitações.'))),
     );
   }
 
-  listOpenForSpecialties(specialtyIds: string[], simulateError = false): Observable<ServiceRequest[]> {
-    return simulateNetwork(
-      () =>
-        this.requestsSignal().filter(
-          (request) => specialtyIds.includes(request.specialtyId) && this.canReceiveProposals(request),
-        ),
-      { simulateError, errorMessage: 'Não foi possível carregar as solicitações disponíveis.' },
+  /** Solicitações que ainda recebem propostas nas especialidades do profissional logado. */
+  listAvailable(): Observable<ServiceRequest[]> {
+    return this.http.get<SolicitacaoApiResponse[]>(`${this.baseUrl}/disponiveis`).pipe(
+      map((response) => response.map(toServiceRequest)),
+      tap((requests) => requests.forEach((request) => this.cache(request))),
+      catchError((error: unknown) =>
+        throwError(() => normalizeError(error, 'Não foi possível carregar as solicitações disponíveis.')),
+      ),
     );
   }
 
-  getById(id: string, simulateError = false): Observable<ServiceRequest | undefined> {
-    return simulateNetwork(() => this.requestsSignal().find((request) => request.id === id), {
-      simulateError,
-      errorMessage: 'Não foi possível carregar a solicitação.',
-    });
+  getById(id: string): Observable<ServiceRequest | undefined> {
+    return this.http.get<SolicitacaoApiResponse>(`${this.baseUrl}/${id}`).pipe(
+      map(toServiceRequest),
+      tap((request) => this.cache(request)),
+      catchError((error: unknown) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          return of(undefined);
+        }
+        return throwError(() => normalizeError(error, 'Não foi possível carregar a solicitação.'));
+      }),
+    );
   }
 
   create(input: CreateRequestInput): Observable<ServiceRequest> {
-    return simulateNetwork(() => {
-      const now = new Date().toISOString();
-      const request: ServiceRequest = {
-        id: `req-${crypto.randomUUID()}`,
-        patientId: input.patientId,
-        specialtyId: input.specialtyId,
-        description: input.description,
-        modality: input.modality,
-        address: input.address,
-        desiredDeadline: input.desiredDeadline,
-        status: 'aberta',
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      this.requestsSignal.update((requests) => [...requests, request]);
-
-      return request;
-    });
+    return this.http.post<SolicitacaoApiResponse>(this.baseUrl, toApiPayload(input)).pipe(
+      map(toServiceRequest),
+      tap((request) => this.cache(request)),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível criar a solicitação.'))),
+    );
   }
 
-  update(id: string, patch: UpdateRequestInput): Observable<ServiceRequest> {
-    return simulateNetwork(() => {
-      const request = this.requestsSignal().find((item) => item.id === id);
-
-      if (!request) {
-        throw new Error('Solicitação não encontrada.');
-      }
-
-      if (!this.canEdit(request)) {
-        throw new Error('Esta solicitação não pode mais ser editada.');
-      }
-
-      const updated: ServiceRequest = { ...request, ...patch, updatedAt: new Date().toISOString() };
-      this.requestsSignal.update((requests) => requests.map((item) => (item.id === id ? updated : item)));
-
-      return updated;
-    });
+  update(id: string, input: UpdateRequestInput): Observable<ServiceRequest> {
+    return this.http.put<SolicitacaoApiResponse>(`${this.baseUrl}/${id}`, toApiPayload(input)).pipe(
+      map(toServiceRequest),
+      tap((request) => this.cache(request)),
+      catchError((error: unknown) =>
+        throwError(() => normalizeError(error, 'Não foi possível atualizar a solicitação.')),
+      ),
+    );
   }
 
   cancel(id: string): Observable<ServiceRequest> {
-    return simulateNetwork(() => {
-      const request = this.requestsSignal().find((item) => item.id === id);
-
-      if (!request) {
-        throw new Error('Solicitação não encontrada.');
-      }
-
-      if (!this.canCancel(request)) {
-        throw new Error('Esta solicitação não pode mais ser cancelada.');
-      }
-
-      const updated: ServiceRequest = { ...request, status: 'cancelada', updatedAt: new Date().toISOString() };
-      this.requestsSignal.update((requests) => requests.map((item) => (item.id === id ? updated : item)));
-
-      return updated;
-    });
+    return this.http.patch<SolicitacaoApiResponse>(`${this.baseUrl}/${id}/cancelar`, {}).pipe(
+      map(toServiceRequest),
+      tap((request) => this.cache(request)),
+      catchError((error: unknown) =>
+        throwError(() => normalizeError(error, 'Não foi possível cancelar a solicitação.')),
+      ),
+    );
   }
 
   complete(id: string): Observable<ServiceRequest> {
-    return simulateNetwork(() => {
-      const request = this.requestsSignal().find((item) => item.id === id);
-
-      if (!request) {
-        throw new Error('Solicitação não encontrada.');
-      }
-
-      if (request.status !== 'em_andamento') {
-        throw new Error('Apenas solicitações em andamento podem ser concluídas.');
-      }
-
-      const updated: ServiceRequest = { ...request, status: 'concluida', updatedAt: new Date().toISOString() };
-      this.requestsSignal.update((requests) => requests.map((item) => (item.id === id ? updated : item)));
-
-      return updated;
-    });
+    return this.http.patch<SolicitacaoApiResponse>(`${this.baseUrl}/${id}/concluir`, {}).pipe(
+      map(toServiceRequest),
+      tap((request) => this.cache(request)),
+      catchError((error: unknown) =>
+        throwError(() => normalizeError(error, 'Não foi possível concluir a solicitação.')),
+      ),
+    );
   }
 
   markReceivingProposals(id: string): void {
@@ -167,4 +151,51 @@ export class RequestService {
       ),
     );
   }
+
+  private cache(request: ServiceRequest): void {
+    this.requestsSignal.update((requests) =>
+      requests.some((item) => item.id === request.id)
+        ? requests.map((item) => (item.id === request.id ? request : item))
+        : [...requests, request],
+    );
+  }
+}
+
+function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
+  return {
+    id: String(response.id),
+    patientId: String(response.pacienteId),
+    specialtyId: String(response.especialidadeId),
+    description: response.descricao,
+    modality: response.modalidade === 'PRESENCIAL' ? 'presencial' : 'online',
+    address: response.endereco
+      ? { street: response.endereco.logradouro, city: response.endereco.cidade, state: response.endereco.uf }
+      : undefined,
+    desiredDeadline: response.prazoDesejado,
+    status: response.status.toLowerCase() as RequestStatus,
+    createdAt: response.criadoEm,
+    updatedAt: response.atualizadoEm,
+  };
+}
+
+function toApiPayload(input: CreateRequestInput) {
+  return {
+    especialidadeId: Number(input.specialtyId),
+    descricao: input.description,
+    modalidade: input.modality === 'presencial' ? 'PRESENCIAL' : 'ONLINE',
+    endereco:
+      input.modality === 'presencial' && input.address
+        ? { logradouro: input.address.street, cidade: input.address.city, uf: input.address.state }
+        : null,
+    prazoDesejado: input.desiredDeadline,
+  };
+}
+
+function normalizeError(error: unknown, defaultMessage: string): Error {
+  if (error instanceof HttpErrorResponse) {
+    const apiError = error.error as ApiErrorResponse | undefined;
+    return new Error(apiError?.message ?? defaultMessage);
+  }
+
+  return error instanceof Error ? error : new Error(defaultMessage);
 }

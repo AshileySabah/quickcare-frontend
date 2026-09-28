@@ -26,14 +26,14 @@
         </ui-grid-item>
 
         <ui-grid-item [xs]="12" [sm]="2">
-          <ui-input
+          <ui-select
             label="UF do registro"
             formControlName="registrationUf"
-            autocomplete="off"
+            [options]="ufOptions()"
             [required]="true"
-            [maxLength]="2"
+            placeholder="UF"
             [errorMessage]="fieldError()('registrationUf')"
-          ></ui-input>
+          ></ui-select>
         </ui-grid-item>
       }
 

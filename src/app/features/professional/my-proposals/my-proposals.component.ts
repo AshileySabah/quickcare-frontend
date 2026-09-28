@@ -60,8 +60,10 @@ export class MyProposalsComponent {
   }
 
   private loadRequests(): void {
-    this.requestService.list().subscribe((requests) => {
-      this.requestsById.set(new Map(requests.map((request) => [request.id, request])));
+    // Só enriquece os cards (especialidade/paciente); em caso de erro mantém os rótulos padrão.
+    this.requestService.listAvailable().subscribe({
+      next: (requests) => this.requestsById.set(new Map(requests.map((request) => [request.id, request]))),
+      error: () => undefined,
     });
   }
 

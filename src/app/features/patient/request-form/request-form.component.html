@@ -81,13 +81,13 @@
           </ui-grid-item>
 
           <ui-grid-item [xs]="12" [sm]="6">
-            <ui-input
+            <ui-select
               label="Estado"
+              [options]="ufOptions()"
               formControlName="state"
               [required]="true"
-              [maxLength]="2"
               [errorMessage]="fieldError('state')"
-            ></ui-input>
+            ></ui-select>
           </ui-grid-item>
         }
 

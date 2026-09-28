@@ -44,17 +44,9 @@ export class ProfessionalHomeComponent {
   }
 
   protected load(): void {
-    const professional = this.authService.currentUser() as Professional | null;
-
-    if (!professional) {
-      return;
-    }
-
     this.viewState.set('loading');
 
-    const specialtyIds = professional.specialtyIds;
-
-    this.requestService.listOpenForSpecialties(specialtyIds).subscribe({
+    this.requestService.listAvailable().subscribe({
       next: (requests) => {
         this.requests.set(requests);
         this.viewState.set(requests.length === 0 ? 'empty' : 'filled');

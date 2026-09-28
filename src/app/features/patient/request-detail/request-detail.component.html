@@ -20,7 +20,7 @@
         <ui-card>
           <header class="request-detail__header">
             <div>
-              <span class="request-detail__specialty">{{ specialtyName(currentRequest.specialtyId) }}</span>
+              <span class="request-detail__specialty">{{ professionalsSummary(currentRequest) }}</span>
               <h1 class="request-detail__title">Solicitação</h1>
             </div>
             <ui-status-badge [status]="currentRequest.status"></ui-status-badge>
@@ -30,13 +30,19 @@
 
           <dl class="request-detail__meta">
             <div>
+              <dt>Profissionais</dt>
+              @for (professional of currentRequest.professionals; track $index) {
+                <dd>{{ professional.quantity }}× {{ professional.categoryLabel }} — {{ specialtyNames(professional) }}</dd>
+              }
+            </div>
+            <div>
               <dt>Modalidade</dt>
               <dd>{{ currentRequest.modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
             </div>
             @if (currentRequest.address) {
               <div>
                 <dt>Endereço</dt>
-                <dd>{{ currentRequest.address.street }}, {{ currentRequest.address.city }} - {{ currentRequest.address.state }}</dd>
+                <dd>{{ formatAddress(currentRequest.address) }}</dd>
               </div>
             }
             <div>

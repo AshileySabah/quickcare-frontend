@@ -2,17 +2,52 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
-import { ServiceRequest } from '../models';
+import { ServiceRequest, requestedProfessionalsSummary } from '../models';
 import { RequestService } from './request.service';
 
 const BASE_URL = `${environment.apiUrl}/solicitacoes`;
+
+const ADDRESS = {
+  cep: '01310100',
+  street: 'Avenida Paulista',
+  number: '1000',
+  complement: 'Apto 12',
+  neighborhood: 'Bela Vista',
+  city: 'São Paulo',
+  state: 'SP',
+};
+
+const ENDERECO_API = {
+  cep: '01310100',
+  logradouro: 'Avenida Paulista',
+  numero: '1000',
+  complemento: 'Apto 12',
+  bairro: 'Bela Vista',
+  cidade: 'São Paulo',
+  uf: 'SP',
+};
 
 function apiResponse(overrides: Record<string, unknown> = {}) {
   return {
     id: 10,
     pacienteId: 3,
-    especialidadeId: 4,
-    especialidadeNome: 'Nutrição',
+    profissionais: [
+      {
+        categoria: 'ENFERMEIRO',
+        categoriaRotulo: 'Enfermeiro',
+        especialidades: [
+          { id: 13, nome: 'Curativos', categoria: 'ENFERMEIRO' },
+          { id: 14, nome: 'Sondagem', categoria: 'ENFERMEIRO' },
+        ],
+        quantidade: 2,
+      },
+      {
+        categoria: 'CUIDADOR',
+        categoriaRotulo: 'Cuidador',
+        especialidades: [{ id: 15, nome: 'Cuidador de Idosos', categoria: 'CUIDADOR' }],
+        quantidade: 1,
+      },
+    ],
     descricao: 'Preciso de acompanhamento nutricional detalhado para o teste automatizado.',
     modalidade: 'ONLINE',
     endereco: null,
@@ -43,10 +78,13 @@ describe('RequestService', () => {
 
     service
       .create({
-        specialtyId: '4',
+        professionals: [
+          { category: 'ENFERMEIRO', specialtyIds: ['13', '14'], quantity: 2 },
+          { category: 'CUIDADOR', specialtyIds: ['15'], quantity: 1 },
+        ],
         description: 'Preciso de atendimento presencial para o teste automatizado.',
         modality: 'presencial',
-        address: { street: 'Rua A, 10', city: 'São Paulo', state: 'SP' },
+        address: ADDRESS,
         desiredDeadline: '2026-12-01',
       })
       .subscribe((request) => (created = request));
@@ -54,23 +92,40 @@ describe('RequestService', () => {
     const req = httpMock.expectOne(BASE_URL);
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({
-      especialidadeId: 4,
+      profissionais: [
+        { categoria: 'ENFERMEIRO', especialidadeIds: [13, 14], quantidade: 2 },
+        { categoria: 'CUIDADOR', especialidadeIds: [15], quantidade: 1 },
+      ],
       descricao: 'Preciso de atendimento presencial para o teste automatizado.',
       modalidade: 'PRESENCIAL',
-      endereco: { logradouro: 'Rua A, 10', cidade: 'São Paulo', uf: 'SP' },
+      endereco: ENDERECO_API,
       prazoDesejado: '2026-12-01',
     });
 
-    req.flush(
-      apiResponse({ modalidade: 'PRESENCIAL', endereco: { logradouro: 'Rua A, 10', cidade: 'São Paulo', uf: 'SP' } }),
-    );
+    req.flush(apiResponse({ modalidade: 'PRESENCIAL', endereco: ENDERECO_API }));
 
     expect(created).toEqual(
       jasmine.objectContaining({
         id: '10',
-        specialtyId: '4',
+        professionals: [
+          {
+            category: 'ENFERMEIRO',
+            categoryLabel: 'Enfermeiro',
+            specialties: [
+              { id: '13', name: 'Curativos', category: 'ENFERMEIRO' },
+              { id: '14', name: 'Sondagem', category: 'ENFERMEIRO' },
+            ],
+            quantity: 2,
+          },
+          {
+            category: 'CUIDADOR',
+            categoryLabel: 'Cuidador',
+            specialties: [{ id: '15', name: 'Cuidador de Idosos', category: 'CUIDADOR' }],
+            quantity: 1,
+          },
+        ],
         modality: 'presencial',
-        address: { street: 'Rua A, 10', city: 'São Paulo', state: 'SP' },
+        address: ADDRESS,
         status: 'aberta',
       }),
     );
@@ -80,10 +135,10 @@ describe('RequestService', () => {
   it('não envia endereço para solicitações online', () => {
     service
       .create({
-        specialtyId: '4',
+        professionals: [{ category: 'OUTRO', specialtyIds: ['21'], quantity: 1 }],
         description: 'Preciso de acompanhamento nutricional detalhado online.',
         modality: 'online',
-        address: { street: 'ignorado', city: 'ignorado', state: 'SP' },
+        address: ADDRESS,
         desiredDeadline: '2026-12-01',
       })
       .subscribe();
@@ -91,6 +146,14 @@ describe('RequestService', () => {
     const req = httpMock.expectOne(BASE_URL);
     expect(req.request.body.endereco).toBeNull();
     req.flush(apiResponse());
+  });
+
+  it('resume os profissionais pedidos', () => {
+    let requests: ServiceRequest[] = [];
+    service.list().subscribe((result) => (requests = result));
+    httpMock.expectOne(BASE_URL).flush([apiResponse()]);
+
+    expect(requestedProfessionalsSummary(requests[0])).toBe('2× Curativos + Sondagem, 1× Cuidador de Idosos');
   });
 
   it('mapeia status em snake_case', () => {
@@ -117,7 +180,7 @@ describe('RequestService', () => {
     let error: Error | undefined;
     service
       .update('10', {
-        specialtyId: '4',
+        professionals: [{ category: 'OUTRO', specialtyIds: ['21'], quantity: 1 }],
         description: 'Descrição atualizada para o teste automatizado.',
         modality: 'online',
         desiredDeadline: '2026-12-01',

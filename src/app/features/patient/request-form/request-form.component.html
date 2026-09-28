@@ -10,93 +10,64 @@
 
   @if (isLoading()) {
     <div class="request-form__loading">
-      <ui-skeleton height="40px"></ui-skeleton>
+      <ui-skeleton height="120px"></ui-skeleton>
       <ui-skeleton height="100px"></ui-skeleton>
       <ui-skeleton height="40px"></ui-skeleton>
     </div>
   } @else {
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <ui-grid>
-        <ui-grid-item [xs]="12">
-          <ui-select
-            label="Especialidade"
-            [options]="specialtyOptions()"
-            formControlName="specialtyId"
-            [required]="true"
-            [errorMessage]="fieldError('specialtyId')"
-          ></ui-select>
-        </ui-grid-item>
+    <form class="request-form__form" [formGroup]="form" (ngSubmit)="submit()">
+      <app-requested-professionals-card
+        [formArray]="form.controls.professionals"
+        [categories]="categories()"
+        [specialties]="specialties()"
+      ></app-requested-professionals-card>
 
-        <ui-grid-item [xs]="12">
-          <ui-textarea
-            label="Descreva sua necessidade"
-            formControlName="description"
-            [rows]="5"
-            [required]="true"
-            [maxLength]="1000"
-            [errorMessage]="fieldError('description')"
-            hint="Explique o que você busca para receber propostas mais precisas."
-          ></ui-textarea>
-        </ui-grid-item>
-
-        <ui-grid-item [xs]="12" [sm]="6">
-          <ui-select
-            label="Modalidade"
-            [options]="modalityOptions"
-            formControlName="modality"
-            [required]="true"
-            [errorMessage]="fieldError('modality')"
-          ></ui-select>
-        </ui-grid-item>
-
-        <ui-grid-item [xs]="12" [sm]="6">
-          <ui-input
-            label="Prazo desejado"
-            type="date"
-            formControlName="desiredDeadline"
-            [required]="true"
-            [errorMessage]="fieldError('desiredDeadline')"
-          ></ui-input>
-        </ui-grid-item>
-
-        @if (form.controls.modality.value === 'presencial') {
+      <ui-card>
+        <h2 class="request-form__section-title">Detalhes</h2>
+        <ui-grid>
           <ui-grid-item [xs]="12">
-            <ui-input
-              label="Endereço"
-              formControlName="street"
+            <ui-textarea
+              label="Descreva sua necessidade"
+              formControlName="description"
+              [rows]="5"
               [required]="true"
-              [maxLength]="150"
-              [errorMessage]="fieldError('street')"
-            ></ui-input>
-          </ui-grid-item>
-
-          <ui-grid-item [xs]="12" [sm]="6">
-            <ui-input
-              label="Cidade"
-              formControlName="city"
-              [required]="true"
-              [maxLength]="100"
-              [errorMessage]="fieldError('city')"
-            ></ui-input>
+              [maxLength]="1000"
+              [errorMessage]="fieldError('description')"
+              hint="Explique o que você busca para receber propostas mais precisas."
+            ></ui-textarea>
           </ui-grid-item>
 
           <ui-grid-item [xs]="12" [sm]="6">
             <ui-select
-              label="Estado"
-              [options]="ufOptions()"
-              formControlName="state"
+              label="Modalidade"
+              [options]="modalityOptions"
+              formControlName="modality"
               [required]="true"
-              [errorMessage]="fieldError('state')"
+              [errorMessage]="fieldError('modality')"
             ></ui-select>
           </ui-grid-item>
-        }
 
-        <ui-grid-item [xs]="12">
-          <ui-button type="submit" [loading]="isSubmitting()">
-            {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
-          </ui-button>
-        </ui-grid-item>
-      </ui-grid>
+          <ui-grid-item [xs]="12" [sm]="6">
+            <ui-input
+              label="Prazo desejado"
+              type="date"
+              formControlName="desiredDeadline"
+              [required]="true"
+              [errorMessage]="fieldError('desiredDeadline')"
+            ></ui-input>
+          </ui-grid-item>
+        </ui-grid>
+      </ui-card>
+
+      @if (form.controls.modality.value === 'presencial') {
+        <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
+      }
+
+      <div>
+        <ui-button type="submit" [loading]="isSubmitting()">
+          {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
+        </ui-button>
+      </div>
     </form>
   }
 </section>

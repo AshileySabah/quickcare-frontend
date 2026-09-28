@@ -35,7 +35,7 @@
           <a class="patient-history__card-link" [routerLink]="['/patient/solicitacoes', request.id]">
             <ui-card [interactive]="true">
               <div class="patient-history__card-header">
-                <span class="patient-history__specialty">{{ specialtyName(request.specialtyId) }}</span>
+                <span class="patient-history__specialty">{{ professionalsSummary(request) }}</span>
                 <ui-status-badge [status]="request.status"></ui-status-badge>
               </div>
               <p class="patient-history__description">{{ request.description }}</p>

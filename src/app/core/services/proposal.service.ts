@@ -61,7 +61,14 @@ export class ProposalService {
         throw new Error('Apenas profissionais validados podem enviar propostas.');
       }
 
-      if (!input.professional.specialtyIds.includes(input.request.specialtyId)) {
+      // Mesma regra do back-end: o profissional precisa ser da categoria e cobrir
+      // todas as especialidades de ao menos um dos profissionais pedidos.
+      const servesSomeRequestedProfessional = input.request.professionals.some(
+        (requested) =>
+          requested.category === input.professional.category &&
+          requested.specialties.every((specialty) => input.professional.specialtyIds.includes(specialty.id)),
+      );
+      if (!servesSomeRequestedProfessional) {
         throw new Error('Você só pode enviar propostas para solicitações da sua especialidade.');
       }
 

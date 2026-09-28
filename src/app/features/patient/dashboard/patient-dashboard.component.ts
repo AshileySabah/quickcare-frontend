@@ -2,8 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RequestService } from '../../../core/services/request.service';
-import { ServiceRequest, Specialty } from '../../../core/models';
-import { SpecialtyService } from '../../../core/services/specialty.service';
+import { ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -31,14 +30,11 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 })
 export class PatientDashboardComponent {
   private readonly requestService = inject(RequestService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly activeRequests = signal<ServiceRequest[]>([]);
-  private readonly specialties = signal<Specialty[]>([]);
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 
@@ -55,7 +51,5 @@ export class PatientDashboardComponent {
     });
   }
 
-  protected specialtyName(specialtyId: string): string {
-    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
-  }
+  protected readonly professionalsSummary = requestedProfessionalsSummary;
 }

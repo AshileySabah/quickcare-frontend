@@ -1,0 +1,55 @@
+<ui-card>
+  <h2 class="requested-professionals-card__title">Profissionais</h2>
+  <p class="requested-professionals-card__hint">
+    Para cada profissional, escolha a categoria e todas as especialidades que ele precisa atender. Ex.: 2 enfermeiros
+    que façam curativos e sondagem.
+  </p>
+
+  @for (row of formArray().controls; track row; let i = $index) {
+    <div class="requested-professionals-card__row" [formGroup]="row">
+      <ui-select
+        label="Categoria"
+        formControlName="category"
+        [options]="categoryOptions()"
+        [required]="true"
+        placeholder="Selecione a categoria"
+        [errorMessage]="fieldError(i, 'category')"
+        (change)="onCategoryChange(i)"
+      ></ui-select>
+      <ui-multi-select
+        label="Especialidades"
+        formControlName="specialtyIds"
+        [options]="specialtyOptionsByRow()[i]"
+        [required]="true"
+        [placeholder]="row.controls.category.value ? 'Selecione uma ou mais' : 'Escolha a categoria antes'"
+        [errorMessage]="fieldError(i, 'specialtyIds')"
+      ></ui-multi-select>
+      <ui-input
+        label="Quantidade"
+        type="number"
+        formControlName="quantity"
+        [required]="true"
+        [errorMessage]="fieldError(i, 'quantity')"
+      ></ui-input>
+      @if (formArray().length > 1) {
+        <button
+          type="button"
+          class="requested-professionals-card__remove"
+          (click)="remove(i)"
+          aria-label="Remover profissional"
+        >
+          &times;
+        </button>
+      } @else {
+        <span class="requested-professionals-card__remove-placeholder" aria-hidden="true"></span>
+      }
+    </div>
+  }
+
+  <div class="requested-professionals-card__footer">
+    <ui-button type="button" variant="ghost" [disabled]="!canAdd()" (click)="add()">+ Adicionar profissional</ui-button>
+    <span class="requested-professionals-card__total">
+      Total: {{ totalProfessionals() }} {{ totalProfessionals() === 1 ? 'profissional' : 'profissionais' }}
+    </span>
+  </div>
+</ui-card>

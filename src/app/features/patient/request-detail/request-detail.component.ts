@@ -4,9 +4,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { ProfessionalValidationStatus, Proposal, ServiceRequest, Specialty } from '../../../core/models';
+import { ProfessionalValidationStatus, Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
 import { PROFESSIONALS_MOCK } from '../../../mocks';
-import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -44,7 +43,6 @@ export class RequestDetailComponent {
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   private readonly requestId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -56,10 +54,8 @@ export class RequestDetailComponent {
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
   protected readonly isAccepting = signal(false);
-  private readonly specialties = signal<Specialty[]>([]);
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.loadRequest();
   }
 
@@ -93,9 +89,9 @@ export class RequestDetailComponent {
     });
   }
 
-  protected specialtyName(specialtyId: string): string {
-    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
-  }
+  protected readonly professionalsSummary = requestedProfessionalsSummary;
+  protected readonly formatAddress = formatRequestAddress;
+  protected readonly specialtyNames = requestedSpecialtyNames;
 
   protected professionalName(professionalId: string): string {
     return PROFESSIONALS_MOCK.find((professional) => professional.id === professionalId)?.name ?? 'Profissional';

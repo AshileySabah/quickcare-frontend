@@ -84,14 +84,25 @@ describe('ProposalService', () => {
     const description = 'Solicitação de teste para a suíte automatizada de propostas.';
 
     requestService
-      .create({ specialtyId: NUTRICAO_ID, description, modality: 'online', desiredDeadline: '2026-12-01' })
+      .create({
+        professionals: [{ category: 'OUTRO', specialtyIds: [NUTRICAO_ID], quantity: 1 }],
+        description,
+        modality: 'online',
+        desiredDeadline: '2026-12-01',
+      })
       .subscribe((request) => (created = request));
 
     httpMock.expectOne(`${environment.apiUrl}/solicitacoes`).flush({
       id: nextRequestId++,
       pacienteId: 1,
-      especialidadeId: Number(NUTRICAO_ID),
-      especialidadeNome: 'Nutrição',
+      profissionais: [
+        {
+          categoria: 'OUTRO',
+          categoriaRotulo: 'Outros profissionais',
+          especialidades: [{ id: Number(NUTRICAO_ID), nome: 'Nutrição', categoria: 'OUTRO' }],
+          quantidade: 1,
+        },
+      ],
       descricao: description,
       modalidade: 'ONLINE',
       endereco: null,

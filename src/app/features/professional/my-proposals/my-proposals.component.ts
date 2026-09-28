@@ -3,9 +3,8 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Proposal, ServiceRequest, Specialty } from '../../../core/models';
+import { Proposal, ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
 import { PATIENTS_MOCK } from '../../../mocks';
-import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -28,15 +27,12 @@ export class MyProposalsComponent {
   private readonly proposalService = inject(ProposalService);
   private readonly requestService = inject(RequestService);
   private readonly toastService = inject(ToastService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
   private readonly requestsById = signal<Map<string, ServiceRequest>>(new Map());
-  private readonly specialties = signal<Specialty[]>([]);
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 
@@ -68,8 +64,8 @@ export class MyProposalsComponent {
   }
 
   protected specialtyName(requestId: string): string {
-    const specialtyId = this.requestsById().get(requestId)?.specialtyId;
-    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? 'Solicitação';
+    const request = this.requestsById().get(requestId);
+    return request ? requestedProfessionalsSummary(request) : 'Solicitação';
   }
 
   protected patientName(requestId: string): string {

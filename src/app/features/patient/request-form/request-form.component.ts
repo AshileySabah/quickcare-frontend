@@ -1,10 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { buildRequestedProfessionalGroup } from '../../../core/forms/requested-professional-form';
+import { ProfessionalCategory, ProfessionalCategoryInfo, ServiceRequest, Specialty } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
-import { UfService } from '../../../core/services/uf.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
@@ -12,19 +14,25 @@ import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/s
 import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
+import { RequestedProfessionalsCardComponent } from './requested-professionals-card/requested-professionals-card.component';
 
 type Modality = 'online' | 'presencial';
-type FieldName = 'specialtyId' | 'description' | 'modality' | 'street' | 'city' | 'state' | 'desiredDeadline';
+type FieldName = 'description' | 'modality' | 'desiredDeadline';
+type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
   selector: 'app-request-form',
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    AddressCardComponent,
     ButtonComponent,
+    CardComponent,
     GridComponent,
     GridItemComponent,
     InputComponent,
+    RequestedProfessionalsCardComponent,
     SelectComponent,
     SkeletonComponent,
     TextareaComponent,
@@ -39,7 +47,6 @@ export class RequestFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly specialtyService = inject(SpecialtyService);
-  private readonly ufService = inject(UfService);
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
 
@@ -47,8 +54,8 @@ export class RequestFormComponent {
   protected readonly isLoading = signal(this.isEditMode);
   protected readonly isSubmitting = signal(false);
 
-  protected readonly specialtyOptions = signal<SelectOption[]>([]);
-  protected readonly ufOptions = signal<SelectOption[]>([]);
+  protected readonly categories = signal<ProfessionalCategoryInfo[]>([]);
+  protected readonly specialties = signal<Specialty[]>([]);
 
   protected readonly modalityOptions: SelectOption[] = [
     { value: 'online', label: 'Online' },
@@ -56,29 +63,38 @@ export class RequestFormComponent {
   ];
 
   protected readonly form = this.fb.nonNullable.group({
-    specialtyId: ['', Validators.required],
+    professionals: this.fb.array([buildRequestedProfessionalGroup(this.fb)]),
     description: ['', [Validators.required, Validators.minLength(20)]],
     modality: ['online' as Modality, Validators.required],
-    street: [''],
-    city: [''],
-    state: [''],
     desiredDeadline: ['', Validators.required],
+    // Só é validado (habilitado) quando a modalidade é presencial.
+    address: this.fb.nonNullable.group({
+      cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+      street: ['', Validators.required],
+      number: ['', Validators.required],
+      complement: [''],
+      neighborhood: ['', Validators.required],
+      city: ['', Validators.required],
+      state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
+    }),
   });
 
   constructor() {
+    this.form.controls.address.disable();
+
     this.specialtyService.list().subscribe({
-      next: (specialties) =>
-        this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name }))),
+      next: (specialties) => this.specialties.set(specialties),
       error: () =>
         this.toastService.error('Não foi possível carregar as especialidades. Recarregue a página e tente novamente.'),
     });
 
-    this.ufService.list().subscribe({
-      next: (ufs) => this.ufOptions.set(ufs),
-      error: () => this.toastService.error('Não foi possível carregar os estados. Recarregue a página e tente novamente.'),
+    this.specialtyService.listCategories().subscribe({
+      next: (categories) => this.categories.set(categories),
+      error: () =>
+        this.toastService.error('Não foi possível carregar as categorias. Recarregue a página e tente novamente.'),
     });
 
-    this.form.controls.modality.valueChanges.subscribe((modality) => this.applyModalityValidators(modality));
+    this.form.controls.modality.valueChanges.subscribe((modality) => this.toggleAddress(modality));
 
     if (this.editingId) {
       this.loadRequestToEdit(this.editingId);
@@ -94,15 +110,7 @@ export class RequestFormComponent {
           return;
         }
 
-        this.form.patchValue({
-          specialtyId: request.specialtyId,
-          description: request.description,
-          modality: request.modality,
-          street: request.address?.street ?? '',
-          city: request.address?.city ?? '',
-          state: request.address?.state ?? '',
-          desiredDeadline: request.desiredDeadline,
-        });
+        this.fillForm(request);
         this.isLoading.set(false);
       },
       error: () => {
@@ -112,27 +120,36 @@ export class RequestFormComponent {
     });
   }
 
-  private applyModalityValidators(modality: Modality): void {
-    const streetControl = this.form.controls.street;
-    const cityControl = this.form.controls.city;
-    const stateControl = this.form.controls.state;
-
-    if (modality === 'presencial') {
-      streetControl.setValidators(Validators.required);
-      cityControl.setValidators(Validators.required);
-      stateControl.setValidators(Validators.required);
-    } else {
-      streetControl.clearValidators();
-      cityControl.clearValidators();
-      stateControl.clearValidators();
-      streetControl.setValue('');
-      cityControl.setValue('');
-      stateControl.setValue('');
+  private fillForm(request: ServiceRequest): void {
+    const professionals = this.form.controls.professionals;
+    professionals.clear();
+    for (const professional of request.professionals) {
+      professionals.push(
+        buildRequestedProfessionalGroup(this.fb, {
+          category: professional.category,
+          specialtyIds: professional.specialties.map((specialty) => specialty.id),
+          quantity: professional.quantity,
+        }),
+      );
     }
 
-    streetControl.updateValueAndValidity();
-    cityControl.updateValueAndValidity();
-    stateControl.updateValueAndValidity();
+    this.form.patchValue({
+      description: request.description,
+      modality: request.modality,
+      desiredDeadline: request.desiredDeadline,
+    });
+
+    if (request.address) {
+      this.form.controls.address.patchValue({ ...request.address, complement: request.address.complement ?? '' });
+    }
+  }
+
+  private toggleAddress(modality: Modality): void {
+    if (modality === 'presencial') {
+      this.form.controls.address.enable();
+    } else {
+      this.form.controls.address.disable();
+    }
   }
 
   protected fieldError(fieldName: FieldName): string | null {
@@ -153,38 +170,56 @@ export class RequestFormComponent {
     return null;
   }
 
+  protected addressFieldError = (fieldName: string): string | null => {
+    const control = this.form.controls.address.get(fieldName as AddressFieldName);
+
+    if (!control || !control.touched) {
+      return null;
+    }
+
+    if (control.hasError('required')) {
+      return 'Campo obrigatório.';
+    }
+
+    if (fieldName === 'cep' && control.hasError('pattern')) {
+      return 'CEP deve conter 8 dígitos, sem hífen.';
+    }
+
+    if (fieldName === 'state' && control.hasError('pattern')) {
+      return 'Use a sigla do estado (ex.: SP).';
+    }
+
+    return null;
+  };
+
   protected submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    const { specialtyId, description, modality, street, city, state, desiredDeadline } = this.form.getRawValue();
-    const address = modality === 'presencial' ? { street, city, state } : undefined;
+    // getRawValue: o address-card desabilita os campos preenchidos pelo CEP.
+    const { professionals, description, modality, desiredDeadline, address } = this.form.getRawValue();
+    const input = {
+      professionals: professionals.map((professional) => ({
+        category: professional.category as ProfessionalCategory,
+        specialtyIds: professional.specialtyIds,
+        quantity: Number(professional.quantity),
+      })),
+      description,
+      modality,
+      desiredDeadline,
+      address: modality === 'presencial' ? { ...address, state: address.state.toUpperCase() } : undefined,
+    };
 
     this.isSubmitting.set(true);
 
-    if (this.editingId) {
-      this.requestService
-        .update(this.editingId, { specialtyId, description, modality, address, desiredDeadline })
-        .subscribe({
-          next: (request) => {
-            this.isSubmitting.set(false);
-            this.toastService.success('Solicitação atualizada com sucesso!');
-            this.router.navigateByUrl(`/patient/solicitacoes/${request.id}`);
-          },
-          error: (error: Error) => {
-            this.isSubmitting.set(false);
-            this.toastService.error(error.message);
-          },
-        });
-      return;
-    }
+    const request$ = this.editingId ? this.requestService.update(this.editingId, input) : this.requestService.create(input);
 
-    this.requestService.create({ specialtyId, description, modality, address, desiredDeadline }).subscribe({
+    request$.subscribe({
       next: (request) => {
         this.isSubmitting.set(false);
-        this.toastService.success('Solicitação criada com sucesso!');
+        this.toastService.success(this.editingId ? 'Solicitação atualizada com sucesso!' : 'Solicitação criada com sucesso!');
         this.router.navigateByUrl(`/patient/solicitacoes/${request.id}`);
       },
       error: (error: Error) => {

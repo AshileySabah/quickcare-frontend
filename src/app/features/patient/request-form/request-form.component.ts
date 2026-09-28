@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
+import { UfService } from '../../../core/services/uf.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
@@ -34,12 +34,12 @@ type FieldName = 'specialtyId' | 'description' | 'modality' | 'street' | 'city' 
 })
 export class RequestFormComponent {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly specialtyService = inject(SpecialtyService);
+  private readonly ufService = inject(UfService);
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
 
@@ -48,6 +48,7 @@ export class RequestFormComponent {
   protected readonly isSubmitting = signal(false);
 
   protected readonly specialtyOptions = signal<SelectOption[]>([]);
+  protected readonly ufOptions = signal<SelectOption[]>([]);
 
   protected readonly modalityOptions: SelectOption[] = [
     { value: 'online', label: 'Online' },
@@ -70,6 +71,11 @@ export class RequestFormComponent {
         this.specialtyOptions.set(specialties.map((specialty) => ({ value: specialty.id, label: specialty.name }))),
       error: () =>
         this.toastService.error('Não foi possível carregar as especialidades. Recarregue a página e tente novamente.'),
+    });
+
+    this.ufService.list().subscribe({
+      next: (ufs) => this.ufOptions.set(ufs),
+      error: () => this.toastService.error('Não foi possível carregar os estados. Recarregue a página e tente novamente.'),
     });
 
     this.form.controls.modality.valueChanges.subscribe((modality) => this.applyModalityValidators(modality));
@@ -175,13 +181,7 @@ export class RequestFormComponent {
       return;
     }
 
-    const patientId = this.authService.currentUser()?.id;
-
-    if (!patientId) {
-      return;
-    }
-
-    this.requestService.create({ patientId, specialtyId, description, modality, address, desiredDeadline }).subscribe({
+    this.requestService.create({ specialtyId, description, modality, address, desiredDeadline }).subscribe({
       next: (request) => {
         this.isSubmitting.set(false);
         this.toastService.success('Solicitação criada com sucesso!');

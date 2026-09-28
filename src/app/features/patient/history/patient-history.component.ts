@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ServiceRequest, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
@@ -21,7 +20,6 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
   styleUrl: './patient-history.component.scss',
 })
 export class PatientHistoryComponent {
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
   private readonly specialtyService = inject(SpecialtyService);
 
@@ -35,19 +33,12 @@ export class PatientHistoryComponent {
   }
 
   protected load(): void {
-    const patientId = this.authService.currentUser()?.id;
-
-    if (!patientId) {
-      return;
-    }
-
     this.viewState.set('loading');
 
-    this.requestService.list({ patientId }).subscribe({
+    this.requestService.list().subscribe({
       next: (requests) => {
-        const sorted = [...requests].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-        this.requests.set(sorted);
-        this.viewState.set(sorted.length === 0 ? 'empty' : 'filled');
+        this.requests.set(requests);
+        this.viewState.set(requests.length === 0 ? 'empty' : 'filled');
       },
       error: () => this.viewState.set('error'),
     });

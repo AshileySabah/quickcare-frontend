@@ -1,7 +1,13 @@
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { environment } from '../../../environments/environment';
 import { ProposalService } from './proposal.service';
 import { RequestService } from './request.service';
 import { Professional, Proposal, ServiceRequest } from '../models';
+
+const NUTRICAO_ID = '4';
+const PSICOLOGIA_ID = '5';
 
 interface SubmitResult {
   proposal?: Proposal;
@@ -20,7 +26,7 @@ describe('ProposalService', () => {
     phone: '(11) 90000-0000',
     cpf: '123.456.789-00',
     category: 'OUTRO',
-    specialtyIds: ['sp-nutricao'],
+    specialtyIds: [NUTRICAO_ID],
     registrationNumber: 'CRN-TESTE',
     birthDate: '1990-01-01',
     gender: 'PREFIRO_NAO_INFORMAR',
@@ -55,29 +61,45 @@ describe('ProposalService', () => {
   const wrongSpecialtyProfessional: Professional = {
     ...approvedProfessional,
     id: 'prof-test-wrong-specialty',
-    specialtyIds: ['sp-psicologia'],
+    specialtyIds: [PSICOLOGIA_ID],
     registrationNumber: 'CRP-TESTE',
   };
 
+  let httpMock: HttpTestingController;
+  let nextRequestId = 1;
+
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient(), provideHttpClientTesting()],
+    });
     proposalService = TestBed.inject(ProposalService);
     requestService = TestBed.inject(RequestService);
+    httpMock = TestBed.inject(HttpTestingController);
   });
+
+  afterEach(() => httpMock.verify());
 
   function createOpenRequest(): ServiceRequest {
     let created!: ServiceRequest;
+    const description = 'Solicitação de teste para a suíte automatizada de propostas.';
 
     requestService
-      .create({
-        patientId: 'pat-test',
-        specialtyId: 'sp-nutricao',
-        description: 'Solicitação de teste para a suíte automatizada de propostas.',
-        modality: 'online',
-        desiredDeadline: '2026-12-01',
-      })
+      .create({ specialtyId: NUTRICAO_ID, description, modality: 'online', desiredDeadline: '2026-12-01' })
       .subscribe((request) => (created = request));
-    tick(1000);
+
+    httpMock.expectOne(`${environment.apiUrl}/solicitacoes`).flush({
+      id: nextRequestId++,
+      pacienteId: 1,
+      especialidadeId: Number(NUTRICAO_ID),
+      especialidadeNome: 'Nutrição',
+      descricao: description,
+      modalidade: 'ONLINE',
+      endereco: null,
+      prazoDesejado: '2026-12-01',
+      status: 'ABERTA',
+      criadoEm: '2026-09-01T10:00:00Z',
+      atualizadoEm: '2026-09-01T10:00:00Z',
+    });
 
     return created;
   }

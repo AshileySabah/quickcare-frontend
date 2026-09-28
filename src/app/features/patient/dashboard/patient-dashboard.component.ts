@@ -1,7 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ServiceRequest, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
@@ -31,7 +30,6 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
   styleUrl: './patient-dashboard.component.scss',
 })
 export class PatientDashboardComponent {
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
   private readonly specialtyService = inject(SpecialtyService);
 
@@ -45,15 +43,9 @@ export class PatientDashboardComponent {
   }
 
   protected load(): void {
-    const patientId = this.authService.currentUser()?.id;
-
-    if (!patientId) {
-      return;
-    }
-
     this.viewState.set('loading');
 
-    this.requestService.list({ patientId }).subscribe({
+    this.requestService.list().subscribe({
       next: (requests) => {
         const active = requests.filter((request) => request.status !== 'concluida' && request.status !== 'cancelada');
         this.activeRequests.set(active);

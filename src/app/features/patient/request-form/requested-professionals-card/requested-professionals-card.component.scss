@@ -1,0 +1,76 @@
+@use 'tokens' as tokens;
+@use 'patterns/auth-page' as authPage;
+
+.requested-professionals-card__title {
+  @include authPage.section-title;
+}
+
+.requested-professionals-card__hint {
+  @include authPage.hint;
+}
+
+// Celular: campos empilhados com o botão de remover ao lado da categoria.
+.requested-professionals-card__row {
+  display: grid;
+  grid-template-columns: 1fr 40px;
+  gap: tokens.space(3);
+  align-items: flex-start;
+  margin-bottom: tokens.space(4);
+
+  > :nth-child(2),
+  > :nth-child(3) {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  > :nth-child(4) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  @include tokens.respond('md') {
+    grid-template-columns: 1fr 1fr 110px 40px;
+    margin-bottom: tokens.space(3);
+
+    > :nth-child(n) {
+      grid-column: auto;
+      grid-row: auto;
+    }
+  }
+}
+
+.requested-professionals-card__remove-placeholder {
+  width: 40px;
+}
+
+.requested-professionals-card__remove {
+  // Alinha com os campos, descontando a altura do label.
+  margin-top: 26px;
+  height: 40px;
+  width: 40px;
+  border: none;
+  border-radius: tokens.radius('sm');
+  background-color: tokens.color('gray', 100);
+  color: tokens.color('gray', 600);
+  font-size: tokens.font-size('lg');
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('gray', 200);
+  }
+}
+
+.requested-professionals-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  flex-wrap: wrap;
+}
+
+.requested-professionals-card__total {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}

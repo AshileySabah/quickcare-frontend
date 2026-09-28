@@ -4,13 +4,13 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiErrorResponse } from '../auth/auth-api.model';
-import { RequestAddress, RequestStatus, ServiceModality, ServiceRequest } from '../models';
+import { Address, ProfessionalCategory, RequestStatus, ServiceModality, ServiceRequest } from '../models';
 
 export interface CreateRequestInput {
-  specialtyId: string;
+  professionals: { category: ProfessionalCategory; specialtyIds: string[]; quantity: number }[];
   description: string;
   modality: ServiceModality;
-  address?: RequestAddress;
+  address?: Address;
   desiredDeadline: string;
 }
 
@@ -19,14 +19,28 @@ export type UpdateRequestInput = CreateRequestInput;
 type ModalidadeApi = 'PRESENCIAL' | 'ONLINE';
 type StatusApi = 'ABERTA' | 'RECEBENDO_PROPOSTAS' | 'EM_ANDAMENTO' | 'CONCLUIDA' | 'CANCELADA';
 
+interface EnderecoApi {
+  cep: string;
+  logradouro: string;
+  numero: string;
+  complemento: string | null;
+  bairro: string;
+  cidade: string;
+  uf: string;
+}
+
 interface SolicitacaoApiResponse {
   id: number;
   pacienteId: number;
-  especialidadeId: number;
-  especialidadeNome: string;
+  profissionais: {
+    categoria: ProfessionalCategory;
+    categoriaRotulo: string;
+    especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
+    quantidade: number;
+  }[];
   descricao: string;
   modalidade: ModalidadeApi;
-  endereco: { logradouro: string; cidade: string; uf: string } | null;
+  endereco: EnderecoApi | null;
   prazoDesejado: string;
   status: StatusApi;
   criadoEm: string;
@@ -165,11 +179,28 @@ function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
   return {
     id: String(response.id),
     patientId: String(response.pacienteId),
-    specialtyId: String(response.especialidadeId),
+    professionals: response.profissionais.map((profissional) => ({
+      category: profissional.categoria,
+      categoryLabel: profissional.categoriaRotulo,
+      specialties: profissional.especialidades.map((especialidade) => ({
+        id: String(especialidade.id),
+        name: especialidade.nome,
+        category: especialidade.categoria,
+      })),
+      quantity: profissional.quantidade,
+    })),
     description: response.descricao,
     modality: response.modalidade === 'PRESENCIAL' ? 'presencial' : 'online',
     address: response.endereco
-      ? { street: response.endereco.logradouro, city: response.endereco.cidade, state: response.endereco.uf }
+      ? {
+          cep: response.endereco.cep,
+          street: response.endereco.logradouro,
+          number: response.endereco.numero,
+          complement: response.endereco.complemento ?? undefined,
+          neighborhood: response.endereco.bairro,
+          city: response.endereco.cidade,
+          state: response.endereco.uf,
+        }
       : undefined,
     desiredDeadline: response.prazoDesejado,
     status: response.status.toLowerCase() as RequestStatus,
@@ -179,14 +210,27 @@ function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
 }
 
 function toApiPayload(input: CreateRequestInput) {
+  const address = input.modality === 'presencial' ? input.address : undefined;
+
   return {
-    especialidadeId: Number(input.specialtyId),
+    profissionais: input.professionals.map((professional) => ({
+      categoria: professional.category,
+      especialidadeIds: professional.specialtyIds.map(Number),
+      quantidade: professional.quantity,
+    })),
     descricao: input.description,
     modalidade: input.modality === 'presencial' ? 'PRESENCIAL' : 'ONLINE',
-    endereco:
-      input.modality === 'presencial' && input.address
-        ? { logradouro: input.address.street, cidade: input.address.city, uf: input.address.state }
-        : null,
+    endereco: address
+      ? {
+          cep: address.cep,
+          logradouro: address.street,
+          numero: address.number,
+          complemento: address.complement || null,
+          bairro: address.neighborhood,
+          cidade: address.city,
+          uf: address.state,
+        }
+      : null,
     prazoDesejado: input.desiredDeadline,
   };
 }

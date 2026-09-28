@@ -5,8 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Professional, Proposal, ServiceRequest, Specialty } from '../../../core/models';
-import { SpecialtyService } from '../../../core/services/specialty.service';
+import { Professional, Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -51,7 +50,6 @@ export class ProfessionalRequestDetailComponent {
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   private readonly requestId = this.route.snapshot.paramMap.get('id') ?? '';
 
@@ -59,7 +57,6 @@ export class ProfessionalRequestDetailComponent {
   protected readonly request = signal<ServiceRequest | null>(null);
   protected readonly existingProposal = signal<Proposal | null>(null);
   protected readonly isSubmitting = signal(false);
-  private readonly specialties = signal<Specialty[]>([]);
 
   protected readonly form = this.fb.nonNullable.group({
     price: ['', [Validators.required, Validators.min(1)]],
@@ -68,7 +65,6 @@ export class ProfessionalRequestDetailComponent {
   });
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 
@@ -100,9 +96,9 @@ export class ProfessionalRequestDetailComponent {
     });
   }
 
-  protected specialtyName(specialtyId: string): string {
-    return this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId;
-  }
+  protected readonly professionalsSummary = requestedProfessionalsSummary;
+  protected readonly formatAddress = formatRequestAddress;
+  protected readonly specialtyNames = requestedSpecialtyNames;
 
   protected fieldError(fieldName: FieldName): string | null {
     const control = this.form.controls[fieldName];

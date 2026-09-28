@@ -77,6 +77,26 @@
     }
   }
 
+  &--danger-outline {
+    background-color: transparent;
+    border-color: tokens.semantic('error');
+    color: tokens.semantic('error');
+
+    &:hover:not(:disabled) {
+      background-color: rgba(tokens.semantic('error'), 0.08);
+    }
+  }
+
+  &--info-outline {
+    background-color: transparent;
+    border-color: tokens.semantic('info');
+    color: tokens.semantic('info');
+
+    &:hover:not(:disabled) {
+      background-color: rgba(tokens.semantic('info'), 0.08);
+    }
+  }
+
   &--inverse {
     background-color: #FFFFFF;
     color: tokens.color('teal', 700);
@@ -98,6 +118,13 @@
   }
 }
 
+// Permite ícone + texto no conteúdo projetado, alinhados e espaçados.
+.ui-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.space(1);
+}
+
 .ui-button__spinner {
   width: 16px;
   height: 16px;
@@ -108,7 +135,9 @@
 }
 
 .ui-button--secondary .ui-button__spinner,
-.ui-button--ghost .ui-button__spinner {
+.ui-button--ghost .ui-button__spinner,
+.ui-button--danger-outline .ui-button__spinner,
+.ui-button--info-outline .ui-button__spinner {
   border: 2px solid rgba(0, 0, 0, 0.15);
   border-top-color: tokens.color('gray', 700);
 }

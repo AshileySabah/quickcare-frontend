@@ -2,7 +2,7 @@
   <header class="patient-dashboard__header">
     <div>
       <h1 class="patient-dashboard__title">Minhas solicitações</h1>
-      <p class="patient-dashboard__subtitle">Acompanhe os atendimentos em andamento.</p>
+      <p class="patient-dashboard__subtitle">Acompanhe prazos, status e propostas das suas solicitações ativas.</p>
     </div>
     <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
   </header>
@@ -13,9 +13,9 @@
         @for (i of [1, 2, 3]; track i) {
           <ui-card>
             <div class="patient-dashboard__skeleton-lines">
-              <ui-skeleton height="20px" width="60%"></ui-skeleton>
-              <ui-skeleton height="14px" width="40%"></ui-skeleton>
-              <ui-skeleton height="14px" width="80%"></ui-skeleton>
+              <ui-skeleton height="20px" width="40%"></ui-skeleton>
+              <ui-skeleton height="16px" width="70%"></ui-skeleton>
+              <ui-skeleton height="64px"></ui-skeleton>
             </div>
           </ui-card>
         }
@@ -23,30 +23,80 @@
     }
     @case ('empty') {
       <ui-empty-state
-        title="Nenhuma solicitação em andamento"
-        message="Crie uma nova solicitação para encontrar um profissional de saúde."
+        title="Nenhuma solicitação ativa"
+        message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
       >
         <ui-button routerLink="/patient/novo">Criar solicitação</ui-button>
+        <ui-button variant="ghost" routerLink="/patient/historico">Ver histórico</ui-button>
       </ui-empty-state>
     }
     @case ('error') {
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
-      <div class="patient-dashboard__list">
-        @for (request of activeRequests(); track request.id) {
-          <a class="patient-dashboard__card-link" [routerLink]="['/patient/solicitacoes', request.id]">
-            <ui-card [interactive]="true">
-              <div class="patient-dashboard__card-header">
-                <span class="patient-dashboard__specialty">{{ specialtyName(request.specialtyId) }}</span>
-                <ui-status-badge [status]="request.status"></ui-status-badge>
-              </div>
-              <p class="patient-dashboard__description">{{ request.description }}</p>
-              <p class="patient-dashboard__date">Criada em {{ request.createdAt | date: 'dd/MM/yyyy' }}</p>
-            </ui-card>
-          </a>
-        }
-      </div>
+      <ui-card padding="sm">
+        <form [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
+          <ui-grid spacing="sm">
+            <ui-grid-item [xs]="12" [lg]="4">
+              <ui-input label="Buscar" formControlName="search" placeholder="Descrição, especialidade, bairro..."></ui-input>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Status" formControlName="status" [options]="statusOptions" placeholder="Status"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Modalidade" formControlName="modality" [options]="modalityOptions" placeholder="Todas"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Categoria" formControlName="category" [options]="categoryOptions()" placeholder="Todas"></ui-select>
+            </ui-grid-item>
+            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+              <ui-select label="Ordenar por" formControlName="sort" [options]="sortOptions" placeholder="Ordenar"></ui-select>
+            </ui-grid-item>
+          </ui-grid>
+        </form>
+        <div class="patient-dashboard__filters-footer">
+          <span class="patient-dashboard__count">
+            {{ filteredRequests().length }}
+            {{ filteredRequests().length === 1 ? 'solicitação' : 'solicitações' }}
+          </span>
+          @if (hasActiveFilters()) {
+            <ui-button variant="ghost" size="sm" (click)="clearFilters()">Limpar filtros</ui-button>
+          }
+        </div>
+      </ui-card>
+
+      @if (filteredRequests().length === 0) {
+        <ui-empty-state title="Nenhuma solicitação encontrada" message="Ajuste ou limpe os filtros para ver outras solicitações.">
+          <ui-button variant="secondary" (click)="clearFilters()">Limpar filtros</ui-button>
+        </ui-empty-state>
+      } @else {
+        <ui-grid>
+          @for (request of filteredRequests(); track request.id) {
+            <ui-grid-item [xs]="12">
+              <app-request-card
+                [request]="request"
+                [proposalCount]="proposalCount(request)"
+                [canEdit]="canEdit(request)"
+                [canCancel]="canCancel(request)"
+                (cancel)="askToCancel($event)"
+              ></app-request-card>
+            </ui-grid-item>
+          }
+        </ui-grid>
+      }
     }
   }
 </section>
+
+<ui-modal [open]="requestToCancel() !== null" titleText="Cancelar solicitação" (closed)="closeCancelModal()">
+  @if (requestToCancel(); as request) {
+    <p class="patient-dashboard__confirm-text">
+      Tem certeza que deseja cancelar a solicitação <strong>#{{ request.id }}</strong>? Os profissionais não poderão mais
+      enviar propostas e essa ação não pode ser desfeita.
+    </p>
+    <div class="patient-dashboard__confirm-actions">
+      <ui-button variant="ghost" [disabled]="isCancelling()" (click)="closeCancelModal()">Voltar</ui-button>
+      <ui-button variant="danger" [loading]="isCancelling()" (click)="confirmCancel()">Sim, cancelar</ui-button>
+    </div>
+  }
+</ui-modal>

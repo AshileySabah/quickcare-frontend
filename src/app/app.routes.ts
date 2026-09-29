@@ -7,21 +7,43 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+    loadComponent: () =>
+      import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    loadComponent: () =>
+      import('./features/auth/login/login.component').then(
+        (m) => m.LoginComponent,
+      ),
+  },
+  {
+    path: 'esqueci-senha',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
+  },
+  {
+    path: 'redefinir-senha',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
   },
   {
     path: 'cadastro',
     loadComponent: () =>
-      import('./features/auth/register-select/register-select.component').then((m) => m.RegisterSelectComponent),
+      import('./features/auth/register-select/register-select.component').then(
+        (m) => m.RegisterSelectComponent,
+      ),
   },
   {
     path: 'cadastro/paciente',
     loadComponent: () =>
-      import('./features/patient/register/patient-register.component').then((m) => m.PatientRegisterComponent),
+      import('./features/patient/register/patient-register.component').then(
+        (m) => m.PatientRegisterComponent,
+      ),
   },
   {
     path: 'cadastro/profissional',
@@ -33,7 +55,9 @@ export const routes: Routes = [
   {
     path: 'acesso-negado',
     loadComponent: () =>
-      import('./features/auth/access-denied/access-denied.component').then((m) => m.AccessDeniedComponent),
+      import('./features/auth/access-denied/access-denied.component').then(
+        (m) => m.AccessDeniedComponent,
+      ),
   },
   {
     path: 'professional/aguardando-validacao',
@@ -71,7 +95,9 @@ export const routes: Routes = [
       {
         path: 'propostas',
         loadComponent: () =>
-          import('./features/professional/my-proposals/my-proposals.component').then((m) => m.MyProposalsComponent),
+          import('./features/professional/my-proposals/my-proposals.component').then(
+            (m) => m.MyProposalsComponent,
+          ),
       },
       {
         path: 'propostas/:id/editar',
@@ -94,38 +120,52 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['patient'] },
     loadComponent: () =>
-      import('./features/patient/patient-shell/patient-shell.component').then((m) => m.PatientShellComponent),
+      import('./features/patient/patient-shell/patient-shell.component').then(
+        (m) => m.PatientShellComponent,
+      ),
     children: [
       {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./features/patient/dashboard/patient-dashboard.component').then((m) => m.PatientDashboardComponent),
+          import('./features/patient/dashboard/patient-dashboard.component').then(
+            (m) => m.PatientDashboardComponent,
+          ),
       },
       {
         path: 'novo',
         loadComponent: () =>
-          import('./features/patient/request-form/request-form.component').then((m) => m.RequestFormComponent),
+          import('./features/patient/request-form/request-form.component').then(
+            (m) => m.RequestFormComponent,
+          ),
       },
       {
         path: 'solicitacoes/:id',
         loadComponent: () =>
-          import('./features/patient/request-detail/request-detail.component').then((m) => m.RequestDetailComponent),
+          import('./features/patient/request-detail/request-detail.component').then(
+            (m) => m.RequestDetailComponent,
+          ),
       },
       {
         path: 'solicitacoes/:id/editar',
         loadComponent: () =>
-          import('./features/patient/request-form/request-form.component').then((m) => m.RequestFormComponent),
+          import('./features/patient/request-form/request-form.component').then(
+            (m) => m.RequestFormComponent,
+          ),
       },
       {
         path: 'historico',
         loadComponent: () =>
-          import('./features/patient/history/patient-history.component').then((m) => m.PatientHistoryComponent),
+          import('./features/patient/history/patient-history.component').then(
+            (m) => m.PatientHistoryComponent,
+          ),
       },
       {
         path: 'perfil',
         loadComponent: () =>
-          import('./features/patient/profile/patient-profile.component').then((m) => m.PatientProfileComponent),
+          import('./features/patient/profile/patient-profile.component').then(
+            (m) => m.PatientProfileComponent,
+          ),
       },
     ],
   },
@@ -134,13 +174,17 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { roles: ['admin'] },
     loadComponent: () =>
-      import('./features/admin/admin-shell/admin-shell.component').then((m) => m.AdminShellComponent),
+      import('./features/admin/admin-shell/admin-shell.component').then(
+        (m) => m.AdminShellComponent,
+      ),
     children: [
       {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
-          import('./features/admin/dashboard/admin-dashboard.component').then((m) => m.AdminDashboardComponent),
+          import('./features/admin/dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent,
+          ),
       },
       {
         path: 'profissionais/:id',

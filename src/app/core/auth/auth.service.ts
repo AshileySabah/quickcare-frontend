@@ -16,7 +16,12 @@ import {
 } from '../models';
 import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
 import { simulateNetwork } from '../services/simulate-network.util';
-import { ApiErrorResponse, CadastroApiResponse, LoginApiResponse, PerfilStatusApi } from './auth-api.model';
+import {
+  ApiErrorResponse,
+  CadastroApiResponse,
+  LoginApiResponse,
+  PerfilStatusApi,
+} from './auth-api.model';
 
 export interface PatientRegistration {
   name: string;
@@ -65,21 +70,79 @@ export interface ProfessionalRegistration {
 export class AuthService {
   private readonly http = inject(HttpClient);
 
-  private readonly users = signal<User[]>([...PATIENTS_MOCK, ...PROFESSIONALS_MOCK, ...ADMINS_MOCK]);
+  private readonly users = signal<User[]>([
+    ...PATIENTS_MOCK,
+    ...PROFESSIONALS_MOCK,
+    ...ADMINS_MOCK,
+  ]);
 
   private readonly currentUserSignal = signal<User | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly isAuthenticated = computed(() => this.currentUserSignal() !== null);
-  readonly role = computed<UserRole | null>(() => this.currentUserSignal()?.role ?? null);
+  readonly role = computed<UserRole | null>(
+    () => this.currentUserSignal()?.role ?? null,
+  );
 
   login(email: string, password: string): Observable<User> {
     return this.http
-      .post<LoginApiResponse>(`${environment.apiUrl}/auth/login`, { email, senha: password }, { withCredentials: true })
+      .post<LoginApiResponse>(
+        `${environment.apiUrl}/auth/login`,
+        { email, senha: password },
+        { withCredentials: true },
+      )
       .pipe(
         map((response) => this.mapLoginResponseToUser(response)),
         tap((user) => this.establishSession(user)),
         catchError((error: unknown) =>
-          throwError(() => this.normalizeError(error, 'Não foi possível entrar. Tente novamente.')),
+          throwError(() =>
+            this.normalizeError(
+              error,
+              'Não foi possível entrar. Tente novamente.',
+            ),
+          ),
+        ),
+      );
+  }
+  requestPasswordReset(email: string): Observable<void> {
+    return this.http
+      .post<unknown>(
+        `${environment.apiUrl}/auth/esqueci-senha`,
+        { email },
+        { withCredentials: true },
+      )
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) =>
+          throwError(() =>
+            this.normalizeError(
+              error,
+              'Não foi possível enviar o código. Tente novamente.',
+            ),
+          ),
+        ),
+      );
+  }
+
+  resetPassword(
+    email: string,
+    token: string,
+    newPassword: string,
+  ): Observable<void> {
+    return this.http
+      .post<unknown>(
+        `${environment.apiUrl}/auth/redefinir-senha`,
+        { email, token, novaSenha: newPassword },
+        { withCredentials: true },
+      )
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) =>
+          throwError(() =>
+            this.normalizeError(
+              error,
+              'Não foi possível redefinir a senha. Tente novamente.',
+            ),
+          ),
         ),
       );
   }
@@ -95,7 +158,14 @@ export class AuthService {
     }
 
     const id = String(response.usuarioId);
-    const emptyAddress: Address = { cep: '', street: '', number: '', neighborhood: '', city: '', state: '' };
+    const emptyAddress: Address = {
+      cep: '',
+      street: '',
+      number: '',
+      neighborhood: '',
+      city: '',
+      state: '',
+    };
 
     if (perfilAtivo.tipo === 'PROFISSIONAL') {
       const professional: Professional = {
@@ -116,7 +186,13 @@ export class AuthService {
         hasLiabilityInsurance: false,
         address: emptyAddress,
         validationStatus: 'aprovado',
-        validationDocument: { fileName: '', fileType: '', fileSizeBytes: 0, uploadedAt: '', previewUrl: '' },
+        validationDocument: {
+          fileName: '',
+          fileType: '',
+          fileSizeBytes: 0,
+          uploadedAt: '',
+          previewUrl: '',
+        },
       };
       return professional;
     }
@@ -161,7 +237,10 @@ export class AuthService {
       telefone: input.phone,
       dataNascimento: input.birthDate,
       genero: input.gender,
-      contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
+      contatosEmergencia: input.emergencyContacts.map((contact) => ({
+        nome: contact.name,
+        telefone: contact.phone,
+      })),
       confirmacaoInformacoesVerdadeiras: input.infoConfirmedTrue,
       consentimentoLgpd: input.lgpdConsent,
       alergias: input.allergies || undefined,
@@ -177,7 +256,10 @@ export class AuthService {
     };
 
     const formData = new FormData();
-    formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));
+    formData.append(
+      'dados',
+      new Blob([JSON.stringify(dados)], { type: 'application/json' }),
+    );
 
     for (const document of input.documents) {
       formData.append('documentos', document.file, document.file.name);
@@ -189,11 +271,20 @@ export class AuthService {
     }
 
     return this.http
-      .post<CadastroApiResponse>(`${environment.apiUrl}/usuarios/cadastro/paciente`, formData, { withCredentials: true })
+      .post<CadastroApiResponse>(
+        `${environment.apiUrl}/usuarios/cadastro/paciente`,
+        formData,
+        { withCredentials: true },
+      )
       .pipe(
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>
-          throwError(() => this.normalizeError(error, 'Não foi possível concluir o cadastro. Tente novamente.')),
+          throwError(() =>
+            this.normalizeError(
+              error,
+              'Não foi possível concluir o cadastro. Tente novamente.',
+            ),
+          ),
         ),
       );
   }
@@ -212,7 +303,10 @@ export class AuthService {
       registroProfissionalUf: input.registrationUf || undefined,
       dataNascimento: input.birthDate,
       genero: input.gender,
-      contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
+      contatosEmergencia: input.emergencyContacts.map((contact) => ({
+        nome: contact.name,
+        telefone: contact.phone,
+      })),
       confirmacaoInformacoesVerdadeiras: input.infoConfirmedTrue,
       consentimentoLgpd: input.lgpdConsent,
       possuiSeguroResponsabilidadeCivil: input.hasLiabilityInsurance,
@@ -228,7 +322,10 @@ export class AuthService {
     };
 
     const formData = new FormData();
-    formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));
+    formData.append(
+      'dados',
+      new Blob([JSON.stringify(dados)], { type: 'application/json' }),
+    );
 
     for (const document of input.documents) {
       formData.append('documentos', document.file, document.file.name);
@@ -240,49 +337,79 @@ export class AuthService {
     }
 
     return this.http
-      .post<CadastroApiResponse>(`${environment.apiUrl}/usuarios/cadastro/profissional`, formData, { withCredentials: true })
+      .post<CadastroApiResponse>(
+        `${environment.apiUrl}/usuarios/cadastro/profissional`,
+        formData,
+        { withCredentials: true },
+      )
       .pipe(
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>
-          throwError(() => this.normalizeError(error, 'Não foi possível concluir o cadastro. Tente novamente.')),
+          throwError(() =>
+            this.normalizeError(
+              error,
+              'Não foi possível concluir o cadastro. Tente novamente.',
+            ),
+          ),
         ),
       );
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(
-      tap(() => this.currentUserSignal.set(null)),
-      catchError(() => {
-        this.currentUserSignal.set(null);
-        return of(undefined);
-      }),
-    );
+    return this.http
+      .post<void>(
+        `${environment.apiUrl}/auth/logout`,
+        {},
+        { withCredentials: true },
+      )
+      .pipe(
+        tap(() => this.currentUserSignal.set(null)),
+        catchError(() => {
+          this.currentUserSignal.set(null);
+          return of(undefined);
+        }),
+      );
   }
 
   listPendingProfessionals(simulateError = false): Observable<Professional[]> {
     return simulateNetwork(
       () =>
         this.users().filter(
-          (user): user is Professional => user.role === 'professional' && user.validationStatus === 'pendente',
+          (user): user is Professional =>
+            user.role === 'professional' &&
+            user.validationStatus === 'pendente',
         ),
-      { simulateError, errorMessage: 'Não foi possível carregar os profissionais pendentes.' },
+      {
+        simulateError,
+        errorMessage: 'Não foi possível carregar os profissionais pendentes.',
+      },
     );
   }
 
-  getProfessionalById(id: string, simulateError = false): Observable<Professional | undefined> {
+  getProfessionalById(
+    id: string,
+    simulateError = false,
+  ): Observable<Professional | undefined> {
     return simulateNetwork(
       () => {
         const user = this.users().find((candidate) => candidate.id === id);
         return user && user.role === 'professional' ? user : undefined;
       },
-      { simulateError, errorMessage: 'Não foi possível carregar o profissional.' },
+      {
+        simulateError,
+        errorMessage: 'Não foi possível carregar o profissional.',
+      },
     );
   }
 
   approveProfessional(id: string): Observable<Professional> {
     return simulateNetwork(() => {
       const professional = this.findPendingProfessionalOrThrow(id);
-      const updated: Professional = { ...professional, validationStatus: 'aprovado', rejectionReason: undefined };
+      const updated: Professional = {
+        ...professional,
+        validationStatus: 'aprovado',
+        rejectionReason: undefined,
+      };
       this.replaceUser(updated);
       return updated;
     });
@@ -291,7 +418,11 @@ export class AuthService {
   rejectProfessional(id: string, reason: string): Observable<Professional> {
     return simulateNetwork(() => {
       const professional = this.findPendingProfessionalOrThrow(id);
-      const updated: Professional = { ...professional, validationStatus: 'reprovado', rejectionReason: reason };
+      const updated: Professional = {
+        ...professional,
+        validationStatus: 'reprovado',
+        rejectionReason: reason,
+      };
       this.replaceUser(updated);
       return updated;
     });
@@ -312,7 +443,9 @@ export class AuthService {
   }
 
   private replaceUser(updated: User): void {
-    this.users.update((users) => users.map((user) => (user.id === updated.id ? updated : user)));
+    this.users.update((users) =>
+      users.map((user) => (user.id === updated.id ? updated : user)),
+    );
 
     if (this.currentUserSignal()?.id === updated.id) {
       this.currentUserSignal.set(updated);

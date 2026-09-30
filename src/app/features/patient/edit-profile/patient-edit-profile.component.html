@@ -1,0 +1,41 @@
+<section class="edit-profile">
+  <header class="edit-profile__header">
+    <h1 class="edit-profile__title">Meu perfil</h1>
+    <p class="edit-profile__subtitle">Mantenha suas informações atualizadas para os profissionais que vão te atender.</p>
+  </header>
+
+  @switch (state()) {
+    @case ('loading') {
+      <div class="edit-profile__skeleton">
+        <ui-skeleton height="96px" width="96px" radius="999px"></ui-skeleton>
+        <ui-skeleton height="220px" radius="16px"></ui-skeleton>
+        <ui-skeleton height="160px" radius="16px"></ui-skeleton>
+      </div>
+    }
+    @case ('error') {
+      <ui-error-state [message]="loadError()" (retry)="load()"></ui-error-state>
+    }
+    @case ('ready') {
+      <form class="edit-profile__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+        <ui-avatar-upload [initialUrl]="avatarUrl()" (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+
+        <ui-basic-info-card
+          [group]="form"
+          [fieldError]="fieldError"
+          [showEmail]="false"
+          [showCpf]="false"
+        ></ui-basic-info-card>
+
+        <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
+
+        <ui-health-info-card [group]="form"></ui-health-info-card>
+
+        <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
+
+        <div class="edit-profile__actions">
+          <ui-button type="submit" [loading]="isSubmitting()">Salvar alterações</ui-button>
+        </div>
+      </form>
+    }
+  }
+</section>

@@ -1,7 +1,8 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
+import { atLeastOneModalityValidator } from '../../../core/forms/professional-validators';
 import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { DocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
@@ -21,14 +22,6 @@ import { PasswordCardComponent } from '../../../shared/ui/register/password-card
 import { ProfessionalPracticeCardComponent } from './professional-practice-card/professional-practice-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-
-function atLeastOneModalityValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const presencial = control.get('attendsPresencial')?.value;
-    const remoto = control.get('attendsRemoto')?.value;
-    return presencial || remoto ? null : { modalityRequired: true };
-  };
-}
 
 type FieldName =
   | 'name'

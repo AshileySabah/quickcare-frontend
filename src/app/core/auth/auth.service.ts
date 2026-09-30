@@ -485,6 +485,12 @@ export class AuthService {
     }
   }
 
+  updateCurrentUser(name: string, avatarUrl: string | null): void {
+    this.currentUserSignal.update((user) =>
+      user ? { ...user, name, avatarUrl: avatarUrl ?? undefined } : user,
+    );
+  }
+
   private establishSession(user: User): void {
     this.currentUserSignal.set(user);
   }

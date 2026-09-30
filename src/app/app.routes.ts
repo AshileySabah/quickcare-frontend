@@ -100,17 +100,17 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'perfil',
+        loadComponent: () =>
+          import('./features/professional/edit-profile/professional-edit-profile.component').then(
+            (m) => m.ProfessionalEditProfileComponent,
+          ),
+      },
+      {
         path: 'propostas/:id/editar',
         loadComponent: () =>
           import('./features/professional/proposal-edit/proposal-edit.component').then(
             (m) => m.ProposalEditComponent,
-          ),
-      },
-      {
-        path: 'perfil',
-        loadComponent: () =>
-          import('./features/professional/profile/professional-profile.component').then(
-            (m) => m.ProfessionalProfileComponent,
           ),
       },
     ],
@@ -163,8 +163,8 @@ export const routes: Routes = [
       {
         path: 'perfil',
         loadComponent: () =>
-          import('./features/patient/profile/patient-profile.component').then(
-            (m) => m.PatientProfileComponent,
+          import('./features/patient/edit-profile/patient-edit-profile.component').then(
+            (m) => m.PatientEditProfileComponent,
           ),
       },
     ],

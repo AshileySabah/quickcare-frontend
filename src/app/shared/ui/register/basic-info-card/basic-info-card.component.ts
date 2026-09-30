@@ -23,6 +23,8 @@ const GENDER_OPTIONS: SelectOption[] = [
 export class BasicInfoCardComponent {
   group = input.required<FormGroup>();
   fieldError = input<(fieldName: string) => string | null>(() => null);
+  showEmail = input(true);
+  showCpf = input(true);
   showCnpj = input(false);
 
   protected readonly genderOptions = GENDER_OPTIONS;

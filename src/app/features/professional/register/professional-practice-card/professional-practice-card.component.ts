@@ -29,13 +29,14 @@ export class ProfessionalPracticeCardComponent {
   group = input.required<FormGroup>();
   fieldError = input<(fieldName: string) => string | null>(() => null);
 
-  categoryOptions = input.required<ProfessionalCategoryInfo[]>();
-  specialtyOptions = input.required<MultiSelectOption[]>();
-  ufOptions = input.required<SelectOption[]>();
-  isOutro = input.required<boolean>();
-  requiresRegistration = input.required<boolean>();
-  registrationLabel = input.required<string>();
+  categoryOptions = input<ProfessionalCategoryInfo[]>([]);
+  specialtyOptions = input<MultiSelectOption[]>([]);
+  ufOptions = input<SelectOption[]>([]);
+  isOutro = input(false);
+  requiresRegistration = input(false);
+  registrationLabel = input('Registro profissional');
   modalityError = input<string | null>(null);
+  showCategoryFields = input(true);
 
   protected get categorySelected(): boolean {
     return !!this.group().get('category')?.value;

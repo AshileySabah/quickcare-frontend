@@ -1,6 +1,7 @@
 import {
   Component,
   ElementRef,
+  OnInit,
   input,
   output,
   signal,
@@ -22,8 +23,9 @@ const MAX_ZOOM_MULTIPLIER = 4;
   templateUrl: './avatar-upload.component.html',
   styleUrl: './avatar-upload.component.scss',
 })
-export class AvatarUploadComponent {
+export class AvatarUploadComponent implements OnInit {
   label = input('Foto de perfil');
+  initialUrl = input<string | null>(null);
 
   avatarChange = output<Blob | null>();
 
@@ -42,6 +44,10 @@ export class AvatarUploadComponent {
   private sourceUrl: string | null = null;
   private minZoom = 0;
   private maxZoom = Infinity;
+
+  ngOnInit(): void {
+    this.previewUrl.set(this.initialUrl());
+  }
 
   protected triggerFileInput(): void {
     this.fileInput()?.nativeElement.click();

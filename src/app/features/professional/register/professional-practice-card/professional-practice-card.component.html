@@ -2,6 +2,7 @@
   <h2 class="professional-practice-card__title">Atuação profissional</h2>
   <div [formGroup]="group()">
     <ui-grid>
+      @if (showCategoryFields()) {
       <ui-grid-item [xs]="12" [sm]="6">
         <ui-select
           label="Categoria profissional"
@@ -60,6 +61,7 @@
           }
         </ui-grid-item>
       }
+      }
 
       <ui-grid-item [xs]="12">
         <span class="professional-practice-card__inline-title">Modalidade de atendimento</span>
@@ -84,5 +86,6 @@
         </ui-grid-item>
       }
     </ui-grid>
+    <ng-content></ng-content>
   </div>
 </ui-card>

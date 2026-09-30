@@ -1,0 +1,29 @@
+@use '../tokens' as tokens;
+@use 'request-list' as list;
+
+@mixin page {
+  max-width: 720px;
+}
+
+@mixin header {
+  margin-bottom: tokens.space(5);
+}
+
+@mixin title {
+  @include list.title;
+}
+
+@mixin subtitle {
+  @include list.subtitle;
+}
+
+@mixin sections {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(5);
+}
+
+@mixin actions {
+  display: flex;
+  justify-content: flex-end;
+}

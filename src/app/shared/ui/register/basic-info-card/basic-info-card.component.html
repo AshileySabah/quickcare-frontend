@@ -13,6 +13,7 @@
         ></ui-input>
       </ui-grid-item>
 
+      @if (showEmail()) {
       <ui-grid-item [xs]="12">
         <ui-input
           label="E-mail"
@@ -24,6 +25,7 @@
           [errorMessage]="fieldError()('email')"
         ></ui-input>
       </ui-grid-item>
+      }
 
       <ui-grid-item [xs]="12" [sm]="6">
         <ui-input
@@ -37,6 +39,7 @@
         ></ui-input>
       </ui-grid-item>
 
+      @if (showCpf()) {
       <ui-grid-item [xs]="12" [sm]="6">
         <ui-input
           label="CPF"
@@ -47,6 +50,7 @@
           [errorMessage]="fieldError()('cpf')"
         ></ui-input>
       </ui-grid-item>
+      }
 
       @if (showCnpj()) {
         <ui-grid-item [xs]="12" [sm]="6">

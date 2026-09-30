@@ -1,0 +1,26 @@
+@use 'patterns/edit-profile' as editProfile;
+
+.edit-profile {
+  @include editProfile.page;
+}
+
+.edit-profile__header {
+  @include editProfile.header;
+}
+
+.edit-profile__title {
+  @include editProfile.title;
+}
+
+.edit-profile__subtitle {
+  @include editProfile.subtitle;
+}
+
+.edit-profile__skeleton,
+.edit-profile__sections {
+  @include editProfile.sections;
+}
+
+.edit-profile__actions {
+  @include editProfile.actions;
+}

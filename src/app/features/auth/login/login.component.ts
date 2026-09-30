@@ -2,7 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-import { User } from '../../../core/models';
+import { homeRouteFor } from '../../../core/auth/home-route';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
@@ -63,27 +63,12 @@ export class LoginComponent {
     this.authService.login(email, password).subscribe({
       next: (user) => {
         this.isSubmitting.set(false);
-        this.redirectAfterLogin(user);
+        this.router.navigateByUrl(homeRouteFor(user));
       },
       error: (error: Error) => {
         this.isSubmitting.set(false);
         this.toastService.error(error.message);
       },
     });
-  }
-
-  private redirectAfterLogin(user: User): void {
-    switch (user.role) {
-      case 'patient':
-        this.router.navigateByUrl('/patient');
-        return;
-      case 'professional':
-        this.router.navigateByUrl(
-          user.validationStatus === 'aprovado' ? '/professional' : '/professional/aguardando-validacao',
-        );
-        return;
-      case 'admin':
-        this.router.navigateByUrl('/admin');
-    }
   }
 }

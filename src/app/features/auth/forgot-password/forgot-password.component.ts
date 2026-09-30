@@ -1,12 +1,14 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+
+const RESEND_COOLDOWN_SECONDS = 60;
 
 @Component({
   selector: 'app-forgot-password',
@@ -25,14 +27,22 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
 
   protected readonly isSubmitting = signal(false);
+  protected readonly sentTo = signal<string | null>(null);
+  protected readonly sentMessage = signal('');
+  protected readonly resendCountdown = signal(0);
+
+  private countdownTimer?: ReturnType<typeof setInterval>;
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
   });
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => clearInterval(this.countdownTimer));
+  }
 
   protected fieldError(): string | null {
     const control = this.form.controls.email;
@@ -58,21 +68,51 @@ export class ForgotPasswordComponent {
       return;
     }
 
+    this.send(this.form.getRawValue().email.trim());
+  }
+
+  protected resend(): void {
+    const email = this.sentTo();
+
+    if (email && this.resendCountdown() === 0) {
+      this.send(email);
+    }
+  }
+
+  protected useAnotherEmail(): void {
+    clearInterval(this.countdownTimer);
+    this.resendCountdown.set(0);
+    this.sentTo.set(null);
+    this.form.reset();
+  }
+
+  private send(email: string): void {
     this.isSubmitting.set(true);
-    const { email } = this.form.getRawValue();
 
     this.authService.requestPasswordReset(email).subscribe({
-      next: () => {
+      next: (message) => {
         this.isSubmitting.set(false);
-        this.toastService.success(
-          'Se o e-mail estiver cadastrado, enviamos um código de 6 dígitos.',
-        );
-        this.router.navigate(['/redefinir-senha'], { queryParams: { email } });
+        this.sentTo.set(email);
+        this.sentMessage.set(message);
+        this.startCountdown();
       },
       error: (error: Error) => {
         this.isSubmitting.set(false);
         this.toastService.error(error.message);
       },
     });
+  }
+
+  private startCountdown(): void {
+    clearInterval(this.countdownTimer);
+    this.resendCountdown.set(RESEND_COOLDOWN_SECONDS);
+
+    this.countdownTimer = setInterval(() => {
+      this.resendCountdown.update((seconds) => seconds - 1);
+
+      if (this.resendCountdown() <= 0) {
+        clearInterval(this.countdownTimer);
+      }
+    }, 1000);
   }
 }

@@ -19,6 +19,15 @@ export interface CadastroApiResponse {
   tipoPerfil: 'PACIENTE' | 'PROFISSIONAL';
 }
 
+export interface MensagemApiResponse {
+  mensagem: string;
+}
+
+export interface RedefinirSenhaApiResponse {
+  mensagem: string;
+  usuario: LoginApiResponse;
+}
+
 export interface ApiErrorResponse {
   timestamp: string;
   status: number;

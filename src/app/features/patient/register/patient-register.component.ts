@@ -1,6 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { AuthService, PatientRegistration } from '../../../core/auth/auth.service';
 import { DocumentType } from '../../../core/models';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
@@ -21,22 +22,6 @@ const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
   { value: 'OUTRO', label: 'Outro' },
 ];
-
-function passwordsMatchValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    return password && confirmPassword && password !== confirmPassword ? { passwordsMismatch: true } : null;
-  };
-}
-
-function strongPasswordValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value: string = control.value ?? '';
-    const valid = value.length >= 8 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
-    return valid ? null : { weakPassword: true };
-  };
-}
 
 type FieldName = 'name' | 'email' | 'phone' | 'cpf' | 'birthDate' | 'gender' | 'infoConfirmedTrue' | 'lgpdConsent' | 'password';
 type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';

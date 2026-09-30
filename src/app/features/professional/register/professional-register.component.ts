@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { DocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
@@ -20,22 +21,6 @@ import { PasswordCardComponent } from '../../../shared/ui/register/password-card
 import { ProfessionalPracticeCardComponent } from './professional-practice-card/professional-practice-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-
-function passwordsMatchValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const password = control.get('password')?.value;
-    const confirmPassword = control.get('confirmPassword')?.value;
-    return password && confirmPassword && password !== confirmPassword ? { passwordsMismatch: true } : null;
-  };
-}
-
-function strongPasswordValidator(): ValidatorFn {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value: string = control.value ?? '';
-    const valid = value.length >= 8 && /[A-Z]/.test(value) && /[a-z]/.test(value) && /\d/.test(value) && /[^A-Za-z0-9]/.test(value);
-    return valid ? null : { weakPassword: true };
-  };
-}
 
 function atLeastOneModalityValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {

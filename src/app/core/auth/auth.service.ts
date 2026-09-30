@@ -20,7 +20,9 @@ import {
   ApiErrorResponse,
   CadastroApiResponse,
   LoginApiResponse,
+  MensagemApiResponse,
   PerfilStatusApi,
+  RedefinirSenhaApiResponse,
 } from './auth-api.model';
 
 export interface PatientRegistration {
@@ -66,6 +68,8 @@ export interface ProfessionalRegistration {
   avatar?: Blob;
 }
 
+export class InvalidPasswordResetLinkError extends Error {}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
@@ -103,20 +107,35 @@ export class AuthService {
         ),
       );
   }
-  requestPasswordReset(email: string): Observable<void> {
+
+  requestPasswordReset(email: string): Observable<string> {
     return this.http
-      .post<unknown>(
-        `${environment.apiUrl}/auth/esqueci-senha`,
-        { email },
-        { withCredentials: true },
-      )
+      .post<MensagemApiResponse>(`${environment.apiUrl}/auth/senha/esqueci`, {
+        email,
+      })
       .pipe(
-        map(() => undefined),
+        map((response) => response.mensagem),
         catchError((error: unknown) =>
           throwError(() =>
             this.normalizeError(
               error,
-              'Não foi possível enviar o código. Tente novamente.',
+              'Não foi possível enviar o link. Tente novamente.',
+            ),
+          ),
+        ),
+      );
+  }
+
+  validatePasswordResetToken(token: string): Observable<void> {
+    return this.http
+      .post<void>(`${environment.apiUrl}/auth/senha/validar-token`, { token })
+      .pipe(
+        map(() => undefined),
+        catchError((error: unknown) =>
+          throwError(() =>
+            this.normalizePasswordResetError(
+              error,
+              'Não foi possível verificar o link. Tente novamente.',
             ),
           ),
         ),
@@ -124,27 +143,41 @@ export class AuthService {
   }
 
   resetPassword(
-    email: string,
     token: string,
     newPassword: string,
-  ): Observable<void> {
+  ): Observable<{ message: string; user: User }> {
     return this.http
-      .post<unknown>(
-        `${environment.apiUrl}/auth/redefinir-senha`,
-        { email, token, novaSenha: newPassword },
-        { withCredentials: true },
+      .post<RedefinirSenhaApiResponse>(
+        `${environment.apiUrl}/auth/senha/redefinir`,
+        { token, novaSenha: newPassword },
       )
       .pipe(
-        map(() => undefined),
+        map((response) => ({
+          message: response.mensagem,
+          user: this.mapLoginResponseToUser(response.usuario),
+        })),
+        tap(({ user }) => this.establishSession(user)),
         catchError((error: unknown) =>
           throwError(() =>
-            this.normalizeError(
+            this.normalizePasswordResetError(
               error,
               'Não foi possível redefinir a senha. Tente novamente.',
             ),
           ),
         ),
       );
+  }
+
+  private normalizePasswordResetError(
+    error: unknown,
+    defaultMessage: string,
+  ): Error {
+    const normalized = this.normalizeError(error, defaultMessage);
+
+    if (error instanceof HttpErrorResponse && error.status === 410) {
+      return new InvalidPasswordResetLinkError(normalized.message);
+    }
+    return normalized;
   }
 
   private mapLoginResponseToUser(response: LoginApiResponse): User {

@@ -1,24 +1,22 @@
-import { Component, inject, signal } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  ReactiveFormsModule,
-  ValidationErrors,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
+import {
+  AuthService,
+  InvalidPasswordResetLinkError,
+} from '../../../core/auth/auth.service';
+import { homeRouteFor } from '../../../core/auth/home-route';
+import {
+  passwordsMatchValidator,
+  strongPasswordValidator,
+} from '../../../core/forms/password-validators';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/forms/input/input.component';
+import { PasswordFieldsComponent } from '../../../shared/ui/forms/password-fields/password-fields.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
-function passwordsMatch(group: AbstractControl): ValidationErrors | null {
-  const password = group.get('password')?.value;
-  const confirmPassword = group.get('confirmPassword')?.value;
-  return password === confirmPassword ? null : { passwordsMismatch: true };
-}
+type PageState = 'validating' | 'form' | 'invalid-link' | 'error';
 
 @Component({
   selector: 'app-reset-password',
@@ -29,40 +27,71 @@ function passwordsMatch(group: AbstractControl): ValidationErrors | null {
     ButtonComponent,
     GridComponent,
     GridItemComponent,
-    InputComponent,
+    PasswordFieldsComponent,
   ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss',
 })
-export class ResetPasswordComponent {
+export class ResetPasswordComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
-  private readonly queryParams = this.route.snapshot.queryParamMap;
+  private token = '';
 
+  protected readonly state = signal<PageState>('validating');
   protected readonly isSubmitting = signal(false);
+  protected readonly stateMessage = signal('');
 
   protected readonly form = this.fb.nonNullable.group(
     {
-      email: [
-        this.queryParams.get('email') ?? '',
-        [Validators.required, Validators.email],
-      ],
-      token: [this.queryParams.get('token') ?? '', [Validators.required]],
-      // TROQUE pelas mesmas regras de senha da tela de cadastro (8+, maiúscula, minúscula, especial)
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, strongPasswordValidator()]],
       confirmPassword: ['', [Validators.required]],
     },
-    { validators: passwordsMatch },
+    { validators: passwordsMatchValidator() },
   );
 
-  protected fieldError(
-    fieldName: 'email' | 'token' | 'password' | 'confirmPassword',
-  ): string | null {
-    const control = this.form.controls[fieldName];
+  ngOnInit(): void {
+    this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
+
+    if (!this.token) {
+      this.showInvalidLink(
+        'Este link de redefinição é inválido. Peça um novo para continuar.',
+      );
+      return;
+    }
+
+    this.router.navigate([], { queryParams: {}, replaceUrl: true });
+
+    this.validateToken();
+  }
+
+  protected validateToken(): void {
+    this.state.set('validating');
+
+    this.authService.validatePasswordResetToken(this.token).subscribe({
+      next: () => this.state.set('form'),
+      error: (error: Error) => {
+        if (error instanceof InvalidPasswordResetLinkError) {
+          this.showInvalidLink(error.message);
+          return;
+        }
+
+        this.stateMessage.set(error.message);
+        this.state.set('error');
+      },
+    });
+  }
+
+  private showInvalidLink(message: string): void {
+    this.stateMessage.set(message);
+    this.state.set('invalid-link');
+  }
+
+  protected get passwordError(): string | null {
+    const control = this.form.controls.password;
 
     if (!control.touched) {
       return null;
@@ -72,18 +101,25 @@ export class ResetPasswordComponent {
       return 'Campo obrigatório.';
     }
 
-    if (fieldName === 'email' && control.hasError('email')) {
-      return 'E-mail inválido.';
+    if (control.hasError('weakPassword')) {
+      return 'A senha não atende aos requisitos.';
     }
 
-    if (fieldName === 'password' && control.hasError('minlength')) {
-      return 'Senha deve ter ao menos 8 caracteres.';
+    return null;
+  }
+
+  protected get confirmPasswordError(): string | null {
+    const control = this.form.controls.confirmPassword;
+
+    if (!control.touched) {
+      return null;
     }
 
-    if (
-      fieldName === 'confirmPassword' &&
-      this.form.hasError('passwordsMismatch')
-    ) {
+    if (control.hasError('required')) {
+      return 'Campo obrigatório.';
+    }
+
+    if (this.form.hasError('passwordsMismatch')) {
       return 'As senhas não conferem.';
     }
 
@@ -97,20 +133,25 @@ export class ResetPasswordComponent {
     }
 
     this.isSubmitting.set(true);
-    const { email, token, password } = this.form.getRawValue();
 
-    this.authService.resetPassword(email, token, password).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.success(
-          'Senha redefinida com sucesso. Entre com a nova senha.',
-        );
-        this.router.navigateByUrl('/login');
-      },
-      error: (error: Error) => {
-        this.isSubmitting.set(false);
-        this.toastService.error(error.message);
-      },
-    });
+    this.authService
+      .resetPassword(this.token, this.form.getRawValue().password)
+      .subscribe({
+        next: ({ message, user }) => {
+          this.isSubmitting.set(false);
+          this.toastService.success(message);
+          this.router.navigateByUrl(homeRouteFor(user));
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+
+          if (error instanceof InvalidPasswordResetLinkError) {
+            this.showInvalidLink(error.message);
+            return;
+          }
+
+          this.toastService.error(error.message);
+        },
+      });
   }
 }

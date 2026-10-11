@@ -10,17 +10,35 @@
         [routerLinkActiveOptions]="{ exact: true }"
         >Início</a
       >
-      <a class="patient-shell__link" routerLink="/patient/historico" routerLinkActive="patient-shell__link--active"
+      <a
+        class="patient-shell__link"
+        routerLink="/patient/historico"
+        routerLinkActive="patient-shell__link--active"
         >Histórico</a
       >
-      <a class="patient-shell__link" routerLink="/patient/perfil" routerLinkActive="patient-shell__link--active"
+      <a
+        class="patient-shell__link"
+        routerLink="/patient/mensagens"
+        routerLinkActive="patient-shell__link--active"
+      >
+        Mensagens</a
+      >
+      <a
+        class="patient-shell__link"
+        routerLink="/patient/perfil"
+        routerLinkActive="patient-shell__link--active"
         >Perfil</a
       >
     </nav>
 
     <div class="patient-shell__user">
-      <ui-avatar [name]="authService.currentUser()?.name ?? ''" [imageUrl]="authService.currentUser()?.avatarUrl"></ui-avatar>
-      <span class="patient-shell__user-name">{{ authService.currentUser()?.name }}</span>
+      <ui-avatar
+        [name]="authService.currentUser()?.name ?? ''"
+        [imageUrl]="authService.currentUser()?.avatarUrl"
+      ></ui-avatar>
+      <span class="patient-shell__user-name">{{
+        authService.currentUser()?.name
+      }}</span>
       <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
     </div>
   </header>

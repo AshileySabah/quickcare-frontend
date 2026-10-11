@@ -1,0 +1,59 @@
+<section class="chat">
+  <header class="chat__header">
+    <a class="chat__back" [routerLink]="backPath()">← Mensagens</a>
+    <h1 class="chat__title">Usuário #{{ otherId }}</h1>
+    <span class="chat__status" [class.chat__status--on]="connected()">
+      {{ connected() ? 'Tempo real ativo' : 'Conectando…' }}
+    </span>
+  </header>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <div class="chat__skeletons">
+        <ui-skeleton height="40px" width="60%"></ui-skeleton>
+        <ui-skeleton height="40px" width="45%"></ui-skeleton>
+        <ui-skeleton height="40px" width="55%"></ui-skeleton>
+      </div>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('ready') {
+      <div class="chat__messages" #list>
+        @if (messages().length === 0) {
+          <p class="chat__empty">Nenhuma mensagem ainda. Diga olá!</p>
+        }
+        @for (message of messages(); track message.id) {
+          <div class="chat__row" [class.chat__row--mine]="message.senderId === meId">
+            <div class="chat__bubble">
+              <p class="chat__text">{{ message.content }}</p>
+              <div class="chat__meta">
+                <span>{{ message.sentAt | date: 'dd/MM HH:mm' }}</span>
+                @if (message.senderId === meId) {
+                  <button type="button" class="chat__delete" (click)="remove(message)">Apagar</button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (actionError()) {
+        <p class="chat__error" role="alert">{{ actionError() }}</p>
+      }
+
+      <form class="chat__form" (submit)="$event.preventDefault(); send()">
+        <textarea
+          class="chat__input"
+          rows="2"
+          name="draft"
+          placeholder="Escreva uma mensagem…"
+          [ngModel]="draft()"
+          (ngModelChange)="draft.set($event)"
+          (keydown.enter)="onEnter($event)"
+        ></textarea>
+        <button class="chat__send" type="submit" [disabled]="sending() || !draft().trim()">Enviar</button>
+      </form>
+    }
+  }
+</section>

@@ -1,0 +1,27 @@
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 720px;
+  margin: 0 auto;
+
+  &__title { margin: 0; }
+  &__subtitle { margin: 0.25rem 0 0; opacity: 0.7; }
+  &__skeletons { display: flex; flex-direction: column; gap: 0.75rem; }
+  &__items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+
+  &__item {
+    display: block;
+    padding: 0.875rem 1rem;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 0.75rem;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover { background: rgba(128, 128, 128, 0.08); }
+  }
+
+  &__item-top { display: flex; justify-content: space-between; gap: 1rem; }
+  &__time { font-size: 0.8rem; opacity: 0.6; }
+  &__preview { margin: 0.25rem 0 0; opacity: 0.8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}

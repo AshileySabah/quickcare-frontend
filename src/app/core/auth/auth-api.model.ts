@@ -9,6 +9,8 @@ export interface LoginApiResponse {
   email: string;
   avatarUrl: string | null;
   perfis: PerfilStatusApi[];
+  categoria?: string;
+  especialidadeIds?: number[];
 }
 
 export interface CadastroApiResponse {

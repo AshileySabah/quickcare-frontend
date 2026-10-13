@@ -1,240 +1,159 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
+import { Proposal } from '../models';
 import { ProposalService } from './proposal.service';
-import { RequestService } from './request.service';
-import { Professional, Proposal, ServiceRequest } from '../models';
 
-const NUTRICAO_ID = '4';
-const PSICOLOGIA_ID = '5';
+const PROPOSALS_URL = `${environment.apiUrl}/propostas`;
+const REQUEST_PROPOSALS_URL = `${environment.apiUrl}/solicitacoes/50/propostas`;
 
-interface SubmitResult {
-  proposal?: Proposal;
-  error?: Error;
+function apiResponse(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 100,
+    solicitacao: {
+      id: 50,
+      pacienteNome: 'Paciente Teste',
+      profissionais: [
+        {
+          categoria: 'ENFERMEIRO',
+          categoriaRotulo: 'Enfermeiro(a)',
+          especialidades: [{ id: 13, nome: 'Curativos', categoria: 'ENFERMEIRO' }],
+          quantidade: 2,
+          vagasPreenchidas: 0,
+        },
+      ],
+      modalidade: 'PRESENCIAL',
+      prazoDesejado: '2026-12-01',
+      status: 'RECEBENDO_PROPOSTAS',
+    },
+    profissional: {
+      id: 20,
+      nome: 'Profissional Teste',
+      categoria: 'ENFERMEIRO',
+      categoriaRotulo: 'Enfermeiro(a)',
+      especialidades: [{ id: 13, nome: 'Curativos', categoria: 'ENFERMEIRO' }],
+    },
+    valor: 180.5,
+    abordagem: 'Curativos diários com relatório semanal de evolução.',
+    prazo: '2026-11-20',
+    status: 'PENDENTE',
+    criadoEm: '2026-10-01T10:00:00Z',
+    atualizadoEm: '2026-10-01T10:00:00Z',
+    ...overrides,
+  };
 }
 
 describe('ProposalService', () => {
-  let proposalService: ProposalService;
-  let requestService: RequestService;
-
-  const approvedProfessional: Professional = {
-    id: 'prof-test-approved',
-    role: 'professional',
-    name: 'Profissional Teste',
-    email: 'prof.teste@example.com',
-    phone: '(11) 90000-0000',
-    cpf: '123.456.789-00',
-    category: 'OUTRO',
-    specialtyIds: [NUTRICAO_ID],
-    registrationNumber: 'CRN-TESTE',
-    birthDate: '1990-01-01',
-    gender: 'PREFIRO_NAO_INFORMAR',
-    emergencyContacts: [{ name: 'Contato Teste', phone: '(11) 90000-0000' }],
-    infoConfirmedTrue: true,
-    lgpdConsent: true,
-    hasLiabilityInsurance: false,
-    address: {
-      cep: '01310-100',
-      street: 'Avenida Paulista',
-      number: '1000',
-      neighborhood: 'Bela Vista',
-      city: 'São Paulo',
-      state: 'SP',
-    },
-    validationStatus: 'aprovado',
-    validationDocument: {
-      fileName: 'doc.pdf',
-      fileType: 'application/pdf',
-      fileSizeBytes: 1000,
-      uploadedAt: '2026-01-01T00:00:00Z',
-      previewUrl: 'mock://doc.pdf',
-    },
-  };
-
-  const pendingProfessional: Professional = {
-    ...approvedProfessional,
-    id: 'prof-test-pending',
-    validationStatus: 'pendente',
-  };
-
-  const wrongSpecialtyProfessional: Professional = {
-    ...approvedProfessional,
-    id: 'prof-test-wrong-specialty',
-    specialtyIds: [PSICOLOGIA_ID],
-    registrationNumber: 'CRP-TESTE',
-  };
-
+  let service: ProposalService;
   let httpMock: HttpTestingController;
-  let nextRequestId = 1;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
-    proposalService = TestBed.inject(ProposalService);
-    requestService = TestBed.inject(RequestService);
+    service = TestBed.inject(ProposalService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => httpMock.verify());
 
-  function createOpenRequest(): ServiceRequest {
-    let created!: ServiceRequest;
-    const description = 'Solicitação de teste para a suíte automatizada de propostas.';
+  it('envia a proposta para a solicitação e mapeia a resposta', () => {
+    let created!: Proposal;
 
-    requestService
-      .create({
-        professionals: [{ category: 'OUTRO', specialtyIds: [NUTRICAO_ID], quantity: 1 }],
-        description,
-        modality: 'online',
-        desiredDeadline: '2026-12-01',
-      })
-      .subscribe((request) => (created = request));
+    service
+      .submit('50', { price: 180.5, approach: 'Curativos diários com relatório semanal de evolução.', deadline: '2026-11-20' })
+      .subscribe((proposal) => (created = proposal));
 
-    httpMock.expectOne(`${environment.apiUrl}/solicitacoes`).flush({
-      id: nextRequestId++,
-      pacienteId: 1,
-      profissionais: [
-        {
-          categoria: 'OUTRO',
-          categoriaRotulo: 'Outros profissionais',
-          especialidades: [{ id: Number(NUTRICAO_ID), nome: 'Nutrição', categoria: 'OUTRO' }],
-          quantidade: 1,
-        },
-      ],
-      descricao: description,
-      modalidade: 'ONLINE',
-      endereco: null,
-      prazoDesejado: '2026-12-01',
-      status: 'ABERTA',
-      criadoEm: '2026-09-01T10:00:00Z',
-      atualizadoEm: '2026-09-01T10:00:00Z',
+    const req = httpMock.expectOne(REQUEST_PROPOSALS_URL);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({
+      valor: 180.5,
+      abordagem: 'Curativos diários com relatório semanal de evolução.',
+      prazo: '2026-11-20',
     });
+    req.flush(apiResponse());
 
-    return created;
-  }
+    expect(created).toEqual(
+      jasmine.objectContaining({
+        id: '100',
+        requestId: '50',
+        professionalId: '20',
+        price: 180.5,
+        status: 'pendente',
+      }),
+    );
+    expect(created.professional.name).toBe('Profissional Teste');
+    expect(created.request.patientName).toBe('Paciente Teste');
+    expect(created.request.status).toBe('recebendo_propostas');
+    expect(created.request.professionals[0].specialties[0].name).toBe('Curativos');
+  });
 
-  function submitProposal(request: ServiceRequest, professional: Professional): SubmitResult {
-    const result: SubmitResult = {};
+  it('lista as propostas de uma solicitação', () => {
+    let proposals: Proposal[] = [];
+    service.listForRequest('50').subscribe((result) => (proposals = result));
 
-    proposalService
-      .submit({
-        request,
-        professional,
-        price: 150,
-        approach: 'Abordagem detalhada de teste automatizado.',
-        deadline: '2026-12-10',
-      })
-      .subscribe({
-        next: (proposal) => (result.proposal = proposal),
-        error: (error: Error) => (result.error = error),
-      });
-    tick(1000);
+    httpMock.expectOne(REQUEST_PROPOSALS_URL).flush([apiResponse(), apiResponse({ id: 101, status: 'ACEITA' })]);
 
-    return result;
-  }
+    expect(proposals.map((proposal) => proposal.status)).toEqual(['pendente', 'aceita']);
+  });
 
-  it('cria proposta pendente e move a solicitação para "recebendo_propostas"', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { proposal } = submitProposal(request, approvedProfessional);
+  it('lista as propostas do profissional logado', () => {
+    service.listMine().subscribe();
+    const req = httpMock.expectOne(PROPOSALS_URL);
+    expect(req.request.method).toBe('GET');
+    req.flush([]);
+  });
 
-    expect(proposal?.status).toBe('pendente');
+  it('edita via PUT', () => {
+    service.update('100', { price: 200, approach: 'Abordagem revisada para o teste.', deadline: '2026-11-25' }).subscribe();
 
-    const updatedRequest = requestService.requests().find((item) => item.id === request.id)!;
-    expect(updatedRequest.status).toBe('recebendo_propostas');
-  }));
+    const req = httpMock.expectOne(`${PROPOSALS_URL}/100`);
+    expect(req.request.method).toBe('PUT');
+    req.flush(apiResponse({ valor: 200 }));
+  });
 
-  it('rejeita proposta de profissional não aprovado', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { error } = submitProposal(request, pendingProfessional);
-
-    expect(error?.message).toBe('Apenas profissionais validados podem enviar propostas.');
-  }));
-
-  it('rejeita proposta de profissional de especialidade diferente', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { error } = submitProposal(request, wrongSpecialtyProfessional);
-
-    expect(error?.message).toBe('Você só pode enviar propostas para solicitações da sua especialidade.');
-  }));
-
-  it('rejeita proposta para solicitação que não está mais recebendo propostas', fakeAsync(() => {
-    const request = createOpenRequest();
-    requestService.markInProgress(request.id, 'prop-fake');
-    const inProgressRequest = requestService.requests().find((item) => item.id === request.id)!;
-
-    const { error } = submitProposal(inProgressRequest, approvedProfessional);
-
-    expect(error?.message).toBe('Esta solicitação não está mais recebendo propostas.');
-  }));
-
-  it('permite editar/cancelar apenas propostas pendentes', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { proposal } = submitProposal(request, approvedProfessional);
-
-    expect(proposalService.canEdit(proposal!)).toBe(true);
-    expect(proposalService.canCancel(proposal!)).toBe(true);
-
+  it('cancela via PATCH /cancelar', () => {
     let cancelled!: Proposal;
-    proposalService.cancel(proposal!.id).subscribe((result) => (cancelled = result));
-    tick(1000);
+    service.cancel('100').subscribe((proposal) => (cancelled = proposal));
+
+    const req = httpMock.expectOne(`${PROPOSALS_URL}/100/cancelar`);
+    expect(req.request.method).toBe('PATCH');
+    req.flush(apiResponse({ status: 'CANCELADA' }));
 
     expect(cancelled.status).toBe('cancelada');
-    expect(proposalService.canEdit(cancelled)).toBe(false);
-    expect(proposalService.canCancel(cancelled)).toBe(false);
-  }));
+    expect(service.canEdit(cancelled)).toBe(false);
+    expect(service.canCancel(cancelled)).toBe(false);
+  });
 
-  it('rejeita update de proposta que não está mais pendente', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { proposal } = submitProposal(request, approvedProfessional);
+  it('aceita via PATCH /aceitar', () => {
+    service.accept('100').subscribe();
 
-    proposalService.cancel(proposal!.id).subscribe();
-    tick(1000);
+    const req = httpMock.expectOne(`${PROPOSALS_URL}/100/aceitar`);
+    expect(req.request.method).toBe('PATCH');
+    req.flush(apiResponse({ status: 'ACEITA' }));
+  });
 
+  it('getById devolve undefined quando a API responde 404', () => {
+    let result: Proposal | undefined | null = null;
+    service.getById('999').subscribe((proposal) => (result = proposal));
+
+    httpMock.expectOne(`${PROPOSALS_URL}/999`).flush({ message: 'Proposta não encontrada.' }, { status: 404, statusText: 'Not Found' });
+
+    expect(result).toBeUndefined();
+  });
+
+  it('propaga a mensagem de erro da API', () => {
     let error: Error | undefined;
-    proposalService.update(proposal!.id, { price: 200 }).subscribe({ error: (err: Error) => (error = err) });
-    tick(1000);
+    service
+      .submit('50', { price: 100, approach: 'Abordagem qualquer para o teste.', deadline: '2026-11-20' })
+      .subscribe({ error: (err: Error) => (error = err) });
 
-    expect(error?.message).toBe('Esta proposta não pode mais ser editada.');
-  }));
+    httpMock.expectOne(REQUEST_PROPOSALS_URL).flush(
+      { message: 'Você já enviou uma proposta para esta solicitação. Edite ou cancele a existente.' },
+      { status: 409, statusText: 'Conflict' },
+    );
 
-  it(
-    'ao aceitar uma proposta, recusa automaticamente as demais pendentes e move a solicitação para "em_andamento"',
-    fakeAsync(() => {
-      const request = createOpenRequest();
-      const { proposal: firstProposal } = submitProposal(request, approvedProfessional);
-
-      const secondProfessional: Professional = { ...approvedProfessional, id: 'prof-test-second' };
-      const requestAfterFirst = requestService.requests().find((item) => item.id === request.id)!;
-      const { proposal: secondProposal } = submitProposal(requestAfterFirst, secondProfessional);
-
-      let accepted!: Proposal;
-      proposalService.acceptProposal(firstProposal!.id).subscribe((result) => (accepted = result));
-      tick(1000);
-
-      expect(accepted.status).toBe('aceita');
-
-      const refreshedSecond = proposalService.proposals().find((item) => item.id === secondProposal!.id)!;
-      expect(refreshedSecond.status).toBe('recusada');
-
-      const updatedRequest = requestService.requests().find((item) => item.id === request.id)!;
-      expect(updatedRequest.status).toBe('em_andamento');
-      expect(updatedRequest.acceptedProposalId).toBe(firstProposal!.id);
-    }),
-  );
-
-  it('rejeita aceitar uma proposta que não está mais pendente', fakeAsync(() => {
-    const request = createOpenRequest();
-    const { proposal } = submitProposal(request, approvedProfessional);
-
-    proposalService.cancel(proposal!.id).subscribe();
-    tick(1000);
-
-    let error: Error | undefined;
-    proposalService.acceptProposal(proposal!.id).subscribe({ error: (err: Error) => (error = err) });
-    tick(1000);
-
-    expect(error?.message).toBe('Esta proposta não está mais disponível para aceite.');
-  }));
+    expect(error?.message).toBe('Você já enviou uma proposta para esta solicitação. Edite ou cancele a existente.');
+  });
 });

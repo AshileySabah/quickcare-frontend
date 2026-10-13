@@ -1,30 +1,49 @@
-import { Injectable, inject, signal } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Professional, Proposal, ServiceRequest } from '../models';
-import { PROPOSALS_MOCK } from '../../mocks';
-import { RequestService } from './request.service';
-import { simulateNetwork } from './simulate-network.util';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+import { ApiErrorResponse } from '../auth/auth-api.model';
+import { ProfessionalCategory, Proposal, ProposalStatus, RequestStatus } from '../models';
+import { ProfissionalSolicitadoApi, toRequestedProfessional } from './request.service';
 
-export interface SubmitProposalInput {
-  request: ServiceRequest;
-  professional: Professional;
+export interface ProposalInput {
   price: number;
   approach: string;
   deadline: string;
 }
 
-export interface UpdateProposalInput {
-  price?: number;
-  approach?: string;
-  deadline?: string;
+type StatusPropostaApi = 'PENDENTE' | 'ACEITA' | 'RECUSADA' | 'CANCELADA';
+
+interface PropostaApiResponse {
+  id: number;
+  solicitacao: {
+    id: number;
+    pacienteNome: string;
+    profissionais: ProfissionalSolicitadoApi[];
+    modalidade: 'PRESENCIAL' | 'ONLINE';
+    prazoDesejado: string;
+    status: string;
+  };
+  profissional: {
+    id: number;
+    nome: string;
+    categoria: ProfessionalCategory;
+    categoriaRotulo: string;
+    especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
+  };
+  valor: number;
+  abordagem: string;
+  prazo: string;
+  status: StatusPropostaApi;
+  criadoEm: string;
+  atualizadoEm: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class ProposalService {
-  private readonly requestService = inject(RequestService);
-
-  private readonly proposalsSignal = signal<Proposal[]>([...PROPOSALS_MOCK]);
-  readonly proposals = this.proposalsSignal.asReadonly();
+  private readonly http = inject(HttpClient);
+  private readonly baseUrl = `${environment.apiUrl}/propostas`;
 
   canEdit(proposal: Proposal): boolean {
     return proposal.status === 'pendente';
@@ -34,137 +53,114 @@ export class ProposalService {
     return proposal.status === 'pendente';
   }
 
-  listForRequest(requestId: string, simulateError = false): Observable<Proposal[]> {
-    return simulateNetwork(() => this.proposalsSignal().filter((proposal) => proposal.requestId === requestId), {
-      simulateError,
-      errorMessage: 'Não foi possível carregar as propostas.',
-    });
-  }
-
-  listForProfessional(professionalId: string, simulateError = false): Observable<Proposal[]> {
-    return simulateNetwork(
-      () => this.proposalsSignal().filter((proposal) => proposal.professionalId === professionalId),
-      { simulateError, errorMessage: 'Não foi possível carregar suas propostas.' },
+  /** Paciente dono: todas as não canceladas. Profissional: só as dele. */
+  listForRequest(requestId: string): Observable<Proposal[]> {
+    return this.http.get<PropostaApiResponse[]>(requestProposalsUrl(requestId)).pipe(
+      map((response) => response.map(toProposal)),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível carregar as propostas.'))),
     );
   }
 
-  getById(id: string, simulateError = false): Observable<Proposal | undefined> {
-    return simulateNetwork(() => this.proposalsSignal().find((proposal) => proposal.id === id), {
-      simulateError,
-      errorMessage: 'Não foi possível carregar a proposta.',
-    });
+  /** Propostas do profissional logado, das mais recentes para as mais antigas. */
+  listMine(): Observable<Proposal[]> {
+    return this.http.get<PropostaApiResponse[]>(this.baseUrl).pipe(
+      map((response) => response.map(toProposal)),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível carregar suas propostas.'))),
+    );
   }
 
-  submit(input: SubmitProposalInput): Observable<Proposal> {
-    return simulateNetwork(() => {
-      if (input.professional.validationStatus !== 'aprovado') {
-        throw new Error('Apenas profissionais validados podem enviar propostas.');
-      }
-
-      // Mesma regra do back-end: o profissional precisa ser da categoria e cobrir
-      // todas as especialidades de ao menos um dos profissionais pedidos.
-      const servesSomeRequestedProfessional = input.request.professionals.some(
-        (requested) =>
-          requested.category === input.professional.category &&
-          requested.specialties.every((specialty) => input.professional.specialtyIds.includes(specialty.id)),
-      );
-      if (!servesSomeRequestedProfessional) {
-        throw new Error('Você só pode enviar propostas para solicitações da sua especialidade.');
-      }
-
-      if (!this.requestService.canReceiveProposals(input.request)) {
-        throw new Error('Esta solicitação não está mais recebendo propostas.');
-      }
-
-      const now = new Date().toISOString();
-      const proposal: Proposal = {
-        id: `prop-${crypto.randomUUID()}`,
-        requestId: input.request.id,
-        professionalId: input.professional.id,
-        price: input.price,
-        approach: input.approach,
-        deadline: input.deadline,
-        status: 'pendente',
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      this.proposalsSignal.update((proposals) => [...proposals, proposal]);
-      this.requestService.markReceivingProposals(input.request.id);
-
-      return proposal;
-    });
+  getById(id: string): Observable<Proposal | undefined> {
+    return this.http.get<PropostaApiResponse>(`${this.baseUrl}/${id}`).pipe(
+      map(toProposal),
+      catchError((error: unknown) => {
+        if (error instanceof HttpErrorResponse && error.status === 404) {
+          return of(undefined);
+        }
+        return throwError(() => normalizeError(error, 'Não foi possível carregar a proposta.'));
+      }),
+    );
   }
 
-  update(id: string, patch: UpdateProposalInput): Observable<Proposal> {
-    return simulateNetwork(() => {
-      const proposal = this.proposalsSignal().find((item) => item.id === id);
+  submit(requestId: string, input: ProposalInput): Observable<Proposal> {
+    return this.http.post<PropostaApiResponse>(requestProposalsUrl(requestId), toApiPayload(input)).pipe(
+      map(toProposal),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível enviar a proposta.'))),
+    );
+  }
 
-      if (!proposal) {
-        throw new Error('Proposta não encontrada.');
-      }
-
-      if (!this.canEdit(proposal)) {
-        throw new Error('Esta proposta não pode mais ser editada.');
-      }
-
-      const updated: Proposal = { ...proposal, ...patch, updatedAt: new Date().toISOString() };
-      this.proposalsSignal.update((proposals) => proposals.map((item) => (item.id === id ? updated : item)));
-
-      return updated;
-    });
+  update(id: string, input: ProposalInput): Observable<Proposal> {
+    return this.http.put<PropostaApiResponse>(`${this.baseUrl}/${id}`, toApiPayload(input)).pipe(
+      map(toProposal),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível atualizar a proposta.'))),
+    );
   }
 
   cancel(id: string): Observable<Proposal> {
-    return simulateNetwork(() => {
-      const proposal = this.proposalsSignal().find((item) => item.id === id);
-
-      if (!proposal) {
-        throw new Error('Proposta não encontrada.');
-      }
-
-      if (!this.canCancel(proposal)) {
-        throw new Error('Esta proposta não pode mais ser cancelada.');
-      }
-
-      const updated: Proposal = { ...proposal, status: 'cancelada', updatedAt: new Date().toISOString() };
-      this.proposalsSignal.update((proposals) => proposals.map((item) => (item.id === id ? updated : item)));
-
-      return updated;
-    });
+    return this.http.patch<PropostaApiResponse>(`${this.baseUrl}/${id}/cancelar`, {}).pipe(
+      map(toProposal),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível cancelar a proposta.'))),
+    );
   }
 
-  acceptProposal(id: string): Observable<Proposal> {
-    return simulateNetwork(() => {
-      const proposal = this.proposalsSignal().find((item) => item.id === id);
-
-      if (!proposal) {
-        throw new Error('Proposta não encontrada.');
-      }
-
-      if (proposal.status !== 'pendente') {
-        throw new Error('Esta proposta não está mais disponível para aceite.');
-      }
-
-      const now = new Date().toISOString();
-
-      this.proposalsSignal.update((proposals) =>
-        proposals.map((item) => {
-          if (item.id === id) {
-            return { ...item, status: 'aceita', updatedAt: now };
-          }
-
-          if (item.requestId === proposal.requestId && item.status === 'pendente') {
-            return { ...item, status: 'recusada', updatedAt: now };
-          }
-
-          return item;
-        }),
-      );
-
-      this.requestService.markInProgress(proposal.requestId, id);
-
-      return { ...proposal, status: 'aceita', updatedAt: now };
-    });
+  /** Paciente aceita: as demais pendentes são recusadas e a solicitação entra em andamento. */
+  accept(id: string): Observable<Proposal> {
+    return this.http.patch<PropostaApiResponse>(`${this.baseUrl}/${id}/aceitar`, {}).pipe(
+      map(toProposal),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível aceitar a proposta.'))),
+    );
   }
+}
+
+function requestProposalsUrl(requestId: string): string {
+  return `${environment.apiUrl}/solicitacoes/${requestId}/propostas`;
+}
+
+function toProposal(response: PropostaApiResponse): Proposal {
+  return {
+    id: String(response.id),
+    requestId: String(response.solicitacao.id),
+    professionalId: String(response.profissional.id),
+    professional: {
+      id: String(response.profissional.id),
+      name: response.profissional.nome,
+      category: response.profissional.categoria,
+      categoryLabel: response.profissional.categoriaRotulo,
+      specialties: response.profissional.especialidades.map((especialidade) => ({
+        id: String(especialidade.id),
+        name: especialidade.nome,
+        category: especialidade.categoria,
+      })),
+    },
+    request: {
+      id: String(response.solicitacao.id),
+      patientName: response.solicitacao.pacienteNome,
+      professionals: response.solicitacao.profissionais.map(toRequestedProfessional),
+      modality: response.solicitacao.modalidade === 'PRESENCIAL' ? 'presencial' : 'online',
+      desiredDeadline: response.solicitacao.prazoDesejado,
+      status: response.solicitacao.status.toLowerCase() as RequestStatus,
+    },
+    price: Number(response.valor),
+    approach: response.abordagem,
+    deadline: response.prazo,
+    status: response.status.toLowerCase() as ProposalStatus,
+    createdAt: response.criadoEm,
+    updatedAt: response.atualizadoEm,
+  };
+}
+
+function toApiPayload(input: ProposalInput) {
+  return {
+    valor: input.price,
+    abordagem: input.approach,
+    prazo: input.deadline,
+  };
+}
+
+function normalizeError(error: unknown, defaultMessage: string): Error {
+  if (error instanceof HttpErrorResponse) {
+    const apiError = error.error as ApiErrorResponse | undefined;
+    return new Error(apiError?.message ?? defaultMessage);
+  }
+
+  return error instanceof Error ? error : new Error(defaultMessage);
 }

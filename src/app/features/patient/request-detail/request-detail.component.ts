@@ -1,11 +1,9 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { ProfessionalValidationStatus, Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
-import { PROFESSIONALS_MOCK } from '../../../mocks';
+import { Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -39,7 +37,6 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 })
 export class RequestDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
@@ -93,16 +90,18 @@ export class RequestDetailComponent {
   protected readonly formatAddress = formatRequestAddress;
   protected readonly specialtyNames = requestedSpecialtyNames;
 
-  protected professionalName(professionalId: string): string {
-    return PROFESSIONALS_MOCK.find((professional) => professional.id === professionalId)?.name ?? 'Profissional';
-  }
-
-  protected professionalValidationStatus(professionalId: string): ProfessionalValidationStatus | null {
-    return PROFESSIONALS_MOCK.find((professional) => professional.id === professionalId)?.validationStatus ?? null;
+  /** Ex.: "Enfermeiro(a) — Curativos, Sondagem". */
+  protected professionalDescription(proposal: Proposal): string {
+    const specialties = proposal.professional.specialties.map((specialty) => specialty.name).join(', ');
+    return specialties ? `${proposal.professional.categoryLabel} — ${specialties}` : proposal.professional.categoryLabel;
   }
 
   protected canEdit(request: ServiceRequest): boolean {
     return this.requestService.canEdit(request);
+  }
+
+  protected canReceiveProposals(request: ServiceRequest): boolean {
+    return this.requestService.canReceiveProposals(request);
   }
 
   protected canCancel(request: ServiceRequest): boolean {
@@ -113,6 +112,8 @@ export class RequestDetailComponent {
     this.requestService.cancel(this.requestId).subscribe({
       next: (updated) => {
         this.request.set(updated);
+        // As propostas pendentes são recusadas junto com o cancelamento.
+        this.loadProposals();
         this.toastService.info('Solicitação cancelada.');
       },
       error: (error: Error) => this.toastService.error(error.message),
@@ -136,7 +137,7 @@ export class RequestDetailComponent {
 
     this.isAccepting.set(true);
 
-    this.proposalService.acceptProposal(proposal.id).subscribe({
+    this.proposalService.accept(proposal.id).subscribe({
       next: () => {
         this.isAccepting.set(false);
         this.proposalToAccept.set(null);

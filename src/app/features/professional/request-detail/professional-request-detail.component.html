@@ -62,6 +62,21 @@
             </div>
             <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
             <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
+            <p class="professional-request-detail__proposal-detail">Prazo: {{ proposal.deadline | date: 'dd/MM/yyyy' }}</p>
+            @if (canEdit(proposal) || canCancel(proposal)) {
+              <div class="professional-request-detail__proposal-actions">
+                @if (canEdit(proposal)) {
+                  <ui-button variant="secondary" [routerLink]="['/professional/propostas', proposal.id, 'editar']">
+                    Editar
+                  </ui-button>
+                }
+                @if (canCancel(proposal)) {
+                  <ui-button variant="danger" [loading]="isCancelling()" (click)="cancelProposal(proposal)">
+                    Cancelar proposta
+                  </ui-button>
+                }
+              </div>
+            }
           </ui-card>
         } @else if (currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') {
           <ui-card>

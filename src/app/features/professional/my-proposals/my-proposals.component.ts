@@ -1,10 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
-import { RequestService } from '../../../core/services/request.service';
-import { Proposal, ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
-import { PATIENTS_MOCK } from '../../../mocks';
+import { Proposal, requestedProfessionalsSummary } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -23,54 +20,31 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
   styleUrl: './my-proposals.component.scss',
 })
 export class MyProposalsComponent {
-  private readonly authService = inject(AuthService);
   private readonly proposalService = inject(ProposalService);
-  private readonly requestService = inject(RequestService);
   private readonly toastService = inject(ToastService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
-  private readonly requestsById = signal<Map<string, ServiceRequest>>(new Map());
+  protected readonly cancellingId = signal<string | null>(null);
 
   constructor() {
     this.load();
   }
 
   protected load(): void {
-    const professionalId = this.authService.currentUser()?.id;
-
-    if (!professionalId) {
-      return;
-    }
-
     this.viewState.set('loading');
 
-    this.proposalService.listForProfessional(professionalId).subscribe({
+    this.proposalService.listMine().subscribe({
       next: (proposals) => {
         this.proposals.set(proposals);
         this.viewState.set(proposals.length === 0 ? 'empty' : 'filled');
-        this.loadRequests();
       },
       error: () => this.viewState.set('error'),
     });
   }
 
-  private loadRequests(): void {
-    // Só enriquece os cards (especialidade/paciente); em caso de erro mantém os rótulos padrão.
-    this.requestService.listAvailable().subscribe({
-      next: (requests) => this.requestsById.set(new Map(requests.map((request) => [request.id, request]))),
-      error: () => undefined,
-    });
-  }
-
-  protected specialtyName(requestId: string): string {
-    const request = this.requestsById().get(requestId);
-    return request ? requestedProfessionalsSummary(request) : 'Solicitação';
-  }
-
-  protected patientName(requestId: string): string {
-    const patientId = this.requestsById().get(requestId)?.patientId;
-    return PATIENTS_MOCK.find((patient) => patient.id === patientId)?.name ?? 'Paciente';
+  protected requestSummary(proposal: Proposal): string {
+    return requestedProfessionalsSummary(proposal.request);
   }
 
   protected canEdit(proposal: Proposal): boolean {
@@ -82,12 +56,18 @@ export class MyProposalsComponent {
   }
 
   protected cancelProposal(id: string): void {
+    this.cancellingId.set(id);
+
     this.proposalService.cancel(id).subscribe({
       next: (updated) => {
+        this.cancellingId.set(null);
         this.proposals.update((proposals) => proposals.map((proposal) => (proposal.id === id ? updated : proposal)));
         this.toastService.info('Proposta cancelada.');
       },
-      error: (error: Error) => this.toastService.error(error.message),
+      error: (error: Error) => {
+        this.cancellingId.set(null);
+        this.toastService.error(error.message);
+      },
     });
   }
 }

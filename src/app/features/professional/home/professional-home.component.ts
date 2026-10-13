@@ -1,10 +1,8 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { RequestService } from '../../../core/services/request.service';
-import { SpecialtyService } from '../../../core/services/specialty.service';
-import { Professional, ServiceRequest, Specialty } from '../../../core/models';
+import { ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
@@ -21,25 +19,14 @@ type ViewState = 'loading' | 'empty' | 'error' | 'filled';
   styleUrl: './professional-home.component.scss',
 })
 export class ProfessionalHomeComponent {
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
-  private readonly specialties = signal<Specialty[]>([]);
 
-  protected readonly specialtyName = computed(() => {
-    const professional = this.authService.currentUser() as Professional | null;
-    const specialtyIds = professional?.specialtyIds ?? [];
-    const names = this.specialties()
-      .filter((specialty) => specialtyIds.includes(specialty.id))
-      .map((specialty) => specialty.name);
-    return names.join(', ');
-  });
+  protected readonly professionalsSummary = requestedProfessionalsSummary;
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
     this.load();
   }
 

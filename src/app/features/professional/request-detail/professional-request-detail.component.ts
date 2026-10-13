@@ -2,10 +2,9 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Professional, Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
+import { Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -46,7 +45,6 @@ type FieldName = 'price' | 'approach' | 'deadline';
 export class ProfessionalRequestDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(AuthService);
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
@@ -57,6 +55,7 @@ export class ProfessionalRequestDetailComponent {
   protected readonly request = signal<ServiceRequest | null>(null);
   protected readonly existingProposal = signal<Proposal | null>(null);
   protected readonly isSubmitting = signal(false);
+  protected readonly isCancelling = signal(false);
 
   protected readonly form = this.fb.nonNullable.group({
     price: ['', [Validators.required, Validators.min(1)]],
@@ -80,13 +79,11 @@ export class ProfessionalRequestDetailComponent {
 
         this.request.set(request);
 
-        const professionalId = this.authService.currentUser()?.id;
-
+        // Para o profissional a API devolve só as propostas dele; uma cancelada
+        // não impede enviar outra.
         this.proposalService.listForRequest(this.requestId).subscribe({
           next: (proposals) => {
-            this.existingProposal.set(
-              proposals.find((proposal) => proposal.professionalId === professionalId) ?? null,
-            );
+            this.existingProposal.set(proposals.find((proposal) => proposal.status !== 'cancelada') ?? null);
             this.pageState.set('filled');
           },
           error: () => this.pageState.set('error'),
@@ -128,25 +125,45 @@ export class ProfessionalRequestDetailComponent {
       return;
     }
 
-    const request = this.request();
-    const professional = this.authService.currentUser() as Professional | null;
-
-    if (!request || !professional) {
-      return;
-    }
-
     const { price, approach, deadline } = this.form.getRawValue();
 
     this.isSubmitting.set(true);
 
-    this.proposalService.submit({ request, professional, price: Number(price), approach, deadline }).subscribe({
+    this.proposalService.submit(this.requestId, { price: Number(price), approach, deadline }).subscribe({
       next: (proposal) => {
         this.isSubmitting.set(false);
         this.existingProposal.set(proposal);
+        this.request.update((request) => (request ? { ...request, status: proposal.request.status } : request));
+        this.form.reset();
         this.toastService.success('Proposta enviada com sucesso!');
       },
       error: (error: Error) => {
         this.isSubmitting.set(false);
+        this.toastService.error(error.message);
+      },
+    });
+  }
+
+  protected canEdit(proposal: Proposal): boolean {
+    return this.proposalService.canEdit(proposal);
+  }
+
+  protected canCancel(proposal: Proposal): boolean {
+    return this.proposalService.canCancel(proposal);
+  }
+
+  protected cancelProposal(proposal: Proposal): void {
+    this.isCancelling.set(true);
+
+    this.proposalService.cancel(proposal.id).subscribe({
+      next: (cancelled) => {
+        this.isCancelling.set(false);
+        this.existingProposal.set(null);
+        this.request.update((request) => (request ? { ...request, status: cancelled.request.status } : request));
+        this.toastService.info('Proposta cancelada.');
+      },
+      error: (error: Error) => {
+        this.isCancelling.set(false);
         this.toastService.error(error.message);
       },
     });

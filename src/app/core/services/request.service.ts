@@ -4,7 +4,14 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { ApiErrorResponse } from '../auth/auth-api.model';
-import { Address, ProfessionalCategory, RequestStatus, ServiceModality, ServiceRequest } from '../models';
+import {
+  Address,
+  ProfessionalCategory,
+  RequestStatus,
+  RequestedProfessional,
+  ServiceModality,
+  ServiceRequest,
+} from '../models';
 
 export interface CreateRequestInput {
   professionals: { category: ProfessionalCategory; specialtyIds: string[]; quantity: number }[];
@@ -29,15 +36,18 @@ interface EnderecoApi {
   uf: string;
 }
 
+export interface ProfissionalSolicitadoApi {
+  categoria: ProfessionalCategory;
+  categoriaRotulo: string;
+  especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
+  quantidade: number;
+  vagasPreenchidas: number;
+}
+
 interface SolicitacaoApiResponse {
   id: number;
   pacienteId: number;
-  profissionais: {
-    categoria: ProfessionalCategory;
-    categoriaRotulo: string;
-    especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
-    quantidade: number;
-  }[];
+  profissionais: ProfissionalSolicitadoApi[];
   descricao: string;
   modalidade: ModalidadeApi;
   endereco: EnderecoApi | null;
@@ -45,6 +55,7 @@ interface SolicitacaoApiResponse {
   status: StatusApi;
   criadoEm: string;
   atualizadoEm: string;
+  totalPropostas: number;
 }
 
 const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
@@ -56,15 +67,13 @@ export class RequestService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/solicitacoes`;
 
-  /**
-   * Cache local das solicitações já carregadas. Enquanto o back-end de propostas
-   * não existe, o ProposalService (mock) move o status das solicitações por aqui.
-   */
+  /** Cache local das solicitações já carregadas. */
   private readonly requestsSignal = signal<ServiceRequest[]>([]);
   readonly requests = this.requestsSignal.asReadonly();
 
+  /** Com alguma proposta aceita a API recusa a edição (ela apagaria as vagas ocupadas). */
   canEdit(request: ServiceRequest): boolean {
-    return EDITABLE_STATUSES.includes(request.status);
+    return EDITABLE_STATUSES.includes(request.status) && !request.professionals.some((professional) => professional.filled > 0);
   }
 
   canCancel(request: ServiceRequest): boolean {
@@ -146,26 +155,6 @@ export class RequestService {
     );
   }
 
-  markReceivingProposals(id: string): void {
-    this.requestsSignal.update((requests) =>
-      requests.map((request) =>
-        request.id === id && request.status === 'aberta'
-          ? { ...request, status: 'recebendo_propostas', updatedAt: new Date().toISOString() }
-          : request,
-      ),
-    );
-  }
-
-  markInProgress(id: string, acceptedProposalId: string): void {
-    this.requestsSignal.update((requests) =>
-      requests.map((request) =>
-        request.id === id
-          ? { ...request, status: 'em_andamento', acceptedProposalId, updatedAt: new Date().toISOString() }
-          : request,
-      ),
-    );
-  }
-
   private cache(request: ServiceRequest): void {
     this.requestsSignal.update((requests) =>
       requests.some((item) => item.id === request.id)
@@ -179,16 +168,7 @@ function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
   return {
     id: String(response.id),
     patientId: String(response.pacienteId),
-    professionals: response.profissionais.map((profissional) => ({
-      category: profissional.categoria,
-      categoryLabel: profissional.categoriaRotulo,
-      specialties: profissional.especialidades.map((especialidade) => ({
-        id: String(especialidade.id),
-        name: especialidade.nome,
-        category: especialidade.categoria,
-      })),
-      quantity: profissional.quantidade,
-    })),
+    professionals: response.profissionais.map(toRequestedProfessional),
     description: response.descricao,
     modality: response.modalidade === 'PRESENCIAL' ? 'presencial' : 'online',
     address: response.endereco
@@ -204,8 +184,23 @@ function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
       : undefined,
     desiredDeadline: response.prazoDesejado,
     status: response.status.toLowerCase() as RequestStatus,
+    proposalCount: response.totalPropostas,
     createdAt: response.criadoEm,
     updatedAt: response.atualizadoEm,
+  };
+}
+
+export function toRequestedProfessional(profissional: ProfissionalSolicitadoApi): RequestedProfessional {
+  return {
+    category: profissional.categoria,
+    categoryLabel: profissional.categoriaRotulo,
+    specialties: profissional.especialidades.map((especialidade) => ({
+      id: String(especialidade.id),
+      name: especialidade.nome,
+      category: especialidade.categoria,
+    })),
+    quantity: profissional.quantidade,
+    filled: profissional.vagasPreenchidas,
   };
 }
 

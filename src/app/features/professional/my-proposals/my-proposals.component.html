@@ -28,17 +28,26 @@
         @for (proposal of proposals(); track proposal.id) {
           <ui-proposal-card
             [proposal]="proposal"
-            [professionalName]="specialtyName(proposal.requestId)"
-            [specialtyName]="'Paciente: ' + patientName(proposal.requestId)"
+            [professionalName]="requestSummary(proposal)"
+            [specialtyName]="'Paciente: ' + proposal.request.patientName"
           >
             <div proposal-actions>
+              <ui-button variant="ghost" [routerLink]="['/professional/solicitacoes', proposal.requestId]">
+                Ver solicitação
+              </ui-button>
               @if (canEdit(proposal)) {
                 <ui-button variant="secondary" [routerLink]="['/professional/propostas', proposal.id, 'editar']">
                   Editar
                 </ui-button>
               }
               @if (canCancel(proposal)) {
-                <ui-button variant="danger" (click)="cancelProposal(proposal.id)">Cancelar</ui-button>
+                <ui-button
+                  variant="danger"
+                  [loading]="cancellingId() === proposal.id"
+                  (click)="cancelProposal(proposal.id)"
+                >
+                  Cancelar
+                </ui-button>
               }
             </div>
           </ui-proposal-card>

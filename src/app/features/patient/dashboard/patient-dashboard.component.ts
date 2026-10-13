@@ -4,7 +4,6 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { RequestStatus, ServiceRequest, requestedSpecialtyNames } from '../../../core/models';
-import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -63,7 +62,6 @@ function normalize(text: string): string {
 export class PatientDashboardComponent {
   private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
-  private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
 
   protected readonly viewState = signal<ViewState>('loading');
@@ -104,18 +102,6 @@ export class PatientDashboardComponent {
       }
     }
     return [...labels].map(([value, label]) => ({ value, label }));
-  });
-
-  /** Profissionais distintos com proposta (não cancelada) por solicitação. */
-  private readonly proposalCountByRequest = computed(() => {
-    const professionalsByRequest = new Map<string, Set<string>>();
-    for (const proposal of this.proposalService.proposals()) {
-      if (proposal.status === 'cancelada') continue;
-      const professionals = professionalsByRequest.get(proposal.requestId) ?? new Set<string>();
-      professionals.add(proposal.professionalId);
-      professionalsByRequest.set(proposal.requestId, professionals);
-    }
-    return new Map([...professionalsByRequest].map(([requestId, professionals]) => [requestId, professionals.size]));
   });
 
   protected readonly filteredRequests = computed(() => {
@@ -165,7 +151,7 @@ export class PatientDashboardComponent {
   }
 
   protected proposalCount(request: ServiceRequest): number {
-    return this.proposalCountByRequest().get(request.id) ?? 0;
+    return request.proposalCount;
   }
 
   protected canEdit(request: ServiceRequest): boolean {

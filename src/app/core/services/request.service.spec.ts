@@ -40,12 +40,14 @@ function apiResponse(overrides: Record<string, unknown> = {}) {
           { id: 14, nome: 'Sondagem', categoria: 'ENFERMEIRO' },
         ],
         quantidade: 2,
+        vagasPreenchidas: 1,
       },
       {
         categoria: 'CUIDADOR',
         categoriaRotulo: 'Cuidador',
         especialidades: [{ id: 15, nome: 'Cuidador de Idosos', categoria: 'CUIDADOR' }],
         quantidade: 1,
+        vagasPreenchidas: 0,
       },
     ],
     descricao: 'Preciso de acompanhamento nutricional detalhado para o teste automatizado.',
@@ -55,6 +57,7 @@ function apiResponse(overrides: Record<string, unknown> = {}) {
     status: 'ABERTA',
     criadoEm: '2026-09-01T10:00:00Z',
     atualizadoEm: '2026-09-01T10:00:00Z',
+    totalPropostas: 0,
     ...overrides,
   };
 }
@@ -116,12 +119,14 @@ describe('RequestService', () => {
               { id: '14', name: 'Sondagem', category: 'ENFERMEIRO' },
             ],
             quantity: 2,
+            filled: 1,
           },
           {
             category: 'CUIDADOR',
             categoryLabel: 'Cuidador',
             specialties: [{ id: '15', name: 'Cuidador de Idosos', category: 'CUIDADOR' }],
             quantity: 1,
+            filled: 0,
           },
         ],
         modality: 'presencial',
@@ -213,25 +218,24 @@ describe('RequestService', () => {
     expect(requests).toEqual([]);
   });
 
-  it('permite editar apenas enquanto aberta ou recebendo propostas', () => {
-    const base = { status: 'aberta' } as ServiceRequest;
+  it('permite editar apenas enquanto aberta ou recebendo propostas e sem vagas preenchidas', () => {
+    const base = { status: 'aberta', professionals: [{ quantity: 2, filled: 0 }] } as ServiceRequest;
 
     expect(service.canEdit(base)).toBe(true);
     expect(service.canEdit({ ...base, status: 'recebendo_propostas' })).toBe(true);
     expect(service.canEdit({ ...base, status: 'em_andamento' })).toBe(false);
+    expect(
+      service.canEdit({ ...base, status: 'recebendo_propostas', professionals: [{ ...base.professionals[0], filled: 1 }] }),
+    ).toBe(false);
     expect(service.canCancel({ ...base, status: 'em_andamento' })).toBe(true);
     expect(service.canCancel({ ...base, status: 'concluida' })).toBe(false);
   });
 
-  it('markReceivingProposals só transiciona a partir de "aberta"', () => {
-    service.list().subscribe();
-    httpMock.expectOne(BASE_URL).flush([apiResponse(), apiResponse({ id: 11, status: 'CANCELADA' })]);
+  it('mapeia o total de propostas recebidas', () => {
+    let requests: ServiceRequest[] = [];
+    service.list().subscribe((result) => (requests = result));
+    httpMock.expectOne(BASE_URL).flush([apiResponse({ totalPropostas: 3 })]);
 
-    service.markReceivingProposals('10');
-    service.markReceivingProposals('11');
-
-    const byId = new Map(service.requests().map((request) => [request.id, request]));
-    expect(byId.get('10')?.status).toBe('recebendo_propostas');
-    expect(byId.get('11')?.status).toBe('cancelada');
+    expect(requests[0].proposalCount).toBe(3);
   });
 });

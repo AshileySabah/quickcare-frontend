@@ -14,6 +14,7 @@ function request(id: string, status: RequestStatus): ServiceRequest {
     modality: 'online',
     desiredDeadline: '2026-12-01',
     status,
+    proposalCount: 0,
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
   };

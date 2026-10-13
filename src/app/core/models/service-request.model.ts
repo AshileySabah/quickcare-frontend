@@ -19,6 +19,8 @@ export interface RequestedProfessional {
   categoryLabel: string;
   specialties: Specialty[];
   quantity: number;
+  /** Vagas já ocupadas por propostas aceitas (≤ quantity). */
+  filled: number;
 }
 
 export interface ServiceRequest {
@@ -30,7 +32,8 @@ export interface ServiceRequest {
   address?: Address;
   desiredDeadline: string;
   status: RequestStatus;
-  acceptedProposalId?: string;
+  /** Propostas não canceladas recebidas. */
+  proposalCount: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,7 +49,7 @@ export function describeRequestedProfessional(professional: RequestedProfessiona
 }
 
 /** Ex.: "2× Curativos + Sondagem, 1× Cuidador de Idosos". */
-export function requestedProfessionalsSummary(request: ServiceRequest): string {
+export function requestedProfessionalsSummary(request: Pick<ServiceRequest, 'professionals'>): string {
   return request.professionals.map(describeRequestedProfessional).join(', ');
 }
 

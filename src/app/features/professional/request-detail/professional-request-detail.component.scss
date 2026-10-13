@@ -81,6 +81,13 @@
   color: tokens.color('gray', 700);
 }
 
+.professional-request-detail__proposal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(2);
+  margin-top: tokens.space(4);
+}
+
 form {
   display: block;
   max-width: 560px;

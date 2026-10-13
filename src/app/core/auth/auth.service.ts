@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
   Address,
@@ -86,6 +86,42 @@ export class AuthService {
   readonly role = computed<UserRole | null>(
     () => this.currentUserSignal()?.role ?? null,
   );
+
+  /** Tentativa única de recuperar a sessão pelos cookies, compartilhada entre os guards. */
+  private sessionRestore$?: Observable<User | null>;
+
+  /**
+   * A sessão vive em memória e some ao recarregar a página, mas os cookies
+   * HttpOnly continuam lá: na primeira navegação protegida, busca o usuário em
+   * /auth/me (renovando o access token se ele já expirou). Depois disso, só
+   * devolve o usuário atual — logout continua valendo sem nova consulta.
+   */
+  ensureSession(): Observable<User | null> {
+    const user = this.currentUserSignal();
+    if (user) {
+      return of(user);
+    }
+
+    this.sessionRestore$ ??= this.fetchCurrentSession().pipe(shareReplay(1));
+    return this.sessionRestore$.pipe(map(() => this.currentUserSignal()));
+  }
+
+  private fetchCurrentSession(): Observable<User | null> {
+    const me$ = this.http.get<LoginApiResponse>(`${environment.apiUrl}/auth/me`);
+
+    return me$.pipe(
+      catchError((error: unknown) =>
+        error instanceof HttpErrorResponse && error.status === 401
+          ? this.http
+              .post<void>(`${environment.apiUrl}/auth/refresh`, {})
+              .pipe(switchMap(() => me$))
+          : throwError(() => error),
+      ),
+      map((response) => this.mapLoginResponseToUser(response)),
+      tap((user) => this.establishSession(user)),
+      catchError(() => of(null)),
+    );
+  }
 
   login(email: string, password: string): Observable<User> {
     return this.http

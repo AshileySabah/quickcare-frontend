@@ -59,6 +59,10 @@
   }
 }
 
+.request-detail__vacancies {
+  color: tokens.color('gray', 700);
+}
+
 .request-detail__actions {
   display: flex;
   flex-wrap: wrap;

@@ -32,7 +32,12 @@
             <div>
               <dt>Profissionais</dt>
               @for (professional of currentRequest.professionals; track $index) {
-                <dd>{{ professional.quantity }}× {{ professional.categoryLabel }} — {{ specialtyNames(professional) }}</dd>
+                <dd>
+                  {{ professional.quantity }}× {{ professional.categoryLabel }} — {{ specialtyNames(professional) }}
+                  <span class="request-detail__vacancies">
+                    ({{ professional.filled }}/{{ professional.quantity }} contratados)
+                  </span>
+                </dd>
               }
             </div>
             <div>
@@ -91,10 +96,10 @@
                 @for (proposal of proposals(); track proposal.id) {
                   <ui-proposal-card
                     [proposal]="proposal"
-                    [professionalName]="professionalName(proposal.professionalId)"
-                    [professionalValidationStatus]="professionalValidationStatus(proposal.professionalId)"
+                    [professionalName]="proposal.professional.name"
+                    [specialtyName]="professionalDescription(proposal)"
                   >
-                    @if (proposal.status === 'pendente' && canEdit(currentRequest)) {
+                    @if (proposal.status === 'pendente' && canReceiveProposals(currentRequest)) {
                       <div proposal-actions>
                         <ui-button (click)="askToAccept(proposal)">Aceitar proposta</ui-button>
                       </div>
@@ -113,8 +118,9 @@
 <ui-modal [open]="proposalToAccept() !== null" titleText="Confirmar aceite" (closed)="closeAcceptModal()">
   @if (proposalToAccept(); as proposal) {
     <p class="request-detail__confirm-text">
-      Ao aceitar esta proposta, as demais propostas pendentes serão recusadas automaticamente e a solicitação entrará
-      em andamento.
+      Ao aceitar, {{ proposal.professional.name }} ocupa uma das vagas pedidas. Propostas que não couberem em nenhuma
+      vaga restante serão recusadas automaticamente, e a solicitação entra em andamento quando todas as vagas forem
+      preenchidas.
     </p>
     <div class="request-detail__confirm-actions">
       <ui-button variant="ghost" (click)="closeAcceptModal()">Cancelar</ui-button>

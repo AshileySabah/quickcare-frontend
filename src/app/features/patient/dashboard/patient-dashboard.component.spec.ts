@@ -1,9 +1,7 @@
-import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
-import { Proposal, ServiceRequest } from '../../../core/models';
-import { ProposalService } from '../../../core/services/proposal.service';
+import { ServiceRequest } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { PatientDashboardComponent } from './patient-dashboard.component';
@@ -18,12 +16,14 @@ function request(overrides: Partial<ServiceRequest>): ServiceRequest {
         categoryLabel: 'Enfermeiro(a)',
         specialties: [{ id: '23', name: 'Curativos', category: 'ENFERMEIRO' }],
         quantity: 2,
+        filled: 0,
       },
     ],
     description: 'Preciso de curativos diários para minha mãe.',
     modality: 'presencial',
     desiredDeadline: '2026-12-01',
     status: 'aberta',
+    proposalCount: 0,
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
     ...overrides,
@@ -31,7 +31,7 @@ function request(overrides: Partial<ServiceRequest>): ServiceRequest {
 }
 
 const REQUESTS: ServiceRequest[] = [
-  request({ id: '1', status: 'aberta', createdAt: '2026-09-01T10:00:00Z' }),
+  request({ id: '1', status: 'aberta', proposalCount: 2, createdAt: '2026-09-01T10:00:00Z' }),
   request({
     id: '2',
     status: 'em_andamento',
@@ -43,6 +43,7 @@ const REQUESTS: ServiceRequest[] = [
         categoryLabel: 'Outros profissionais',
         specialties: [{ id: '31', name: 'Nutrição', category: 'OUTRO' }],
         quantity: 1,
+        filled: 0,
       },
     ],
     createdAt: '2026-09-10T10:00:00Z',
@@ -65,18 +66,11 @@ describe('PatientDashboardComponent', () => {
     requestService.canEdit.and.callFake((item) => ['aberta', 'recebendo_propostas'].includes(item.status));
     requestService.canCancel.and.callFake((item) => item.status !== 'concluida' && item.status !== 'cancelada');
 
-    const proposals: Proposal[] = [
-      { id: 'p1', requestId: '1', professionalId: 'a', price: 1, approach: '', deadline: '', status: 'pendente', createdAt: '', updatedAt: '' },
-      { id: 'p2', requestId: '1', professionalId: 'b', price: 1, approach: '', deadline: '', status: 'pendente', createdAt: '', updatedAt: '' },
-      { id: 'p3', requestId: '1', professionalId: 'c', price: 1, approach: '', deadline: '', status: 'cancelada', createdAt: '', updatedAt: '' },
-    ];
-
     TestBed.configureTestingModule({
       imports: [PatientDashboardComponent],
       providers: [
         provideRouter([]),
         { provide: RequestService, useValue: requestService },
-        { provide: ProposalService, useValue: { proposals: signal(proposals) } },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
       ],
     });
@@ -97,7 +91,7 @@ describe('PatientDashboardComponent', () => {
     expect(cardIds()).toEqual(['#2']);
   });
 
-  it('conta profissionais distintos com proposta não cancelada', () => {
+  it('mostra o total de propostas recebidas informado pela API', () => {
     const card = fixture.nativeElement.querySelectorAll('app-request-card')[1] as HTMLElement;
     expect(card.querySelector('.request-card__proposals-link')?.textContent?.trim()).toBe('2');
   });

@@ -1,0 +1,182 @@
+<ui-card>
+  <article class="step-card" [attr.aria-label]="'Etapa ' + step().label">
+    <header class="step-card__header">
+      <div class="step-card__title-row">
+        <h2 class="step-card__title">{{ step().label }}</h2>
+        <ui-validation-status-badge [status]="step().status"></ui-validation-status-badge>
+      </div>
+
+      <div class="step-card__tools">
+        @if (isPending()) {
+          <ui-button variant="info-outline" size="sm" [loading]="isPreValidating()" (click)="preValidate.emit()">
+            Pré-validar esta etapa
+          </ui-button>
+        }
+        @if (lookupLink(); as link) {
+          <a class="step-card__lookup" [href]="link.url" target="_blank" rel="noopener">{{ link.label }} ↗</a>
+        }
+      </div>
+    </header>
+
+    <dl class="step-card__data">
+      @switch (step().type) {
+        @case ('IDENTIDADE') {
+          <div>
+            <dt>Nome</dt>
+            <dd>{{ data().name }}</dd>
+          </div>
+          <div>
+            <dt>CPF</dt>
+            <dd>{{ formatCpf(data().cpf) }}</dd>
+          </div>
+          <div>
+            <dt>Data de nascimento</dt>
+            <dd>{{ data().birthDate | date: 'dd/MM/yyyy' }}</dd>
+          </div>
+          <div>
+            <dt>Documento de identidade</dt>
+            <dd>
+              @if (data().identityDocumentType) {
+                {{ data().identityDocumentType }} {{ data().identityDocumentNumber }}
+                @if (data().identityDocumentUf) {
+                  ({{ data().identityDocumentUf }})
+                }
+              } @else {
+                Número não informado
+              }
+            </dd>
+          </div>
+        }
+        @case ('CNPJ') {
+          <div>
+            <dt>CNPJ</dt>
+            <dd>{{ formatCnpj(data().cnpj) }}</dd>
+          </div>
+          <div>
+            <dt>Profissional</dt>
+            <dd>{{ data().name }}</dd>
+          </div>
+        }
+        @case ('REGISTRO_PROFISSIONAL') {
+          <div>
+            <dt>{{ registrationLabel() }}</dt>
+            <dd>{{ data().registrationNumber }} / {{ data().registrationUf }}</dd>
+          </div>
+          <div>
+            <dt>Profissional</dt>
+            <dd>{{ data().name }}</dd>
+          </div>
+          @if (!lookupLink()) {
+            <div>
+              <dt>Onde conferir</dt>
+              <dd>No portal do conselho regional da categoria ({{ data().registrationUf }}).</dd>
+            </div>
+          }
+        }
+      }
+    </dl>
+
+    <section class="step-card__section">
+      <h3 class="step-card__section-title">Documento enviado</h3>
+      @if (step().document; as document) {
+        <ui-stored-file [file]="document"></ui-stored-file>
+      } @else {
+        <p class="step-card__muted">Nenhum documento vinculado a esta etapa.</p>
+      }
+    </section>
+
+    @if (preValidation(); as state) {
+      <app-pre-validation-alert [state]="state" (retry)="preValidate.emit()"></app-pre-validation-alert>
+    }
+
+    @if (isPending()) {
+      <form class="step-card__decision" [formGroup]="form" (ngSubmit)="decide('aprovada')">
+        <ui-textarea
+          label="Justificativa"
+          formControlName="justification"
+          [rows]="4"
+          [required]="true"
+          [maxLength]="1000"
+          hint="Obrigatória para aprovar ou reprovar. A pré-validação, se usada, já preenche um texto que você pode editar."
+          [errorMessage]="justificationError()"
+        ></ui-textarea>
+
+        <ui-file-picker
+          label="Anexo (opcional)"
+          hint="Ex.: print da consulta no site oficial. PDF, JPG ou PNG, até 5MB."
+          [disabled]="deciding() !== null"
+          (fileChange)="onAttachmentChange($event)"
+        ></ui-file-picker>
+
+        <div class="step-card__actions">
+          @if (opinion() === 'favoravel') {
+            <span class="step-card__suggestion">Sugestão da pré-validação: aprovar</span>
+          } @else if (opinion() === 'desfavoravel') {
+            <span class="step-card__suggestion step-card__suggestion--warning">Sugestão da pré-validação: reprovar</span>
+          }
+          <ui-button
+            [variant]="rejectVariant()"
+            [loading]="deciding() === 'reprovada'"
+            [disabled]="deciding() !== null"
+            (click)="decide('reprovada')"
+          >
+            Reprovar
+          </ui-button>
+          <ui-button
+            type="submit"
+            [variant]="approveVariant()"
+            [loading]="deciding() === 'aprovada'"
+            [disabled]="deciding() !== null"
+          >
+            Aprovar
+          </ui-button>
+        </div>
+      </form>
+    } @else {
+      <section class="step-card__section">
+        <h3 class="step-card__section-title">Decisão</h3>
+        <p class="step-card__justification">{{ step().justification }}</p>
+        @if (step().attachment; as attachment) {
+          <ui-stored-file [file]="attachment"></ui-stored-file>
+        }
+        <p class="step-card__muted">
+          {{ step().status === 'aprovada' ? 'Aprovada' : 'Reprovada' }}
+          @if (step().reviewedBy) {
+            por {{ step().reviewedBy }}
+          }
+          em {{ step().reviewedAt | date: 'dd/MM/yyyy HH:mm' }}
+        </p>
+      </section>
+    }
+
+    @if (step().history.length > 0) {
+      <details class="step-card__history">
+        <summary>Avaliações anteriores ({{ step().history.length }})</summary>
+        <ol class="step-card__history-list">
+          @for (previous of step().history; track previous.id) {
+            <li class="step-card__history-item">
+              <div class="step-card__title-row">
+                <ui-validation-status-badge [status]="previous.status"></ui-validation-status-badge>
+                <span class="step-card__muted">
+                  {{ previous.reviewedAt | date: 'dd/MM/yyyy HH:mm' }}
+                  @if (previous.reviewedBy) {
+                    · {{ previous.reviewedBy }}
+                  }
+                </span>
+              </div>
+              @if (previous.justification) {
+                <p class="step-card__justification">{{ previous.justification }}</p>
+              }
+              @if (previous.document; as document) {
+                <ui-stored-file [file]="document"></ui-stored-file>
+              }
+              @if (previous.attachment; as attachment) {
+                <ui-stored-file [file]="attachment"></ui-stored-file>
+              }
+            </li>
+          }
+        </ol>
+      </details>
+    }
+  </article>
+</ui-card>

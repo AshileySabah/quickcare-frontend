@@ -1,70 +1,98 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
-import { Professional, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ProfessionalCategoryInfo, ValidationProfile, ValidationStatus, ValidationSummary } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
+import { ValidationService } from '../../../core/services/validation.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 
+interface StatusFilter {
+  value: ValidationStatus | null;
+  label: string;
+}
+
+const STATUS_FILTERS: StatusFilter[] = [
+  { value: 'pendente', label: 'Em análise' },
+  { value: 'reprovado', label: 'Reprovados' },
+  { value: 'aprovado', label: 'Aprovados' },
+  { value: null, label: 'Todos' },
+];
+
+/** Fila de validação cadastral de um perfil (profissionais ou pacientes), vindo da rota. */
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, SkeletonComponent],
+  imports: [
+    DatePipe,
+    RouterLink,
+    CardComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    SkeletonComponent,
+    ValidationStatusBadgeComponent,
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
 })
 export class AdminDashboardComponent {
-  private readonly authService = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly validationService = inject(ValidationService);
   private readonly specialtyService = inject(SpecialtyService);
 
+  protected readonly profile = this.route.snapshot.data['profile'] as ValidationProfile;
+  protected readonly statusFilters = STATUS_FILTERS;
+  protected readonly selectedStatus = signal<ValidationStatus | null>('pendente');
+
   protected readonly viewState = signal<ViewState>('loading');
-  protected readonly pendingProfessionals = signal<Professional[]>([]);
-  private readonly specialties = signal<Specialty[]>([]);
+  protected readonly entries = signal<ValidationSummary[]>([]);
   private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   constructor() {
-    this.specialtyService.list().subscribe((specialties) => this.specialties.set(specialties));
-    this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
+    if (this.profile === 'professional') {
+      this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
+    }
+    this.load();
+  }
+
+  protected get title(): string {
+    return this.profile === 'professional' ? 'Validação de profissionais' : 'Validação de pacientes';
+  }
+
+  protected get detailBasePath(): string {
+    return this.profile === 'professional' ? '/admin/profissionais' : '/admin/pacientes';
+  }
+
+  protected selectStatus(status: ValidationStatus | null): void {
+    this.selectedStatus.set(status);
     this.load();
   }
 
   protected load(): void {
     this.viewState.set('loading');
 
-    this.authService.listPendingProfessionals().subscribe({
-      next: (professionals) => {
-        this.pendingProfessionals.set(professionals);
-        this.viewState.set(professionals.length === 0 ? 'empty' : 'filled');
+    this.validationService.list(this.profile, this.selectedStatus() ?? undefined).subscribe({
+      next: (entries) => {
+        this.entries.set(entries);
+        this.viewState.set(entries.length === 0 ? 'empty' : 'filled');
       },
       error: () => this.viewState.set('error'),
     });
   }
 
-  protected specialtyNames(professional: Professional): string {
-    return professional.specialtyIds
-      .map((specialtyId) => this.specialties().find((specialty) => specialty.id === specialtyId)?.name ?? specialtyId)
-      .join(', ');
+  protected categoryLabel(entry: ValidationSummary): string {
+    return this.categories().find((category) => category.value === entry.category)?.label ?? entry.category ?? '';
   }
 
-  protected registrationSummary(professional: Professional): string {
-    return professional.registrationNumber
-      ? `${this.registrationLabel(professional)}: ${professional.registrationNumber}`
-      : 'Sem registro profissional';
-  }
-
-  protected categoryLabel(professional: Professional): string {
-    return this.categories().find((category) => category.value === professional.category)?.label ?? professional.category;
-  }
-
-  private registrationLabel(professional: Professional): string {
-    return (
-      this.categories().find((category) => category.value === professional.category)?.registrationLabel ??
-      'Registro profissional'
-    );
+  protected pendingStepsLabel(entry: ValidationSummary): string {
+    if (entry.pendingSteps === 0) {
+      return 'Nenhuma etapa aguardando avaliação';
+    }
+    return entry.pendingSteps === 1 ? '1 etapa aguardando avaliação' : `${entry.pendingSteps} etapas aguardando avaliação`;
   }
 }

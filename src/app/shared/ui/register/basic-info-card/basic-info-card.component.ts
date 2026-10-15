@@ -13,6 +13,11 @@ const GENDER_OPTIONS: SelectOption[] = [
   { value: 'PREFIRO_NAO_INFORMAR', label: 'Prefiro não informar' },
 ];
 
+const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
+  { value: 'RG', label: 'RG' },
+  { value: 'CNH', label: 'CNH' },
+];
+
 @Component({
   selector: 'ui-basic-info-card',
   standalone: true,
@@ -26,6 +31,14 @@ export class BasicInfoCardComponent {
   showEmail = input(true);
   showCpf = input(true);
   showCnpj = input(false);
+  /** Tipo, número e UF emissora do RG/CNH — exigidos no cadastro para a etapa de identidade. */
+  showIdentityDocument = input(false);
+  ufOptions = input<SelectOption[]>([]);
 
   protected readonly genderOptions = GENDER_OPTIONS;
+  protected readonly identityDocumentOptions = IDENTITY_DOCUMENT_OPTIONS;
+
+  protected get isRg(): boolean {
+    return this.group().get('identityDocumentType')?.value === 'RG';
+  }
 }

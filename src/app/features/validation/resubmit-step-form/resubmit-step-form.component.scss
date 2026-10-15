@@ -1,0 +1,20 @@
+@use 'tokens' as tokens;
+
+.resubmit-form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  padding-top: tokens.space(4);
+  border-top: 1px solid tokens.color('gray', 200);
+}
+
+.resubmit-form__title {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.resubmit-form__actions {
+  display: flex;
+  justify-content: flex-end;
+}

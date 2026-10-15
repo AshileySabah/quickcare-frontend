@@ -1,11 +1,17 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import {
+  cnpjValidator,
+  cpfValidator,
+  identityDocumentValidator,
+  normalizeIdentityNumber,
+} from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { atLeastOneModalityValidator } from '../../../core/forms/professional-validators';
 import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { DocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { DocumentType, IdentityDocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
@@ -28,6 +34,9 @@ type FieldName =
   | 'email'
   | 'phone'
   | 'cpf'
+  | 'identityDocumentType'
+  | 'identityDocumentNumber'
+  | 'identityDocumentUf'
   | 'cnpj'
   | 'category'
   | 'specialtyIds'
@@ -121,8 +130,11 @@ export class ProfessionalRegisterComponent implements OnInit {
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
-      cnpj: ['', [Validators.pattern(/^\d{14}$/)]],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/), cpfValidator()]],
+      identityDocumentType: ['', [Validators.required]],
+      identityDocumentNumber: ['', [Validators.required]],
+      identityDocumentUf: [''],
+      cnpj: ['', [Validators.pattern(/^\d{14}$/), cnpjValidator()]],
       category: this.fb.nonNullable.control<ProfessionalCategory | ''>('', Validators.required),
       specialtyIds: this.fb.nonNullable.control<string[]>([], Validators.required),
       specialtySingle: [''],
@@ -149,7 +161,7 @@ export class ProfessionalRegisterComponent implements OnInit {
       password: ['', [Validators.required, strongPasswordValidator()]],
       confirmPassword: ['', Validators.required],
     },
-    { validators: [passwordsMatchValidator(), atLeastOneModalityValidator()] },
+    { validators: [passwordsMatchValidator(), atLeastOneModalityValidator(), identityDocumentValidator()] },
   );
 
   constructor() {
@@ -275,8 +287,24 @@ export class ProfessionalRegisterComponent implements OnInit {
       return 'CPF deve conter 11 dígitos, sem pontuação.';
     }
 
+    if (fieldName === 'cpf' && control.hasError('cpfInvalid')) {
+      return 'CPF inválido.';
+    }
+
     if (fieldName === 'cnpj' && control.hasError('pattern')) {
       return 'CNPJ deve conter 14 dígitos, sem pontuação.';
+    }
+
+    if (fieldName === 'cnpj' && control.hasError('cnpjInvalid')) {
+      return 'CNPJ inválido.';
+    }
+
+    if (fieldName === 'identityDocumentNumber' && this.form.hasError('identityDocumentInvalid')) {
+      return this.form.getError('identityDocumentInvalid') as string;
+    }
+
+    if (fieldName === 'identityDocumentUf' && this.form.hasError('identityDocumentUfRequired')) {
+      return 'Informe a UF que emitiu o RG.';
     }
 
     if (fieldName === 'raioAtendimentoKm' && control.hasError('min')) {
@@ -364,6 +392,9 @@ export class ProfessionalRegisterComponent implements OnInit {
       email,
       phone,
       cpf,
+      identityDocumentType,
+      identityDocumentNumber,
+      identityDocumentUf,
       cnpj,
       category,
       specialtyIds,
@@ -391,6 +422,9 @@ export class ProfessionalRegisterComponent implements OnInit {
         email,
         phone,
         cpf,
+        identityDocumentType: identityDocumentType as IdentityDocumentType,
+        identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
+        identityDocumentUf: identityDocumentUf || undefined,
         cnpj: cnpj || undefined,
         category: category as ProfessionalCategory,
         specialtyIds,

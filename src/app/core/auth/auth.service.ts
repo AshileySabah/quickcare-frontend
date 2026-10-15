@@ -5,17 +5,18 @@ import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import {
   Address,
+  Admin,
   EmergencyContact,
   Gender,
+  IdentityDocumentType,
   Patient,
   Professional,
   ProfessionalCategory,
   RegistrationDocument,
   User,
   UserRole,
+  ValidationStatus,
 } from '../models';
-import { ADMINS_MOCK, PATIENTS_MOCK, PROFESSIONALS_MOCK } from '../../mocks';
-import { simulateNetwork } from '../services/simulate-network.util';
 import {
   ApiErrorResponse,
   CadastroApiResponse,
@@ -25,7 +26,14 @@ import {
   RedefinirSenhaApiResponse,
 } from './auth-api.model';
 
-export interface PatientRegistration {
+/** Documento oficial com foto conferido na etapa de identidade. */
+export interface IdentityDocumentInput {
+  identityDocumentType: IdentityDocumentType;
+  identityDocumentNumber: string;
+  identityDocumentUf?: string;
+}
+
+export interface PatientRegistration extends IdentityDocumentInput {
   name: string;
   email: string;
   phone: string;
@@ -44,7 +52,7 @@ export interface PatientRegistration {
   avatar?: Blob;
 }
 
-export interface ProfessionalRegistration {
+export interface ProfessionalRegistration extends IdentityDocumentInput {
   name: string;
   email: string;
   phone: string;
@@ -73,12 +81,6 @@ export class InvalidPasswordResetLinkError extends Error {}
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
-
-  private readonly users = signal<User[]>([
-    ...PATIENTS_MOCK,
-    ...PROFESSIONALS_MOCK,
-    ...ADMINS_MOCK,
-  ]);
 
   private readonly currentUserSignal = signal<User | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
@@ -217,7 +219,7 @@ export class AuthService {
   }
 
   private mapLoginResponseToUser(response: LoginApiResponse): User {
-    const prioridade: PerfilStatusApi['tipo'][] = ['PROFISSIONAL', 'PACIENTE'];
+    const prioridade: PerfilStatusApi['tipo'][] = ['ADMIN', 'PROFISSIONAL', 'PACIENTE'];
     const perfilAtivo = prioridade
       .map((tipo) => response.perfis.find((perfil) => perfil.tipo === tipo))
       .find((perfil) => perfil?.status === 'ATIVO');
@@ -235,6 +237,19 @@ export class AuthService {
       city: '',
       state: '',
     };
+
+    if (perfilAtivo.tipo === 'ADMIN') {
+      const admin: Admin = {
+        id,
+        role: 'admin',
+        name: response.nome,
+        email: response.email,
+        avatarUrl: response.avatarUrl ?? undefined,
+      };
+      return admin;
+    }
+
+    const validationStatus = (perfilAtivo.statusValidacao?.toLowerCase() ?? 'aprovado') as ValidationStatus;
 
     if (perfilAtivo.tipo === 'PROFISSIONAL') {
       const professional: Professional = {
@@ -254,14 +269,7 @@ export class AuthService {
         lgpdConsent: true,
         hasLiabilityInsurance: false,
         address: emptyAddress,
-        validationStatus: 'aprovado',
-        validationDocument: {
-          fileName: '',
-          fileType: '',
-          fileSizeBytes: 0,
-          uploadedAt: '',
-          previewUrl: '',
-        },
+        validationStatus,
       };
       return professional;
     }
@@ -280,6 +288,7 @@ export class AuthService {
       infoConfirmedTrue: true,
       lgpdConsent: true,
       address: emptyAddress,
+      validationStatus,
     };
     return patient;
   }
@@ -304,6 +313,7 @@ export class AuthService {
       senha: input.password,
       cpf: input.cpf,
       telefone: input.phone,
+      ...identityDocumentPayload(input),
       dataNascimento: input.birthDate,
       genero: input.gender,
       contatosEmergencia: input.emergencyContacts.map((contact) => ({
@@ -365,6 +375,7 @@ export class AuthService {
       senha: input.password,
       cpf: input.cpf,
       telefone: input.phone,
+      ...identityDocumentPayload(input),
       cnpj: input.cnpj || undefined,
       categoria: input.category,
       especialidadeIds: input.specialtyIds.map(Number),
@@ -440,85 +451,11 @@ export class AuthService {
       );
   }
 
-  listPendingProfessionals(simulateError = false): Observable<Professional[]> {
-    return simulateNetwork(
-      () =>
-        this.users().filter(
-          (user): user is Professional =>
-            user.role === 'professional' &&
-            user.validationStatus === 'pendente',
-        ),
-      {
-        simulateError,
-        errorMessage: 'Não foi possível carregar os profissionais pendentes.',
-      },
+  /** Atualiza o status depois de um reenvio, sem precisar entrar de novo. */
+  updateValidationStatus(validationStatus: ValidationStatus): void {
+    this.currentUserSignal.update((user) =>
+      user && user.role !== 'admin' ? { ...user, validationStatus } : user,
     );
-  }
-
-  getProfessionalById(
-    id: string,
-    simulateError = false,
-  ): Observable<Professional | undefined> {
-    return simulateNetwork(
-      () => {
-        const user = this.users().find((candidate) => candidate.id === id);
-        return user && user.role === 'professional' ? user : undefined;
-      },
-      {
-        simulateError,
-        errorMessage: 'Não foi possível carregar o profissional.',
-      },
-    );
-  }
-
-  approveProfessional(id: string): Observable<Professional> {
-    return simulateNetwork(() => {
-      const professional = this.findPendingProfessionalOrThrow(id);
-      const updated: Professional = {
-        ...professional,
-        validationStatus: 'aprovado',
-        rejectionReason: undefined,
-      };
-      this.replaceUser(updated);
-      return updated;
-    });
-  }
-
-  rejectProfessional(id: string, reason: string): Observable<Professional> {
-    return simulateNetwork(() => {
-      const professional = this.findPendingProfessionalOrThrow(id);
-      const updated: Professional = {
-        ...professional,
-        validationStatus: 'reprovado',
-        rejectionReason: reason,
-      };
-      this.replaceUser(updated);
-      return updated;
-    });
-  }
-
-  private findPendingProfessionalOrThrow(id: string): Professional {
-    const user = this.users().find((candidate) => candidate.id === id);
-
-    if (!user || user.role !== 'professional') {
-      throw new Error('Profissional não encontrado.');
-    }
-
-    if (user.validationStatus !== 'pendente') {
-      throw new Error('Este profissional já foi avaliado.');
-    }
-
-    return user;
-  }
-
-  private replaceUser(updated: User): void {
-    this.users.update((users) =>
-      users.map((user) => (user.id === updated.id ? updated : user)),
-    );
-
-    if (this.currentUserSignal()?.id === updated.id) {
-      this.currentUserSignal.set(updated);
-    }
   }
 
   updateCurrentUser(name: string, avatarUrl: string | null): void {
@@ -530,4 +467,12 @@ export class AuthService {
   private establishSession(user: User): void {
     this.currentUserSignal.set(user);
   }
+}
+
+function identityDocumentPayload(input: IdentityDocumentInput) {
+  return {
+    documentoIdentidadeTipo: input.identityDocumentType,
+    documentoIdentidadeNumero: input.identityDocumentNumber,
+    documentoIdentidadeUf: input.identityDocumentType === 'RG' ? input.identityDocumentUf : undefined,
+  };
 }

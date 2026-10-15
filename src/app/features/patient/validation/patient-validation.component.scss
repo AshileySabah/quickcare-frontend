@@ -1,0 +1,17 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.patient-validation {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+  max-width: 760px;
+}
+
+.patient-validation__title {
+  @include list.title;
+}
+
+.patient-validation__subtitle {
+  @include list.subtitle;
+}

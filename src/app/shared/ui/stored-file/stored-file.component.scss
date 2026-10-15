@@ -1,0 +1,57 @@
+@use 'tokens' as tokens;
+
+.ui-stored-file {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(3);
+}
+
+.ui-stored-file__thumb,
+.ui-stored-file__placeholder {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: tokens.radius('md');
+}
+
+.ui-stored-file__thumb {
+  object-fit: cover;
+}
+
+.ui-stored-file__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: tokens.color('gray', 100);
+  color: tokens.color('gray', 600);
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+}
+
+.ui-stored-file__info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: tokens.space(1);
+  min-width: 0;
+}
+
+.ui-stored-file__name {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+  word-break: break-all;
+}
+
+.ui-stored-file__meta,
+.ui-stored-file__unavailable {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.ui-stored-file__open {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+}

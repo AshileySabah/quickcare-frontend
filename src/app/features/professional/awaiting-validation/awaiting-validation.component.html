@@ -1,27 +1,14 @@
-<div class="auth-page">
-  <div class="auth-page__panel">
-    @if (professional(); as user) {
-      @if (user.validationStatus === 'reprovado') {
-        <h1 class="auth-page__title">Cadastro não aprovado</h1>
-        <p class="auth-page__subtitle">Infelizmente seu documento de registro profissional não foi validado.</p>
+<div class="awaiting-validation">
+  <header class="awaiting-validation__header">
+    <div>
+      <p class="awaiting-validation__brand">QuickCare</p>
+      <h1 class="awaiting-validation__title">Validação do seu cadastro</h1>
+      <p class="awaiting-validation__subtitle">
+        Olá, {{ userName() }}. Você poderá ver solicitações e enviar propostas assim que todas as etapas forem aprovadas.
+      </p>
+    </div>
+    <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+  </header>
 
-        @if (user.rejectionReason) {
-          <ui-card>
-            <p class="awaiting-validation__reason-label">Motivo</p>
-            <p class="awaiting-validation__reason-text">{{ user.rejectionReason }}</p>
-          </ui-card>
-        }
-      } @else {
-        <h1 class="auth-page__title">Cadastro em análise</h1>
-        <p class="auth-page__subtitle">
-          Recebemos seu documento de registro profissional e nossa equipe está validando suas informações. Você
-          receberá acesso assim que a validação for concluída.
-        </p>
-      }
-
-      <ui-button class="awaiting-validation__logout" [fullWidth]="true" variant="ghost" (click)="logout()">
-        Sair
-      </ui-button>
-    }
-  </div>
+  <app-my-validation profile="professional"></app-my-validation>
 </div>

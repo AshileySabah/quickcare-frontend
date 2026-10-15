@@ -1,0 +1,91 @@
+<form class="resubmit-form" [formGroup]="form" (ngSubmit)="submit()">
+  <p class="resubmit-form__title">Corrija os dados e envie um novo documento</p>
+
+  <ui-grid>
+    @switch (step().type) {
+      @case ('IDENTIDADE') {
+        <ui-grid-item [xs]="12">
+          <ui-input
+            label="Nome completo"
+            formControlName="name"
+            [required]="true"
+            [maxLength]="150"
+            [errorMessage]="fieldError('name')"
+          ></ui-input>
+        </ui-grid-item>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input label="CPF" formControlName="cpf" mask="cpf" [required]="true" [errorMessage]="fieldError('cpf')"></ui-input>
+        </ui-grid-item>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-select
+            label="Documento de identidade"
+            formControlName="identityDocumentType"
+            [options]="identityDocumentOptions"
+            [required]="true"
+            [errorMessage]="fieldError('identityDocumentType')"
+          ></ui-select>
+        </ui-grid-item>
+        <ui-grid-item [xs]="12" [sm]="isRg ? 6 : 12">
+          <ui-input
+            label="Número do documento"
+            formControlName="identityDocumentNumber"
+            hint="Só números (e X, se houver)."
+            [required]="true"
+            [maxLength]="20"
+            [errorMessage]="fieldError('identityDocumentNumber')"
+          ></ui-input>
+        </ui-grid-item>
+        @if (isRg) {
+          <ui-grid-item [xs]="12" [sm]="6">
+            <ui-select
+              label="UF emissora"
+              formControlName="identityDocumentUf"
+              [options]="ufOptions()"
+              [required]="true"
+              [errorMessage]="fieldError('identityDocumentUf')"
+            ></ui-select>
+          </ui-grid-item>
+        }
+      }
+      @case ('CNPJ') {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input label="CNPJ" formControlName="cnpj" mask="cnpj" [required]="true" [errorMessage]="fieldError('cnpj')"></ui-input>
+        </ui-grid-item>
+      }
+      @case ('REGISTRO_PROFISSIONAL') {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            [label]="registrationLabel()"
+            formControlName="registrationNumber"
+            [required]="true"
+            [maxLength]="50"
+            [errorMessage]="fieldError('registrationNumber')"
+          ></ui-input>
+        </ui-grid-item>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-select
+            label="UF do registro"
+            formControlName="registrationUf"
+            [options]="ufOptions()"
+            [required]="true"
+            [errorMessage]="fieldError('registrationUf')"
+          ></ui-select>
+        </ui-grid-item>
+      }
+    }
+
+    <ui-grid-item [xs]="12">
+      <ui-file-picker
+        label="Novo documento"
+        [required]="true"
+        [disabled]="isSubmitting()"
+        [errorMessage]="documentError()"
+        (fileChange)="onDocumentChange($event)"
+      ></ui-file-picker>
+    </ui-grid-item>
+  </ui-grid>
+
+  <div class="resubmit-form__actions">
+    <ui-button type="submit" [loading]="isSubmitting()">Reenviar para análise</ui-button>
+  </div>
+</form>

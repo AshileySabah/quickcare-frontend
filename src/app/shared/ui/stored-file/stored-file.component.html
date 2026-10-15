@@ -1,0 +1,27 @@
+@if (file(); as current) {
+  <div class="ui-stored-file">
+    @if (isImage(current) && current.url) {
+      <img class="ui-stored-file__thumb" [src]="current.url" [alt]="current.fileName" />
+    } @else {
+      <div class="ui-stored-file__placeholder" aria-hidden="true">{{ isImage(current) ? 'IMG' : 'PDF' }}</div>
+    }
+
+    <div class="ui-stored-file__info">
+      <span class="ui-stored-file__name">{{ current.fileName }}</span>
+      <span class="ui-stored-file__meta">
+        @if (current.sizeBytes !== null) {
+          {{ (current.sizeBytes / 1024 / 1024).toFixed(2) }} MB ·
+        }
+        @if (current.sentAt) {
+          Enviado em {{ current.sentAt | date: 'dd/MM/yyyy HH:mm' }}
+        }
+      </span>
+    </div>
+
+    @if (current.url) {
+      <a class="ui-stored-file__open" [href]="current.url" target="_blank" rel="noopener">Abrir ↗</a>
+    } @else {
+      <span class="ui-stored-file__unavailable">Arquivo indisponível para visualização</span>
+    }
+  </div>
+}

@@ -4,8 +4,34 @@
       <h1 class="patient-dashboard__title">Minhas solicitações</h1>
       <p class="patient-dashboard__subtitle">Acompanhe prazos, status e propostas das suas solicitações ativas.</p>
     </div>
-    <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
+    @if (validationStatus() === 'aprovado') {
+      <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
+    } @else {
+      <ui-button [disabled]="true">Nova solicitação</ui-button>
+    }
   </header>
+
+  @if (validationStatus() !== 'aprovado') {
+    <div
+      class="patient-dashboard__validation"
+      [class.patient-dashboard__validation--rejected]="validationStatus() === 'reprovado'"
+      role="status"
+    >
+      <div>
+        <strong>
+          {{ validationStatus() === 'reprovado' ? 'Seu cadastro precisa de correções' : 'Seu cadastro está em análise' }}
+        </strong>
+        <p>
+          {{
+            validationStatus() === 'reprovado'
+              ? 'Veja o motivo, corrija os dados e reenvie o documento.'
+              : 'Você poderá criar solicitações assim que ele for aprovado pela nossa equipe.'
+          }}
+        </p>
+      </div>
+      <ui-button variant="secondary" size="sm" routerLink="/patient/validacao">Ver andamento</ui-button>
+    </div>
+  }
 
   @switch (viewState()) {
     @case ('loading') {
@@ -26,7 +52,9 @@
         title="Nenhuma solicitação ativa"
         message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
       >
-        <ui-button routerLink="/patient/novo">Criar solicitação</ui-button>
+        @if (validationStatus() === 'aprovado') {
+          <ui-button routerLink="/patient/novo">Criar solicitação</ui-button>
+        }
         <ui-button variant="ghost" routerLink="/patient/historico">Ver histórico</ui-button>
       </ui-empty-state>
     }

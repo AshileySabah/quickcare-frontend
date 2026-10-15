@@ -1,0 +1,76 @@
+@switch (state().status) {
+  @case ('loading') {
+    <div class="pre-validation-alert pre-validation-alert--loading" role="status" aria-live="polite">
+      <span class="pre-validation-alert__spinner" aria-hidden="true"></span>
+      <span>Validando… consultando as fontes desta etapa.</span>
+    </div>
+  }
+
+  @case ('error') {
+    <div class="pre-validation-alert pre-validation-alert--indisponivel" role="alert">
+      <div class="pre-validation-alert__header">
+        <span class="pre-validation-alert__icon" aria-hidden="true">!</span>
+        <strong>Não foi possível pré-validar esta etapa</strong>
+      </div>
+      <p class="pre-validation-alert__text">{{ errorMessage() }} Você pode validar manualmente.</p>
+      <div class="pre-validation-alert__footer">
+        <ui-button variant="ghost" size="sm" (click)="retry.emit()">Tentar de novo</ui-button>
+      </div>
+    </div>
+  }
+
+  @case ('done') {
+    @if (result(); as current) {
+      <div
+        [class]="'pre-validation-alert pre-validation-alert--' + current.opinion"
+        role="status"
+        aria-live="polite"
+      >
+        <div class="pre-validation-alert__header">
+          <span class="pre-validation-alert__icon" aria-hidden="true">{{ icon(current.opinion) }}</span>
+          <strong>{{ title(current.opinion) }}</strong>
+        </div>
+
+        <ul class="pre-validation-alert__checks">
+          @for (check of current.checks; track check.field) {
+            <li class="pre-validation-alert__check">
+              <div class="pre-validation-alert__check-header">
+                <span
+                  [class]="'pre-validation-alert__check-icon pre-validation-alert__check-icon--' + check.opinion"
+                  aria-hidden="true"
+                  >{{ icon(check.opinion) }}</span
+                >
+                <span class="pre-validation-alert__check-field">{{ check.field }}</span>
+                @if (check.provider) {
+                  <span class="pre-validation-alert__check-provider">via {{ check.provider }}</span>
+                }
+                <span class="pre-validation-alert__check-opinion">{{ title(check.opinion) }}</span>
+              </div>
+              <ul class="pre-validation-alert__reasons">
+                @for (reason of check.reasons; track reason) {
+                  <li>{{ reason }}</li>
+                }
+              </ul>
+              @if (check.notes.length > 0) {
+                <ul class="pre-validation-alert__notes">
+                  @for (note of check.notes; track note) {
+                    <li>{{ note }}</li>
+                  }
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+
+        <div class="pre-validation-alert__footer">
+          <span class="pre-validation-alert__timestamp">
+            Consultado às {{ current.checkedAt | date: 'HH:mm:ss' }}. O parecer só orienta: a decisão é sua.
+          </span>
+          @if (current.opinion === 'indisponivel') {
+            <ui-button variant="ghost" size="sm" (click)="retry.emit()">Tentar de novo</ui-button>
+          }
+        </div>
+      </div>
+    }
+  }
+}

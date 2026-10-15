@@ -1,6 +1,9 @@
 export type UserRole = 'patient' | 'professional' | 'admin';
 
-export type ProfessionalValidationStatus = 'pendente' | 'aprovado' | 'reprovado';
+/** Situação da validação cadastral feita pelo admin (paciente e profissional). */
+export type ValidationStatus = 'pendente' | 'aprovado' | 'reprovado';
+
+export type IdentityDocumentType = 'RG' | 'CNH';
 
 export type Gender = 'MASCULINO' | 'FEMININO' | 'OUTRO' | 'PREFIRO_NAO_INFORMAR';
 
@@ -37,14 +40,7 @@ export interface Patient extends BaseUser {
   healthConditions?: string;
   medicationsInUse?: string;
   address: Address;
-}
-
-export interface ProfessionalDocument {
-  fileName: string;
-  fileType: string;
-  fileSizeBytes: number;
-  uploadedAt: string;
-  previewUrl: string;
+  validationStatus: ValidationStatus;
 }
 
 export interface Address {
@@ -75,9 +71,7 @@ export interface Professional extends BaseUser {
   hasLiabilityInsurance: boolean;
   address: Address;
   bio?: string;
-  validationStatus: ProfessionalValidationStatus;
-  validationDocument: ProfessionalDocument;
-  rejectionReason?: string;
+  validationStatus: ValidationStatus;
 }
 
 export interface Admin extends BaseUser {

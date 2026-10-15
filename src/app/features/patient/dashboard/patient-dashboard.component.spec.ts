@@ -1,5 +1,7 @@
+import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { AuthService } from '../../../core/auth/auth.service';
 import { of } from 'rxjs';
 import { ServiceRequest } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
@@ -72,6 +74,10 @@ describe('PatientDashboardComponent', () => {
         provideRouter([]),
         { provide: RequestService, useValue: requestService },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
+        {
+          provide: AuthService,
+          useValue: { currentUser: signal({ role: 'patient', validationStatus: 'aprovado' }) },
+        },
       ],
     });
 

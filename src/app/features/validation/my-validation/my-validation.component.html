@@ -1,0 +1,77 @@
+@switch (viewState()) {
+  @case ('loading') {
+    <div class="my-validation__loading">
+      <ui-skeleton height="20px" width="60%"></ui-skeleton>
+      <ui-skeleton height="120px"></ui-skeleton>
+    </div>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (detail(); as current) {
+      <div class="my-validation">
+        <div [class]="'my-validation__summary my-validation__summary--' + current.status">
+          @switch (current.status) {
+            @case ('aprovado') {
+              <strong>Cadastro aprovado</strong>
+              <p>Seus dados foram validados pela nossa equipe.</p>
+            }
+            @case ('reprovado') {
+              <strong>Algumas etapas foram reprovadas</strong>
+              <p>Veja o motivo de cada uma, corrija o que for preciso e reenvie. A etapa volta para análise.</p>
+            }
+            @default {
+              <strong>Cadastro em análise</strong>
+              <p>Nossa equipe está conferindo seus dados e documentos, etapa por etapa.</p>
+            }
+          }
+        </div>
+
+        @if (current.steps.length === 0) {
+          <ui-card>
+            <p class="my-validation__muted">Seu cadastro não tem etapas de validação pendentes.</p>
+          </ui-card>
+        }
+
+        @for (step of current.steps; track step.id) {
+          <ui-card>
+            <div class="my-validation__step">
+              <div class="my-validation__step-header">
+                <h2 class="my-validation__step-title">{{ step.label }}</h2>
+                <ui-validation-status-badge [status]="step.status"></ui-validation-status-badge>
+              </div>
+
+              @switch (step.status) {
+                @case ('pendente') {
+                  <p class="my-validation__muted">Aguardando avaliação.</p>
+                }
+                @case ('aprovada') {
+                  <p class="my-validation__muted">Aprovada em {{ step.reviewedAt | date: 'dd/MM/yyyy' }}.</p>
+                }
+                @case ('reprovada') {
+                  <div class="my-validation__reason">
+                    <span class="my-validation__reason-label">Motivo da reprovação</span>
+                    <p class="my-validation__reason-text">{{ step.justification }}</p>
+                    @if (step.attachment; as attachment) {
+                      <ui-stored-file [file]="attachment"></ui-stored-file>
+                    }
+                  </div>
+
+                  <app-resubmit-step-form
+                    [profile]="profile()"
+                    [step]="step"
+                    [data]="current.data"
+                    [ufOptions]="ufOptions()"
+                    [registrationLabel]="registrationLabel(current)"
+                    (resubmitted)="onResubmitted($event)"
+                  ></app-resubmit-step-form>
+                }
+              }
+            </div>
+          </ui-card>
+        }
+      </div>
+    }
+  }
+}

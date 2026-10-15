@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { patientStatusGuard } from './core/guards/patient-status.guard';
 import { professionalStatusGuard } from './core/guards/professional-status.guard';
 import { roleGuard } from './core/guards/role.guard';
 
@@ -134,6 +135,7 @@ export const routes: Routes = [
       },
       {
         path: 'novo',
+        canActivate: [patientStatusGuard],
         loadComponent: () =>
           import('./features/patient/request-form/request-form.component').then(
             (m) => m.RequestFormComponent,
@@ -151,6 +153,13 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/patient/request-form/request-form.component').then(
             (m) => m.RequestFormComponent,
+          ),
+      },
+      {
+        path: 'validacao',
+        loadComponent: () =>
+          import('./features/patient/validation/patient-validation.component').then(
+            (m) => m.PatientValidationComponent,
           ),
       },
       {
@@ -178,9 +187,18 @@ export const routes: Routes = [
         (m) => m.AdminShellComponent,
       ),
     children: [
+      { path: '', pathMatch: 'full', redirectTo: 'profissionais' },
       {
-        path: '',
-        pathMatch: 'full',
+        path: 'profissionais',
+        data: { profile: 'professional' },
+        loadComponent: () =>
+          import('./features/admin/dashboard/admin-dashboard.component').then(
+            (m) => m.AdminDashboardComponent,
+          ),
+      },
+      {
+        path: 'pacientes',
+        data: { profile: 'patient' },
         loadComponent: () =>
           import('./features/admin/dashboard/admin-dashboard.component').then(
             (m) => m.AdminDashboardComponent,
@@ -188,9 +206,18 @@ export const routes: Routes = [
       },
       {
         path: 'profissionais/:id',
+        data: { profile: 'professional' },
         loadComponent: () =>
-          import('./features/admin/professional-detail/admin-professional-detail.component').then(
-            (m) => m.AdminProfessionalDetailComponent,
+          import('./features/admin/validation-detail/admin-validation-detail.component').then(
+            (m) => m.AdminValidationDetailComponent,
+          ),
+      },
+      {
+        path: 'pacientes/:id',
+        data: { profile: 'patient' },
+        loadComponent: () =>
+          import('./features/admin/validation-detail/admin-validation-detail.component').then(
+            (m) => m.AdminValidationDetailComponent,
           ),
       },
     ],

@@ -1,9 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { cpfValidator, identityDocumentValidator, normalizeIdentityNumber } from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { AuthService, PatientRegistration } from '../../../core/auth/auth.service';
-import { DocumentType } from '../../../core/models';
+import { DocumentType, IdentityDocumentType } from '../../../core/models';
+import { UfService } from '../../../core/services/uf.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { AvatarUploadComponent } from '../../../shared/ui/forms/avatar-upload/avatar-upload.component';
@@ -23,7 +25,15 @@ const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'OUTRO', label: 'Outro' },
 ];
 
-type FieldName = 'name' | 'email' | 'phone' | 'cpf' | 'birthDate' | 'gender' | 'infoConfirmedTrue' | 'lgpdConsent' | 'password';
+type FieldName =
+  | 'name'
+  | 'email'
+  | 'phone'
+  | 'cpf'
+  | 'identityDocumentType'
+  | 'identityDocumentNumber'
+  | 'identityDocumentUf'
+  | 'birthDate' | 'gender' | 'infoConfirmedTrue' | 'lgpdConsent' | 'password';
 type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
@@ -50,8 +60,10 @@ export class PatientRegisterComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private readonly ufService = inject(UfService);
 
   protected readonly isSubmitting = signal(false);
+  protected readonly ufOptions = signal<SelectOption[]>([]);
   protected readonly avatarBlob = signal<Blob | null>(null);
   protected readonly documentTypeOptions = DOCUMENT_TYPE_OPTIONS;
 
@@ -74,7 +86,10 @@ export class PatientRegisterComponent {
       name: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', [Validators.required]],
-      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+      cpf: ['', [Validators.required, Validators.pattern(/^\d{11}$/), cpfValidator()]],
+      identityDocumentType: ['', [Validators.required]],
+      identityDocumentNumber: ['', [Validators.required]],
+      identityDocumentUf: [''],
       birthDate: ['', [Validators.required]],
       gender: ['', [Validators.required]],
       emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
@@ -95,8 +110,15 @@ export class PatientRegisterComponent {
       password: ['', [Validators.required, strongPasswordValidator()]],
       confirmPassword: ['', [Validators.required]],
     },
-    { validators: passwordsMatchValidator() },
+    { validators: [passwordsMatchValidator(), identityDocumentValidator()] },
   );
+
+  constructor() {
+    this.ufService.list().subscribe({
+      next: (ufs) => this.ufOptions.set(ufs),
+      error: () => this.toastService.error('Não foi possível carregar a lista de estados.'),
+    });
+  }
 
   protected fieldError = (fieldName: string): string | null => {
     const control = this.form.controls[fieldName as FieldName];
@@ -119,6 +141,18 @@ export class PatientRegisterComponent {
 
     if (fieldName === 'cpf' && control.hasError('pattern')) {
       return 'CPF deve conter 11 dígitos, sem pontuação.';
+    }
+
+    if (fieldName === 'cpf' && control.hasError('cpfInvalid')) {
+      return 'CPF inválido.';
+    }
+
+    if (fieldName === 'identityDocumentNumber' && this.form.hasError('identityDocumentInvalid')) {
+      return this.form.getError('identityDocumentInvalid') as string;
+    }
+
+    if (fieldName === 'identityDocumentUf' && this.form.hasError('identityDocumentUfRequired')) {
+      return 'Informe a UF que emitiu o RG.';
     }
 
     if ((fieldName === 'infoConfirmedTrue' || fieldName === 'lgpdConsent') && control.hasError('required')) {
@@ -191,6 +225,9 @@ export class PatientRegisterComponent {
       email,
       phone,
       cpf,
+      identityDocumentType,
+      identityDocumentNumber,
+      identityDocumentUf,
       birthDate,
       gender,
       emergencyContacts,
@@ -209,6 +246,9 @@ export class PatientRegisterComponent {
         email,
         phone,
         cpf,
+        identityDocumentType: identityDocumentType as IdentityDocumentType,
+        identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
+        identityDocumentUf: identityDocumentUf || undefined,
         birthDate,
         gender: gender as PatientRegistration['gender'],
         emergencyContacts,

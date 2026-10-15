@@ -1,10 +1,24 @@
 <section class="admin-dashboard">
   <header class="admin-dashboard__header">
     <div>
-      <h1 class="admin-dashboard__title">Profissionais pendentes</h1>
-      <p class="admin-dashboard__subtitle">Valide os documentos de registro profissional enviados.</p>
+      <h1 class="admin-dashboard__title">{{ title }}</h1>
+      <p class="admin-dashboard__subtitle">Confira cada etapa do cadastro e aprove ou reprove com justificativa.</p>
     </div>
   </header>
+
+  <div class="admin-dashboard__filters" role="group" aria-label="Filtrar por situação">
+    @for (filter of statusFilters; track filter.label) {
+      <button
+        type="button"
+        class="admin-dashboard__filter"
+        [class.admin-dashboard__filter--active]="selectedStatus() === filter.value"
+        [attr.aria-pressed]="selectedStatus() === filter.value"
+        (click)="selectStatus(filter.value)"
+      >
+        {{ filter.label }}
+      </button>
+    }
+  </div>
 
   @switch (viewState()) {
     @case ('loading') {
@@ -21,8 +35,8 @@
     }
     @case ('empty') {
       <ui-empty-state
-        title="Nenhum profissional pendente"
-        message="Todos os cadastros enviados já foram avaliados."
+        title="Nenhum cadastro encontrado"
+        [message]="selectedStatus() === 'pendente' ? 'Todos os cadastros enviados já foram avaliados.' : 'Não há cadastros nesta situação.'"
       ></ui-empty-state>
     }
     @case ('error') {
@@ -30,17 +44,18 @@
     }
     @case ('filled') {
       <div class="admin-dashboard__list">
-        @for (professional of pendingProfessionals(); track professional.id) {
-          <a class="admin-dashboard__card-link" [routerLink]="['/admin/profissionais', professional.id]">
+        @for (entry of entries(); track entry.id) {
+          <a class="admin-dashboard__card-link" [routerLink]="[detailBasePath, entry.id]">
             <ui-card [interactive]="true">
               <div class="admin-dashboard__card-header">
-                <span class="admin-dashboard__name">{{ professional.name }}</span>
-                <span class="admin-dashboard__specialty">{{ specialtyNames(professional) }}</span>
+                <span class="admin-dashboard__name">{{ entry.name }}</span>
+                <ui-validation-status-badge [status]="entry.status"></ui-validation-status-badge>
               </div>
-              <p class="admin-dashboard__registration">{{ registrationSummary(professional) }}</p>
-              <p class="admin-dashboard__date">
-                Documento enviado em {{ professional.validationDocument.uploadedAt | date: 'dd/MM/yyyy' }}
-              </p>
+              @if (entry.category) {
+                <span class="admin-dashboard__specialty">{{ categoryLabel(entry) }}</span>
+              }
+              <p class="admin-dashboard__registration">{{ entry.email }} · {{ pendingStepsLabel(entry) }}</p>
+              <p class="admin-dashboard__date">Cadastrado em {{ entry.registeredAt | date: 'dd/MM/yyyy' }}</p>
             </ui-card>
           </a>
         }

@@ -27,7 +27,12 @@
         <form class="patient-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
           <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
 
-          <ui-basic-info-card [group]="form" [fieldError]="fieldError"></ui-basic-info-card>
+          <ui-basic-info-card
+            [group]="form"
+            [fieldError]="fieldError"
+            [showIdentityDocument]="true"
+            [ufOptions]="ufOptions()"
+          ></ui-basic-info-card>
 
           <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
 

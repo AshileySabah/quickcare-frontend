@@ -1,0 +1,34 @@
+<div class="ui-file-picker">
+  <span class="ui-file-picker__label">
+    {{ label() }}
+    @if (required()) {
+      <span class="ui-file-picker__required" aria-hidden="true">*</span>
+    }
+  </span>
+
+  @if (file(); as selected) {
+    <div class="ui-file-picker__selected">
+      <span class="ui-file-picker__file-name">{{ selected.name }}</span>
+      <span class="ui-file-picker__file-size">{{ (selected.size / 1024 / 1024).toFixed(2) }} MB</span>
+      <button type="button" class="ui-file-picker__remove" [disabled]="disabled()" (click)="clear()">Remover</button>
+    </div>
+  } @else {
+    <label class="ui-file-picker__button" [class.ui-file-picker__button--disabled]="disabled()" [for]="inputId">
+      + Escolher arquivo
+      <input
+        class="ui-file-picker__input"
+        [id]="inputId"
+        type="file"
+        accept=".pdf,.jpg,.jpeg,.png"
+        [disabled]="disabled()"
+        (change)="onFileSelected($event)"
+      />
+    </label>
+  }
+
+  @if (localError() ?? errorMessage(); as error) {
+    <p class="ui-file-picker__error" role="alert">{{ error }}</p>
+  } @else {
+    <p class="ui-file-picker__hint">{{ hint() }}</p>
+  }
+</div>

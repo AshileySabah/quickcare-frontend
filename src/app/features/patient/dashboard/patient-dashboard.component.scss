@@ -20,6 +20,25 @@
   @include list.subtitle;
 }
 
+.patient-dashboard__validation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  padding: tokens.space(4);
+  border-left: 4px solid tokens.semantic('warning');
+  border-radius: tokens.radius('md');
+  background-color: #FFFBEB;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+
+  &--rejected {
+    border-color: tokens.semantic('error');
+    background-color: #FEF2F2;
+  }
+}
+
 .patient-dashboard__list {
   @include list.list;
   gap: tokens.space(4);

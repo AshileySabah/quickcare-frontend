@@ -52,6 +52,44 @@
       </ui-grid-item>
       }
 
+      @if (showIdentityDocument()) {
+        <ui-grid-item [xs]="12" [sm]="isRg ? 4 : 6">
+          <ui-select
+            label="Documento de identidade"
+            formControlName="identityDocumentType"
+            [options]="identityDocumentOptions"
+            [required]="true"
+            placeholder="Selecione"
+            [errorMessage]="fieldError()('identityDocumentType')"
+          ></ui-select>
+        </ui-grid-item>
+
+        <ui-grid-item [xs]="12" [sm]="isRg ? 4 : 6">
+          <ui-input
+            label="Número do documento"
+            formControlName="identityDocumentNumber"
+            autocomplete="off"
+            hint="Só números (e X, se houver)."
+            [required]="true"
+            [maxLength]="20"
+            [errorMessage]="fieldError()('identityDocumentNumber')"
+          ></ui-input>
+        </ui-grid-item>
+
+        @if (isRg) {
+          <ui-grid-item [xs]="12" [sm]="4">
+            <ui-select
+              label="UF emissora"
+              formControlName="identityDocumentUf"
+              [options]="ufOptions()"
+              [required]="true"
+              placeholder="Selecione"
+              [errorMessage]="fieldError()('identityDocumentUf')"
+            ></ui-select>
+          </ui-grid-item>
+        }
+      }
+
       @if (showCnpj()) {
         <ui-grid-item [xs]="12" [sm]="6">
           <ui-input

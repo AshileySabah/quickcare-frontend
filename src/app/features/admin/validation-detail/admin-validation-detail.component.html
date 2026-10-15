@@ -1,0 +1,101 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <div class="validation-detail__loading">
+      <ui-skeleton height="28px" width="50%"></ui-skeleton>
+      <ui-skeleton height="16px" width="30%"></ui-skeleton>
+      <ui-skeleton height="160px"></ui-skeleton>
+    </div>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Cadastro não encontrado" message="O link pode estar incorreto.">
+      <ui-button [routerLink]="backLink">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (detail(); as current) {
+      <section class="validation-detail">
+        <a class="validation-detail__back" [routerLink]="backLink">← Voltar para a lista</a>
+
+        <ui-card>
+          <div class="validation-detail__header">
+            <div>
+              <h1 class="validation-detail__name">{{ current.data.name }}</h1>
+              <p class="validation-detail__subtitle">
+                {{ profile === 'professional' ? categoryLabel(current) : 'Paciente' }} · Cadastrado em
+                {{ current.registeredAt | date: 'dd/MM/yyyy' }}
+              </p>
+            </div>
+            <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+          </div>
+
+          <dl class="validation-detail__meta">
+            <div>
+              <dt>E-mail</dt>
+              <dd>{{ current.data.email }}</dd>
+            </div>
+            <div>
+              <dt>Telefone</dt>
+              <dd>{{ formatPhone(current.data.phone) }}</dd>
+            </div>
+            <div>
+              <dt>Endereço</dt>
+              <dd>
+                {{ current.data.address.street }}, {{ current.data.address.number }} ·
+                {{ current.data.address.city }}/{{ current.data.address.state }} · CEP
+                {{ formatCep(current.data.address.cep) }}
+              </dd>
+            </div>
+            @if (current.data.specialties.length > 0) {
+              <div>
+                <dt>Especialidades</dt>
+                <dd>{{ current.data.specialties.join(', ') }}</dd>
+              </div>
+            }
+          </dl>
+        </ui-card>
+
+        @if (current.steps.length === 0) {
+          <ui-card>
+            <p class="validation-detail__muted">
+              Este cadastro é anterior à validação cadastral e não tem etapas para avaliar.
+            </p>
+          </ui-card>
+        }
+
+        @if (pendingSteps().length > 0) {
+          <div class="validation-detail__batch">
+            <div>
+              <p class="validation-detail__batch-title">Pré-validação com APIs de terceiros (opcional)</p>
+              <p class="validation-detail__muted">
+                Consulta Serpro (CPF) e BrasilAPI (CNPJ) e sugere um parecer. Sem clicar, a validação é manual.
+              </p>
+            </div>
+            <ui-button variant="info-outline" [loading]="preValidatingCount() > 0" (click)="preValidateAll()">
+              @if (preValidatingCount() > 0) {
+                Validando {{ preValidatingCount() }} {{ preValidatingCount() === 1 ? 'etapa' : 'etapas' }}…
+              } @else {
+                Pré-validar todas as etapas
+              }
+            </ui-button>
+          </div>
+        }
+
+        @for (step of current.steps; track step.id) {
+          <app-validation-step-card
+            [profile]="profile"
+            [validationId]="current.id"
+            [step]="step"
+            [data]="current.data"
+            [registrationLabel]="registrationLabel(current)"
+            [preValidation]="preValidations()[step.type]"
+            (preValidate)="preValidate(step.type)"
+            (decided)="onDecided(step.type, $event)"
+          ></app-validation-step-card>
+        }
+      </section>
+    }
+  }
+}

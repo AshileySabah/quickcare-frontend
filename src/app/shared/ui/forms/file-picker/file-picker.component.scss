@@ -1,0 +1,89 @@
+@use 'tokens' as tokens;
+
+.ui-file-picker {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}
+
+.ui-file-picker__label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.ui-file-picker__required {
+  color: tokens.semantic('error');
+}
+
+.ui-file-picker__button {
+  position: relative;
+  align-self: flex-start;
+  padding: tokens.space(2) tokens.space(3);
+  border: 1px dashed tokens.color('teal', 500);
+  border-radius: tokens.radius('md');
+  font-size: tokens.font-size('sm');
+  color: tokens.color('teal', 700);
+  cursor: pointer;
+
+  &:hover {
+    background-color: tokens.color('teal', 50);
+  }
+
+  &:focus-within {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.ui-file-picker__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.ui-file-picker__selected {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+  padding: tokens.space(2) tokens.space(3);
+  border-radius: tokens.radius('md');
+  background-color: tokens.color('gray', 50);
+}
+
+.ui-file-picker__file-name {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 900);
+  word-break: break-all;
+}
+
+.ui-file-picker__file-size {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.ui-file-picker__remove {
+  margin-left: auto;
+  border: none;
+  background: none;
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+  cursor: pointer;
+}
+
+.ui-file-picker__hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.ui-file-picker__error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}

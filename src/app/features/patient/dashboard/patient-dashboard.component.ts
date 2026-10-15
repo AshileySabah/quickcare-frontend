@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
+import { AuthService } from '../../../core/auth/auth.service';
 import { RequestStatus, ServiceRequest, requestedSpecialtyNames } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -63,6 +64,13 @@ export class PatientDashboardComponent {
   private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
   private readonly toastService = inject(ToastService);
+  private readonly authService = inject(AuthService);
+
+  /** Sem cadastro aprovado, o paciente acompanha a validação mas ainda não cria solicitações. */
+  protected readonly validationStatus = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.role === 'patient' ? user.validationStatus : 'aprovado';
+  });
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

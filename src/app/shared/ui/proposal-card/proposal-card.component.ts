@@ -3,7 +3,7 @@ import { Component, input } from '@angular/core';
 import { CardComponent } from '../layout/card/card.component';
 import { StatusBadgeComponent } from '../feedback/status-badge/status-badge.component';
 import { VerifiedBadgeComponent } from '../feedback/verified-badge/verified-badge.component';
-import { ProfessionalValidationStatus, Proposal } from '../../../core/models';
+import { Proposal, ValidationStatus } from '../../../core/models';
 
 @Component({
   selector: 'ui-proposal-card',
@@ -15,6 +15,6 @@ import { ProfessionalValidationStatus, Proposal } from '../../../core/models';
 export class ProposalCardComponent {
   proposal = input.required<Proposal>();
   professionalName = input.required<string>();
-  professionalValidationStatus = input<ProfessionalValidationStatus | null>(null);
+  professionalValidationStatus = input<ValidationStatus | null>(null);
   specialtyName = input<string | null>(null);
 }

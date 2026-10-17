@@ -260,8 +260,9 @@ export class AuthService {
         avatarUrl: response.avatarUrl ?? undefined,
         phone: '',
         cpf: '',
-        category: 'OUTRO',
-        specialtyIds: [],
+        category:
+          (response.categoria as ProfessionalCategory | undefined) ?? 'OUTRO',
+        specialtyIds: response.especialidadeIds?.map(String) ?? [],
         birthDate: '',
         gender: 'PREFIRO_NAO_INFORMAR',
         emergencyContacts: [],

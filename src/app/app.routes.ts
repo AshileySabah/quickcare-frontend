@@ -79,6 +79,20 @@ export const routes: Routes = [
       ),
     children: [
       {
+        path: 'mensagens',
+        loadComponent: () =>
+          import('./features/chat/conversations/chat-conversations.component').then(
+            (m) => m.ChatConversationsComponent,
+          ),
+      },
+      {
+        path: 'mensagens/:usuarioId',
+        loadComponent: () =>
+          import('./features/chat/conversation/chat-conversation.component').then(
+            (m) => m.ChatConversationComponent,
+          ),
+      },
+      {
         path: '',
         pathMatch: 'full',
         loadComponent: () =>
@@ -125,6 +139,20 @@ export const routes: Routes = [
         (m) => m.PatientShellComponent,
       ),
     children: [
+            {
+        path: 'mensagens',
+        loadComponent: () =>
+          import('./features/chat/conversations/chat-conversations.component').then(
+            (m) => m.ChatConversationsComponent,
+          ),
+      },
+      {
+        path: 'mensagens/:usuarioId',
+        loadComponent: () =>
+          import('./features/chat/conversation/chat-conversation.component').then(
+            (m) => m.ChatConversationComponent,
+          ),
+      },
       {
         path: '',
         pathMatch: 'full',

@@ -1,0 +1,60 @@
+<section class="chat-list">
+  <header class="chat-list__header">
+    <h1 class="chat-list__title">Mensagens</h1>
+    <p class="chat-list__subtitle">Suas conversas com outros usuários.</p>
+  </header>
+
+  <div class="chat-list__new">
+    <input
+      #userId
+      type="number"
+      min="1"
+      placeholder="ID do usuário (temporário)"
+    />
+    <button type="button" (click)="open(userId.value)">Abrir conversa</button>
+  </div>
+
+  @switch (viewState()) {
+    @case ("loading") {
+      <div class="chat-list__skeletons">
+        @for (i of [1, 2, 3]; track i) {
+          <ui-skeleton height="64px"></ui-skeleton>
+        }
+      </div>
+    }
+    @case ("empty") {
+      <ui-empty-state
+        title="Nenhuma conversa ainda"
+        message="Quando você trocar mensagens com alguém, elas aparecerão aqui."
+      ></ui-empty-state>
+    }
+    @case ("error") {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ("filled") {
+      <ul class="chat-list__items">
+        @for (conversation of conversations(); track conversation.userId) {
+          <li>
+            <a
+              class="chat-list__item"
+              [routerLink]="[basePath(), conversation.userId]"
+            >
+              <div class="chat-list__item-top">
+                <strong>Usuário #{{ conversation.userId }}</strong>
+                <span class="chat-list__time">{{
+                  conversation.lastMessage.sentAt | date: "dd/MM HH:mm"
+                }}</span>
+              </div>
+              <p class="chat-list__preview">
+                {{
+                  conversation.lastMessage.content ||
+                    "📎 " + conversation.lastMessage.attachment?.name
+                }}
+              </p>
+            </a>
+          </li>
+        }
+      </ul>
+    }
+  }
+</section>

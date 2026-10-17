@@ -46,7 +46,10 @@
                 }}</span>
               </div>
               <p class="chat-list__preview">
-                {{ conversation.lastMessage.content }}
+                {{
+                  conversation.lastMessage.content ||
+                    "📎 " + conversation.lastMessage.attachment?.name
+                }}
               </p>
             </a>
           </li>

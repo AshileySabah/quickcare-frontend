@@ -39,6 +39,17 @@
   &__delete { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; font-size: inherit; }
   &__error { margin: 0; color: #c0392b; }
 
+  &__attachment { margin-bottom: 0.4rem; }
+  &__attachment-missing { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+  &__media { display: block; max-width: 100%; max-height: 260px; border-radius: 0.5rem; }
+  &__audio { display: block; width: 100%; max-width: 280px; }
+  &__file { color: inherit; word-break: break-all; }
+
+  &__selected { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: rgba(128, 128, 128, 0.15); font-size: 0.85rem; }
+  &__selected-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &__selected-remove { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }
+  &__attach { padding: 0.6rem 0.8rem; border-radius: 0.5rem; border: 1px solid rgba(128, 128, 128, 0.4); background: none; cursor: pointer; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }
+
   &__form { display: flex; gap: 0.5rem; align-items: flex-end; }
   &__input { flex: 1; resize: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(128, 128, 128, 0.4); font: inherit; }
   &__send { padding: 0.6rem 1.1rem; border-radius: 0.5rem; border: 0; cursor: pointer; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }

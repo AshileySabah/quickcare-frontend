@@ -26,7 +26,54 @@
         @for (message of messages(); track message.id) {
           <div class="chat__row" [class.chat__row--mine]="message.senderId === meId">
             <div class="chat__bubble">
-              <p class="chat__text">{{ message.content }}</p>
+              @if (message.attachment; as attachment) {
+                <div class="chat__attachment">
+                  @if (!attachment.url) {
+                    <span class="chat__attachment-missing">Anexo indisponível: {{ attachment.name }}</span>
+                  } @else {
+                    @switch (attachment.kind) {
+                      @case ('image') {
+                        <a [href]="attachment.url" target="_blank" rel="noopener">
+                          <img
+                            class="chat__media"
+                            [src]="attachment.url"
+                            [alt]="attachment.name"
+                            (load)="scrollToBottom()"
+                            (error)="onAttachmentError()"
+                          />
+                        </a>
+                      }
+                      @case ('video') {
+                        <video
+                          class="chat__media"
+                          controls
+                          preload="metadata"
+                          [src]="attachment.url"
+                          (loadedmetadata)="scrollToBottom()"
+                          (error)="onAttachmentError()"
+                        ></video>
+                      }
+                      @case ('audio') {
+                        <audio
+                          class="chat__audio"
+                          controls
+                          preload="metadata"
+                          [src]="attachment.url"
+                          (error)="onAttachmentError()"
+                        ></audio>
+                      }
+                      @default {
+                        <a class="chat__file" [href]="attachment.url" target="_blank" rel="noopener">
+                          📄 {{ attachment.name }}
+                        </a>
+                      }
+                    }
+                  }
+                </div>
+              }
+              @if (message.content) {
+                <p class="chat__text">{{ message.content }}</p>
+              }
               <div class="chat__meta">
                 <span>{{ message.sentAt | date: 'dd/MM HH:mm' }}</span>
                 @if (message.senderId === meId) {
@@ -42,7 +89,27 @@
         <p class="chat__error" role="alert">{{ actionError() }}</p>
       }
 
+      @if (selectedFile(); as file) {
+        <div class="chat__selected">
+          <span class="chat__selected-name">📎 {{ file.name }}</span>
+          <button type="button" class="chat__selected-remove" (click)="clearFile()" [disabled]="sending()">
+            Remover
+          </button>
+        </div>
+      }
+
       <form class="chat__form" (submit)="$event.preventDefault(); send()">
+        <input #fileInput type="file" hidden [accept]="accept" (change)="onFileSelected($event)" />
+        <button
+          type="button"
+          class="chat__attach"
+          aria-label="Anexar arquivo"
+          title="Anexar arquivo"
+          [disabled]="sending()"
+          (click)="fileInput.click()"
+        >
+          📎
+        </button>
         <textarea
           class="chat__input"
           rows="2"
@@ -52,7 +119,9 @@
           (ngModelChange)="draft.set($event)"
           (keydown.enter)="onEnter($event)"
         ></textarea>
-        <button class="chat__send" type="submit" [disabled]="sending() || !draft().trim()">Enviar</button>
+        <button class="chat__send" type="submit" [disabled]="sending() || !canSend()">
+          {{ sending() ? 'Enviando…' : 'Enviar' }}
+        </button>
       </form>
     }
   }

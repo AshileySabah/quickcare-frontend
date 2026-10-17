@@ -35,17 +35,23 @@ export class ChatService implements OnDestroy {
       );
   }
 
-  send(recipientId: number, content: string): Observable<ChatMessage> {
-    return this.http
-      .post<ChatMessageApi>(
-        this.baseUrl,
-        { destinatarioId: recipientId, conteudo: content },
-        { withCredentials: true },
-      )
-      .pipe(
-        map(toChatMessage),
-        catchError((error) => throwError(() => this.normalizeError(error))),
-      );
+  /** O back espera multipart: parte "dados" (JSON) e, opcionalmente, a parte "arquivo". */
+  send(recipientId: number, content: string, file: File | null = null): Observable<ChatMessage> {
+    const body = new FormData();
+    body.append(
+      'dados',
+      new Blob([JSON.stringify({ destinatarioId: recipientId, conteudo: content })], {
+        type: 'application/json',
+      }),
+    );
+    if (file) {
+      body.append('arquivo', file);
+    }
+
+    return this.http.post<ChatMessageApi>(this.baseUrl, body, { withCredentials: true }).pipe(
+      map(toChatMessage),
+      catchError((error) => throwError(() => this.normalizeError(error))),
+    );
   }
 
   remove(messageId: number): Observable<void> {
@@ -98,6 +104,9 @@ export class ChatService implements OnDestroy {
 
   private normalizeError(error: unknown): Error {
     if (error instanceof HttpErrorResponse) {
+      if (error.status === 413) {
+        return new Error('O arquivo é maior que o limite permitido.');
+      }
       const message = (error.error as { message?: string } | null)?.message;
       return new Error(message ?? 'Nao foi possivel concluir a operacao no chat.');
     }

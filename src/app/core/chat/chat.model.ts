@@ -5,6 +5,9 @@ export interface ChatMessageApi {
   destinatarioId: number;
   conteudo: string;
   dataEnvio: string;
+  anexoUrl?: string | null;
+  anexoNomeOriginal?: string | null;
+  anexoTipo?: string | null;
 }
 
 /** Evento de exclusao enviado pelo WebSocket (MensagemExcluidaEvento). */
@@ -13,12 +16,23 @@ export interface ChatMessageDeletedApi {
   excluida: boolean;
 }
 
+export type AttachmentKind = 'image' | 'video' | 'audio' | 'pdf' | 'file';
+
+export interface ChatAttachment {
+  /** URL assinada (expira em 24h). Nula quando o back nao conseguiu assinar. */
+  url: string | null;
+  name: string;
+  type: string;
+  kind: AttachmentKind;
+}
+
 export interface ChatMessage {
   id: number;
   senderId: number;
   recipientId: number;
   content: string;
   sentAt: Date;
+  attachment: ChatAttachment | null;
 }
 
 export type ChatEvent =

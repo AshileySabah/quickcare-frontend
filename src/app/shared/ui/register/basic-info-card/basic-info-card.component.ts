@@ -28,6 +28,9 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
 export class BasicInfoCardComponent {
   group = input.required<FormGroup>();
   fieldError = input<(fieldName: string) => string | null>(() => null);
+  /** Nome e telefone ficam de fora ao criar o outro perfil: já estão na conta. */
+  showName = input(true);
+  showPhone = input(true);
   showEmail = input(true);
   showCpf = input(true);
   showCnpj = input(false);

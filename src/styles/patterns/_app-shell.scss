@@ -58,7 +58,9 @@
 @mixin user {
   order: 2;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: flex-end;
   gap: tokens.space(3);
 
   @include tokens.respond('lg') {

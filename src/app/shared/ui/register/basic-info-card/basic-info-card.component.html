@@ -2,6 +2,7 @@
   <h2 class="basic-info-card__title">Informações básicas</h2>
   <div [formGroup]="group()">
     <ui-grid>
+      @if (showName()) {
       <ui-grid-item [xs]="12">
         <ui-input
           label="Nome completo"
@@ -12,6 +13,7 @@
           [errorMessage]="fieldError()('name')"
         ></ui-input>
       </ui-grid-item>
+      }
 
       @if (showEmail()) {
       <ui-grid-item [xs]="12">
@@ -27,6 +29,7 @@
       </ui-grid-item>
       }
 
+      @if (showPhone()) {
       <ui-grid-item [xs]="12" [sm]="6">
         <ui-input
           label="Telefone"
@@ -38,6 +41,7 @@
           [errorMessage]="fieldError()('phone')"
         ></ui-input>
       </ui-grid-item>
+      }
 
       @if (showCpf()) {
       <ui-grid-item [xs]="12" [sm]="6">

@@ -1,0 +1,25 @@
+@if (hasBothProfiles()) {
+  <div class="profile-switcher" role="group" aria-label="Perfil em uso">
+    @for (option of options; track option.role) {
+      <button
+        type="button"
+        class="profile-switcher__option"
+        [class.profile-switcher__option--active]="option.role === currentRole()"
+        [attr.aria-pressed]="option.role === currentRole()"
+        [disabled]="switching() || isBanned(option.role)"
+        (click)="select(option.role)"
+      >
+        {{ option.label }}
+        @if (isBanned(option.role)) {
+          <span class="profile-switcher__banned">banido</span>
+        }
+      </button>
+    }
+  </div>
+}
+
+@if (missingRole(); as role) {
+  <a class="profile-switcher__create" [routerLink]="role === 'patient' ? '/criar-perfil/paciente' : '/criar-perfil/profissional'">
+    {{ role === 'patient' ? 'Criar perfil de paciente' : 'Quero atender como profissional' }}
+  </a>
+}

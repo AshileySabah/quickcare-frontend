@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { newProfileGuard } from './core/guards/new-profile.guard';
 import { patientStatusGuard } from './core/guards/patient-status.guard';
 import { professionalStatusGuard } from './core/guards/professional-status.guard';
 import { roleGuard } from './core/guards/role.guard';
@@ -48,6 +49,24 @@ export const routes: Routes = [
   },
   {
     path: 'cadastro/profissional',
+    loadComponent: () =>
+      import('./features/professional/register/professional-register.component').then(
+        (m) => m.ProfessionalRegisterComponent,
+      ),
+  },
+  {
+    path: 'criar-perfil/paciente',
+    canActivate: [authGuard, newProfileGuard],
+    data: { newProfileRole: 'patient' },
+    loadComponent: () =>
+      import('./features/patient/register/patient-register.component').then(
+        (m) => m.PatientRegisterComponent,
+      ),
+  },
+  {
+    path: 'criar-perfil/profissional',
+    canActivate: [authGuard, newProfileGuard],
+    data: { newProfileRole: 'professional' },
     loadComponent: () =>
       import('./features/professional/register/professional-register.component').then(
         (m) => m.ProfessionalRegisterComponent,

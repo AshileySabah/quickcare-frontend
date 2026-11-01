@@ -79,3 +79,13 @@ export interface Admin extends BaseUser {
 }
 
 export type User = Patient | Professional | Admin;
+
+/** Perfis entre os quais o usuário alterna; o admin nunca tem outro. */
+export type SwitchableRole = 'patient' | 'professional';
+
+/** Um perfil do usuário, para o seletor de perfil. */
+export interface ProfileSummary {
+  role: SwitchableRole;
+  banned: boolean;
+  validationStatus: ValidationStatus;
+}

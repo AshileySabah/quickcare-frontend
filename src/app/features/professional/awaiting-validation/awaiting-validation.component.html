@@ -7,7 +7,10 @@
         Olá, {{ userName() }}. Você poderá ver solicitações e enviar propostas assim que todas as etapas forem aprovadas.
       </p>
     </div>
-    <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+    <div class="awaiting-validation__actions">
+      <ui-profile-switcher></ui-profile-switcher>
+      <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
+    </div>
   </header>
 
   <app-my-validation profile="professional"></app-my-validation>

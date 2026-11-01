@@ -5,6 +5,8 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 const AUTH_PATH = `${environment.apiUrl}/auth/`;
+/** Rotas de /auth/ feitas com a sessão já aberta, que também renovam o token num 401. */
+const AUTH_PATHS_WITH_REFRESH = [`${AUTH_PATH}perfil-ativo`];
 
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(environment.apiUrl)) {
@@ -13,7 +15,7 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
 
   const authenticatedReq = req.clone({ withCredentials: true });
 
-  if (req.url.startsWith(AUTH_PATH)) {
+  if (req.url.startsWith(AUTH_PATH) && !AUTH_PATHS_WITH_REFRESH.includes(req.url)) {
     return next(authenticatedReq);
   }
 

@@ -1,12 +1,12 @@
 @use 'tokens' as tokens;
-@use 'patterns/auth-page' as authPage;
+@use 'patterns/form' as form;
 
 .emergency-contacts-card__title {
-  @include authPage.section-title;
+  @include form.section-title;
 }
 
 .emergency-contacts-card__hint {
-  @include authPage.hint;
+  @include form.hint;
 }
 
 .emergency-contacts-card__row {

@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { homeRouteFor } from '../../../core/auth/home-route';
 import { SwitchableRole } from '../../../core/models';
@@ -11,13 +11,12 @@ const OPTIONS: { role: SwitchableRole; label: string }[] = [
 ];
 
 /**
- * Alterna entre paciente e profissional sem sair da conta. Quem só tem um
- * perfil vê o atalho para criar o outro; o admin não vê nada.
+ * Alterna entre paciente e profissional sem sair da conta. Só aparece para
+ * quem tem os dois perfis; o atalho para criar o outro fica no menu do avatar.
  */
 @Component({
   selector: 'ui-profile-switcher',
   standalone: true,
-  imports: [RouterLink],
   templateUrl: './profile-switcher.component.html',
   styleUrl: './profile-switcher.component.scss',
 })
@@ -31,15 +30,6 @@ export class ProfileSwitcherComponent {
   protected readonly switching = signal(false);
 
   protected readonly hasBothProfiles = computed(() => this.authService.profiles().length > 1);
-
-  /** O perfil que a conta ainda não tem, para oferecer a criação. */
-  protected readonly missingRole = computed<SwitchableRole | null>(() => {
-    const role = this.currentRole();
-    if ((role !== 'patient' && role !== 'professional') || this.hasBothProfiles()) {
-      return null;
-    }
-    return role === 'patient' ? 'professional' : 'patient';
-  });
 
   protected isBanned(role: SwitchableRole): boolean {
     return this.authService.profiles().find((profile) => profile.role === role)?.banned ?? true;

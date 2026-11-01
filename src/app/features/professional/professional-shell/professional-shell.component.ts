@@ -1,22 +1,26 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { AvatarComponent } from '../../../shared/ui/feedback/avatar/avatar.component';
-import { ProfileSwitcherComponent } from '../../../shared/ui/profile-switcher/profile-switcher.component';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
 
 @Component({
   selector: 'app-professional-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonComponent, AvatarComponent, ProfileSwitcherComponent],
-  templateUrl: './professional-shell.component.html',
-  styleUrl: './professional-shell.component.scss',
+  imports: [RouterOutlet, AppShellComponent],
+  template: `
+    <ui-app-shell
+      homeLink="/professional"
+      navLabel="Navegação do profissional"
+      [navItems]="navItems"
+      profileLink="/professional/perfil"
+    >
+      <router-outlet></router-outlet>
+    </ui-app-shell>
+  `,
 })
 export class ProfessionalShellComponent {
-  protected readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-
-  protected logout(): void {
-    this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
-  }
+  protected readonly navItems: ShellNavItem[] = [
+    { label: 'Solicitações abertas', link: '/professional', exact: true },
+    { label: 'Minhas propostas', link: '/professional/propostas' },
+    { label: 'Histórico', link: '/professional/historico' },
+  ];
 }

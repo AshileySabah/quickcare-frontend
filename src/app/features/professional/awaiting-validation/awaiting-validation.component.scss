@@ -4,32 +4,6 @@
   display: flex;
   flex-direction: column;
   gap: tokens.space(5);
-  max-width: 760px;
-  min-height: 100vh;
-  margin: 0 auto;
-  padding: tokens.space(6) tokens.space(4);
-}
-
-.awaiting-validation__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: tokens.space(3);
-}
-
-.awaiting-validation__actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-end;
-  gap: tokens.space(3);
-}
-
-.awaiting-validation__brand {
-  font-size: tokens.font-size('sm');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('teal', 700);
-  margin-bottom: tokens.space(2);
 }
 
 .awaiting-validation__title {

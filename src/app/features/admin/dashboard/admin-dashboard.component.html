@@ -22,16 +22,7 @@
 
   @switch (viewState()) {
     @case ('loading') {
-      <div class="admin-dashboard__list">
-        @for (i of [1, 2, 3]; track i) {
-          <ui-card>
-            <div class="admin-dashboard__skeleton-lines">
-              <ui-skeleton height="20px" width="60%"></ui-skeleton>
-              <ui-skeleton height="14px" width="40%"></ui-skeleton>
-            </div>
-          </ui-card>
-        }
-      </div>
+      <ui-skeleton-list></ui-skeleton-list>
     }
     @case ('empty') {
       <ui-empty-state

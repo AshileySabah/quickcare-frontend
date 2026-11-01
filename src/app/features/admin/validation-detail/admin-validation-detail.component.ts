@@ -14,10 +14,10 @@ import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { formatMasked } from '../../../shared/ui/forms/input/input-mask.util';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
 import { ValidationStepCardComponent } from '../validation-step-card/validation-step-card.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
@@ -29,14 +29,13 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 @Component({
   selector: 'app-admin-validation-detail',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     DatePipe,
     RouterLink,
     ButtonComponent,
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    SkeletonComponent,
     ValidationStatusBadgeComponent,
     ValidationStepCardComponent,
   ],

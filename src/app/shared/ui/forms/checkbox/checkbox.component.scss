@@ -35,7 +35,7 @@
   height: 20px;
   border-radius: tokens.radius('sm');
   border: 1px solid tokens.color('gray', 300);
-  background-color: #FFFFFF;
+  background-color: tokens.color('gray', 0);
   color: transparent;
   font-size: 12px;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
@@ -44,7 +44,7 @@
 .ui-checkbox__input:checked + .ui-checkbox__box {
   background-color: tokens.color('teal', 500);
   border-color: tokens.color('teal', 500);
-  color: #FFFFFF;
+  color: tokens.color('gray', 0);
 }
 
 .ui-checkbox__label {

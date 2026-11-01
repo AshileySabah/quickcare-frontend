@@ -1,0 +1,26 @@
+<div class="app-shell">
+  <header class="app-shell__header">
+    <a class="app-shell__brand" [routerLink]="homeLink()">{{ brandLabel() }}</a>
+
+    <nav class="app-shell__nav" [attr.aria-label]="navLabel()">
+      @for (item of navItems(); track item.link) {
+        <a
+          class="app-shell__link"
+          [routerLink]="item.link"
+          routerLinkActive="app-shell__link--active"
+          [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+          >{{ item.label }}</a
+        >
+      }
+    </nav>
+
+    <div class="app-shell__user">
+      <ui-profile-switcher></ui-profile-switcher>
+      <ui-user-menu [profileLink]="profileLink()"></ui-user-menu>
+    </div>
+  </header>
+
+  <main class="app-shell__content">
+    <ng-content></ng-content>
+  </main>
+</div>

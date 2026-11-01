@@ -1,50 +1,41 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProposalService } from '../../../core/services/proposal.service';
+import { ProposalInput, ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
+import { Proposal, ServiceRequest } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/forms/input/input.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
+import { RequestSummaryComponent } from '../../../shared/ui/request-summary/request-summary.component';
 import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
-import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { ProposalFormComponent } from '../proposal-form/proposal-form.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
-type FieldName = 'price' | 'approach' | 'deadline';
 
 @Component({
   selector: 'app-professional-request-detail',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     CurrencyPipe,
     DatePipe,
-    ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    GridComponent,
-    GridItemComponent,
-    InputComponent,
-    SkeletonComponent,
+    ProposalFormComponent,
+    RequestSummaryComponent,
     StatusBadgeComponent,
-    TextareaComponent,
   ],
   templateUrl: './professional-request-detail.component.html',
   styleUrl: './professional-request-detail.component.scss',
 })
 export class ProfessionalRequestDetailComponent {
   private readonly route = inject(ActivatedRoute);
-  private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
@@ -56,12 +47,6 @@ export class ProfessionalRequestDetailComponent {
   protected readonly existingProposal = signal<Proposal | null>(null);
   protected readonly isSubmitting = signal(false);
   protected readonly isCancelling = signal(false);
-
-  protected readonly form = this.fb.nonNullable.group({
-    price: ['', [Validators.required, Validators.min(1)]],
-    approach: ['', [Validators.required, Validators.minLength(20)]],
-    deadline: ['', Validators.required],
-  });
 
   constructor() {
     this.load();
@@ -93,48 +78,14 @@ export class ProfessionalRequestDetailComponent {
     });
   }
 
-  protected readonly professionalsSummary = requestedProfessionalsSummary;
-  protected readonly formatAddress = formatRequestAddress;
-  protected readonly specialtyNames = requestedSpecialtyNames;
-
-  protected fieldError(fieldName: FieldName): string | null {
-    const control = this.form.controls[fieldName];
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'price' && control.hasError('min')) {
-      return 'Informe um valor válido.';
-    }
-
-    if (fieldName === 'approach' && control.hasError('minlength')) {
-      return 'Descreva sua abordagem com mais detalhes (mínimo 20 caracteres).';
-    }
-
-    return null;
-  }
-
-  protected submit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const { price, approach, deadline } = this.form.getRawValue();
-
+  protected submit(input: ProposalInput): void {
     this.isSubmitting.set(true);
 
-    this.proposalService.submit(this.requestId, { price: Number(price), approach, deadline }).subscribe({
+    this.proposalService.submit(this.requestId, input).subscribe({
       next: (proposal) => {
         this.isSubmitting.set(false);
         this.existingProposal.set(proposal);
         this.request.update((request) => (request ? { ...request, status: proposal.request.status } : request));
-        this.form.reset();
         this.toastService.success('Proposta enviada com sucesso!');
       },
       error: (error: Error) => {

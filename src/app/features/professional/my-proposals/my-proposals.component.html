@@ -1,31 +1,31 @@
 <section class="my-proposals">
-  <h1 class="my-proposals__title">Minhas propostas</h1>
+  <h1 class="my-proposals__title">{{ isHistory ? 'Histórico' : 'Minhas propostas' }}</h1>
 
   @switch (viewState()) {
     @case ('loading') {
-      <div class="my-proposals__list">
-        @for (i of [1, 2]; track i) {
-          <ui-card>
-            <ui-skeleton height="20px" width="50%"></ui-skeleton>
-            <ui-skeleton height="60px"></ui-skeleton>
-          </ui-card>
-        }
-      </div>
+      <ui-skeleton-list [count]="2"></ui-skeleton-list>
     }
     @case ('empty') {
-      <ui-empty-state
-        title="Você ainda não enviou propostas"
-        message="Acesse o início para ver solicitações abertas da sua especialidade."
-      >
-        <ui-button routerLink="/professional">Ver solicitações</ui-button>
-      </ui-empty-state>
+      @if (isHistory) {
+        <ui-empty-state
+          title="Nenhuma proposta encerrada"
+          message="Propostas recusadas, canceladas ou de solicitações concluídas aparecem aqui."
+        ></ui-empty-state>
+      } @else {
+        <ui-empty-state
+          title="Nenhuma proposta em andamento"
+          message="Veja as solicitações abertas da sua especialidade e envie uma proposta. As encerradas ficam no histórico."
+        >
+          <ui-button routerLink="/professional">Ver solicitações abertas</ui-button>
+        </ui-empty-state>
+      }
     }
     @case ('error') {
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
       <div class="my-proposals__list">
-        @for (proposal of proposals(); track proposal.id) {
+        @for (proposal of visibleProposals(); track proposal.id) {
           <ui-proposal-card
             [proposal]="proposal"
             [professionalName]="requestSummary(proposal)"

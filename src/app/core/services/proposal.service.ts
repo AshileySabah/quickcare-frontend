@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { ApiErrorResponse } from '../auth/auth-api.model';
+import { normalizeError } from '../http/api-error';
 import { ProfessionalCategory, Proposal, ProposalStatus, RequestStatus } from '../models';
 import { ProfissionalSolicitadoApi, toRequestedProfessional } from './request.service';
 
@@ -154,13 +154,4 @@ function toApiPayload(input: ProposalInput) {
     abordagem: input.approach,
     prazo: input.deadline,
   };
-}
-
-function normalizeError(error: unknown, defaultMessage: string): Error {
-  if (error instanceof HttpErrorResponse) {
-    const apiError = error.error as ApiErrorResponse | undefined;
-    return new Error(apiError?.message ?? defaultMessage);
-  }
-
-  return error instanceof Error ? error : new Error(defaultMessage);
 }

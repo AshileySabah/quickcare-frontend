@@ -2,97 +2,151 @@
   <header class="patient-dashboard__header">
     <div>
       <h1 class="patient-dashboard__title">Minhas solicitações</h1>
-      <p class="patient-dashboard__subtitle">Acompanhe prazos, status e propostas das suas solicitações ativas.</p>
+      <p class="patient-dashboard__subtitle">
+        Acompanhe prazos, status e propostas das suas solicitações ativas.
+      </p>
     </div>
-    @if (validationStatus() === 'aprovado') {
+    @if (validationStatus() === "aprovado") {
       <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
     } @else {
       <ui-button [disabled]="true">Nova solicitação</ui-button>
     }
   </header>
 
-  @if (validationStatus() !== 'aprovado') {
+  @if (validationStatus() !== "aprovado") {
     <div
       class="patient-dashboard__validation"
-      [class.patient-dashboard__validation--rejected]="validationStatus() === 'reprovado'"
+      [class.patient-dashboard__validation--rejected]="
+        validationStatus() === 'reprovado'
+      "
       role="status"
     >
       <div>
         <strong>
-          {{ validationStatus() === 'reprovado' ? 'Seu cadastro precisa de correções' : 'Seu cadastro está em análise' }}
+          {{
+            validationStatus() === "reprovado"
+              ? "Seu cadastro precisa de correções"
+              : "Seu cadastro está em validação"
+          }}
         </strong>
         <p>
           {{
-            validationStatus() === 'reprovado'
-              ? 'Veja o motivo, corrija os dados e reenvie o documento.'
-              : 'Você poderá criar solicitações assim que ele for aprovado pela nossa equipe.'
+            validationStatus() === "reprovado"
+              ? "Veja o motivo, corrija os dados e reenvie o documento."
+              : "Você poderá criar solicitações assim que ele for aprovado pela nossa equipe."
           }}
         </p>
       </div>
-      <ui-button variant="secondary" size="sm" routerLink="/patient/validacao">Ver andamento</ui-button>
+      <ui-button
+        variant="secondary"
+        size="sm"
+        [attr.aria-expanded]="showValidation()"
+        aria-controls="patient-validation-details"
+        (click)="showValidation.set(!showValidation())"
+      >
+        {{
+          showValidation()
+            ? "Ocultar detalhes"
+            : validationStatus() === "reprovado"
+              ? "Corrigir cadastro"
+              : "Ver detalhes"
+        }}
+      </ui-button>
     </div>
+
+    @if (showValidation()) {
+      <div id="patient-validation-details">
+        <app-my-validation profile="patient"></app-my-validation>
+      </div>
+    }
   }
 
   @switch (viewState()) {
-    @case ('loading') {
-      <div class="patient-dashboard__list">
-        @for (i of [1, 2, 3]; track i) {
-          <ui-card>
-            <div class="patient-dashboard__skeleton-lines">
-              <ui-skeleton height="20px" width="40%"></ui-skeleton>
-              <ui-skeleton height="16px" width="70%"></ui-skeleton>
-              <ui-skeleton height="64px"></ui-skeleton>
-            </div>
-          </ui-card>
-        }
-      </div>
+    @case ("loading") {
+      <ui-skeleton-list></ui-skeleton-list>
     }
-    @case ('empty') {
+    @case ("empty") {
       <ui-empty-state
         title="Nenhuma solicitação ativa"
         message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
       >
-        <ui-button variant="ghost" routerLink="/patient/historico">Ver histórico</ui-button>
       </ui-empty-state>
     }
-    @case ('error') {
+    @case ("error") {
       <ui-error-state (retry)="load()"></ui-error-state>
     }
-    @case ('filled') {
+    @case ("filled") {
       <ui-card padding="sm">
-        <form [formGroup]="filters" role="search" (submit)="$event.preventDefault()">
+        <form
+          [formGroup]="filters"
+          role="search"
+          (submit)="$event.preventDefault()"
+        >
           <ui-grid spacing="sm">
             <ui-grid-item [xs]="12" [lg]="4">
-              <ui-input label="Buscar" formControlName="search" placeholder="Descrição, especialidade, bairro..."></ui-input>
+              <ui-input
+                label="Buscar"
+                formControlName="search"
+                placeholder="Descrição, especialidade, bairro..."
+              ></ui-input>
             </ui-grid-item>
             <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select label="Status" formControlName="status" [options]="statusOptions" placeholder="Status"></ui-select>
+              <ui-select
+                label="Status"
+                formControlName="status"
+                [options]="statusOptions"
+                placeholder="Status"
+              ></ui-select>
             </ui-grid-item>
             <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select label="Modalidade" formControlName="modality" [options]="modalityOptions" placeholder="Todas"></ui-select>
+              <ui-select
+                label="Modalidade"
+                formControlName="modality"
+                [options]="modalityOptions"
+                placeholder="Todas"
+              ></ui-select>
             </ui-grid-item>
             <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select label="Categoria" formControlName="category" [options]="categoryOptions()" placeholder="Todas"></ui-select>
+              <ui-select
+                label="Categoria"
+                formControlName="category"
+                [options]="categoryOptions()"
+                placeholder="Todas"
+              ></ui-select>
             </ui-grid-item>
             <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select label="Ordenar por" formControlName="sort" [options]="sortOptions" placeholder="Ordenar"></ui-select>
+              <ui-select
+                label="Ordenar por"
+                formControlName="sort"
+                [options]="sortOptions"
+                placeholder="Ordenar"
+              ></ui-select>
             </ui-grid-item>
           </ui-grid>
         </form>
         <div class="patient-dashboard__filters-footer">
           <span class="patient-dashboard__count">
             {{ filteredRequests().length }}
-            {{ filteredRequests().length === 1 ? 'solicitação' : 'solicitações' }}
+            {{
+              filteredRequests().length === 1 ? "solicitação" : "solicitações"
+            }}
           </span>
           @if (hasActiveFilters()) {
-            <ui-button variant="ghost" size="sm" (click)="clearFilters()">Limpar filtros</ui-button>
+            <ui-button variant="ghost" size="sm" (click)="clearFilters()"
+              >Limpar filtros</ui-button
+            >
           }
         </div>
       </ui-card>
 
       @if (filteredRequests().length === 0) {
-        <ui-empty-state title="Nenhuma solicitação encontrada" message="Ajuste ou limpe os filtros para ver outras solicitações.">
-          <ui-button variant="secondary" (click)="clearFilters()">Limpar filtros</ui-button>
+        <ui-empty-state
+          title="Nenhuma solicitação encontrada"
+          message="Ajuste ou limpe os filtros para ver outras solicitações."
+        >
+          <ui-button variant="secondary" (click)="clearFilters()"
+            >Limpar filtros</ui-button
+          >
         </ui-empty-state>
       } @else {
         <ui-grid>
@@ -113,15 +167,31 @@
   }
 </section>
 
-<ui-modal [open]="requestToCancel() !== null" titleText="Cancelar solicitação" (closed)="closeCancelModal()">
+<ui-modal
+  [open]="requestToCancel() !== null"
+  titleText="Cancelar solicitação"
+  (closed)="closeCancelModal()"
+>
   @if (requestToCancel(); as request) {
     <p class="patient-dashboard__confirm-text">
-      Tem certeza que deseja cancelar a solicitação <strong>#{{ request.id }}</strong>? Os profissionais não poderão mais
-      enviar propostas e essa ação não pode ser desfeita.
+      Tem certeza que deseja cancelar a solicitação
+      <strong>#{{ request.id }}</strong
+      >? Os profissionais não poderão mais enviar propostas e essa ação não pode
+      ser desfeita.
     </p>
     <div class="patient-dashboard__confirm-actions">
-      <ui-button variant="ghost" [disabled]="isCancelling()" (click)="closeCancelModal()">Voltar</ui-button>
-      <ui-button variant="danger" [loading]="isCancelling()" (click)="confirmCancel()">Sim, cancelar</ui-button>
+      <ui-button
+        variant="ghost"
+        [disabled]="isCancelling()"
+        (click)="closeCancelModal()"
+        >Voltar</ui-button
+      >
+      <ui-button
+        variant="danger"
+        [loading]="isCancelling()"
+        (click)="confirmCancel()"
+        >Sim, cancelar</ui-button
+      >
     </div>
   }
 </ui-modal>

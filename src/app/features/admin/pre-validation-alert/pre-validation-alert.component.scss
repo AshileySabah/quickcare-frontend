@@ -3,10 +3,10 @@
 
 // Cores por parecer: borda, fundo e ícone.
 $opinions: (
-  favoravel: (tokens.semantic('success'), #F0FDF4),
-  desfavoravel: (tokens.semantic('error'), #FEF2F2),
-  indisponivel: (tokens.semantic('warning'), #FFFBEB),
-  sem-api: (tokens.semantic('info'), #EFF6FF),
+  favoravel: (tokens.semantic('success'), tokens.semantic('success-light')),
+  desfavoravel: (tokens.semantic('error'), tokens.semantic('error-light')),
+  indisponivel: (tokens.semantic('warning'), tokens.semantic('warning-light')),
+  sem-api: (tokens.semantic('info'), tokens.semantic('info-light')),
 );
 
 .pre-validation-alert {
@@ -70,7 +70,7 @@ $opinions: (
   justify-content: center;
   flex-shrink: 0;
   border-radius: tokens.radius('full');
-  color: #FFFFFF;
+  color: tokens.color('gray', 0);
   font-weight: tokens.font-weight('medium');
   line-height: 1;
 }

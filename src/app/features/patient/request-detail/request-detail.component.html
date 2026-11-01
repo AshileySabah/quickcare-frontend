@@ -1,10 +1,6 @@
 @switch (pageState()) {
   @case ('loading') {
-    <div class="request-detail__loading">
-      <ui-skeleton height="28px" width="50%"></ui-skeleton>
-      <ui-skeleton height="16px" width="30%"></ui-skeleton>
-      <ui-skeleton height="80px"></ui-skeleton>
-    </div>
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
   }
   @case ('not-found') {
     <ui-empty-state title="Solicitação não encontrada" message="Ela pode ter sido removida ou o link está incorreto.">
@@ -17,70 +13,23 @@
   @case ('filled') {
     @if (request(); as currentRequest) {
       <section class="request-detail">
-        <ui-card>
-          <header class="request-detail__header">
-            <div>
-              <span class="request-detail__specialty">{{ professionalsSummary(currentRequest) }}</span>
-              <h1 class="request-detail__title">Solicitação</h1>
-            </div>
-            <ui-status-badge [status]="currentRequest.status"></ui-status-badge>
-          </header>
-
-          <p class="request-detail__description">{{ currentRequest.description }}</p>
-
-          <dl class="request-detail__meta">
-            <div>
-              <dt>Profissionais</dt>
-              @for (professional of currentRequest.professionals; track $index) {
-                <dd>
-                  {{ professional.quantity }}× {{ professional.categoryLabel }} — {{ specialtyNames(professional) }}
-                  <span class="request-detail__vacancies">
-                    ({{ professional.filled }}/{{ professional.quantity }} contratados)
-                  </span>
-                </dd>
-              }
-            </div>
-            <div>
-              <dt>Modalidade</dt>
-              <dd>{{ currentRequest.modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
-            </div>
-            @if (currentRequest.address) {
-              <div>
-                <dt>Endereço</dt>
-                <dd>{{ formatAddress(currentRequest.address) }}</dd>
-              </div>
-            }
-            <div>
-              <dt>Prazo desejado</dt>
-              <dd>{{ currentRequest.desiredDeadline | date: 'dd/MM/yyyy' }}</dd>
-            </div>
-          </dl>
-
-          <div class="request-detail__actions">
-            @if (canEdit(currentRequest)) {
-              <ui-button variant="secondary" [routerLink]="['/patient/solicitacoes', currentRequest.id, 'editar']">
-                Editar
-              </ui-button>
-            }
-            @if (canCancel(currentRequest)) {
-              <ui-button variant="danger" (click)="cancelRequest()">Cancelar solicitação</ui-button>
-            }
-          </div>
-        </ui-card>
+        <ui-request-summary [request]="currentRequest" [showVacancies]="true">
+          @if (canEdit(currentRequest)) {
+            <ui-button variant="secondary" [routerLink]="['/patient/solicitacoes', currentRequest.id, 'editar']">
+              Editar
+            </ui-button>
+          }
+          @if (canCancel(currentRequest)) {
+            <ui-button variant="danger" (click)="cancelRequest()">Cancelar solicitação</ui-button>
+          }
+        </ui-request-summary>
 
         <div class="request-detail__proposals">
           <h2 class="request-detail__proposals-title">Propostas recebidas</h2>
 
           @switch (proposalsState()) {
             @case ('loading') {
-              <div class="request-detail__proposals-list">
-                @for (i of [1, 2]; track i) {
-                  <ui-card>
-                    <ui-skeleton height="20px" width="50%"></ui-skeleton>
-                    <ui-skeleton height="60px"></ui-skeleton>
-                  </ui-card>
-                }
-              </div>
+              <ui-skeleton-list [count]="2"></ui-skeleton-list>
             }
             @case ('error') {
               <ui-error-state (retry)="loadProposals()"></ui-error-state>

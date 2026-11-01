@@ -1,21 +1,21 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { AvatarComponent } from '../../../shared/ui/feedback/avatar/avatar.component';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
 
+/** O admin não tem tela de perfil: o menu da conta mostra só "Sair". */
 @Component({
   selector: 'app-admin-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonComponent, AvatarComponent],
-  templateUrl: './admin-shell.component.html',
-  styleUrl: './admin-shell.component.scss',
+  imports: [RouterOutlet, AppShellComponent],
+  template: `
+    <ui-app-shell homeLink="/admin" brandLabel="QuickCare Admin" navLabel="Navegação do admin" [navItems]="navItems">
+      <router-outlet></router-outlet>
+    </ui-app-shell>
+  `,
 })
 export class AdminShellComponent {
-  protected readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-
-  protected logout(): void {
-    this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
-  }
+  protected readonly navItems: ShellNavItem[] = [
+    { label: 'Profissionais', link: '/admin/profissionais' },
+    { label: 'Pacientes', link: '/admin/pacientes' },
+  ];
 }

@@ -7,10 +7,10 @@ import { ValidationService } from '../../../core/services/validation.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { StoredFileComponent } from '../../../shared/ui/stored-file/stored-file.component';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { ResubmitStepFormComponent } from '../resubmit-step-form/resubmit-step-form.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type ViewState = 'loading' | 'error' | 'filled';
 
@@ -18,12 +18,11 @@ type ViewState = 'loading' | 'error' | 'filled';
 @Component({
   selector: 'app-my-validation',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     DatePipe,
     CardComponent,
     ErrorStateComponent,
     ResubmitStepFormComponent,
-    SkeletonComponent,
     StoredFileComponent,
     ValidationStatusBadgeComponent,
   ],

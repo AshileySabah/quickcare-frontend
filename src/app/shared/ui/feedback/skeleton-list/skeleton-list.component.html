@@ -1,0 +1,25 @@
+<div class="skeleton-list" role="status" aria-label="Carregando">
+  @switch (variant()) {
+    @case ('page') {
+      <ui-skeleton height="28px" width="50%"></ui-skeleton>
+      <ui-skeleton height="16px" width="30%"></ui-skeleton>
+      <ui-skeleton height="120px"></ui-skeleton>
+    }
+    @case ('form') {
+      <ui-skeleton height="96px" width="96px" radius="999px"></ui-skeleton>
+      <ui-skeleton height="220px" radius="16px"></ui-skeleton>
+      <ui-skeleton height="160px" radius="16px"></ui-skeleton>
+    }
+    @default {
+      @for (item of items(); track item) {
+        <ui-card>
+          <div class="skeleton-list__lines">
+            <ui-skeleton height="20px" width="50%"></ui-skeleton>
+            <ui-skeleton height="14px" width="70%"></ui-skeleton>
+            <ui-skeleton height="56px"></ui-skeleton>
+          </div>
+        </ui-card>
+      }
+    }
+  }
+</div>

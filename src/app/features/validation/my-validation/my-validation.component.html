@@ -1,9 +1,6 @@
 @switch (viewState()) {
   @case ('loading') {
-    <div class="my-validation__loading">
-      <ui-skeleton height="20px" width="60%"></ui-skeleton>
-      <ui-skeleton height="120px"></ui-skeleton>
-    </div>
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
   }
   @case ('error') {
     <ui-error-state (retry)="load()"></ui-error-state>

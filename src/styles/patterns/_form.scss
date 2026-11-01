@@ -1,0 +1,77 @@
+@use '../tokens' as tokens;
+
+/** Título de seção dentro de um card de formulário. */
+@mixin section-title {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+  margin-bottom: tokens.space(3);
+}
+
+@mixin hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+  margin-bottom: tokens.space(3);
+}
+
+@mixin field-error {
+  margin-top: tokens.space(2);
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}
+
+// Campo com label, controle, dica e erro: base de ui-input, ui-select e ui-textarea.
+@mixin field {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  width: 100%;
+}
+
+@mixin field-label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+/** O controle em si (input, select, textarea); `&--error` marca o inválido. */
+@mixin field-control {
+  border: 1px solid tokens.color('gray', 300);
+  border-radius: tokens.radius('md');
+  background-color: tokens.color('gray', 0);
+  font-family: tokens.$font-family-base;
+  font-size: tokens.font-size('base');
+  color: tokens.color('gray', 900);
+
+  &::placeholder {
+    color: tokens.color('gray', 400);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: tokens.color('gray', 400);
+  }
+
+  &:focus-visible {
+    border-color: tokens.color('teal', 500);
+  }
+
+  &:disabled {
+    background-color: tokens.color('gray', 100);
+    color: tokens.color('gray', 400);
+    cursor: not-allowed;
+  }
+
+  &--error {
+    border-color: tokens.semantic('error');
+  }
+}
+
+@mixin field-hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+@mixin field-message-error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}

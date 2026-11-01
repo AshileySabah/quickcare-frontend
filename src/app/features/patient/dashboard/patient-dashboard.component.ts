@@ -4,12 +4,11 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
-import { RequestStatus, ServiceRequest, requestedSpecialtyNames } from '../../../core/models';
+import { ListViewState, requestedSpecialtyNames, RequestStatus, ServiceRequest } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
@@ -17,9 +16,10 @@ import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
+import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
-type ViewState = 'loading' | 'empty' | 'error' | 'filled';
 type StatusFilter = 'ativas' | RequestStatus;
 type SortOrder = 'recentes' | 'antigas' | 'prazo';
 
@@ -42,7 +42,7 @@ function normalize(text: string): string {
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
@@ -53,9 +53,9 @@ function normalize(text: string): string {
     GridItemComponent,
     InputComponent,
     ModalComponent,
+    MyValidationComponent,
     RequestCardComponent,
     SelectComponent,
-    SkeletonComponent,
   ],
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss',
@@ -72,7 +72,10 @@ export class PatientDashboardComponent {
     return user?.role === 'patient' ? user.validationStatus : 'aprovado';
   });
 
-  protected readonly viewState = signal<ViewState>('loading');
+  /** Etapas da validação, abertas pelo banner; com tudo aprovado o banner some. */
+  protected readonly showValidation = signal(false);
+
+  protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
 
   protected readonly requestToCancel = signal<ServiceRequest | null>(null);

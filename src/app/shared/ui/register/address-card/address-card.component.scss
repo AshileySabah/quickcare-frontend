@@ -1,9 +1,9 @@
-@use 'patterns/auth-page' as authPage;
+@use 'patterns/form' as form;
 
 :host {
   display: block;
 }
 
 .address-card__title {
-  @include authPage.section-title;
+  @include form.section-title;
 }

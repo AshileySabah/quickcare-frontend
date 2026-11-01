@@ -1,0 +1,28 @@
+<div class="auth-layout">
+  @if (sideTitle(); as title) {
+    <aside class="auth-layout__side">
+      <a class="auth-layout__side-brand" routerLink="/">QuickCare</a>
+      <h2 class="auth-layout__side-title">{{ title }}</h2>
+      <p class="auth-layout__side-text">{{ sideText() }}</p>
+      @if (sideItems().length > 0) {
+        <ul class="auth-layout__side-list">
+          @for (item of sideItems(); track item) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+      }
+    </aside>
+  }
+
+  <div class="auth-layout__main">
+    @if (sideTitle()) {
+      <a class="auth-layout__mobile-brand" routerLink="/">QuickCare</a>
+    }
+
+    <div class="auth-layout__content" [class.auth-layout__content--top]="panel() === 'form'">
+      <div [class]="'auth-layout__panel auth-layout__panel--' + panel()">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+</div>

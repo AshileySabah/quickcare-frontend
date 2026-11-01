@@ -1,7 +1,15 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { atLeastOneModalityValidator } from '../../../core/forms/professional-validators';
+import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
+import { EmergencyContactGroup, setEmergencyContacts } from '../../../core/forms/emergency-contact-form';
+import { profileFieldErrorsFor } from '../../../core/forms/profile-form';
+import {
+  atLeastOneModalityValidator,
+  fromAttendanceModality,
+  modalityError,
+  requireRadiusWhenPresencial,
+  toAttendanceModality,
+} from '../../../core/forms/attendance-modality';
 import { Gender } from '../../../core/models';
 import { ProfessionalProfile, ProfileService } from '../../../core/services/profile.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
@@ -12,17 +20,15 @@ import { CheckboxComponent } from '../../../shared/ui/forms/checkbox/checkbox.co
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ProfessionalPracticeCardComponent } from '../register/professional-practice-card/professional-practice-card.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type PageState = 'loading' | 'error' | 'ready';
-type FieldName = 'name' | 'phone' | 'birthDate' | 'gender' | 'raioAtendimentoKm';
-type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
   selector: 'app-professional-edit-profile',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     AvatarUploadComponent,
@@ -32,7 +38,6 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     EmergencyContactsCardComponent,
     ErrorStateComponent,
     ProfessionalPracticeCardComponent,
-    SkeletonComponent,
   ],
   templateUrl: './professional-edit-profile.component.html',
   styleUrl: './professional-edit-profile.component.scss',
@@ -61,31 +66,16 @@ export class ProfessionalEditProfileComponent implements OnInit {
       attendsPresencial: [false],
       attendsRemoto: [false],
       raioAtendimentoKm: [10, [Validators.min(1)]],
-      address: this.fb.nonNullable.group({
-        cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-        street: ['', Validators.required],
-        number: ['', Validators.required],
-        complement: [''],
-        neighborhood: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-      }),
+      address: buildAddressGroup(this.fb),
     },
     { validators: atLeastOneModalityValidator() },
   );
 
+  protected readonly fieldError = profileFieldErrorsFor(this.form);
+  protected readonly addressFieldError = addressFieldErrorsFor(this.form.controls.address);
+
   constructor() {
-    this.form.controls.attendsPresencial.valueChanges.subscribe((presencial) => {
-      const raioControl = this.form.controls.raioAtendimentoKm;
-
-      if (presencial) {
-        raioControl.setValidators([Validators.required, Validators.min(1)]);
-      } else {
-        raioControl.clearValidators();
-      }
-
-      raioControl.updateValueAndValidity();
-    });
+    requireRadiusWhenPresencial(this.form.controls.attendsPresencial, this.form.controls.raioAtendimentoKm);
   }
 
   ngOnInit(): void {
@@ -113,49 +103,8 @@ export class ProfessionalEditProfileComponent implements OnInit {
   }
 
   protected get modalityError(): string | null {
-    const touched = this.form.controls.attendsPresencial.touched || this.form.controls.attendsRemoto.touched;
-    return touched && this.form.hasError('modalityRequired') ? 'Selecione ao menos uma modalidade de atendimento.' : null;
+    return modalityError(this.form);
   }
-
-  protected fieldError = (fieldName: string): string | null => {
-    const control = this.form.controls[fieldName as FieldName];
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'raioAtendimentoKm' && control.hasError('min')) {
-      return 'Informe um raio de atendimento válido.';
-    }
-
-    return null;
-  };
-
-  protected addressFieldError = (fieldName: string): string | null => {
-    const control = this.form.controls.address.get(fieldName as AddressFieldName);
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'cep' && control.hasError('pattern')) {
-      return 'CEP deve conter 8 dígitos, sem hífen.';
-    }
-
-    if (fieldName === 'state' && control.hasError('pattern')) {
-      return 'Informe a sigla do estado (ex.: SP).';
-    }
-
-    return null;
-  };
 
   protected submit(): void {
     if (this.form.invalid) {
@@ -165,8 +114,6 @@ export class ProfessionalEditProfileComponent implements OnInit {
 
     this.isSubmitting.set(true);
     const value = this.form.getRawValue();
-    const modalidadeAtendimento =
-      value.attendsPresencial && value.attendsRemoto ? 'AMBOS' : value.attendsPresencial ? 'PRESENCIAL' : 'REMOTO';
 
     this.profileService
       .updateProfessionalProfile({
@@ -176,7 +123,7 @@ export class ProfessionalEditProfileComponent implements OnInit {
         gender: value.gender as Gender,
         emergencyContacts: value.emergencyContacts,
         hasLiabilityInsurance: value.hasLiabilityInsurance,
-        modalidadeAtendimento,
+        modalidadeAtendimento: toAttendanceModality(value.attendsPresencial, value.attendsRemoto),
         raioAtendimentoKm: value.attendsPresencial ? value.raioAtendimentoKm : undefined,
         address: value.address,
         avatar: this.avatarBlob ?? undefined,
@@ -198,10 +145,7 @@ export class ProfessionalEditProfileComponent implements OnInit {
   }
 
   private fillForm(profile: ProfessionalProfile): void {
-    const contacts = this.form.controls.emergencyContacts;
-    contacts.clear();
-    profile.emergencyContacts.forEach(() => contacts.push(buildEmergencyContactGroup(this.fb)));
-
+    setEmergencyContacts(this.form, this.fb, profile.emergencyContacts);
     this.form.reset({
       name: profile.name,
       phone: profile.phone,
@@ -209,8 +153,7 @@ export class ProfessionalEditProfileComponent implements OnInit {
       gender: profile.gender,
       emergencyContacts: profile.emergencyContacts,
       hasLiabilityInsurance: profile.hasLiabilityInsurance,
-      attendsPresencial: profile.modalidadeAtendimento !== 'REMOTO',
-      attendsRemoto: profile.modalidadeAtendimento !== 'PRESENCIAL',
+      ...fromAttendanceModality(profile.modalidadeAtendimento),
       raioAtendimentoKm: profile.raioAtendimentoKm ?? 10,
       address: profile.address,
     });

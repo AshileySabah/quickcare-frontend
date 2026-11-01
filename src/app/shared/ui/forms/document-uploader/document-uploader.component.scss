@@ -39,7 +39,7 @@
   background-color: tokens.semantic('warning');
   font-size: 10px;
   line-height: 1;
-  color: #FFFFFF;
+  color: tokens.color('gray', 0);
   transition: background-color 0.2s ease, color 0.2s ease;
 
   &--met {
@@ -160,7 +160,7 @@
   padding: 0 tokens.space(2);
   border: 1px solid tokens.color('gray', 300);
   border-radius: tokens.radius('sm');
-  background-color: #FFFFFF;
+  background-color: tokens.color('gray', 0);
   font-size: tokens.font-size('xs');
   color: tokens.color('gray', 900);
 

@@ -9,8 +9,8 @@
   padding: tokens.space(3) tokens.space(4);
   border-radius: tokens.radius('md');
   border-left: 4px solid transparent;
-  background-color: #FFFFFF;
-  box-shadow: 0 4px 16px rgba(4, 52, 44, 0.15);
+  background-color: tokens.color('gray', 0);
+  box-shadow: 0 4px 16px rgba(tokens.color('teal', 900), 0.15);
 
   &--success {
     border-left-color: tokens.semantic('success');

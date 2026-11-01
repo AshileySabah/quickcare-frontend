@@ -1,18 +1,16 @@
-import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProposalService } from '../../../core/services/proposal.service';
 import { RequestService } from '../../../core/services/request.service';
-import { Proposal, ServiceRequest, formatRequestAddress, requestedProfessionalsSummary, requestedSpecialtyNames } from '../../../core/models';
+import { Proposal, ServiceRequest } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
 import { ProposalCardComponent } from '../../../shared/ui/proposal-card/proposal-card.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
-import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
+import { RequestSummaryComponent } from '../../../shared/ui/request-summary/request-summary.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -20,17 +18,14 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [
-    DatePipe,
+  imports: [SkeletonListComponent, 
     RouterLink,
     ButtonComponent,
-    CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     ModalComponent,
     ProposalCardComponent,
-    SkeletonComponent,
-    StatusBadgeComponent,
+    RequestSummaryComponent,
   ],
   templateUrl: './request-detail.component.html',
   styleUrl: './request-detail.component.scss',
@@ -85,10 +80,6 @@ export class RequestDetailComponent {
       error: () => this.proposalsState.set('error'),
     });
   }
-
-  protected readonly professionalsSummary = requestedProfessionalsSummary;
-  protected readonly formatAddress = formatRequestAddress;
-  protected readonly specialtyNames = requestedSpecialtyNames;
 
   /** Ex.: "Enfermeiro(a) — Curativos, Sondagem". */
   protected professionalDescription(proposal: Proposal): string {

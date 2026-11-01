@@ -1,29 +1,14 @@
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProposalService } from '../../../core/services/proposal.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
-import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
-import { InputComponent } from '../../../shared/ui/forms/input/input.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
-import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
+import { ProposalInput, ProposalService } from '../../../core/services/proposal.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-
-type FieldName = 'price' | 'approach' | 'deadline';
+import { ProposalFormComponent } from '../proposal-form/proposal-form.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-proposal-edit',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    ButtonComponent,
-    GridComponent,
-    GridItemComponent,
-    InputComponent,
-    SkeletonComponent,
-    TextareaComponent,
-  ],
+  imports: [SkeletonListComponent, ProposalFormComponent],
   templateUrl: './proposal-edit.component.html',
   styleUrl: './proposal-edit.component.scss',
 })
@@ -32,18 +17,11 @@ export class ProposalEditComponent {
   private readonly router = inject(Router);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
-  private readonly fb = inject(FormBuilder);
 
   private readonly proposalId = this.route.snapshot.paramMap.get('id') ?? '';
 
-  protected readonly isLoading = signal(true);
+  protected readonly proposal = signal<ProposalInput | null>(null);
   protected readonly isSubmitting = signal(false);
-
-  protected readonly form = this.fb.nonNullable.group({
-    price: ['', [Validators.required, Validators.min(1)]],
-    approach: ['', [Validators.required, Validators.minLength(20)]],
-    deadline: ['', Validators.required],
-  });
 
   constructor() {
     this.proposalService.getById(this.proposalId).subscribe({
@@ -54,12 +32,7 @@ export class ProposalEditComponent {
           return;
         }
 
-        this.form.patchValue({
-          price: String(proposal.price),
-          approach: proposal.approach,
-          deadline: proposal.deadline,
-        });
-        this.isLoading.set(false);
+        this.proposal.set({ price: proposal.price, approach: proposal.approach, deadline: proposal.deadline });
       },
       error: () => {
         this.toastService.error('Não foi possível carregar a proposta.');
@@ -68,39 +41,10 @@ export class ProposalEditComponent {
     });
   }
 
-  protected fieldError(fieldName: FieldName): string | null {
-    const control = this.form.controls[fieldName];
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'price' && control.hasError('min')) {
-      return 'Informe um valor válido.';
-    }
-
-    if (fieldName === 'approach' && control.hasError('minlength')) {
-      return 'Descreva sua abordagem com mais detalhes (mínimo 20 caracteres).';
-    }
-
-    return null;
-  }
-
-  protected submit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const { price, approach, deadline } = this.form.getRawValue();
-
+  protected save(input: ProposalInput): void {
     this.isSubmitting.set(true);
 
-    this.proposalService.update(this.proposalId, { price: Number(price), approach, deadline }).subscribe({
+    this.proposalService.update(this.proposalId, input).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.toastService.success('Proposta atualizada com sucesso!');

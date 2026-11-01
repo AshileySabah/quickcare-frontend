@@ -57,9 +57,3 @@
   font-size: tokens.font-size('xs');
   color: tokens.color('gray', 500);
 }
-
-@mixin skeleton-lines {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(2);
-}

@@ -120,6 +120,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'historico',
+        data: { view: 'history' },
+        loadComponent: () =>
+          import('./features/professional/my-proposals/my-proposals.component').then(
+            (m) => m.MyProposalsComponent,
+          ),
+      },
+      {
         path: 'perfil',
         loadComponent: () =>
           import('./features/professional/edit-profile/professional-edit-profile.component').then(
@@ -172,13 +180,6 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/patient/request-form/request-form.component').then(
             (m) => m.RequestFormComponent,
-          ),
-      },
-      {
-        path: 'validacao',
-        loadComponent: () =>
-          import('./features/patient/validation/patient-validation.component').then(
-            (m) => m.PatientValidationComponent,
           ),
       },
       {

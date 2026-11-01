@@ -17,9 +17,3 @@
     }
   </div>
 }
-
-@if (missingRole(); as role) {
-  <a class="profile-switcher__create" [routerLink]="role === 'patient' ? '/criar-perfil/paciente' : '/criar-perfil/profissional'">
-    {{ role === 'patient' ? 'Criar perfil de paciente' : 'Quero atender como profissional' }}
-  </a>
-}

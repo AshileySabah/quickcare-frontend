@@ -17,6 +17,7 @@ import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
+import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
 
 type ViewState = 'loading' | 'empty' | 'error' | 'filled';
@@ -53,6 +54,7 @@ function normalize(text: string): string {
     GridItemComponent,
     InputComponent,
     ModalComponent,
+    MyValidationComponent,
     RequestCardComponent,
     SelectComponent,
     SkeletonComponent,
@@ -71,6 +73,9 @@ export class PatientDashboardComponent {
     const user = this.authService.currentUser();
     return user?.role === 'patient' ? user.validationStatus : 'aprovado';
   });
+
+  /** Etapas da validação, abertas pelo banner; com tudo aprovado o banner some. */
+  protected readonly showValidation = signal(false);
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

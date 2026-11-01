@@ -1,0 +1,34 @@
+<div class="user-menu">
+  <button
+    type="button"
+    class="user-menu__trigger"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="open()"
+    aria-label="Abrir menu da conta"
+    (click)="toggle()"
+  >
+    <ui-avatar [name]="authService.currentUser()?.name ?? ''" [imageUrl]="authService.currentUser()?.avatarUrl"></ui-avatar>
+  </button>
+
+  @if (open()) {
+    <div class="user-menu__dropdown" role="menu">
+      @if (profileLink(); as link) {
+        <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Meu perfil</a>
+      }
+      <button type="button" class="user-menu__item user-menu__item--danger" role="menuitem" (click)="logout()">
+        Sair
+      </button>
+      @if (missingRole(); as role) {
+        <hr class="user-menu__divider" />
+        <a
+          class="user-menu__item user-menu__item--highlight"
+          role="menuitem"
+          [routerLink]="role === 'patient' ? '/criar-perfil/paciente' : '/criar-perfil/profissional'"
+          (click)="close()"
+        >
+          {{ role === 'patient' ? 'Criar perfil de paciente' : 'Quero atender como profissional' }}
+        </a>
+      }
+    </div>
+  }
+</div>

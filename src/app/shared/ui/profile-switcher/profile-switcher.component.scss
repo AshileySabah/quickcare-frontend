@@ -52,15 +52,3 @@
   font-weight: tokens.font-weight('regular');
   color: tokens.semantic('error');
 }
-
-.profile-switcher__create {
-  font-size: tokens.font-size('sm');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('teal', 600);
-  white-space: nowrap;
-
-  &:hover {
-    color: tokens.color('teal', 700);
-    text-decoration: underline;
-  }
-}

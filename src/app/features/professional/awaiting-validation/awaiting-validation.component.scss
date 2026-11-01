@@ -26,6 +26,8 @@
 }
 
 .awaiting-validation__brand {
+  display: inline-block;
+  text-decoration: none;
   font-size: tokens.font-size('sm');
   font-weight: tokens.font-weight('medium');
   color: tokens.color('teal', 700);

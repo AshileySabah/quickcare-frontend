@@ -1,22 +1,20 @@
-import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { AvatarComponent } from '../../../shared/ui/feedback/avatar/avatar.component';
-import { ProfileSwitcherComponent } from '../../../shared/ui/profile-switcher/profile-switcher.component';
+import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
 
 @Component({
   selector: 'app-patient-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonComponent, AvatarComponent, ProfileSwitcherComponent],
-  templateUrl: './patient-shell.component.html',
-  styleUrl: './patient-shell.component.scss',
+  imports: [RouterOutlet, AppShellComponent],
+  template: `
+    <ui-app-shell homeLink="/patient" navLabel="Navegação do paciente" [navItems]="navItems" profileLink="/patient/perfil">
+      <router-outlet></router-outlet>
+    </ui-app-shell>
+  `,
 })
 export class PatientShellComponent {
-  protected readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-
-  protected logout(): void {
-    this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
-  }
+  protected readonly navItems: ShellNavItem[] = [
+    { label: 'Minhas solicitações', link: '/patient', exact: true },
+    { label: 'Histórico', link: '/patient/historico' },
+  ];
 }

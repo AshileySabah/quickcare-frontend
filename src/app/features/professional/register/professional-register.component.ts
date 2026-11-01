@@ -1,6 +1,7 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
 import {
   cnpjValidator,
   cpfValidator,
@@ -9,9 +10,19 @@ import {
 } from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { atLeastOneModalityValidator } from '../../../core/forms/professional-validators';
-import { AuthService, ProfessionalRegistration } from '../../../core/auth/auth.service';
+import { AuthService, ProfessionalProfileInput } from '../../../core/auth/auth.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { DocumentType, IdentityDocumentType, ProfessionalCategory, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
+import { prefillFromOtherProfile } from '../../../core/forms/profile-prefill';
+import {
+  DocumentType,
+  Gender,
+  IdentityDocumentType,
+  ProfessionalCategory,
+  ProfessionalCategoryInfo,
+  Specialty,
+  User,
+} from '../../../core/models';
+import { ProfileService } from '../../../core/services/profile.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
@@ -52,6 +63,19 @@ type FieldName =
 
 type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
+/** Dados da conta: já existem quando o paciente logado cria o perfil de profissional. */
+const ACCOUNT_FIELDS = [
+  'name',
+  'email',
+  'phone',
+  'cpf',
+  'identityDocumentType',
+  'identityDocumentNumber',
+  'identityDocumentUf',
+  'password',
+  'confirmPassword',
+] as const;
+
 @Component({
   selector: 'app-professional-register',
   standalone: true,
@@ -79,6 +103,10 @@ export class ProfessionalRegisterComponent implements OnInit {
   private readonly ufService = inject(UfService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private readonly profileService = inject(ProfileService);
+
+  /** Rota /criar-perfil/profissional: quem já é paciente cria o perfil de profissional sem refazer a conta. */
+  protected readonly isNewProfile = inject(ActivatedRoute).snapshot.data['newProfileRole'] === 'professional';
 
   protected readonly isSubmitting = signal(false);
   protected readonly avatarBlob = signal<Blob | null>(null);
@@ -208,6 +236,14 @@ export class ProfessionalRegisterComponent implements OnInit {
     });
 
     this.form.controls.cnpj.valueChanges.subscribe((value) => this.hasCnpj.set(!!value));
+
+    if (this.isNewProfile) {
+      ACCOUNT_FIELDS.forEach((field) => this.form.controls[field].disable());
+      this.profileService.getPatientProfile().subscribe({
+        next: (profile) => prefillFromOtherProfile(this.form, this.fb, profile),
+        error: () => this.toastService.error('Não foi possível trazer os dados do seu perfil de paciente.'),
+      });
+    }
   }
 
   ngOnInit(): void {
@@ -416,51 +452,61 @@ export class ProfessionalRegisterComponent implements OnInit {
     const modalidadeAtendimento =
       attendsPresencial && attendsRemoto ? 'AMBOS' : attendsPresencial ? 'PRESENCIAL' : 'REMOTO';
 
-    this.authService
-      .registerProfessional({
-        name,
-        email,
-        phone,
-        cpf,
-        identityDocumentType: identityDocumentType as IdentityDocumentType,
-        identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
-        identityDocumentUf: identityDocumentUf || undefined,
-        cnpj: cnpj || undefined,
-        category: category as ProfessionalCategory,
-        specialtyIds,
-        registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
-        registrationUf: this.requiresRegistration ? registrationUf : undefined,
-        birthDate,
-        gender: gender as ProfessionalRegistration['gender'],
-        emergencyContacts,
-        infoConfirmedTrue,
-        lgpdConsent,
-        hasLiabilityInsurance,
-        password,
-        modalidadeAtendimento,
-        raioAtendimentoKm: attendsPresencial ? raioAtendimentoKm : undefined,
-        address: {
-          cep: address.cep,
-          street: address.street,
-          number: address.number,
-          complement: address.complement || undefined,
-          neighborhood: address.neighborhood,
-          city: address.city,
-          state: address.state,
-        },
-        documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
-        avatar: this.avatarBlob() ?? undefined,
-      })
-      .subscribe({
-        next: () => {
-          this.isSubmitting.set(false);
-          this.toastService.success('Cadastro realizado com sucesso!');
-          this.router.navigateByUrl('/professional');
-        },
-        error: (error: Error) => {
-          this.isSubmitting.set(false);
-          this.toastService.error(error.message);
-        },
-      });
+    const profile: ProfessionalProfileInput = {
+      cnpj: cnpj || undefined,
+      category: category as ProfessionalCategory,
+      specialtyIds,
+      registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
+      registrationUf: this.requiresRegistration ? registrationUf : undefined,
+      birthDate,
+      gender: gender as Gender,
+      emergencyContacts,
+      infoConfirmedTrue,
+      lgpdConsent,
+      hasLiabilityInsurance,
+      modalidadeAtendimento,
+      raioAtendimentoKm: attendsPresencial ? raioAtendimentoKm : undefined,
+      address: {
+        cep: address.cep,
+        street: address.street,
+        number: address.number,
+        complement: address.complement || undefined,
+        neighborhood: address.neighborhood,
+        city: address.city,
+        state: address.state,
+      },
+      documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
+    };
+
+    const request$: Observable<User> = this.isNewProfile
+      ? this.authService.createProfessionalProfile(profile)
+      : this.authService.registerProfessional({
+          ...profile,
+          name,
+          email,
+          phone,
+          cpf,
+          identityDocumentType: identityDocumentType as IdentityDocumentType,
+          identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
+          identityDocumentUf: identityDocumentUf || undefined,
+          password,
+          avatar: this.avatarBlob() ?? undefined,
+        });
+
+    request$.subscribe({
+      next: () => {
+        this.isSubmitting.set(false);
+        this.toastService.success(
+          this.isNewProfile
+            ? 'Perfil de profissional criado! Ele passa pela validação do cadastro.'
+            : 'Cadastro realizado com sucesso!',
+        );
+        this.router.navigateByUrl('/professional');
+      },
+      error: (error: Error) => {
+        this.isSubmitting.set(false);
+        this.toastService.error(error.message);
+      },
+    });
   }
 }

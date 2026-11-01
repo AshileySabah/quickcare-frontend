@@ -19,18 +19,34 @@
 
     <div class="auth-page__content">
       <div class="auth-page__panel">
-        <a class="auth-page__back" routerLink="/">← Voltar para o início</a>
+        @if (isNewProfile) {
+          <a class="auth-page__back" routerLink="/professional">← Voltar para o perfil de profissional</a>
 
-        <h1 class="auth-page__title">Cadastro de paciente</h1>
-        <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
+          <h1 class="auth-page__title">Criar perfil de paciente</h1>
+          <p class="auth-page__subtitle">
+            Usamos o nome, o e-mail, o CPF e a senha da sua conta. Trouxemos os dados do seu perfil de profissional —
+            confira antes de enviar. O novo perfil passa pela validação do cadastro.
+          </p>
+        } @else {
+          <a class="auth-page__back" routerLink="/">← Voltar para o início</a>
+
+          <h1 class="auth-page__title">Cadastro de paciente</h1>
+          <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
+        }
 
         <form class="patient-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
-          <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+          @if (!isNewProfile) {
+            <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+          }
 
           <ui-basic-info-card
             [group]="form"
             [fieldError]="fieldError"
-            [showIdentityDocument]="true"
+            [showName]="!isNewProfile"
+            [showEmail]="!isNewProfile"
+            [showPhone]="!isNewProfile"
+            [showCpf]="!isNewProfile"
+            [showIdentityDocument]="!isNewProfile"
             [ufOptions]="ufOptions()"
           ></ui-basic-info-card>
 
@@ -46,21 +62,27 @@
 
           <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
 
-          <ui-password-card
-            [group]="form"
-            [passwordError]="passwordError"
-            [confirmPasswordError]="confirmPasswordError"
-          ></ui-password-card>
+          @if (!isNewProfile) {
+            <ui-password-card
+              [group]="form"
+              [passwordError]="passwordError"
+              [confirmPasswordError]="confirmPasswordError"
+            ></ui-password-card>
+          }
 
           <ui-declarations-card [group]="form" [fieldError]="fieldError"></ui-declarations-card>
 
-          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">Criar conta</ui-button>
+          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">
+            {{ isNewProfile ? 'Criar perfil de paciente' : 'Criar conta' }}
+          </ui-button>
         </form>
 
-        <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
-        <p class="auth-page__footer">
-          Errou o perfil? <a routerLink="/cadastro/profissional">Cadastre-se como profissional</a>
-        </p>
+        @if (!isNewProfile) {
+          <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+          <p class="auth-page__footer">
+            Errou o perfil? <a routerLink="/cadastro/profissional">Cadastre-se como profissional</a>
+          </p>
+        }
       </div>
     </div>
   </div>

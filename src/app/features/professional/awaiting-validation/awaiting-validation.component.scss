@@ -17,6 +17,14 @@
   gap: tokens.space(3);
 }
 
+.awaiting-validation__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: tokens.space(3);
+}
+
 .awaiting-validation__brand {
   font-size: tokens.font-size('sm');
   font-weight: tokens.font-weight('medium');

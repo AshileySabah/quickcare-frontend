@@ -12,8 +12,9 @@
   border-radius: tokens.radius('full');
   cursor: pointer;
 
+  // O gatilho fica no header escuro; o dropdown abre claro.
   &:focus-visible {
-    outline: 2px solid tokens.color('teal', 500);
+    outline: 2px solid tokens.color('teal', 300);
     outline-offset: 2px;
   }
 }
@@ -28,10 +29,10 @@
   min-width: 220px;
   max-width: calc(100vw - #{tokens.space(8)});
   padding: tokens.space(2) 0;
-  background-color: #FFFFFF;
+  background-color: tokens.color('gray', 0);
   border: 1px solid tokens.color('gray', 200);
   border-radius: tokens.radius('md');
-  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.12);
+  box-shadow: 0 8px 24px rgba(tokens.color('gray', 900), 0.12);
 }
 
 .user-menu__item {

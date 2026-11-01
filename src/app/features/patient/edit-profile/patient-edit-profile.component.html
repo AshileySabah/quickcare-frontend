@@ -6,11 +6,7 @@
 
   @switch (state()) {
     @case ('loading') {
-      <div class="edit-profile__skeleton">
-        <ui-skeleton height="96px" width="96px" radius="999px"></ui-skeleton>
-        <ui-skeleton height="220px" radius="16px"></ui-skeleton>
-        <ui-skeleton height="160px" radius="16px"></ui-skeleton>
-      </div>
+      <ui-skeleton-list variant="form"></ui-skeleton-list>
     }
     @case ('error') {
       <ui-error-state [message]="loadError()" (retry)="load()"></ui-error-state>

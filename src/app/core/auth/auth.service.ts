@@ -14,19 +14,20 @@ import {
   ProfessionalCategory,
   ProfileSummary,
   RegistrationDocument,
+  AttendanceModality,
   SwitchableRole,
   User,
   UserRole,
   ValidationStatus,
 } from '../models';
 import {
-  ApiErrorResponse,
   CadastroApiResponse,
   LoginApiResponse,
   MensagemApiResponse,
   PerfilStatusApi,
   RedefinirSenhaApiResponse,
 } from './auth-api.model';
+import { normalizeError } from '../http/api-error';
 
 /** Documento oficial com foto conferido na etapa de identidade. */
 export interface IdentityDocumentInput {
@@ -72,7 +73,7 @@ export interface ProfessionalProfileInput {
   infoConfirmedTrue: boolean;
   lgpdConsent: boolean;
   hasLiabilityInsurance: boolean;
-  modalidadeAtendimento: 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
+  modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm?: number;
   address: Address;
   documents: RegistrationDocument[];
@@ -153,7 +154,7 @@ export class AuthService {
         map((response) => this.startSession(response)),
         catchError((error: unknown) =>
           throwError(() =>
-            this.normalizeError(
+            normalizeError(
               error,
               'Não foi possível entrar. Tente novamente.',
             ),
@@ -174,7 +175,7 @@ export class AuthService {
       .pipe(
         map((response) => this.startSession(response)),
         catchError((error: unknown) =>
-          throwError(() => this.normalizeError(error, 'Não foi possível trocar de perfil. Tente novamente.')),
+          throwError(() => normalizeError(error, 'Não foi possível trocar de perfil. Tente novamente.')),
         ),
       );
   }
@@ -188,7 +189,7 @@ export class AuthService {
         map((response) => response.mensagem),
         catchError((error: unknown) =>
           throwError(() =>
-            this.normalizeError(
+            normalizeError(
               error,
               'Não foi possível enviar o link. Tente novamente.',
             ),
@@ -242,7 +243,7 @@ export class AuthService {
     error: unknown,
     defaultMessage: string,
   ): Error {
-    const normalized = this.normalizeError(error, defaultMessage);
+    const normalized = normalizeError(error, defaultMessage);
 
     if (error instanceof HttpErrorResponse && error.status === 410) {
       return new InvalidPasswordResetLinkError(normalized.message);
@@ -350,18 +351,6 @@ export class AuthService {
     return patient;
   }
 
-  private normalizeError(error: unknown, defaultMessage: string): Error {
-    if (error instanceof HttpErrorResponse) {
-      const apiError = error.error as ApiErrorResponse | undefined;
-      return new Error(apiError?.message ?? defaultMessage);
-    }
-
-    if (error instanceof Error) {
-      return error;
-    }
-
-    return new Error(defaultMessage);
-  }
 
   registerPatient(input: PatientRegistration): Observable<User> {
     const dados = { ...accountPayload(input), ...patientProfilePayload(input) };
@@ -376,7 +365,7 @@ export class AuthService {
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>
           throwError(() =>
-            this.normalizeError(
+            normalizeError(
               error,
               'Não foi possível concluir o cadastro. Tente novamente.',
             ),
@@ -398,7 +387,7 @@ export class AuthService {
         switchMap(() => this.login(input.email, input.password)),
         catchError((error: unknown) =>
           throwError(() =>
-            this.normalizeError(
+            normalizeError(
               error,
               'Não foi possível concluir o cadastro. Tente novamente.',
             ),
@@ -420,7 +409,7 @@ export class AuthService {
     return this.http.post<LoginApiResponse>(`${environment.apiUrl}/perfis/${tipo}`, formData).pipe(
       map((response) => this.startSession(response)),
       catchError((error: unknown) =>
-        throwError(() => this.normalizeError(error, 'Não foi possível criar o perfil. Tente novamente.')),
+        throwError(() => normalizeError(error, 'Não foi possível criar o perfil. Tente novamente.')),
       ),
     );
   }

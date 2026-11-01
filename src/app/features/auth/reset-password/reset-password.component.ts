@@ -15,13 +15,14 @@ import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.comp
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { PasswordFieldsComponent } from '../../../shared/ui/forms/password-fields/password-fields.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 
 type PageState = 'validating' | 'form' | 'invalid-link' | 'error';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [
+  imports: [AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
@@ -30,7 +31,6 @@ type PageState = 'validating' | 'form' | 'invalid-link' | 'error';
     PasswordFieldsComponent,
   ],
   templateUrl: './reset-password.component.html',
-  styleUrl: './reset-password.component.scss',
 })
 export class ResetPasswordComponent implements OnInit {
   private readonly fb = inject(FormBuilder);

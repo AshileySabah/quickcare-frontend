@@ -17,11 +17,7 @@
   }
 
   @if (isLoading()) {
-    <div class="request-form__loading">
-      <ui-skeleton height="120px"></ui-skeleton>
-      <ui-skeleton height="100px"></ui-skeleton>
-      <ui-skeleton height="40px"></ui-skeleton>
-    </div>
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
   } @else {
     <form class="request-form__form" [formGroup]="form" (ngSubmit)="submit()">
       <app-requested-professionals-card

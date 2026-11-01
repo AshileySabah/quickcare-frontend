@@ -1,0 +1,45 @@
+<ui-card>
+  <header class="request-summary__header">
+    <div>
+      <span class="request-summary__specialty">{{ professionalsSummary(request()) }}</span>
+      <h1 class="request-summary__title">Solicitação</h1>
+    </div>
+    <ui-status-badge [status]="request().status"></ui-status-badge>
+  </header>
+
+  <p class="request-summary__description">{{ request().description }}</p>
+
+  <dl class="request-summary__meta">
+    <div>
+      <dt>Profissionais</dt>
+      @for (professional of request().professionals; track $index) {
+        <dd>
+          {{ professional.quantity }}× {{ professional.categoryLabel }} — {{ specialtyNames(professional) }}
+          @if (showVacancies()) {
+            <span class="request-summary__vacancies">
+              ({{ professional.filled }}/{{ professional.quantity }} contratados)
+            </span>
+          }
+        </dd>
+      }
+    </div>
+    <div>
+      <dt>Modalidade</dt>
+      <dd>{{ request().modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
+    </div>
+    @if (request().address; as address) {
+      <div>
+        <dt>Endereço</dt>
+        <dd>{{ formatAddress(address) }}</dd>
+      </div>
+    }
+    <div>
+      <dt>Prazo desejado</dt>
+      <dd>{{ request().desiredDeadline | date: 'dd/MM/yyyy' }}</dd>
+    </div>
+  </dl>
+
+  <div class="request-summary__actions">
+    <ng-content></ng-content>
+  </div>
+</ui-card>

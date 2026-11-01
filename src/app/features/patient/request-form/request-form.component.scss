@@ -1,5 +1,5 @@
 @use 'tokens' as tokens;
-@use 'patterns/auth-page' as authPage;
+@use 'patterns/form' as form;
 
 .request-form__title {
   font-size: tokens.font-size('xl');
@@ -15,13 +15,7 @@
 }
 
 .request-form__section-title {
-  @include authPage.section-title;
-}
-
-.request-form__loading {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(4);
+  @include form.section-title;
 }
 
 .request-form__form {

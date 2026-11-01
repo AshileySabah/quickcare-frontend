@@ -1,17 +1,12 @@
-<div class="awaiting-validation">
-  <header class="awaiting-validation__header">
-    <div>
-      <a class="awaiting-validation__brand" routerLink="/professional">QuickCare</a>
+<ui-app-shell homeLink="/professional" navLabel="Navegação do profissional" [navItems]="[]">
+  <section class="awaiting-validation">
+    <header>
       <h1 class="awaiting-validation__title">Validação do seu cadastro</h1>
       <p class="awaiting-validation__subtitle">
         Olá, {{ userName() }}. Você poderá ver solicitações e enviar propostas assim que todas as etapas forem aprovadas.
       </p>
-    </div>
-    <div class="awaiting-validation__actions">
-      <ui-profile-switcher></ui-profile-switcher>
-      <ui-button variant="ghost" size="sm" (click)="logout()">Sair</ui-button>
-    </div>
-  </header>
+    </header>
 
-  <app-my-validation profile="professional"></app-my-validation>
-</div>
+    <app-my-validation profile="professional"></app-my-validation>
+  </section>
+</ui-app-shell>

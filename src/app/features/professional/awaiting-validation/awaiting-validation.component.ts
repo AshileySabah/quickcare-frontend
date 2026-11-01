@@ -1,15 +1,18 @@
 import { Component, computed, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { ProfileSwitcherComponent } from '../../../shared/ui/profile-switcher/profile-switcher.component';
+import { AppShellComponent } from '../../../shared/ui/layout/app-shell/app-shell.component';
 import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 
-/** Profissional sem cadastro aprovado: acompanha as etapas e reenvia as reprovadas. */
+/**
+ * Profissional sem cadastro aprovado: acompanha as etapas e reenvia as
+ * reprovadas. Usa o mesmo layout das áreas logadas, mas sem itens de menu nem
+ * "Meu perfil", que ficam bloqueados até a aprovação.
+ */
 @Component({
   selector: 'app-awaiting-validation',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, MyValidationComponent, ProfileSwitcherComponent],
+  imports: [AppShellComponent, MyValidationComponent],
   templateUrl: './awaiting-validation.component.html',
   styleUrl: './awaiting-validation.component.scss',
 })
@@ -28,9 +31,5 @@ export class AwaitingValidationComponent {
     if (this.isApproved()) {
       this.router.navigateByUrl('/professional');
     }
-  }
-
-  protected logout(): void {
-    this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
   }
 }

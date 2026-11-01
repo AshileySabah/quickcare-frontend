@@ -11,10 +11,10 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #FFFFFF;
+  background-color: tokens.color('gray', 0);
   border: 1px solid tokens.color('gray', 200);
   border-radius: tokens.radius('xl');
-  box-shadow: 0 1px 2px rgba(4, 52, 44, 0.04), 0 8px 24px rgba(4, 52, 44, 0.05);
+  box-shadow: 0 1px 2px rgba(tokens.color('teal', 900), 0.04), 0 8px 24px rgba(tokens.color('teal', 900), 0.05);
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 
   &--padding-none {
@@ -38,7 +38,7 @@
 
     &:hover {
       border-color: tokens.color('teal', 300);
-      box-shadow: 0 6px 16px rgba(4, 52, 44, 0.08), 0 20px 40px rgba(4, 52, 44, 0.12);
+      box-shadow: 0 6px 16px rgba(tokens.color('teal', 900), 0.08), 0 20px 40px rgba(tokens.color('teal', 900), 0.12);
       transform: translateY(-3px);
 
       .ui-card__decoration::before {
@@ -75,6 +75,6 @@
     width: 140px;
     height: 140px;
     border-radius: tokens.radius('full');
-    background: radial-gradient(circle, rgba(29, 158, 117, 0.08), rgba(29, 158, 117, 0) 70%);
+    background: radial-gradient(circle, rgba(tokens.color('teal', 500), 0.08), rgba(tokens.color('teal', 500), 0) 70%);
   }
 }

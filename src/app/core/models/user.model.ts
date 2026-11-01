@@ -55,6 +55,9 @@ export interface Address {
 
 export type ProfessionalCategory = 'MEDICO' | 'ENFERMEIRO' | 'CUIDADOR' | 'OUTRO';
 
+/** Como o profissional atende, no formato da API. */
+export type AttendanceModality = 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
+
 export interface Professional extends BaseUser {
   role: 'professional';
   phone: string;

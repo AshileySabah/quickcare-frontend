@@ -1,13 +1,11 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { ApiErrorResponse } from '../auth/auth-api.model';
+import { normalizeError } from '../http/api-error';
 import { AuthService } from '../auth/auth.service';
-import { Address, EmergencyContact, Gender } from '../models';
-
-export type ServiceModalityApi = 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
+import { Address, AttendanceModality, EmergencyContact, Gender } from '../models';
 
 interface BaseProfile {
   name: string;
@@ -28,7 +26,7 @@ export interface PatientProfile extends BaseProfile {
 
 export interface ProfessionalProfile extends BaseProfile {
   hasLiabilityInsurance: boolean;
-  modalidadeAtendimento: ServiceModalityApi;
+  modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
 }
 
@@ -51,7 +49,7 @@ export interface PatientProfileUpdate extends BaseProfileUpdate {
 
 export interface ProfessionalProfileUpdate extends BaseProfileUpdate {
   hasLiabilityInsurance: boolean;
-  modalidadeAtendimento: ServiceModalityApi;
+  modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm?: number;
 }
 
@@ -85,7 +83,7 @@ interface PerfilPacienteApi extends BasePerfilApi {
 
 interface PerfilProfissionalApi extends BasePerfilApi {
   possuiSeguroResponsabilidadeCivil: boolean;
-  modalidadeAtendimento: ServiceModalityApi;
+  modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
 }
 
@@ -215,13 +213,4 @@ function toFormData(dados: object, avatar?: Blob): FormData {
   }
 
   return formData;
-}
-
-function normalizeError(error: unknown, defaultMessage: string): Error {
-  if (error instanceof HttpErrorResponse) {
-    const apiError = error.error as ApiErrorResponse | undefined;
-    return new Error(apiError?.message ?? defaultMessage);
-  }
-
-  return error instanceof Error ? error : new Error(defaultMessage);
 }

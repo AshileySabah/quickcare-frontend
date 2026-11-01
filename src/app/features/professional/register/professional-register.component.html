@@ -1,127 +1,105 @@
-<div class="auth-page">
-  <aside class="auth-page__side">
-    <a class="auth-page__side-brand" routerLink="/">QuickCare</a>
-    <h2 class="auth-page__side-title">
-      Preencha sua agenda com pacientes reais
-    </h2>
-    <p class="auth-page__side-text">
-      Acesse solicitações da sua especialidade, envie suas próprias propostas e
-      ganhe visibilidade sem depender só de indicação.
+<ui-auth-layout
+  sideTitle="Preencha sua agenda com pacientes reais"
+  sideText="Acesse solicitações da sua especialidade, envie suas próprias propostas e ganhe visibilidade sem depender só de indicação."
+  [sideItems]="['Solicitações reais da sua especialidade', 'Você define prazos e valores', 'Validação de cadastro simples e rápida']"
+  panel="form"
+>
+  @if (isNewProfile) {
+    <a class="auth-layout__back" routerLink="/patient">← Voltar para o perfil de paciente</a>
+
+    <h1 class="auth-layout__title">Criar perfil de profissional</h1>
+    <p class="auth-layout__subtitle">
+      Usamos o nome, o e-mail, o CPF e a senha da sua conta. Trouxemos os dados do seu perfil de paciente —
+      confira antes de enviar. O novo perfil passa pela validação do cadastro.
     </p>
-    <ul class="auth-page__side-list">
-      <li>Solicitações reais da sua especialidade</li>
-      <li>Você define prazos e valores</li>
-      <li>Validação de cadastro simples e rápida</li>
-    </ul>
-    <span class="auth-page__side-note"
-      >Já tem conta? Entre e continue de onde parou.</span
-    >
-  </aside>
+  } @else {
+    <a class="auth-layout__back" routerLink="/">← Voltar para o início</a>
 
-  <div class="auth-page__main">
-    <a class="auth-page__mobile-brand" routerLink="/">QuickCare</a>
+    <h1 class="auth-layout__title">Cadastro de profissional</h1>
+    <p class="auth-layout__subtitle">
+      Crie sua conta e envie seu documento de registro profissional para
+      validação.
+    </p>
+  }
 
-    <div class="auth-page__content">
-      <div class="auth-page__panel">
-        @if (isNewProfile) {
-          <a class="auth-page__back" routerLink="/patient">← Voltar para o perfil de paciente</a>
+  <form
+    class="auth-layout__sections"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+    autocomplete="off"
+  >
+    @if (!isNewProfile) {
+      <ui-avatar-upload
+        (avatarChange)="onAvatarChange($event)"
+      ></ui-avatar-upload>
+    }
 
-          <h1 class="auth-page__title">Criar perfil de profissional</h1>
-          <p class="auth-page__subtitle">
-            Usamos o nome, o e-mail, o CPF e a senha da sua conta. Trouxemos os dados do seu perfil de paciente —
-            confira antes de enviar. O novo perfil passa pela validação do cadastro.
-          </p>
-        } @else {
-          <a class="auth-page__back" routerLink="/">← Voltar para o início</a>
+    <ui-basic-info-card
+      [group]="form"
+      [fieldError]="fieldError"
+      [showName]="!isNewProfile"
+      [showEmail]="!isNewProfile"
+      [showPhone]="!isNewProfile"
+      [showCpf]="!isNewProfile"
+      [showCnpj]="true"
+      [showIdentityDocument]="!isNewProfile"
+      [ufOptions]="ufOptions()"
+    ></ui-basic-info-card>
 
-          <h1 class="auth-page__title">Cadastro de profissional</h1>
-          <p class="auth-page__subtitle">
-            Crie sua conta e envie seu documento de registro profissional para
-            validação.
-          </p>
-        }
+    <ui-professional-practice-card
+      [group]="form"
+      [fieldError]="fieldError"
+      [categoryOptions]="categoryOptions()"
+      [specialtyOptions]="specialtyOptions()"
+      [ufOptions]="ufOptions()"
+      [isOutro]="isOutro"
+      [requiresRegistration]="requiresRegistration"
+      [registrationLabel]="registrationLabel"
+      [modalityError]="modalityError"
+    ></ui-professional-practice-card>
 
-        <form
-          class="professional-register__sections"
-          [formGroup]="form"
-          (ngSubmit)="submit()"
-          autocomplete="off"
-        >
-          @if (!isNewProfile) {
-            <ui-avatar-upload
-              (avatarChange)="onAvatarChange($event)"
-            ></ui-avatar-upload>
-          }
+    <ui-emergency-contacts-card
+      [formArray]="form.controls.emergencyContacts"
+    ></ui-emergency-contacts-card>
 
-          <ui-basic-info-card
-            [group]="form"
-            [fieldError]="fieldError"
-            [showName]="!isNewProfile"
-            [showEmail]="!isNewProfile"
-            [showPhone]="!isNewProfile"
-            [showCpf]="!isNewProfile"
-            [showCnpj]="true"
-            [showIdentityDocument]="!isNewProfile"
-            [ufOptions]="ufOptions()"
-          ></ui-basic-info-card>
+    <ui-documents-card
+      [typeOptions]="documentTypeOptions()"
+      [errorMessage]="documentsError()"
+      (documentsChange)="onDocumentsChange($event)"
+    ></ui-documents-card>
 
-          <ui-professional-practice-card
-            [group]="form"
-            [fieldError]="fieldError"
-            [categoryOptions]="categoryOptions()"
-            [specialtyOptions]="specialtyOptions()"
-            [ufOptions]="ufOptions()"
-            [isOutro]="isOutro"
-            [requiresRegistration]="requiresRegistration"
-            [registrationLabel]="registrationLabel"
-            [modalityError]="modalityError"
-          ></ui-professional-practice-card>
+    <ui-address-card
+      [group]="form.controls.address"
+      [fieldError]="addressFieldError"
+    ></ui-address-card>
 
-          <ui-emergency-contacts-card
-            [formArray]="form.controls.emergencyContacts"
-          ></ui-emergency-contacts-card>
+    @if (!isNewProfile) {
+      <ui-password-card
+        [group]="form"
+        [passwordError]="passwordError"
+        [confirmPasswordError]="confirmPasswordError"
+      ></ui-password-card>
+    }
 
-          <ui-documents-card
-            [typeOptions]="documentTypeOptions()"
-            [errorMessage]="documentsError()"
-            (documentsChange)="onDocumentsChange($event)"
-          ></ui-documents-card>
+    <ui-declarations-card [group]="form" [fieldError]="fieldError">
+      <ui-checkbox
+        label="Possuo seguro de responsabilidade civil profissional"
+        formControlName="hasLiabilityInsurance"
+      ></ui-checkbox>
+    </ui-declarations-card>
 
-          <ui-address-card
-            [group]="form.controls.address"
-            [fieldError]="addressFieldError"
-          ></ui-address-card>
+    <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">
+      {{ isNewProfile ? 'Criar perfil de profissional' : 'Criar conta' }}
+    </ui-button>
+  </form>
 
-          @if (!isNewProfile) {
-            <ui-password-card
-              [group]="form"
-              [passwordError]="passwordError"
-              [confirmPasswordError]="confirmPasswordError"
-            ></ui-password-card>
-          }
-
-          <ui-declarations-card [group]="form" [fieldError]="fieldError">
-            <ui-checkbox
-              label="Possuo seguro de responsabilidade civil profissional"
-              formControlName="hasLiabilityInsurance"
-            ></ui-checkbox>
-          </ui-declarations-card>
-
-          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">
-            {{ isNewProfile ? 'Criar perfil de profissional' : 'Criar conta' }}
-          </ui-button>
-        </form>
-
-        @if (!isNewProfile) {
-          <p class="auth-page__footer">
-            Já tem conta? <a routerLink="/login">Entrar</a>
-          </p>
-          <p class="auth-page__footer">
-            Errou o perfil?
-            <a routerLink="/cadastro/paciente">Cadastre-se como paciente</a>
-          </p>
-        }
-      </div>
-    </div>
-  </div>
-</div>
+  @if (!isNewProfile) {
+    <p class="auth-layout__footer">
+      Já tem conta? <a routerLink="/login">Entrar</a>
+    </p>
+    <p class="auth-layout__footer">
+      Errou o perfil?
+      <a routerLink="/cadastro/paciente">Cadastre-se como paciente</a>
+    </p>
+  }
+</ui-auth-layout>

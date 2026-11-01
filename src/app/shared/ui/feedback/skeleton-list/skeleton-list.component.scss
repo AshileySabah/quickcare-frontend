@@ -1,0 +1,13 @@
+@use 'tokens' as tokens;
+
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}
+
+.skeleton-list__lines {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}

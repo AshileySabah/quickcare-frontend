@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
+import { fieldErrorsFor } from '../../../core/forms/field-errors';
 import { buildRequestedProfessionalGroup } from '../../../core/forms/requested-professional-form';
 import { ProfessionalCategory, ProfessionalCategoryInfo, ServiceRequest, Specialty } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
@@ -11,21 +13,19 @@ import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.comp
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
 import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { RequestedProfessionalsCardComponent } from './requested-professionals-card/requested-professionals-card.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type Modality = 'online' | 'presencial';
-type FieldName = 'description' | 'modality' | 'desiredDeadline';
-type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
   selector: 'app-request-form',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     ButtonComponent,
@@ -36,7 +36,6 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     RequestedProfessionalsCardComponent,
     RouterLink,
     SelectComponent,
-    SkeletonComponent,
     StatusBadgeComponent,
     TextareaComponent,
   ],
@@ -73,16 +72,13 @@ export class RequestFormComponent {
     modality: ['online' as Modality, Validators.required],
     desiredDeadline: ['', Validators.required],
     // Só é validado (habilitado) quando a modalidade é presencial.
-    address: this.fb.nonNullable.group({
-      cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      street: ['', Validators.required],
-      number: ['', Validators.required],
-      complement: [''],
-      neighborhood: ['', Validators.required],
-      city: ['', Validators.required],
-      state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-    }),
+    address: buildAddressGroup(this.fb),
   });
+
+  protected readonly fieldError = fieldErrorsFor(this.form, {
+    description: { minlength: 'Descreva com mais detalhes (mínimo 20 caracteres).' },
+  });
+  protected readonly addressFieldError = addressFieldErrorsFor(this.form.controls.address);
 
   constructor() {
     this.form.controls.address.disable();
@@ -162,46 +158,6 @@ export class RequestFormComponent {
       this.form.controls.address.disable();
     }
   }
-
-  protected fieldError(fieldName: FieldName): string | null {
-    const control = this.form.controls[fieldName];
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'description' && control.hasError('minlength')) {
-      return 'Descreva com mais detalhes (mínimo 20 caracteres).';
-    }
-
-    return null;
-  }
-
-  protected addressFieldError = (fieldName: string): string | null => {
-    const control = this.form.controls.address.get(fieldName as AddressFieldName);
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'cep' && control.hasError('pattern')) {
-      return 'CEP deve conter 8 dígitos, sem hífen.';
-    }
-
-    if (fieldName === 'state' && control.hasError('pattern')) {
-      return 'Use a sigla do estado (ex.: SP).';
-    }
-
-    return null;
-  };
 
   protected submit(): void {
     if (this.form.invalid) {

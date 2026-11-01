@@ -1,10 +1,6 @@
 @switch (pageState()) {
   @case ('loading') {
-    <div class="validation-detail__loading">
-      <ui-skeleton height="28px" width="50%"></ui-skeleton>
-      <ui-skeleton height="16px" width="30%"></ui-skeleton>
-      <ui-skeleton height="160px"></ui-skeleton>
-    </div>
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
   }
   @case ('not-found') {
     <ui-empty-state title="Cadastro não encontrado" message="O link pode estar incorreto.">

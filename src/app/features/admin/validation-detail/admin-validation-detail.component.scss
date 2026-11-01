@@ -6,12 +6,6 @@
   gap: tokens.space(5);
 }
 
-.validation-detail__loading {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(3);
-}
-
 .validation-detail__back {
   align-self: flex-start;
   font-size: tokens.font-size('sm');

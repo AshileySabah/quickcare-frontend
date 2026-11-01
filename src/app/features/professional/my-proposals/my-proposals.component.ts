@@ -1,16 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProposalService } from '../../../core/services/proposal.service';
-import { Proposal, ProposalStatus, RequestStatus, requestedProfessionalsSummary } from '../../../core/models';
+import { ListViewState, Proposal, ProposalStatus, requestedProfessionalsSummary, RequestStatus } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ProposalCardComponent } from '../../../shared/ui/proposal-card/proposal-card.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-
-type ViewState = 'loading' | 'empty' | 'error' | 'filled';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 /** Como no histórico do paciente: encerrada é a proposta que já não anda mais. */
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
@@ -29,7 +26,7 @@ function isClosed(proposal: Proposal): boolean {
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [RouterLink, ButtonComponent, CardComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent, SkeletonComponent],
+  imports: [SkeletonListComponent, RouterLink, ButtonComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })
@@ -39,7 +36,7 @@ export class MyProposalsComponent {
 
   protected readonly isHistory = inject(ActivatedRoute).snapshot.data['view'] === 'history';
 
-  protected readonly viewState = signal<ViewState>('loading');
+  protected readonly viewState = signal<ListViewState>('loading');
   private readonly proposals = signal<Proposal[]>([]);
   protected readonly visibleProposals = computed(() =>
     this.proposals().filter((proposal) => isClosed(proposal) === this.isHistory),

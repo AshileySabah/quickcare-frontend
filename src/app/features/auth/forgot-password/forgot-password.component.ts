@@ -7,13 +7,14 @@ import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.comp
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [
+  imports: [AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,
@@ -22,7 +23,6 @@ const RESEND_COOLDOWN_SECONDS = 60;
     InputComponent,
   ],
   templateUrl: './forgot-password.component.html',
-  styleUrl: './forgot-password.component.scss',
 })
 export class ForgotPasswordComponent {
   private readonly fb = inject(FormBuilder);

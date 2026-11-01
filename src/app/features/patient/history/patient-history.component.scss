@@ -11,7 +11,3 @@
 .patient-history__subtitle {
   @include list.subtitle;
 }
-
-.patient-history__skeleton-lines {
-  @include list.skeleton-lines;
-}

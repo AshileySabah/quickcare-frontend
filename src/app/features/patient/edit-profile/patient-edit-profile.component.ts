@@ -1,6 +1,8 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EmergencyContactGroup, buildEmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
+import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
+import { EmergencyContactGroup, setEmergencyContacts } from '../../../core/forms/emergency-contact-form';
+import { profileFieldErrorsFor } from '../../../core/forms/profile-form';
 import { Gender } from '../../../core/models';
 import { PatientProfile, ProfileService } from '../../../core/services/profile.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
@@ -10,17 +12,15 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { HealthInfoCardComponent } from '../register/health-info-card/health-info-card.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 type PageState = 'loading' | 'error' | 'ready';
-type FieldName = 'name' | 'phone' | 'birthDate' | 'gender';
-type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
 
 @Component({
   selector: 'app-patient-edit-profile',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     AvatarUploadComponent,
@@ -29,7 +29,6 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     EmergencyContactsCardComponent,
     ErrorStateComponent,
     HealthInfoCardComponent,
-    SkeletonComponent,
   ],
   templateUrl: './patient-edit-profile.component.html',
   styleUrl: './patient-edit-profile.component.scss',
@@ -56,16 +55,11 @@ export class PatientEditProfileComponent implements OnInit {
     allergies: [''],
     healthConditions: [''],
     medicationsInUse: [''],
-    address: this.fb.nonNullable.group({
-      cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-      street: ['', Validators.required],
-      number: ['', Validators.required],
-      complement: [''],
-      neighborhood: ['', Validators.required],
-      city: ['', Validators.required],
-      state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-    }),
+    address: buildAddressGroup(this.fb),
   });
+
+  protected readonly fieldError = profileFieldErrorsFor(this.form);
+  protected readonly addressFieldError = addressFieldErrorsFor(this.form.controls.address);
 
   ngOnInit(): void {
     this.load();
@@ -90,42 +84,6 @@ export class PatientEditProfileComponent implements OnInit {
     this.avatarBlob = blob;
     this.avatarRemoved = blob === null;
   }
-
-  protected fieldError = (fieldName: string): string | null => {
-    const control = this.form.controls[fieldName as FieldName];
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    return null;
-  };
-
-  protected addressFieldError = (fieldName: string): string | null => {
-    const control = this.form.controls.address.get(fieldName as AddressFieldName);
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'cep' && control.hasError('pattern')) {
-      return 'CEP deve conter 8 dígitos, sem hífen.';
-    }
-
-    if (fieldName === 'state' && control.hasError('pattern')) {
-      return 'Informe a sigla do estado (ex.: SP).';
-    }
-
-    return null;
-  };
 
   protected submit(): void {
     if (this.form.invalid) {
@@ -166,10 +124,7 @@ export class PatientEditProfileComponent implements OnInit {
   }
 
   private fillForm(profile: PatientProfile): void {
-    const contacts = this.form.controls.emergencyContacts;
-    contacts.clear();
-    profile.emergencyContacts.forEach(() => contacts.push(buildEmergencyContactGroup(this.fb)));
-
+    setEmergencyContacts(this.form, this.fb, profile.emergencyContacts);
     this.form.reset({
       name: profile.name,
       phone: profile.phone,

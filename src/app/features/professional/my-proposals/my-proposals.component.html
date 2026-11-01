@@ -3,14 +3,7 @@
 
   @switch (viewState()) {
     @case ('loading') {
-      <div class="my-proposals__list">
-        @for (i of [1, 2]; track i) {
-          <ui-card>
-            <ui-skeleton height="20px" width="50%"></ui-skeleton>
-            <ui-skeleton height="60px"></ui-skeleton>
-          </ui-card>
-        }
-      </div>
+      <ui-skeleton-list [count]="2"></ui-skeleton-list>
     }
     @case ('empty') {
       @if (isHistory) {

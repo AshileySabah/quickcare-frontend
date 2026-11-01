@@ -8,19 +8,7 @@
 
   @switch (viewState()) {
     @case ('loading') {
-      <ui-grid>
-        @for (i of [1, 2, 3]; track i) {
-          <ui-grid-item [xs]="12">
-            <ui-card>
-              <div class="patient-history__skeleton-lines">
-                <ui-skeleton height="20px" width="40%"></ui-skeleton>
-                <ui-skeleton height="16px" width="70%"></ui-skeleton>
-                <ui-skeleton height="64px"></ui-skeleton>
-              </div>
-            </ui-card>
-          </ui-grid-item>
-        }
-      </ui-grid>
+      <ui-skeleton-list></ui-skeleton-list>
     }
     @case ('empty') {
       <ui-empty-state

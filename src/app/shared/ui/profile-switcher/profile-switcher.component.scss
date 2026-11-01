@@ -1,10 +1,12 @@
 @use 'tokens' as tokens;
 
+// Fica no header escuro (teal 800) do ui-app-shell: inativo só com o texto
+// branco, ativo com o oval verde.
 .profile-switcher {
   display: inline-flex;
   padding: 2px;
-  background-color: tokens.color('gray', 100);
-  border: 1px solid tokens.color('gray', 200);
+  background-color: tokens.color('teal', 900);
+  border: 1px solid tokens.color('teal', 700);
   border-radius: tokens.radius('full');
 }
 
@@ -15,7 +17,7 @@
   padding: tokens.space(1) tokens.space(3);
   font-size: tokens.font-size('sm');
   font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 600);
+  color: tokens.color('gray', 0);
   background: transparent;
   border: none;
   border-radius: tokens.radius('full');
@@ -23,25 +25,27 @@
   white-space: nowrap;
 
   &:hover:not(:disabled):not(.profile-switcher__option--active) {
-    color: tokens.color('gray', 900);
+    color: tokens.color('teal', 200);
   }
 
   &:focus-visible {
-    outline: 2px solid tokens.color('teal', 500);
+    outline: 2px solid tokens.color('teal', 300);
     outline-offset: 1px;
   }
 
+  // Sem opacidade: o texto continua legível no fundo escuro.
   &:disabled {
     cursor: not-allowed;
-    opacity: 0.6;
+    color: tokens.color('teal', 200);
   }
 
+  // teal 900 sobre teal 300: contraste ~6,7:1.
   &--active {
-    color: #FFFFFF;
-    background-color: tokens.color('teal', 600);
+    color: tokens.color('teal', 900);
+    background-color: tokens.color('teal', 300);
 
     &:disabled {
-      opacity: 1;
+      color: tokens.color('teal', 900);
       cursor: default;
     }
   }
@@ -50,5 +54,4 @@
 .profile-switcher__banned {
   font-size: tokens.font-size('xs');
   font-weight: tokens.font-weight('regular');
-  color: tokens.semantic('error');
 }

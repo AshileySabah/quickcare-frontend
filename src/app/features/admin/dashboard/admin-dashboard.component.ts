@@ -1,16 +1,14 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProfessionalCategoryInfo, ValidationProfile, ValidationStatus, ValidationSummary } from '../../../core/models';
+import { ListViewState, ProfessionalCategoryInfo, ValidationProfile, ValidationStatus, ValidationSummary } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ValidationService } from '../../../core/services/validation.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
-
-type ViewState = 'loading' | 'empty' | 'error' | 'filled';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 interface StatusFilter {
   value: ValidationStatus | null;
@@ -28,13 +26,12 @@ const STATUS_FILTERS: StatusFilter[] = [
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [
+  imports: [SkeletonListComponent, 
     DatePipe,
     RouterLink,
     CardComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    SkeletonComponent,
     ValidationStatusBadgeComponent,
   ],
   templateUrl: './admin-dashboard.component.html',
@@ -49,7 +46,7 @@ export class AdminDashboardComponent {
   protected readonly statusFilters = STATUS_FILTERS;
   protected readonly selectedStatus = signal<ValidationStatus | null>('pendente');
 
-  protected readonly viewState = signal<ViewState>('loading');
+  protected readonly viewState = signal<ListViewState>('loading');
   protected readonly entries = signal<ValidationSummary[]>([]);
   private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 

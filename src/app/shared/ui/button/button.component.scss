@@ -42,7 +42,7 @@
 
   &--primary {
     background-color: tokens.color('teal', 500);
-    color: #FFFFFF;
+    color: tokens.color('gray', 0);
 
     &:hover:not(:disabled) {
       background-color: tokens.color('teal', 600);
@@ -70,7 +70,7 @@
 
   &--danger {
     background-color: tokens.semantic('error');
-    color: #FFFFFF;
+    color: tokens.color('gray', 0);
 
     &:hover:not(:disabled) {
       filter: brightness(0.9);
@@ -98,7 +98,7 @@
   }
 
   &--inverse {
-    background-color: #FFFFFF;
+    background-color: tokens.color('gray', 0);
     color: tokens.color('teal', 700);
 
     &:hover:not(:disabled) {
@@ -108,12 +108,12 @@
 
   &--inverse-outline {
     background-color: transparent;
-    border-color: rgba(255, 255, 255, 0.6);
-    color: #FFFFFF;
+    border-color: rgba(tokens.color('gray', 0), 0.6);
+    color: tokens.color('gray', 0);
 
     &:hover:not(:disabled) {
-      background-color: rgba(255, 255, 255, 0.12);
-      border-color: #FFFFFF;
+      background-color: rgba(tokens.color('gray', 0), 0.12);
+      border-color: tokens.color('gray', 0);
     }
   }
 }
@@ -129,8 +129,8 @@
   width: 16px;
   height: 16px;
   border-radius: tokens.radius('full');
-  border: 2px solid rgba(255, 255, 255, 0.4);
-  border-top-color: #FFFFFF;
+  border: 2px solid rgba(tokens.color('gray', 0), 0.4);
+  border-top-color: tokens.color('gray', 0);
   animation: ui-button-spin 0.6s linear infinite;
 }
 
@@ -138,7 +138,7 @@
 .ui-button--ghost .ui-button__spinner,
 .ui-button--danger-outline .ui-button__spinner,
 .ui-button--info-outline .ui-button__spinner {
-  border: 2px solid rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(tokens.color('gray', 900), 0.15);
   border-top-color: tokens.color('gray', 700);
 }
 

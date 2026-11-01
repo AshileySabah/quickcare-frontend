@@ -1,89 +1,71 @@
-<div class="auth-page">
-  <aside class="auth-page__side">
-    <a class="auth-page__side-brand" routerLink="/">QuickCare</a>
-    <h2 class="auth-page__side-title">Cuidado com saúde, do seu jeito</h2>
-    <p class="auth-page__side-text">
-      Publique sua solicitação, compare propostas de profissionais validados e escolha quem vai te atender — tudo em
-      poucos minutos.
+<ui-auth-layout
+  sideTitle="Cuidado com saúde, do seu jeito"
+  sideText="Publique sua solicitação, compare propostas de profissionais validados e escolha quem vai te atender — tudo em poucos minutos."
+  [sideItems]="['Solicite atendimento sem sair de casa', 'Compare propostas antes de decidir', 'Acompanhe tudo em um só lugar']"
+  panel="form"
+>
+  @if (isNewProfile) {
+    <a class="auth-layout__back" routerLink="/professional">← Voltar para o perfil de profissional</a>
+
+    <h1 class="auth-layout__title">Criar perfil de paciente</h1>
+    <p class="auth-layout__subtitle">
+      Usamos o nome, o e-mail, o CPF e a senha da sua conta. Trouxemos os dados do seu perfil de profissional —
+      confira antes de enviar. O novo perfil passa pela validação do cadastro.
     </p>
-    <ul class="auth-page__side-list">
-      <li>Solicite atendimento sem sair de casa</li>
-      <li>Compare propostas antes de decidir</li>
-      <li>Acompanhe tudo em um só lugar</li>
-    </ul>
-    <span class="auth-page__side-note">Já tem conta? Entre e continue de onde parou.</span>
-  </aside>
+  } @else {
+    <a class="auth-layout__back" routerLink="/">← Voltar para o início</a>
 
-  <div class="auth-page__main">
-    <a class="auth-page__mobile-brand" routerLink="/">QuickCare</a>
+    <h1 class="auth-layout__title">Cadastro de paciente</h1>
+    <p class="auth-layout__subtitle">Crie sua conta para solicitar atendimentos.</p>
+  }
 
-    <div class="auth-page__content">
-      <div class="auth-page__panel">
-        @if (isNewProfile) {
-          <a class="auth-page__back" routerLink="/professional">← Voltar para o perfil de profissional</a>
+  <form class="auth-layout__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+    @if (!isNewProfile) {
+      <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
+    }
 
-          <h1 class="auth-page__title">Criar perfil de paciente</h1>
-          <p class="auth-page__subtitle">
-            Usamos o nome, o e-mail, o CPF e a senha da sua conta. Trouxemos os dados do seu perfil de profissional —
-            confira antes de enviar. O novo perfil passa pela validação do cadastro.
-          </p>
-        } @else {
-          <a class="auth-page__back" routerLink="/">← Voltar para o início</a>
+    <ui-basic-info-card
+      [group]="form"
+      [fieldError]="fieldError"
+      [showName]="!isNewProfile"
+      [showEmail]="!isNewProfile"
+      [showPhone]="!isNewProfile"
+      [showCpf]="!isNewProfile"
+      [showIdentityDocument]="!isNewProfile"
+      [ufOptions]="ufOptions()"
+    ></ui-basic-info-card>
 
-          <h1 class="auth-page__title">Cadastro de paciente</h1>
-          <p class="auth-page__subtitle">Crie sua conta para solicitar atendimentos.</p>
-        }
+    <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
 
-        <form class="patient-register__sections" [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
-          @if (!isNewProfile) {
-            <ui-avatar-upload (avatarChange)="onAvatarChange($event)"></ui-avatar-upload>
-          }
+    <ui-health-info-card [group]="form"></ui-health-info-card>
 
-          <ui-basic-info-card
-            [group]="form"
-            [fieldError]="fieldError"
-            [showName]="!isNewProfile"
-            [showEmail]="!isNewProfile"
-            [showPhone]="!isNewProfile"
-            [showCpf]="!isNewProfile"
-            [showIdentityDocument]="!isNewProfile"
-            [ufOptions]="ufOptions()"
-          ></ui-basic-info-card>
+    <ui-documents-card
+      [typeOptions]="documentTypeOptions"
+      [errorMessage]="documentsError()"
+      (documentsChange)="onDocumentsChange($event)"
+    ></ui-documents-card>
 
-          <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
+    <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
 
-          <ui-health-info-card [group]="form"></ui-health-info-card>
+    @if (!isNewProfile) {
+      <ui-password-card
+        [group]="form"
+        [passwordError]="passwordError"
+        [confirmPasswordError]="confirmPasswordError"
+      ></ui-password-card>
+    }
 
-          <ui-documents-card
-            [typeOptions]="documentTypeOptions"
-            [errorMessage]="documentsError()"
-            (documentsChange)="onDocumentsChange($event)"
-          ></ui-documents-card>
+    <ui-declarations-card [group]="form" [fieldError]="fieldError"></ui-declarations-card>
 
-          <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
+    <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">
+      {{ isNewProfile ? 'Criar perfil de paciente' : 'Criar conta' }}
+    </ui-button>
+  </form>
 
-          @if (!isNewProfile) {
-            <ui-password-card
-              [group]="form"
-              [passwordError]="passwordError"
-              [confirmPasswordError]="confirmPasswordError"
-            ></ui-password-card>
-          }
-
-          <ui-declarations-card [group]="form" [fieldError]="fieldError"></ui-declarations-card>
-
-          <ui-button type="submit" [fullWidth]="true" [loading]="isSubmitting()">
-            {{ isNewProfile ? 'Criar perfil de paciente' : 'Criar conta' }}
-          </ui-button>
-        </form>
-
-        @if (!isNewProfile) {
-          <p class="auth-page__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
-          <p class="auth-page__footer">
-            Errou o perfil? <a routerLink="/cadastro/profissional">Cadastre-se como profissional</a>
-          </p>
-        }
-      </div>
-    </div>
-  </div>
-</div>
+  @if (!isNewProfile) {
+    <p class="auth-layout__footer">Já tem conta? <a routerLink="/login">Entrar</a></p>
+    <p class="auth-layout__footer">
+      Errou o perfil? <a routerLink="/cadastro/profissional">Cadastre-se como profissional</a>
+    </p>
+  }
+</ui-auth-layout>

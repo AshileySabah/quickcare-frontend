@@ -31,9 +31,3 @@ export interface RedefinirSenhaApiResponse {
   mensagem: string;
   usuario: LoginApiResponse;
 }
-
-export interface ApiErrorResponse {
-  timestamp: string;
-  status: number;
-  message: string;
-}

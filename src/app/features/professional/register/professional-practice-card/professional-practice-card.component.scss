@@ -1,8 +1,8 @@
 @use 'tokens' as tokens;
-@use 'patterns/auth-page' as authPage;
+@use 'patterns/form' as form;
 
 .professional-practice-card__title {
-  @include authPage.section-title;
+  @include form.section-title;
 }
 
 .professional-practice-card__inline-title {
@@ -20,5 +20,5 @@
 }
 
 .professional-practice-card__error {
-  @include authPage.field-error;
+  @include form.field-error;
 }

@@ -2,26 +2,24 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { RequestService } from '../../../core/services/request.service';
-import { ServiceRequest, requestedProfessionalsSummary } from '../../../core/models';
+import { ListViewState, requestedProfessionalsSummary, ServiceRequest } from '../../../core/models';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { SkeletonComponent } from '../../../shared/ui/feedback/skeleton/skeleton.component';
 import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
-
-type ViewState = 'loading' | 'empty' | 'error' | 'filled';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 
 @Component({
   selector: 'app-professional-home',
   standalone: true,
-  imports: [DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, SkeletonComponent, StatusBadgeComponent],
+  imports: [SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
   templateUrl: './professional-home.component.html',
   styleUrl: './professional-home.component.scss',
 })
 export class ProfessionalHomeComponent {
   private readonly requestService = inject(RequestService);
 
-  protected readonly viewState = signal<ViewState>('loading');
+  protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
 
   protected readonly professionalsSummary = requestedProfessionalsSummary;

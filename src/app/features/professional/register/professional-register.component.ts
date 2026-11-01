@@ -9,10 +9,22 @@ import {
   normalizeIdentityNumber,
 } from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
-import { atLeastOneModalityValidator } from '../../../core/forms/professional-validators';
 import { AuthService, ProfessionalProfileInput } from '../../../core/auth/auth.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
-import { prefillFromOtherProfile } from '../../../core/forms/profile-prefill';
+import { addressFieldErrorsFor, buildAddressGroup, toAddress } from '../../../core/forms/address-form';
+import {
+  confirmPasswordError,
+  disableAccountFields,
+  missingDocumentMessage,
+  prefillFromOtherProfile,
+  profileFieldErrorsFor,
+} from '../../../core/forms/profile-form';
+import {
+  atLeastOneModalityValidator,
+  modalityError,
+  requireRadiusWhenPresencial,
+  toAttendanceModality,
+} from '../../../core/forms/attendance-modality';
 import {
   DocumentType,
   Gender,
@@ -39,47 +51,12 @@ import { PasswordCardComponent } from '../../../shared/ui/register/password-card
 import { ProfessionalPracticeCardComponent } from './professional-practice-card/professional-practice-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-
-type FieldName =
-  | 'name'
-  | 'email'
-  | 'phone'
-  | 'cpf'
-  | 'identityDocumentType'
-  | 'identityDocumentNumber'
-  | 'identityDocumentUf'
-  | 'cnpj'
-  | 'category'
-  | 'specialtyIds'
-  | 'specialtySingle'
-  | 'registrationNumber'
-  | 'registrationUf'
-  | 'birthDate'
-  | 'gender'
-  | 'infoConfirmedTrue'
-  | 'lgpdConsent'
-  | 'raioAtendimentoKm'
-  | 'password';
-
-type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
-
-/** Dados da conta: já existem quando o paciente logado cria o perfil de profissional. */
-const ACCOUNT_FIELDS = [
-  'name',
-  'email',
-  'phone',
-  'cpf',
-  'identityDocumentType',
-  'identityDocumentNumber',
-  'identityDocumentUf',
-  'password',
-  'confirmPassword',
-] as const;
+import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 
 @Component({
   selector: 'app-professional-register',
   standalone: true,
-  imports: [
+  imports: [AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     AddressCardComponent,
@@ -94,7 +71,6 @@ const ACCOUNT_FIELDS = [
     ProfessionalPracticeCardComponent,
   ],
   templateUrl: './professional-register.component.html',
-  styleUrl: './professional-register.component.scss',
 })
 export class ProfessionalRegisterComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
@@ -177,33 +153,18 @@ export class ProfessionalRegisterComponent implements OnInit {
       attendsPresencial: [false],
       attendsRemoto: [false],
       raioAtendimentoKm: [10, [Validators.min(1)]],
-      address: this.fb.nonNullable.group({
-        cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-        street: ['', Validators.required],
-        number: ['', Validators.required],
-        complement: [''],
-        neighborhood: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-      }),
+      address: buildAddressGroup(this.fb),
       password: ['', [Validators.required, strongPasswordValidator()]],
       confirmPassword: ['', Validators.required],
     },
     { validators: [passwordsMatchValidator(), atLeastOneModalityValidator(), identityDocumentValidator()] },
   );
 
+  protected readonly fieldError = profileFieldErrorsFor(this.form);
+  protected readonly addressFieldError = addressFieldErrorsFor(this.form.controls.address);
+
   constructor() {
-    this.form.controls.attendsPresencial.valueChanges.subscribe((presencial) => {
-      const raioControl = this.form.controls.raioAtendimentoKm;
-
-      if (presencial) {
-        raioControl.setValidators([Validators.required, Validators.min(1)]);
-      } else {
-        raioControl.clearValidators();
-      }
-
-      raioControl.updateValueAndValidity();
-    });
+    requireRadiusWhenPresencial(this.form.controls.attendsPresencial, this.form.controls.raioAtendimentoKm);
 
     // Registration belongs to the professional's own council (CRM, COREN...), not to
     // each specialty. Cuidadores have no regulating council, so they carry no
@@ -238,7 +199,7 @@ export class ProfessionalRegisterComponent implements OnInit {
     this.form.controls.cnpj.valueChanges.subscribe((value) => this.hasCnpj.set(!!value));
 
     if (this.isNewProfile) {
-      ACCOUNT_FIELDS.forEach((field) => this.form.controls[field].disable());
+      disableAccountFields(this.form);
       this.profileService.getPatientProfile().subscribe({
         next: (profile) => prefillFromOtherProfile(this.form, this.fb, profile),
         error: () => this.toastService.error('Não foi possível trazer os dados do seu perfil de paciente.'),
@@ -284,140 +245,30 @@ export class ProfessionalRegisterComponent implements OnInit {
   }
 
   protected get modalityError(): string | null {
-    const touched = this.form.controls.attendsPresencial.touched || this.form.controls.attendsRemoto.touched;
-    return touched && this.form.hasError('modalityRequired') ? 'Selecione ao menos uma modalidade de atendimento.' : null;
+    return modalityError(this.form);
   }
-
-  protected fieldError = (fieldName: string): string | null => {
-    const control = this.form.controls[fieldName as FieldName];
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      if (fieldName === 'specialtyIds' || fieldName === 'specialtySingle') {
-        return 'Selecione ao menos uma especialidade.';
-      }
-      if (fieldName === 'category') {
-        return 'Selecione uma categoria profissional.';
-      }
-      if (fieldName === 'registrationNumber') {
-        return 'Informe o número de registro profissional.';
-      }
-      if (fieldName === 'infoConfirmedTrue' || fieldName === 'lgpdConsent') {
-        return 'Esta confirmação é obrigatória.';
-      }
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'email' && control.hasError('email')) {
-      return 'E-mail inválido.';
-    }
-
-    if (fieldName === 'password' && control.hasError('weakPassword')) {
-      return 'A senha não atende aos requisitos mínimos.';
-    }
-
-    if (fieldName === 'cpf' && control.hasError('pattern')) {
-      return 'CPF deve conter 11 dígitos, sem pontuação.';
-    }
-
-    if (fieldName === 'cpf' && control.hasError('cpfInvalid')) {
-      return 'CPF inválido.';
-    }
-
-    if (fieldName === 'cnpj' && control.hasError('pattern')) {
-      return 'CNPJ deve conter 14 dígitos, sem pontuação.';
-    }
-
-    if (fieldName === 'cnpj' && control.hasError('cnpjInvalid')) {
-      return 'CNPJ inválido.';
-    }
-
-    if (fieldName === 'identityDocumentNumber' && this.form.hasError('identityDocumentInvalid')) {
-      return this.form.getError('identityDocumentInvalid') as string;
-    }
-
-    if (fieldName === 'identityDocumentUf' && this.form.hasError('identityDocumentUfRequired')) {
-      return 'Informe a UF que emitiu o RG.';
-    }
-
-    if (fieldName === 'raioAtendimentoKm' && control.hasError('min')) {
-      return 'Informe um raio de atendimento válido.';
-    }
-
-    return null;
-  };
-
-  protected addressFieldError = (fieldName: string): string | null => {
-    const control = this.form.controls.address.get(fieldName as AddressFieldName);
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'cep' && control.hasError('pattern')) {
-      return 'CEP deve conter 8 dígitos, sem hífen.';
-    }
-
-    if (fieldName === 'state' && control.hasError('pattern')) {
-      return 'Informe a sigla do estado (ex.: SP).';
-    }
-
-    return null;
-  };
 
   protected get passwordError(): string | null {
     return this.fieldError('password');
   }
 
   protected get confirmPasswordError(): string | null {
-    const control = this.form.controls.confirmPassword;
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Confirme sua senha.';
-    }
-
-    if (this.form.hasError('passwordsMismatch')) {
-      return 'As senhas não coincidem.';
-    }
-
-    return null;
+    return confirmPasswordError(this.form);
   }
 
   protected submit(): void {
     const documents = this.documents();
-    const hasCpfDocument = documents.some((document) => document.type === 'VALIDACAO_CPF');
-    const hasCnpjDocument = documents.some((document) => document.type === 'VALIDACAO_CNPJ');
-    const hasRegistrationDocument = documents.some((document) => document.type === 'REGISTRO_PROFISSIONAL');
-
-    let documentsValid = true;
-
-    if (!hasCpfDocument) {
-      this.documentsError.set('Envie um documento que valide seu CPF.');
-      documentsValid = false;
+    const requiredDocuments: DocumentType[] = ['VALIDACAO_CPF'];
+    if (this.requiresCnpjDocument) {
+      requiredDocuments.push('VALIDACAO_CNPJ');
     }
-
-    if (this.requiresCnpjDocument && !hasCnpjDocument) {
-      this.documentsError.set('Envie um documento que valide o CNPJ informado.');
-      documentsValid = false;
+    if (this.requiresRegistration) {
+      requiredDocuments.push('REGISTRO_PROFISSIONAL');
     }
+    const missingDocument = missingDocumentMessage(documents, requiredDocuments);
+    this.documentsError.set(missingDocument);
 
-    if (this.requiresRegistration && !hasRegistrationDocument) {
-      this.documentsError.set('Envie um documento que valide seu registro profissional.');
-      documentsValid = false;
-    }
-
-    if (this.form.invalid || !documentsValid) {
+    if (this.form.invalid || missingDocument) {
       this.form.markAllAsTouched();
       return;
     }
@@ -449,9 +300,6 @@ export class ProfessionalRegisterComponent implements OnInit {
       password,
     } = this.form.getRawValue();
 
-    const modalidadeAtendimento =
-      attendsPresencial && attendsRemoto ? 'AMBOS' : attendsPresencial ? 'PRESENCIAL' : 'REMOTO';
-
     const profile: ProfessionalProfileInput = {
       cnpj: cnpj || undefined,
       category: category as ProfessionalCategory,
@@ -464,17 +312,9 @@ export class ProfessionalRegisterComponent implements OnInit {
       infoConfirmedTrue,
       lgpdConsent,
       hasLiabilityInsurance,
-      modalidadeAtendimento,
+      modalidadeAtendimento: toAttendanceModality(attendsPresencial, attendsRemoto),
       raioAtendimentoKm: attendsPresencial ? raioAtendimentoKm : undefined,
-      address: {
-        cep: address.cep,
-        street: address.street,
-        number: address.number,
-        complement: address.complement || undefined,
-        neighborhood: address.neighborhood,
-        city: address.city,
-        state: address.state,
-      },
+      address: toAddress(address),
       documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
     };
 

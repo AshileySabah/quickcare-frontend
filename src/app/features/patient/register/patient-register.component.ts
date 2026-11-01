@@ -5,7 +5,14 @@ import { Observable } from 'rxjs';
 import { cpfValidator, identityDocumentValidator, normalizeIdentityNumber } from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { AuthService, PatientProfileInput } from '../../../core/auth/auth.service';
-import { prefillFromOtherProfile } from '../../../core/forms/profile-prefill';
+import { addressFieldErrorsFor, buildAddressGroup, toAddress } from '../../../core/forms/address-form';
+import {
+  confirmPasswordError,
+  disableAccountFields,
+  missingDocumentMessage,
+  prefillFromOtherProfile,
+  profileFieldErrorsFor,
+} from '../../../core/forms/profile-form';
 import { DocumentType, Gender, IdentityDocumentType, User } from '../../../core/models';
 import { ProfileService } from '../../../core/services/profile.service';
 import { UfService } from '../../../core/services/uf.service';
@@ -22,40 +29,17 @@ import { HealthInfoCardComponent } from './health-info-card/health-info-card.com
 import { PasswordCardComponent } from '../../../shared/ui/register/password-card/password-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 
 const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
   { value: 'OUTRO', label: 'Outro' },
 ];
 
-type FieldName =
-  | 'name'
-  | 'email'
-  | 'phone'
-  | 'cpf'
-  | 'identityDocumentType'
-  | 'identityDocumentNumber'
-  | 'identityDocumentUf'
-  | 'birthDate' | 'gender' | 'infoConfirmedTrue' | 'lgpdConsent' | 'password';
-
-/** Dados da conta: já existem quando o profissional logado cria o perfil de paciente. */
-const ACCOUNT_FIELDS = [
-  'name',
-  'email',
-  'phone',
-  'cpf',
-  'identityDocumentType',
-  'identityDocumentNumber',
-  'identityDocumentUf',
-  'password',
-  'confirmPassword',
-] as const;
-type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 'state';
-
 @Component({
   selector: 'app-patient-register',
   standalone: true,
-  imports: [
+  imports: [AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     AddressCardComponent,
@@ -69,7 +53,6 @@ type AddressFieldName = 'cep' | 'street' | 'number' | 'neighborhood' | 'city' | 
     PasswordCardComponent,
   ],
   templateUrl: './patient-register.component.html',
-  styleUrl: './patient-register.component.scss',
 })
 export class PatientRegisterComponent {
   private readonly fb = inject(FormBuilder);
@@ -118,20 +101,15 @@ export class PatientRegisterComponent {
       medicationsInUse: [''],
       infoConfirmedTrue: [false, [Validators.requiredTrue]],
       lgpdConsent: [false, [Validators.requiredTrue]],
-      address: this.fb.nonNullable.group({
-        cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-        street: ['', Validators.required],
-        number: ['', Validators.required],
-        complement: [''],
-        neighborhood: ['', Validators.required],
-        city: ['', Validators.required],
-        state: ['', [Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]],
-      }),
+      address: buildAddressGroup(this.fb),
       password: ['', [Validators.required, strongPasswordValidator()]],
       confirmPassword: ['', [Validators.required]],
     },
     { validators: [passwordsMatchValidator(), identityDocumentValidator()] },
   );
+
+  protected readonly fieldError = profileFieldErrorsFor(this.form);
+  protected readonly addressFieldError = addressFieldErrorsFor(this.form.controls.address);
 
   constructor() {
     this.ufService.list().subscribe({
@@ -140,7 +118,7 @@ export class PatientRegisterComponent {
     });
 
     if (this.isNewProfile) {
-      ACCOUNT_FIELDS.forEach((field) => this.form.controls[field].disable());
+      disableAccountFields(this.form);
       this.profileService.getProfessionalProfile().subscribe({
         next: (profile) => prefillFromOtherProfile(this.form, this.fb, profile),
         error: () => this.toastService.error('Não foi possível trazer os dados do seu perfil de profissional.'),
@@ -148,101 +126,20 @@ export class PatientRegisterComponent {
     }
   }
 
-  protected fieldError = (fieldName: string): string | null => {
-    const control = this.form.controls[fieldName as FieldName];
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'email' && control.hasError('email')) {
-      return 'E-mail inválido.';
-    }
-
-    if (fieldName === 'password' && control.hasError('weakPassword')) {
-      return 'A senha não atende aos requisitos mínimos.';
-    }
-
-    if (fieldName === 'cpf' && control.hasError('pattern')) {
-      return 'CPF deve conter 11 dígitos, sem pontuação.';
-    }
-
-    if (fieldName === 'cpf' && control.hasError('cpfInvalid')) {
-      return 'CPF inválido.';
-    }
-
-    if (fieldName === 'identityDocumentNumber' && this.form.hasError('identityDocumentInvalid')) {
-      return this.form.getError('identityDocumentInvalid') as string;
-    }
-
-    if (fieldName === 'identityDocumentUf' && this.form.hasError('identityDocumentUfRequired')) {
-      return 'Informe a UF que emitiu o RG.';
-    }
-
-    if ((fieldName === 'infoConfirmedTrue' || fieldName === 'lgpdConsent') && control.hasError('required')) {
-      return 'Esta confirmação é obrigatória.';
-    }
-
-    return null;
-  };
-
-  protected addressFieldError = (fieldName: string): string | null => {
-    const control = this.form.controls.address.get(fieldName as AddressFieldName);
-
-    if (!control || !control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Campo obrigatório.';
-    }
-
-    if (fieldName === 'cep' && control.hasError('pattern')) {
-      return 'CEP deve conter 8 dígitos, sem hífen.';
-    }
-
-    if (fieldName === 'state' && control.hasError('pattern')) {
-      return 'Informe a sigla do estado (ex.: SP).';
-    }
-
-    return null;
-  };
-
   protected get passwordError(): string | null {
     return this.fieldError('password');
   }
 
   protected get confirmPasswordError(): string | null {
-    const control = this.form.controls.confirmPassword;
-
-    if (!control.touched) {
-      return null;
-    }
-
-    if (control.hasError('required')) {
-      return 'Confirme sua senha.';
-    }
-
-    if (this.form.hasError('passwordsMismatch')) {
-      return 'As senhas não coincidem.';
-    }
-
-    return null;
+    return confirmPasswordError(this.form);
   }
 
   protected submit(): void {
     const documents = this.documents();
-    const hasCpfDocument = documents.some((document) => document.type === 'VALIDACAO_CPF');
+    const missingDocument = missingDocumentMessage(documents, ['VALIDACAO_CPF']);
+    this.documentsError.set(missingDocument);
 
-    if (!hasCpfDocument) {
-      this.documentsError.set('Envie um documento que valide seu CPF.');
-    }
-
-    if (this.form.invalid || !hasCpfDocument) {
+    if (this.form.invalid || missingDocument) {
       this.form.markAllAsTouched();
       return;
     }
@@ -277,15 +174,7 @@ export class PatientRegisterComponent {
       allergies: allergies || undefined,
       healthConditions: healthConditions || undefined,
       medicationsInUse: medicationsInUse || undefined,
-      address: {
-        cep: address.cep,
-        street: address.street,
-        number: address.number,
-        complement: address.complement || undefined,
-        neighborhood: address.neighborhood,
-        city: address.city,
-        state: address.state,
-      },
+      address: toAddress(address),
       documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
     };
 

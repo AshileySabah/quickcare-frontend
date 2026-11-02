@@ -1,14 +1,19 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ServiceRequest } from '../../../core/models';
-import { EDIT_REQUEST_WITH_ACCEPTED_CONSEQUENCES, hasAcceptedProposals } from '../../../core/services/request.service';
+import {
+  EDIT_REQUEST_WITH_ACCEPTED_CONSEQUENCES,
+  hasAcceptedProposals,
+  isLateChange,
+} from '../../../core/services/request.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 
 /**
- * Botão "Editar" da solicitação. Sem propostas aceitas, abre a edição direto;
- * com aceitas, antes avisa que as vagas reabrem e é preciso aceitar de novo.
+ * Botão "Editar" da solicitação. Sem aceitos, abre a edição direto; com
+ * aceitos, antes avisa que eles precisam reaceitar (e, a menos de 48h do
+ * atendimento, que perder ou trocar o profissional conta ocorrência).
  */
 @Component({
   selector: 'app-edit-request-action',
@@ -24,7 +29,7 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
       [open]="confirming()"
       titleText="Editar solicitação"
       icon="pencil"
-      message="Editar esta solicitação, que já tem propostas aceitas?"
+      [message]="message()"
       [consequences]="consequences"
       confirmLabel="Sim, editar a solicitação"
       cancelLabel="Não, manter como está"
@@ -40,6 +45,11 @@ export class EditRequestActionComponent {
 
   protected readonly confirming = signal(false);
   protected readonly consequences = EDIT_REQUEST_WITH_ACCEPTED_CONSEQUENCES;
+  protected readonly message = computed(() =>
+    isLateChange(this.request())
+      ? 'Falta menos de 48h para um atendimento desta solicitação. Editar mesmo assim?'
+      : 'Editar esta solicitação, que já tem profissionais aceitos?',
+  );
 
   protected edit(): void {
     if (hasAcceptedProposals(this.request())) {

@@ -55,3 +55,16 @@
   font-size: tokens.font-size('xs');
   font-weight: tokens.font-weight('regular');
 }
+
+// Não lidas do outro perfil: chama atenção sem competir com o oval ativo.
+.profile-switcher__unread {
+  min-width: 16px;
+  height: 16px;
+  padding: 0 tokens.space(1);
+  font-size: tokens.font-size('xs');
+  line-height: 16px;
+  text-align: center;
+  color: tokens.color('gray', 0);
+  background-color: tokens.semantic('error');
+  border-radius: tokens.radius('full');
+}

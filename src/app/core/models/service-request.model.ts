@@ -34,6 +34,10 @@ export interface ServiceRequest {
   status: RequestStatus;
   /** Propostas não canceladas recebidas. */
   proposalCount: number;
+  /** Algum atendimento já começou: não dá para editar (remarque ou cancele o atendimento). */
+  attendanceInProgress: boolean;
+  /** Início do próximo atendimento que ainda não começou (ISO). */
+  nextAttendanceStart?: string;
   createdAt: string;
   updatedAt: string;
 }

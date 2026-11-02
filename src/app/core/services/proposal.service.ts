@@ -5,12 +5,15 @@ import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
 import { ProfessionalCategory, Proposal, ProposalStatus, ReacceptReason, RequestStatus } from '../models';
+import { AtendimentoApiResponse, toAttendance } from './attendance.service';
 import { ProfissionalSolicitadoApi, toRequestedProfessional } from './request.service';
 
 export interface ProposalInput {
   price: number;
   approach: string;
-  deadline: string;
+  /** ISO (com fuso); o formulário converte do horário local. */
+  start: string;
+  end: string;
 }
 
 type StatusPropostaApi = 'PENDENTE' | 'ACEITA' | 'RECUSADA' | 'CANCELADA';
@@ -38,9 +41,11 @@ interface PropostaApiResponse {
   };
   valor: number;
   abordagem: string;
-  prazo: string;
+  inicio: string;
+  termino: string;
   status: StatusPropostaApi;
   motivoReaceite?: 'PROPOSTA_ALTERADA' | 'SOLICITACAO_ALTERADA';
+  atendimento?: AtendimentoApiResponse;
   criadoEm: string;
   atualizadoEm: string;
 }
@@ -71,13 +76,17 @@ export class ProposalService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/propostas`;
 
-  /** Pendente ou já aceita (a vaga reabre e o paciente aceita de novo), com a solicitação em curso. */
+  /**
+   * Pendente ou já aceita (deixa de estar aceita e o paciente aceita de novo),
+   * com a solicitação em curso. Depois que o atendimento começou, só remarcar.
+   */
   canEdit(proposal: Proposal): boolean {
-    return ALTERABLE_STATUSES.includes(proposal.status) && ACTIVE_REQUEST_STATUSES.includes(proposal.request.status);
+    return this.canCancel(proposal) && proposal.attendance?.status !== 'em_andamento';
   }
 
+  /** A aceita cancela o atendimento (a regra das 48h decide se conta ocorrência). */
   canCancel(proposal: Proposal): boolean {
-    return this.canEdit(proposal);
+    return ALTERABLE_STATUSES.includes(proposal.status) && ACTIVE_REQUEST_STATUSES.includes(proposal.request.status);
   }
 
   /**
@@ -192,9 +201,11 @@ function toProposal(response: PropostaApiResponse): Proposal {
     },
     price: Number(response.valor),
     approach: response.abordagem,
-    deadline: response.prazo,
+    start: response.inicio,
+    end: response.termino,
     status: response.status.toLowerCase() as ProposalStatus,
     reacceptReason: response.motivoReaceite?.toLowerCase() as ReacceptReason | undefined,
+    attendance: response.atendimento ? toAttendance(response.atendimento) : undefined,
     createdAt: response.criadoEm,
     updatedAt: response.atualizadoEm,
   };
@@ -204,19 +215,21 @@ function toApiPayload(input: ProposalInput) {
   return {
     valor: input.price,
     abordagem: input.approach,
-    prazo: input.deadline,
+    inicio: input.start,
+    termino: input.end,
   };
 }
 
 /** O que acontece ao cancelar uma proposta já aceita (a pendente cancela sem perguntar). */
 export const CANCEL_ACCEPTED_PROPOSAL_CONSEQUENCES = [
-  'Ela deixa de estar aceita e a vaga reabre para outros profissionais.',
+  'O atendimento é cancelado e a vaga reabre para outros profissionais.',
+  'O paciente é avisado.',
   'A proposta vai para o histórico.',
 ];
 
 /** O que acontece ao editar uma proposta já aceita (alerta antes de abrir a edição). */
 export const EDIT_ACCEPTED_PROPOSAL_CONSEQUENCES = [
-  'Ela deixa de estar aceita e a vaga reabre para outros profissionais.',
-  'O paciente precisa aceitar a proposta de novo (ou escolher outra).',
+  'Ela deixa de estar aceita: o atendimento marcado é cancelado e a vaga reabre.',
+  'O paciente precisa aceitar ou recusar a proposta de novo (ou escolher outra).',
   'Até o novo aceite, o nome e os dados do paciente deixam de aparecer para você.',
 ];

@@ -37,7 +37,7 @@ export class ProposalEditComponent {
         }
 
         this.wasAccepted.set(proposal.status === 'aceita');
-        this.proposal.set({ price: proposal.price, approach: proposal.approach, deadline: proposal.deadline });
+        this.proposal.set({ price: proposal.price, approach: proposal.approach, start: proposal.start, end: proposal.end });
       },
       error: () => {
         this.toastService.error('Não foi possível carregar a proposta.');

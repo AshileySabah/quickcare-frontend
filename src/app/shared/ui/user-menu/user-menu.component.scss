@@ -1,58 +1,22 @@
 @use 'tokens' as tokens;
+@use 'patterns/dropdown' as dropdown;
 
 .user-menu {
   position: relative;
 }
 
 .user-menu__trigger {
-  display: flex;
-  padding: 0;
-  background: transparent;
-  border: none;
   border-radius: tokens.radius('full');
-  cursor: pointer;
-
-  // O gatilho fica no header escuro; o dropdown abre claro.
-  &:focus-visible {
-    outline: 2px solid tokens.color('teal', 300);
-    outline-offset: 2px;
-  }
+  @include dropdown.header-trigger;
 }
 
 .user-menu__dropdown {
-  position: absolute;
-  top: calc(100% + #{tokens.space(2)});
-  right: 0;
-  z-index: 20;
-  display: flex;
-  flex-direction: column;
-  min-width: 220px;
-  max-width: calc(100vw - #{tokens.space(8)});
   padding: tokens.space(2) 0;
-  background-color: tokens.color('gray', 0);
-  border: 1px solid tokens.color('gray', 200);
-  border-radius: tokens.radius('md');
-  box-shadow: 0 8px 24px rgba(tokens.color('gray', 900), 0.12);
+  @include dropdown.panel;
 }
 
 .user-menu__item {
-  display: block;
-  width: 100%;
-  padding: tokens.space(2) tokens.space(4);
-  font: inherit;
-  font-size: tokens.font-size('sm');
-  text-align: left;
-  color: tokens.color('gray', 700);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-
-  &:hover,
-  &:focus-visible {
-    background-color: tokens.color('gray', 50);
-    color: tokens.color('gray', 900);
-    outline: none;
-  }
+  @include dropdown.item;
 
   &--highlight {
     font-weight: tokens.font-weight('medium');

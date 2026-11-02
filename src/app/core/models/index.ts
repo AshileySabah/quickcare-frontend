@@ -5,3 +5,5 @@ export * from './proposal.model';
 export * from './validation.model';
 export * from './view-state.model';
 export * from './public-profile.model';
+export * from './notification.model';
+export * from './attendance.model';

@@ -15,6 +15,8 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
+import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
+import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -22,7 +24,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,
@@ -52,9 +54,10 @@ export class RequestDetailComponent {
   protected readonly reacceptNotice = reacceptNotice;
   protected readonly cancelConsequences = CANCEL_REQUEST_CONSEQUENCES;
   protected readonly acceptConsequences = [
+    'O atendimento fica marcado no período da proposta e começa e termina sozinho nesses horários.',
     'O profissional ocupa uma das vagas pedidas e passa a ver seus dados.',
+    'Se a vaga aguardava o reaceite de outro profissional, ele é substituído (a menos de 48h do atendimento, isso conta como ocorrência para você).',
     'Propostas que não couberem nas vagas restantes serão recusadas.',
-    'A solicitação entra em andamento quando todas as vagas forem preenchidas.',
   ];
   protected readonly rejectConsequences = [
     'O profissional verá que a proposta foi recusada.',
@@ -87,8 +90,23 @@ export class RequestDetailComponent {
     });
   }
 
-  protected loadProposals(): void {
-    this.proposalsState.set('loading');
+  /** Depois de remarcar, cancelar ou responder no atendimento: status e vagas mudam junto. */
+  protected refresh(): void {
+    this.requestService.getById(this.requestId).subscribe({
+      next: (request) => {
+        if (request) {
+          this.request.set(request);
+        }
+        this.loadProposals(false);
+      },
+      error: () => this.loadProposals(false),
+    });
+  }
+
+  protected loadProposals(showSkeleton = true): void {
+    if (showSkeleton) {
+      this.proposalsState.set('loading');
+    }
 
     this.proposalService.listForRequest(this.requestId).subscribe({
       next: (proposals) => {

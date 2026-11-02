@@ -1,0 +1,156 @@
+@use 'tokens' as tokens;
+@use 'patterns/dropdown' as dropdown;
+
+.notification-bell {
+  position: relative;
+}
+
+// O sino fica no header escuro.
+.notification-bell__trigger {
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: tokens.color('gray', 0);
+  border-radius: tokens.radius('full');
+  @include dropdown.header-trigger;
+
+  &:hover {
+    background-color: rgba(tokens.color('gray', 0), 0.12);
+  }
+}
+
+.notification-bell__badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 tokens.space(1);
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+  line-height: 18px;
+  text-align: center;
+  color: tokens.color('gray', 0);
+  background-color: tokens.semantic('error');
+  border: 2px solid tokens.color('teal', 800);
+  border-radius: tokens.radius('full');
+  box-sizing: content-box;
+}
+
+.notification-bell__panel {
+  @include dropdown.panel(280px);
+
+  // Alinha à borda direita do header (o avatar, 36px, e o gap ficam à direita
+  // do sino), para caber inteiro também no celular.
+  & {
+    right: calc(-36px - #{tokens.space(3)});
+    width: 360px;
+    max-height: 480px;
+    overflow: hidden;
+  }
+}
+
+.notification-bell__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: tokens.space(2);
+  padding: tokens.space(3) tokens.space(4);
+  border-bottom: 1px solid tokens.color('gray', 100);
+}
+
+.notification-bell__title {
+  margin: 0;
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.notification-bell__mark-all,
+.notification-bell__retry {
+  padding: 0;
+  font: inherit;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('teal', 600);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: tokens.color('teal', 700);
+    text-decoration: underline;
+  }
+}
+
+.notification-bell__state {
+  margin: 0;
+  padding: tokens.space(6) tokens.space(4);
+  font-size: tokens.font-size('sm');
+  text-align: center;
+  color: tokens.color('gray', 500);
+}
+
+.notification-bell__list {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  list-style: none;
+  overflow-y: auto;
+
+  li + li {
+    border-top: 1px solid tokens.color('gray', 100);
+  }
+}
+
+.notification-bell__item {
+  @include dropdown.item;
+
+  // Depois do mixin: aqui o item é um bloco de três linhas, mais espaçado.
+  & {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.space(1);
+    padding: tokens.space(3) tokens.space(4);
+  }
+
+  &--unread {
+    background-color: tokens.color('teal', 50);
+  }
+}
+
+.notification-bell__item-title {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(2);
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.notification-bell__dot {
+  flex-shrink: 0;
+  width: 8px;
+  height: 8px;
+  background-color: tokens.color('teal', 500);
+  border-radius: tokens.radius('full');
+}
+
+.notification-bell__item-message {
+  color: tokens.color('gray', 600);
+}
+
+.notification-bell__item-time {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.notification-bell__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

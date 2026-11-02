@@ -15,7 +15,7 @@
   @case ('filled') {
     @if (request(); as currentRequest) {
       <section class="professional-request-detail">
-        <ui-request-summary [request]="currentRequest">
+        <ui-request-summary [request]="currentRequest" [uiHighlight]="'solicitacao-' + currentRequest.id">
           @if (patient(); as currentPatient) {
             <ui-person-chip
               summary-person
@@ -30,7 +30,7 @@
         </ui-request-summary>
 
         @if (existingProposal(); as proposal) {
-          <ui-card>
+          <ui-card [uiHighlight]="'proposta-' + proposal.id">
             <h2 class="professional-request-detail__form-title">Sua proposta</h2>
             <div class="professional-request-detail__proposal-status">
               <ui-status-badge kind="proposal" [status]="proposal.status"></ui-status-badge>
@@ -40,7 +40,15 @@
             }
             <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
             <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
-            <p class="professional-request-detail__proposal-detail">Prazo: {{ proposal.deadline | date: 'dd/MM/yyyy' }}</p>
+            @if (proposal.attendance; as attendance) {
+              <app-attendance-panel
+                viewer="professional"
+                [attendance]="attendance"
+                (changed)="refresh()"
+              ></app-attendance-panel>
+            } @else {
+              <p class="professional-request-detail__proposal-detail">Quando: {{ period(proposal) }}</p>
+            }
             @if (canEdit(proposal) || canCancel(proposal)) {
               <div class="professional-request-detail__proposal-actions">
                 @if (canEdit(proposal)) {
@@ -61,7 +69,7 @@
             }
           </ui-card>
         } @else if (currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') {
-          <ui-card>
+          <ui-card [uiHighlight]="previousProposal() ? 'proposta-' + previousProposal()!.id : 'nova-proposta'">
             @if (previousProposal(); as previous) {
               <h2 class="professional-request-detail__form-title">Reenviar proposta</h2>
               <ui-notice>

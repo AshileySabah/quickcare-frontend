@@ -1,8 +1,15 @@
 import { Component, computed, input } from '@angular/core';
 import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
-import { PROPOSAL_STATUS_LABELS, ProposalStatus, REQUEST_STATUS_LABELS, RequestStatus } from '../../../../core/models';
+import {
+  ATTENDANCE_STATUS_LABELS,
+  AttendanceStatus,
+  PROPOSAL_STATUS_LABELS,
+  ProposalStatus,
+  REQUEST_STATUS_LABELS,
+  RequestStatus,
+} from '../../../../core/models';
 
-export type DomainStatus = RequestStatus | ProposalStatus;
+export type DomainStatus = RequestStatus | ProposalStatus | AttendanceStatus;
 
 interface StatusPresentation {
   label: string;
@@ -15,6 +22,15 @@ const REQUEST_VARIANTS: Record<RequestStatus, BadgeVariant> = {
   em_andamento: 'primary',
   concluida: 'success',
   cancelada: 'error',
+};
+
+const ATTENDANCE_VARIANTS: Record<AttendanceStatus, BadgeVariant> = {
+  agendado: 'info',
+  aguardando_reaceite: 'warning',
+  em_andamento: 'primary',
+  finalizado: 'success',
+  concluido: 'success',
+  cancelado: 'error',
 };
 
 const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
@@ -33,9 +49,13 @@ const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
 export class StatusBadgeComponent {
   status = input.required<DomainStatus>();
   /** Solicitação e proposta têm status com o mesmo nome ("cancelada") e significados diferentes. */
-  kind = input<'request' | 'proposal'>('request');
+  kind = input<'request' | 'proposal' | 'attendance'>('request');
 
   protected readonly presentation = computed<StatusPresentation>(() => {
+    if (this.kind() === 'attendance') {
+      const status = this.status() as AttendanceStatus;
+      return { label: ATTENDANCE_STATUS_LABELS[status], variant: ATTENDANCE_VARIANTS[status] };
+    }
     if (this.kind() === 'proposal') {
       const status = this.status() as ProposalStatus;
       return { label: PROPOSAL_STATUS_LABELS[status], variant: PROPOSAL_VARIANTS[status] };

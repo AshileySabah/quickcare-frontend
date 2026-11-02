@@ -1,0 +1,126 @@
+<section class="attendance-panel" aria-label="Atendimento">
+  <header class="attendance-panel__header">
+    <span class="attendance-panel__title">Atendimento</span>
+    <ui-status-badge kind="attendance" [status]="attendance().status"></ui-status-badge>
+  </header>
+
+  <p class="attendance-panel__period">
+    <ui-icon name="calendar"></ui-icon>
+    {{ period() }}
+  </p>
+
+  @if (attendance().status === 'cancelado') {
+    <p class="attendance-panel__note">{{ cancellation() }}</p>
+  }
+
+  @if (reacceptNotice(); as notice) {
+    <ui-notice>{{ notice }}</ui-notice>
+  }
+
+  @if (rescheduleNotice(); as notice) {
+    <ui-notice>{{ notice }}</ui-notice>
+  }
+
+  @if (canReaccept() || canAnswerReschedule() || canChange()) {
+    <ui-button-group class="attendance-panel__actions">
+      @if (canReaccept()) {
+        <ui-button variant="secondary" size="sm" [loading]="pending() === 'reaccept'" (click)="reaccept()">
+          <ui-icon name="check"></ui-icon>
+          Reaceitar
+        </ui-button>
+        <ui-button variant="danger-outline" size="sm" (click)="dialog.set('decline-reaccept')">
+          <ui-icon name="x-circle"></ui-icon>
+          Recusar nova versão
+        </ui-button>
+      }
+      @if (canAnswerReschedule()) {
+        <ui-button
+          variant="secondary"
+          size="sm"
+          [loading]="pending() === 'accept-reschedule'"
+          (click)="acceptReschedule()"
+        >
+          <ui-icon name="check"></ui-icon>
+          Aceitar remarcação
+        </ui-button>
+        <ui-button
+          variant="danger-outline"
+          size="sm"
+          [loading]="pending() === 'decline-reschedule'"
+          (click)="declineReschedule()"
+        >
+          <ui-icon name="x-circle"></ui-icon>
+          Recusar remarcação
+        </ui-button>
+      }
+      @if (canChange()) {
+        <ui-button variant="info-outline" size="sm" (click)="openReschedule()">
+          <ui-icon name="calendar"></ui-icon>
+          Remarcar
+        </ui-button>
+        <ui-button variant="danger-outline" size="sm" (click)="dialog.set('cancel')">
+          <ui-icon name="x-circle"></ui-icon>
+          Cancelar atendimento
+        </ui-button>
+      }
+    </ui-button-group>
+  }
+</section>
+
+<ui-confirm-dialog
+  [open]="dialog() === 'cancel'"
+  titleText="Cancelar atendimento"
+  icon="x-circle"
+  message="Cancelar este atendimento?"
+  [consequences]="cancelConsequences()"
+  confirmLabel="Sim, cancelar o atendimento"
+  cancelLabel="Não, manter o atendimento"
+  confirmVariant="danger"
+  [loading]="pending() === 'cancel'"
+  (confirmed)="cancel()"
+  (closed)="closeDialog()"
+></ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="dialog() === 'decline-reaccept'"
+  titleText="Recusar nova versão"
+  icon="x-circle"
+  message="Recusar a nova versão da solicitação?"
+  [consequences]="declineReacceptConsequences"
+  confirmLabel="Sim, recusar a nova versão"
+  cancelLabel="Não, voltar"
+  confirmVariant="danger"
+  [loading]="pending() === 'decline-reaccept'"
+  (confirmed)="declineReaccept()"
+  (closed)="closeDialog()"
+></ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="dialog() === 'reschedule'"
+  titleText="Remarcar atendimento"
+  icon="calendar"
+  [message]="started() ? 'O atendimento já começou: escolha o novo término.' : 'Escolha o novo período.'"
+  [consequences]="['A outra parte aceita ou recusa. Se recusar, continua no horário atual.']"
+  confirmLabel="Pedir remarcação"
+  cancelLabel="Não, manter o horário"
+  [loading]="pending() === 'reschedule'"
+  (confirmed)="confirmReschedule()"
+  (closed)="closeDialog()"
+>
+  <form class="attendance-panel__reschedule" [formGroup]="rescheduleForm" (ngSubmit)="confirmReschedule()">
+    <ui-input
+      label="Novo início"
+      type="datetime-local"
+      formControlName="start"
+      [required]="!started()"
+      [errorMessage]="rescheduleError('start')"
+    ></ui-input>
+    <ui-input
+      label="Novo término"
+      type="datetime-local"
+      formControlName="end"
+      [required]="true"
+      [errorMessage]="rescheduleError('end')"
+    ></ui-input>
+  </form>
+</ui-confirm-dialog>

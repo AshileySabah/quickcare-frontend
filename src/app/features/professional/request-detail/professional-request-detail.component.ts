@@ -1,4 +1,4 @@
-import { CurrencyPipe, DatePipe } from '@angular/common';
+import { CurrencyPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
@@ -25,15 +25,17 @@ import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.compon
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
+import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
+import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
+import { formatPeriod } from '../../../core/formatting/period';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-professional-request-detail',
   standalone: true,
-  imports: [NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [HighlightDirective, AttendancePanelComponent, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     CurrencyPipe,
-    DatePipe,
     RouterLink,
     ButtonComponent,
     CardComponent,
@@ -123,9 +125,9 @@ export class ProfessionalRequestDetailComponent {
     });
   }
 
-  /** Valor e abordagem da anterior; o prazo fica em branco para ele escolher de novo. */
+  /** Valor e abordagem da anterior; o período fica em branco para ele escolher de novo. */
   protected resendValue(proposal: Proposal): ProposalInput {
-    return { price: proposal.price, approach: proposal.approach, deadline: '' };
+    return { price: proposal.price, approach: proposal.approach, start: '', end: '' };
   }
 
   private loadPatient(): void {
@@ -145,8 +147,28 @@ export class ProfessionalRequestDetailComponent {
     return this.proposalService.canEdit(proposal);
   }
 
+  /** Com atendimento ativo, quem cancela é o painel do atendimento (com a regra das 48h). */
   protected canCancel(proposal: Proposal): boolean {
-    return this.proposalService.canCancel(proposal);
+    return this.proposalService.canCancel(proposal) && !this.hasActiveAttendance(proposal);
+  }
+
+  protected hasActiveAttendance(proposal: Proposal): boolean {
+    return !!proposal.attendance && proposal.attendance.status !== 'cancelado';
+  }
+
+  protected period(proposal: Proposal): string {
+    return formatPeriod(proposal.start, proposal.end);
+  }
+
+  /** Depois de uma ação no atendimento: recarrega solicitação e proposta sem piscar a tela. */
+  protected refresh(): void {
+    this.requestService.getById(this.requestId).subscribe((request) => request && this.request.set(request));
+    this.proposalService.listForRequest(this.requestId).subscribe((proposals) => {
+      this.existingProposal.set(
+        proposals.find((proposal) => proposal.status === 'pendente' || proposal.status === 'aceita') ?? null,
+      );
+      this.previousProposal.set(resendBase(proposals));
+    });
   }
 
   /** Pendente cancela direto; já aceita, pergunta antes (a vaga reabre). */

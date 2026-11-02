@@ -19,7 +19,7 @@ let nextId = 0;
 })
 export class InputComponent implements ControlValueAccessor {
   label = input.required<string>();
-  type = input<'text' | 'email' | 'password' | 'number' | 'tel' | 'date'>('text');
+  type = input<'text' | 'email' | 'password' | 'number' | 'tel' | 'date' | 'datetime-local'>('text');
   placeholder = input<string>('');
   hint = input<string | null>(null);
   errorMessage = input<string | null>(null);

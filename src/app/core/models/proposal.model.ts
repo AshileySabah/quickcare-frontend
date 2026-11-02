@@ -1,3 +1,4 @@
+import { Attendance } from './attendance.model';
 import { RequestStatus, RequestedProfessional, ServiceModality } from './service-request.model';
 import { Specialty } from './specialty.model';
 import { ProfessionalCategory } from './user.model';
@@ -40,9 +41,13 @@ export interface Proposal {
   request: ProposalRequestSummary;
   price: number;
   approach: string;
-  deadline: string;
+  /** Período oferecido (ISO); o do atendimento começa igual e muda por remarcação. */
+  start: string;
+  end: string;
   status: ProposalStatus;
   reacceptReason?: ReacceptReason;
+  /** O atendimento mais recente (o ativo, ou o último encerrado); só existe se já foi aceita. */
+  attendance?: Attendance;
   createdAt: string;
   updatedAt: string;
 }

@@ -36,6 +36,14 @@
               [subtitle]="requestSummary(proposal)"
               [notice]="reacceptNotice(proposal, 'professional')"
             >
+              @if (proposal.attendance; as attendance) {
+                <app-attendance-panel
+                  proposal-attendance
+                  viewer="professional"
+                  [attendance]="attendance"
+                  (changed)="load()"
+                ></app-attendance-panel>
+              }
               <ui-button-group proposal-actions>
                 <ui-button
                   variant="info-outline"

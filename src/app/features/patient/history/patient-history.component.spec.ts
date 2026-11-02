@@ -15,6 +15,7 @@ function request(id: string, status: RequestStatus): ServiceRequest {
     desiredDeadline: '2026-12-01',
     status,
     proposalCount: 0,
+    attendanceInProgress: false,
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
   };

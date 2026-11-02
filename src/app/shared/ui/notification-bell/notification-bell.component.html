@@ -1,0 +1,66 @@
+@if (notificationService.activeRole()) {
+  <div class="notification-bell" uiDismissible [uiDismissibleOpen]="open()" (dismissed)="close()">
+    <button
+      type="button"
+      class="notification-bell__trigger"
+      aria-haspopup="true"
+      [attr.aria-expanded]="open()"
+      [attr.aria-label]="triggerLabel()"
+      (click)="toggle()"
+    >
+      <ui-icon name="bell" [size]="22"></ui-icon>
+      @if (notificationService.activeUnread() > 0) {
+        <span class="notification-bell__badge" aria-hidden="true">{{ badge() }}</span>
+      }
+    </button>
+
+    @if (open()) {
+      <section class="notification-bell__panel" aria-label="Notificações">
+        <header class="notification-bell__header">
+          <h2 class="notification-bell__title">Notificações</h2>
+          @if (notificationService.activeUnread() > 0) {
+            <button type="button" class="notification-bell__mark-all" (click)="markAllAsRead()">
+              Marcar todas como lidas
+            </button>
+          }
+        </header>
+
+        @if (notificationService.loading() && notificationService.notifications().length === 0) {
+          <p class="notification-bell__state">Carregando...</p>
+        } @else if (notificationService.failed() && notificationService.notifications().length === 0) {
+          <p class="notification-bell__state">
+            Não foi possível carregar as notificações.
+            <button type="button" class="notification-bell__retry" (click)="notificationService.reload()">
+              Tentar de novo
+            </button>
+          </p>
+        } @else if (notificationService.notifications().length === 0) {
+          <p class="notification-bell__state">Nenhuma notificação por aqui.</p>
+        } @else {
+          <ul class="notification-bell__list">
+            @for (notification of notificationService.notifications(); track notification.id) {
+              <li>
+                <button
+                  type="button"
+                  class="notification-bell__item"
+                  [class.notification-bell__item--unread]="!notification.read"
+                  (click)="select(notification)"
+                >
+                  <span class="notification-bell__item-title">
+                    @if (!notification.read) {
+                      <span class="notification-bell__dot"></span>
+                      <span class="notification-bell__sr-only">Não lida:</span>
+                    }
+                    {{ notification.title }}
+                  </span>
+                  <span class="notification-bell__item-message">{{ notification.message }}</span>
+                  <span class="notification-bell__item-time">{{ timeAgo(notification.createdAt) }}</span>
+                </button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+  </div>
+}

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { homeRouteFor } from '../../../core/auth/home-route';
 import { SwitchableRole } from '../../../core/models';
+import { NotificationService } from '../../../core/services/notification.service';
 import { ToastService } from '../feedback/toast/toast.service';
 
 const OPTIONS: { role: SwitchableRole; label: string }[] = [
@@ -24,10 +25,14 @@ export class ProfileSwitcherComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private readonly notificationService = inject(NotificationService);
 
   protected readonly options = OPTIONS;
   protected readonly currentRole = this.authService.role;
   protected readonly switching = signal(false);
+
+  /** Não lidas do perfil que não está em uso, mostradas na opção dele. */
+  protected readonly otherUnread = this.notificationService.otherUnread;
 
   protected readonly hasBothProfiles = computed(() => this.authService.profiles().length > 1);
 

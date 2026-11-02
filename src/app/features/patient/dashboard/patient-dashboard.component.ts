@@ -23,6 +23,7 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
+import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
 /** A home só lista solicitações ativas; as encerradas ficam no histórico. */
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
@@ -30,7 +31,7 @@ const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_a
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [
+  imports: [HighlightDirective, 
     RouterLink,
     ButtonComponent,
     ConfirmDialogComponent,

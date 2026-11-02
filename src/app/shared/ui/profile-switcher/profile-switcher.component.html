@@ -12,6 +12,12 @@
         {{ option.label }}
         @if (isBanned(option.role)) {
           <span class="profile-switcher__banned">banido</span>
+        } @else if (option.role !== currentRole() && otherUnread() > 0) {
+          <span
+            class="profile-switcher__unread"
+            [attr.aria-label]="otherUnread() === 1 ? '1 notificação não lida' : otherUnread() + ' notificações não lidas'"
+            >{{ otherUnread() > 99 ? '99+' : otherUnread() }}</span
+          >
         }
       </button>
     }

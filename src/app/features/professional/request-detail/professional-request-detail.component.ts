@@ -25,13 +25,14 @@ import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.compon
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
+import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-professional-request-detail',
   standalone: true,
-  imports: [NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [HighlightDirective, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     CurrencyPipe,
     DatePipe,
     RouterLink,

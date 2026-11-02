@@ -1,0 +1,55 @@
+@use '../tokens' as tokens;
+
+/**
+ * Painel que abre do header (menu da conta, notificações): claro, alinhado à
+ * direita do gatilho e acima do conteúdo.
+ */
+@mixin panel($min-width: 220px) {
+  position: absolute;
+  top: calc(100% + #{tokens.space(2)});
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  min-width: $min-width;
+  max-width: calc(100vw - #{tokens.space(8)});
+  background-color: tokens.color('gray', 0);
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('md');
+  box-shadow: 0 8px 24px rgba(tokens.color('gray', 900), 0.12);
+}
+
+/** Gatilho no header escuro: sem fundo, com foco visível em teal claro. */
+@mixin header-trigger {
+  display: flex;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 300);
+    outline-offset: 2px;
+  }
+}
+
+/** Linha clicável do painel. */
+@mixin item {
+  display: block;
+  width: 100%;
+  padding: tokens.space(2) tokens.space(4);
+  font: inherit;
+  font-size: tokens.font-size('sm');
+  text-align: left;
+  color: tokens.color('gray', 700);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background-color: tokens.color('gray', 50);
+    color: tokens.color('gray', 900);
+    outline: none;
+  }
+}

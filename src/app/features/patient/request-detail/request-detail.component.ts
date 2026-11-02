@@ -15,6 +15,7 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
+import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -22,7 +23,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,

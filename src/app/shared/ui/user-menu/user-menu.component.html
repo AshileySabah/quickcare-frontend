@@ -1,4 +1,4 @@
-<div class="user-menu">
+<div class="user-menu" uiDismissible [uiDismissibleOpen]="open()" (dismissed)="close()">
   <button
     type="button"
     class="user-menu__trigger"

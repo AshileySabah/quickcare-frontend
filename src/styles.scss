@@ -77,3 +77,68 @@ b {
   outline-offset: 2px;
   border-radius: tokens.radius('sm');
 }
+
+// Item alvo de uma notificação (uiHighlight): ao abrir a notificação, a tela
+// rola até ele, o card ganha um contorno verde e uma película verde que pulsa
+// três vezes. Global porque o alvo é o host de componentes diferentes (cards,
+// resumo da solicitação, validação).
+.ui-highlight {
+  position: relative;
+  display: block;
+  border-radius: tokens.radius('md');
+  scroll-margin: tokens.space(24);
+}
+
+.ui-highlight--active {
+  box-shadow: 0 0 0 3px tokens.semantic('success');
+  animation: ui-highlight-ring 0.8s ease-out 3;
+
+  // Película por cima do conteúdo do card, sem bloquear cliques.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background-color: rgba(tokens.semantic('success'), 0.18);
+    border-radius: inherit;
+    animation: ui-highlight-tint 0.8s ease-in-out 3 forwards;
+  }
+}
+
+@keyframes ui-highlight-ring {
+  0% {
+    box-shadow:
+      0 0 0 3px tokens.semantic('success'),
+      0 0 0 3px rgba(tokens.semantic('success'), 0.5);
+  }
+
+  100% {
+    box-shadow:
+      0 0 0 3px tokens.semantic('success'),
+      0 0 0 16px rgba(tokens.semantic('success'), 0);
+  }
+}
+
+@keyframes ui-highlight-tint {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+// Sem animação para quem prefere menos movimento: só o contorno fixo.
+@media (prefers-reduced-motion: reduce) {
+  .ui-highlight--active {
+    animation: none;
+
+    &::after {
+      animation: none;
+      opacity: 0.6;
+    }
+  }
+}

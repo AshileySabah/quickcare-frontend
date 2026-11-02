@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NotificationBellComponent } from '../../notification-bell/notification-bell.component';
 import { ProfileSwitcherComponent } from '../../profile-switcher/profile-switcher.component';
 import { UserMenuComponent } from '../../user-menu/user-menu.component';
 
@@ -12,13 +13,13 @@ export interface ShellNavItem {
 
 /**
  * Layout das áreas logadas (paciente, profissional e admin): header com marca,
- * navegação, seletor de perfil e menu da conta. Cada perfil tem o próprio
+ * navegação, seletor de perfil, notificações e menu da conta. Cada perfil tem o próprio
  * shell, que só informa os itens e projeta o conteúdo aqui dentro.
  */
 @Component({
   selector: 'ui-app-shell',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, ProfileSwitcherComponent, UserMenuComponent],
+  imports: [RouterLink, RouterLinkActive, NotificationBellComponent, ProfileSwitcherComponent, UserMenuComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })

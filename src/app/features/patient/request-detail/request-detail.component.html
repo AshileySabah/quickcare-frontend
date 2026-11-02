@@ -15,7 +15,7 @@
   @case ('filled') {
     @if (request(); as currentRequest) {
       <section class="request-detail">
-        <ui-request-summary [request]="currentRequest" [showVacancies]="true">
+        <ui-request-summary [request]="currentRequest" [showVacancies]="true" [uiHighlight]="'solicitacao-' + currentRequest.id">
           @if (canEdit(currentRequest)) {
             <app-edit-request-action [request]="currentRequest"></app-edit-request-action>
           }
@@ -47,6 +47,7 @@
               <div class="request-detail__proposals-list">
                 @for (proposal of proposals(); track proposal.id) {
                   <ui-proposal-card
+                    [uiHighlight]="'proposta-' + proposal.id"
                     [proposal]="proposal"
                     [personName]="proposal.professional.name"
                     [personAvatarUrl]="proposal.professional.avatarUrl"

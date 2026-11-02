@@ -1,7 +1,8 @@
-import { Component, ElementRef, HostListener, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { SwitchableRole } from '../../../core/models';
+import { DismissibleDirective } from '../dismissible/dismissible.directive';
 import { AvatarComponent } from '../feedback/avatar/avatar.component';
 
 /**
@@ -11,14 +12,13 @@ import { AvatarComponent } from '../feedback/avatar/avatar.component';
 @Component({
   selector: 'ui-user-menu',
   standalone: true,
-  imports: [RouterLink, AvatarComponent],
+  imports: [RouterLink, AvatarComponent, DismissibleDirective],
   templateUrl: './user-menu.component.html',
   styleUrl: './user-menu.component.scss',
 })
 export class UserMenuComponent {
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
   /** Tela de edição do perfil em uso; sem ela (admin), o menu só tem "Sair". */
   profileLink = input<string | null>(null);
@@ -45,17 +45,5 @@ export class UserMenuComponent {
   protected logout(): void {
     this.close();
     this.authService.logout().subscribe(() => this.router.navigateByUrl('/login'));
-  }
-
-  @HostListener('document:click', ['$event'])
-  protected onDocumentClick(event: MouseEvent): void {
-    if (this.open() && !this.host.nativeElement.contains(event.target as Node)) {
-      this.close();
-    }
-  }
-
-  @HostListener('document:keydown.escape')
-  protected onEscape(): void {
-    this.close();
   }
 }

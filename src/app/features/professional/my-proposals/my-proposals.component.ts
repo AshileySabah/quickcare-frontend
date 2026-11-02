@@ -18,6 +18,8 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confir
 import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
+import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
 
 /** Como no histórico do paciente: encerrada é a proposta que já não anda mais. */
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
@@ -33,10 +35,11 @@ function isClosed(proposal: Proposal): boolean {
  * "Minhas propostas" mostra as ativas (pendentes e aceitas em solicitações em
  * curso); a rota de histórico (data.view = 'history') mostra as encerradas.
  */
+
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
+  imports: [PersonMenuComponent, AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })
@@ -44,6 +47,8 @@ export class MyProposalsComponent {
   private readonly fb = inject(FormBuilder);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
+  /** Bloqueado por ocorrências, "Reenviar proposta" fica desabilitado. */
+  protected readonly blocked = inject(OccurrenceService).blockFor('professional');
 
   /** No lugar do paciente, enquanto a proposta não é aceita. */
   protected readonly patientHiddenNote = 'O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.';

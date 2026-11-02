@@ -1,0 +1,158 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Disputa não encontrada" message="O link pode estar incorreto.">
+      <ui-button [routerLink]="backLink">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (detail(); as current) {
+      <section class="dispute-detail">
+        <ui-back-link [fallback]="backLink"></ui-back-link>
+
+        <ui-card>
+          <div class="dispute-detail__header">
+            <div>
+              <h1 class="dispute-detail__title">{{ current.summary.service }}</h1>
+              <p class="dispute-detail__subtitle">
+                Atendimento {{ period(current.summary.start, current.summary.end) }} ·
+                <a [routerLink]="['/admin/solicitacoes', current.summary.requestId]">Solicitação #{{ current.summary.requestId }}</a>
+              </p>
+            </div>
+            <ui-status-badge kind="problem" [status]="current.problem.status"></ui-status-badge>
+          </div>
+
+          <dl class="dispute-detail__meta">
+            <div>
+              <dt>Paciente</dt>
+              <dd>
+                <a [routerLink]="['/admin/perfis', 'patient', current.summary.patient.userId]">{{ current.summary.patient.name }}</a>
+                · {{ current.summary.patient.email }}
+              </dd>
+            </div>
+            <div>
+              <dt>Profissional</dt>
+              <dd>
+                <a [routerLink]="['/admin/perfis', 'professional', current.summary.professional.userId]">{{ current.summary.professional.name }}</a>
+                · {{ current.summary.professional.email }}
+              </dd>
+            </div>
+            <div>
+              <dt>Status do atendimento</dt>
+              <dd>{{ statusLabels[current.attendanceStatus] }} (antes do relato: {{ statusLabels[current.statusBeforeReport] }})</dd>
+            </div>
+            <div>
+              <dt>Prazo de resposta</dt>
+              <dd>{{ current.problem.answerDeadline | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+          </dl>
+        </ui-card>
+
+        <div class="dispute-detail__versions">
+          <ui-card>
+            <h2 class="dispute-detail__section-title">Relato · {{ sideLabel(current.problem.reportedBy, current) }}</h2>
+            <p class="dispute-detail__muted">
+              {{ current.problem.reason === 'combinado' ? 'Diz que combinaram de não fazer' : 'Diz que o outro não compareceu' }}
+              · {{ current.problem.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+            </p>
+            <p class="dispute-detail__text">{{ current.problem.description }}</p>
+            @for (file of attachments(current, current.problem.reportedBy); track $index) {
+              <ui-stored-file [file]="file"></ui-stored-file>
+            } @empty {
+              <p class="dispute-detail__muted">Sem anexos.</p>
+            }
+          </ui-card>
+
+          <ui-card>
+            <h2 class="dispute-detail__section-title">Contestação · {{ sideLabel(contestingSide(current), current) }}</h2>
+            @if (current.problem.contestation) {
+              <p class="dispute-detail__muted">{{ current.problem.contestedAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+              <p class="dispute-detail__text">{{ current.problem.contestation }}</p>
+              @for (file of attachments(current, contestingSide(current)); track $index) {
+                <ui-stored-file [file]="file"></ui-stored-file>
+              } @empty {
+                <p class="dispute-detail__muted">Sem anexos.</p>
+              }
+            } @else {
+              <p class="dispute-detail__muted">Ainda não contestou.</p>
+            }
+          </ui-card>
+        </div>
+
+        @if (open()) {
+          <ui-card>
+            <h2 class="dispute-detail__section-title">Decisão</h2>
+            <form class="dispute-detail__decision" [formGroup]="form">
+              <ui-select
+                label="O atendimento"
+                formControlName="decision"
+                [options]="decisionOptions"
+                [required]="true"
+              ></ui-select>
+              <fieldset class="dispute-detail__fieldset">
+                <legend>Quem leva ocorrência</legend>
+                <ui-checkbox formControlName="patientOccurrence" [label]="current.summary.patient.name + ' (paciente)'"></ui-checkbox>
+                <ui-checkbox
+                  formControlName="professionalOccurrence"
+                  [label]="current.summary.professional.name + ' (profissional)'"
+                ></ui-checkbox>
+              </fieldset>
+              <div class="dispute-detail__actions">
+                <ui-button (click)="dialogOpen.set(true)">Registrar decisão</ui-button>
+              </div>
+            </form>
+          </ui-card>
+        } @else if (current.problem.status === 'decidido') {
+          <ui-notice>
+            Decidido em {{ current.problem.decidedAt | date: 'dd/MM/yyyy HH:mm' }}: o atendimento
+            {{ current.problem.decision === 'realizado' ? 'foi' : 'não foi' }} realizado. Justificativa:
+            {{ current.problem.decisionJustification }}
+          </ui-notice>
+        } @else {
+          <ui-notice>Sem contestação: não há decisão a tomar. Se o outro lado contestar, a disputa volta para cá.</ui-notice>
+        }
+
+        <ui-card>
+          <h2 class="dispute-detail__section-title">Histórico do atendimento</h2>
+          <ol class="dispute-detail__timeline">
+            @for (event of current.events; track $index) {
+              <li>
+                <span class="dispute-detail__muted">{{ event.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                <span>{{ eventLabel(event.type) }}{{ event.author ? ' · ' + event.author : '' }}</span>
+              </li>
+            }
+          </ol>
+          @if (current.actions.length) {
+            <h3 class="dispute-detail__subsection-title">Ações de administradores</h3>
+            <ul class="dispute-detail__timeline">
+              @for (action of current.actions; track $index) {
+                <li>
+                  <span class="dispute-detail__muted">{{ action.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span>{{ actionLabels[action.type] }} por {{ action.admin }}: {{ action.justification }}</span>
+                </li>
+              }
+            </ul>
+          }
+        </ui-card>
+      </section>
+    }
+  }
+}
+
+<ui-justification-dialog
+  [open]="dialogOpen()"
+  titleText="Registrar decisão"
+  icon="check"
+  message="Confirmar a decisão desta disputa?"
+  [consequences]="decisionConsequences()"
+  confirmLabel="Sim, registrar a decisão"
+  cancelLabel="Não, voltar"
+  [loading]="saving()"
+  (confirmed)="decide($event)"
+  (closed)="closeDialog()"
+></ui-justification-dialog>

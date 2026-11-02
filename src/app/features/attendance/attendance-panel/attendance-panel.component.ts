@@ -14,20 +14,24 @@ import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/s
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { AttendanceProblemComponent } from '../attendance-problem/attendance-problem.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type PendingAction = 'reaccept' | 'decline-reaccept' | 'accept-reschedule' | 'decline-reschedule' | 'reschedule' | 'cancel';
 
 /**
  * O atendimento de uma proposta aceita, do ponto de vista de quem vê:
  * status e período, a remarcação pendente (responder ou aguardar), o reaceite
- * depois que o paciente editou e as ações de remarcar e cancelar. O
- * atendimento muda de estado sozinho no horário: não há iniciar nem finalizar.
+ * depois que o paciente editou, as ações de remarcar e cancelar e o relato
+ * de "não foi realizado". O atendimento muda de estado sozinho no horário:
+ * não há iniciar nem finalizar.
  */
 @Component({
   selector: 'app-attendance-panel',
   standalone: true,
-  imports: [
+  imports: [InvalidFieldFocusDirective, 
     ReactiveFormsModule,
+    AttendanceProblemComponent,
     ButtonComponent,
     ButtonGroupComponent,
     ConfirmDialogComponent,

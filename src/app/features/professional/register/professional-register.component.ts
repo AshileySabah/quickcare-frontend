@@ -52,11 +52,12 @@ import { ProfessionalPracticeCardComponent } from './professional-practice-card/
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 @Component({
   selector: 'app-professional-register',
   standalone: true,
-  imports: [AuthLayoutComponent, 
+  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     AddressCardComponent,

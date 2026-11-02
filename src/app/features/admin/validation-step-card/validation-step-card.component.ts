@@ -18,6 +18,7 @@ import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.co
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { PreValidationAlertComponent, PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 interface LookupLink {
   label: string;
@@ -43,7 +44,7 @@ const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
 @Component({
   selector: 'app-validation-step-card',
   standalone: true,
-  imports: [
+  imports: [InvalidFieldFocusDirective, 
     DatePipe,
     ReactiveFormsModule,
     ButtonComponent,

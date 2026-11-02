@@ -9,7 +9,8 @@ export interface ProfileDetail {
 
 /**
  * Topo das telas de perfil (profissional e paciente): foto, nome, uma linha
- * de apoio e os dados em lista.
+ * de apoio e os dados em lista. Ações sobre a pessoa (ex.: bloquear) entram
+ * no slot profile-actions.
  */
 @Component({
   selector: 'ui-profile-card',

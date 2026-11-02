@@ -13,6 +13,7 @@ import { ProfileCardComponent, ProfileDetail } from '../../../shared/ui/profile-
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
+import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-action/profile-block-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
@@ -20,12 +21,12 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
  * Perfil do paciente, como o profissional com proposta aceita vê. A saúde
  * chega enquanto a solicitação está em curso; os contatos de emergência, só
  * depois que o atendimento começou. Os dois usam os cards do cadastro, só
- * para leitura.
+ * para leitura. O profissional pode bloquear (ou desbloquear) o paciente daqui.
  */
 @Component({
   selector: 'app-patient-profile',
   standalone: true,
-  imports: [BackLinkComponent, 
+  imports: [BackLinkComponent, ProfileBlockActionComponent,
     CardComponent,
     EmergencyContactsCardComponent,
     EmptyStateComponent,

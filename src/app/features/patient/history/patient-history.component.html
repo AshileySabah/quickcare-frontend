@@ -24,7 +24,7 @@
         <ui-grid>
           @for (request of filters.filtered(); track request.id) {
             <ui-grid-item [xs]="12">
-              <app-request-card [request]="request" [canRequestAgain]="true"></app-request-card>
+              <app-request-card [request]="request" [canRequestAgain]="true" [blocked]="!!blocked()"></app-request-card>
             </ui-grid-item>
           }
         </ui-grid>

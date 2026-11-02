@@ -29,13 +29,21 @@
           @for (proposal of filters.filtered(); track proposal.id) {
             <ui-proposal-card
               [proposal]="proposal"
-              [personName]="proposal.request.patientName"
-              [personAvatarUrl]="proposal.request.patientAvatarUrl"
-              [personLink]="proposal.request.patientId ? ['/professional/pacientes', proposal.request.patientId] : null"
               [personHiddenNote]="proposal.status === 'pendente' ? patientHiddenNote : null"
               [subtitle]="requestSummary(proposal)"
               [notice]="reacceptNotice(proposal, 'professional')"
             >
+              @if (proposal.request.patientName && proposal.request.patientId) {
+                <app-person-menu
+                  proposal-person
+                  kind="patient"
+                  [personId]="proposal.request.patientId"
+                  [name]="proposal.request.patientName"
+                  [avatarUrl]="proposal.request.patientAvatarUrl"
+                  [profileLink]="['/professional/pacientes', proposal.request.patientId]"
+                  (blocked)="load()"
+                ></app-person-menu>
+              }
               @if (proposal.attendance; as attendance) {
                 <app-attendance-panel
                   proposal-attendance
@@ -67,7 +75,12 @@
                     Cancelar
                   </ui-button>
                 }
-                @if (canResend(proposal)) {
+                @if (canResend(proposal) && blocked()) {
+                  <ui-button variant="secondary" size="sm" [disabled]="true">
+                    <ui-icon name="refresh"></ui-icon>
+                    Reenviar proposta
+                  </ui-button>
+                } @else if (canResend(proposal)) {
                   <ui-button
                     variant="secondary"
                     size="sm"

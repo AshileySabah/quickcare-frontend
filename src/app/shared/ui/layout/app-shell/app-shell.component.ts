@@ -9,6 +9,8 @@ export interface ShellNavItem {
   link: string;
   /** Marca como ativo só na rota exata (para a tela inicial, que é prefixo das outras). */
   exact?: boolean;
+  /** Quantos itens aguardam ação ali (ex.: disputas em aberto); zero não aparece. */
+  count?: number;
 }
 
 /**
@@ -30,4 +32,6 @@ export class AppShellComponent {
   navItems = input.required<ShellNavItem[]>();
   /** Tela de edição do perfil em uso; nula para quem não tem (admin). */
   profileLink = input<string | null>(null);
+  /** Lista de usuários bloqueados do perfil em uso; nula para o admin. */
+  blockedUsersLink = input<string | null>(null);
 }

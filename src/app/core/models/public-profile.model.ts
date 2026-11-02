@@ -19,6 +19,8 @@ export interface ProfessionalPublicProfile {
   completedServices: number;
   /** Só para o paciente cujo atendimento com ele já começou. */
   emergencyContacts?: EmergencyContact[];
+  /** O bloqueio que quem vê fez dele, se houver (a tela oferece desbloquear). */
+  blockId?: string;
 }
 
 /** Visível ao profissional com proposta aceita, enquanto a solicitação está em curso. */
@@ -40,4 +42,6 @@ export interface PatientPublicProfile {
   health?: PatientHealthInfo;
   /** Só depois que o atendimento começou. */
   emergencyContacts?: EmergencyContact[];
+  /** O bloqueio que quem vê fez dele, se houver (a tela oferece desbloquear). */
+  blockId?: string;
 }

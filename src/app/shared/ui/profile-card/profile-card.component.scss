@@ -12,6 +12,14 @@
   min-width: 0;
 }
 
+.profile-card__actions {
+  margin-left: auto;
+
+  &:empty {
+    display: none;
+  }
+}
+
 .profile-card__name {
   font-size: tokens.font-size('xl');
   font-weight: tokens.font-weight('medium');

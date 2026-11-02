@@ -44,7 +44,7 @@
     </ui-grid-item>
 
     <ui-grid-item [xs]="12">
-      <ui-button type="submit" [loading]="submitting()">{{ submitLabel() }}</ui-button>
+      <ui-button type="submit" [loading]="submitting()" [disabled]="disabled()">{{ submitLabel() }}</ui-button>
     </ui-grid-item>
   </ui-grid>
 </form>

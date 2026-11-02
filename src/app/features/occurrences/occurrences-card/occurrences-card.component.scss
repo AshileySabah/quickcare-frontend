@@ -1,0 +1,69 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: block;
+  margin-bottom: tokens.space(4);
+}
+
+.occurrences-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: tokens.space(2);
+  margin-bottom: tokens.space(3);
+}
+
+.occurrences-card__title {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(2);
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.occurrences-card__rule {
+  margin: 0 0 tokens.space(3);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.occurrences-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.occurrences-card__item {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+
+  &--annulled .occurrences-card__reason {
+    text-decoration: line-through;
+    color: tokens.color('gray', 500);
+  }
+}
+
+.occurrences-card__line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+}
+
+.occurrences-card__appeal {
+  margin-left: auto;
+}
+
+.occurrences-card__decision {
+  margin: tokens.space(1) 0 0;
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 600);
+}
+
+.occurrences-card__date {
+  min-width: 6.5rem;
+  color: tokens.color('gray', 500);
+}

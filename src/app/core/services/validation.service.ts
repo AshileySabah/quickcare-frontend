@@ -23,7 +23,7 @@ import {
   ValidationSummary,
 } from '../models';
 
-type StatusValidacaoApi = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
+export type StatusValidacaoApi = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 type StatusEtapaApi = 'PENDENTE' | 'APROVADA' | 'REPROVADA';
 type ParecerApi = 'FAVORAVEL' | 'DESFAVORAVEL' | 'INDISPONIVEL' | 'SEM_API';
 type PerfilApi = 'PACIENTE' | 'PROFISSIONAL';

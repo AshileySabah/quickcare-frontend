@@ -6,19 +6,13 @@
     </div>
   </header>
 
-  <div class="admin-dashboard__filters" role="group" aria-label="Filtrar por situação">
-    @for (filter of statusFilters; track filter.label) {
-      <button
-        type="button"
-        class="admin-dashboard__filter"
-        [class.admin-dashboard__filter--active]="selectedStatus() === filter.value"
-        [attr.aria-pressed]="selectedStatus() === filter.value"
-        (click)="selectStatus(filter.value)"
-      >
-        {{ filter.label }}
-      </button>
-    }
-  </div>
+  <ui-filter-chips
+    class="admin-dashboard__filters"
+    label="Filtrar por situação"
+    [chips]="statusFilters"
+    [selected]="selectedStatus()"
+    (selectedChange)="selectStatus($event)"
+  ></ui-filter-chips>
 
   @switch (viewState()) {
     @case ('loading') {

@@ -6,8 +6,9 @@ import { DismissibleDirective } from '../dismissible/dismissible.directive';
 import { AvatarComponent } from '../feedback/avatar/avatar.component';
 
 /**
- * Avatar do header que abre o menu da conta: "Meu perfil" (se houver), "Sair"
- * e, para quem só tem um perfil, o atalho para criar o outro.
+ * Avatar do header que abre o menu da conta: "Meu perfil" e "Usuários
+ * bloqueados" (se houver), "Sair" e, para quem só tem um perfil, o atalho para
+ * criar o outro.
  */
 @Component({
   selector: 'ui-user-menu',
@@ -22,6 +23,8 @@ export class UserMenuComponent {
 
   /** Tela de edição do perfil em uso; sem ela (admin), o menu só tem "Sair". */
   profileLink = input<string | null>(null);
+  /** Quem o perfil em uso bloqueou; o admin não bloqueia ninguém. */
+  blockedUsersLink = input<string | null>(null);
 
   protected readonly open = signal(false);
 

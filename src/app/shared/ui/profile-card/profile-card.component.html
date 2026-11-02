@@ -7,6 +7,9 @@
         <p class="profile-card__subtitle">{{ subtitle() }}</p>
       }
     </div>
+    <div class="profile-card__actions">
+      <ng-content select="[profile-actions]"></ng-content>
+    </div>
   </header>
 
   @if (details().length > 0) {

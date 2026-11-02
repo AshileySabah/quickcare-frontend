@@ -52,6 +52,8 @@ export class RequestCardComponent {
   canCancel = input(false);
   /** No histórico: abre uma nova solicitação com os dados desta. */
   canRequestAgain = input(false);
+  /** Bloqueado por ocorrências: "Reabrir solicitação" (cria outra) fica desabilitado. */
+  blocked = input(false);
 
   cancel = output<ServiceRequest>();
 

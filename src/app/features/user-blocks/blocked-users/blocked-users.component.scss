@@ -1,0 +1,42 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.blocked-users__header {
+  @include list.header;
+  flex-direction: column;
+}
+
+.blocked-users__title {
+  @include list.title;
+}
+
+.blocked-users__subtitle {
+  @include list.subtitle;
+}
+
+.blocked-users__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blocked-users__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  padding: tokens.space(3) 0;
+  border-bottom: 1px solid tokens.color('gray', 100);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}

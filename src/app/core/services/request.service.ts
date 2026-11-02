@@ -44,7 +44,7 @@ export interface ProfissionalSolicitadoApi {
   vagasPreenchidas: number;
 }
 
-interface SolicitacaoApiResponse {
+export interface SolicitacaoApiResponse {
   id: number;
   pacienteId: number;
   profissionais: ProfissionalSolicitadoApi[];
@@ -157,7 +157,7 @@ export class RequestService {
   }
 }
 
-function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
+export function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
   return {
     id: String(response.id),
     patientId: String(response.pacienteId),

@@ -1,0 +1,56 @@
+<section class="admin-requests">
+  <header class="admin-requests__header">
+    <div>
+      <h1 class="admin-requests__title">Solicitações</h1>
+      <p class="admin-requests__subtitle">Encontre uma solicitação para ver as propostas, os atendimentos e mudar o status.</p>
+    </div>
+  </header>
+
+  <div class="admin-requests__filters">
+    <ui-input label="Buscar" placeholder="Nome ou e-mail do paciente, ou o número" [formControl]="search"></ui-input>
+    <ui-filter-chips
+      label="Filtrar por status"
+      [chips]="statusFilters"
+      [selected]="status()"
+      (selectedChange)="selectStatus($event)"
+    ></ui-filter-chips>
+  </div>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Nenhuma solicitação encontrada" message="Ajuste a busca ou os filtros."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-requests__list">
+        @for (request of requests(); track request.id) {
+          <a class="admin-requests__card-link" [routerLink]="['/admin/solicitacoes', request.id]">
+            <ui-card [interactive]="true">
+              <div class="admin-requests__card-header">
+                <span class="admin-requests__service">#{{ request.id }} · {{ request.service }}</span>
+                <ui-status-badge [status]="request.status"></ui-status-badge>
+              </div>
+              <p class="admin-requests__patient">{{ request.patient.name }} · {{ request.patient.email }}</p>
+              <p class="admin-requests__description">
+                {{ request.modality === 'presencial' ? 'Presencial' : 'Online' }}
+                @if (request.city) {
+                  · {{ request.city }}/{{ request.state }}
+                }
+                · {{ request.filledSlots }} de {{ request.slots }} vagas preenchidas
+              </p>
+              <p class="admin-requests__date">
+                Criada em {{ request.createdAt | date: 'dd/MM/yyyy' }} · prazo desejado
+                {{ request.desiredDate | date: 'dd/MM/yyyy' }}
+              </p>
+            </ui-card>
+          </a>
+        }
+      </div>
+    }
+  }
+</section>

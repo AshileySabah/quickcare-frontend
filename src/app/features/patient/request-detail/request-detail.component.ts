@@ -17,6 +17,7 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confir
 import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
+import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -24,7 +25,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [PersonMenuComponent, AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,

@@ -1,0 +1,61 @@
+@use 'tokens' as tokens;
+
+.attendance-problem {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  padding: tokens.space(3);
+  border: 1px solid tokens.color('gray', 100);
+  border-radius: tokens.radius('md');
+  background-color: tokens.color('gray', 50);
+}
+
+.attendance-problem__title {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(2);
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 800);
+}
+
+.attendance-problem__entry {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+}
+
+.attendance-problem__author {
+  margin: 0;
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 600);
+}
+
+.attendance-problem__text {
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+  white-space: pre-line;
+}
+
+.attendance-problem__attachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.attendance-problem__actions {
+  justify-content: flex-end;
+}
+
+.attendance-problem__form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-top: tokens.space(4);
+}

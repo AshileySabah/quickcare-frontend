@@ -28,6 +28,7 @@ interface PerfilPublicoProfissionalApi {
   membroDesde: string;
   atendimentosConcluidos: number;
   contatosEmergencia?: ContatoEmergenciaApi[];
+  bloqueioId?: number;
 }
 
 interface ContatoEmergenciaApi {
@@ -49,6 +50,7 @@ interface PerfilPublicoPacienteApi {
     medicamentosEmUso: string | null;
   };
   contatosEmergencia?: ContatoEmergenciaApi[];
+  bloqueioId?: number;
 }
 
 /**
@@ -96,6 +98,7 @@ function toProfessionalProfile(api: PerfilPublicoProfissionalApi): ProfessionalP
     memberSince: api.membroDesde,
     completedServices: api.atendimentosConcluidos,
     emergencyContacts: toContacts(api.contatosEmergencia),
+    blockId: api.bloqueioId ? String(api.bloqueioId) : undefined,
   };
 }
 
@@ -114,6 +117,7 @@ function toPatientProfile(api: PerfilPublicoPacienteApi): PatientPublicProfile {
       medicationsInUse: api.saude.medicamentosEmUso ?? undefined,
     },
     emergencyContacts: toContacts(api.contatosEmergencia),
+    blockId: api.bloqueioId ? String(api.bloqueioId) : undefined,
   };
 }
 

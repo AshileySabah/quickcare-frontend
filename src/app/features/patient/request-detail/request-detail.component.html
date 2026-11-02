@@ -49,12 +49,18 @@
                   <ui-proposal-card
                     [uiHighlight]="'proposta-' + proposal.id"
                     [proposal]="proposal"
-                    [personName]="proposal.professional.name"
-                    [personAvatarUrl]="proposal.professional.avatarUrl"
-                    [personLink]="['/patient/profissionais', proposal.professional.id]"
                     [subtitle]="professionalDescription(proposal)"
                     [notice]="reacceptNotice(proposal, 'patient')"
                   >
+                    <app-person-menu
+                      proposal-person
+                      kind="professional"
+                      [personId]="proposal.professional.id"
+                      [name]="proposal.professional.name"
+                      [avatarUrl]="proposal.professional.avatarUrl"
+                      [profileLink]="['/patient/profissionais', proposal.professional.id]"
+                      (blocked)="refresh()"
+                    ></app-person-menu>
                     @if (proposal.status === 'pendente' && canReceiveProposals(currentRequest)) {
                       <ui-button-group proposal-actions>
                         <ui-button variant="secondary" size="sm" (click)="askToAccept(proposal)">

@@ -20,11 +20,14 @@ describe('field-errors', () => {
     expect(fieldError('description')).toBe('Descreva com mais detalhes.');
   });
 
-  it('não mostra nada para um erro sem mensagem', () => {
-    const control = new FormControl('abc', Validators.maxLength(1));
-    control.markAsTouched();
+  it('erro sem mensagem própria usa a do limite ou a genérica (nunca fica mudo)', () => {
+    const tooLong = new FormControl('abc', Validators.maxLength(1));
+    const custom = new FormControl('x', () => ({ somethingElse: true }));
+    tooLong.markAsTouched();
+    custom.markAsTouched();
 
-    expect(controlError(control)).toBeNull();
+    expect(controlError(tooLong)).toBe('Use no máximo 1 caractere.');
+    expect(controlError(custom)).toBe('Valor inválido.');
   });
 
   it('traduz os erros do endereço', () => {

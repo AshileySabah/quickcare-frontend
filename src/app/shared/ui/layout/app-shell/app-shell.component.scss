@@ -66,6 +66,20 @@
   }
 }
 
+.app-shell__count {
+  display: inline-block;
+  min-width: 16px;
+  height: 16px;
+  margin-left: tokens.space(1);
+  padding: 0 tokens.space(1);
+  font-size: tokens.font-size('xs');
+  line-height: 16px;
+  text-align: center;
+  color: tokens.color('gray', 0);
+  background-color: tokens.semantic('error');
+  border-radius: tokens.radius('full');
+}
+
 .app-shell__user {
   order: 2;
   display: flex;

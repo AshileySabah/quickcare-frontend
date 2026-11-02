@@ -21,13 +21,16 @@ import { RequestedProfessionalsCardComponent } from './requested-professionals-c
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
+import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type Modality = 'online' | 'presencial';
 
 @Component({
   selector: 'app-request-form',
   standalone: true,
-  imports: [NoticeComponent, BackLinkComponent, SkeletonListComponent, 
+  imports: [InvalidFieldFocusDirective, BlockedNoticeComponent, NoticeComponent, BackLinkComponent, SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     ButtonComponent,
@@ -50,6 +53,8 @@ export class RequestFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly specialtyService = inject(SpecialtyService);
+  /** Bloqueado por ocorrências não cria (editar segue liberado). */
+  protected readonly blocked = inject(OccurrenceService).blockFor('patient');
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
   /** "Reabrir solicitação" no histórico: cria outra, só copiando os dados desta. */

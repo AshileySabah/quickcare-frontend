@@ -1,0 +1,28 @@
+<div class="person-menu" uiDismissible [uiDismissibleOpen]="open()" (dismissed)="close()">
+  <button
+    type="button"
+    class="person-menu__trigger"
+    aria-haspopup="menu"
+    [attr.aria-expanded]="open()"
+    [attr.aria-label]="menuLabel()"
+    (click)="toggle()"
+  >
+    <ui-person-chip [name]="name()" [avatarUrl]="avatarUrl()" [caption]="caption()"></ui-person-chip>
+    <ui-icon class="person-menu__chevron" name="chevron-down" [size]="16"></ui-icon>
+  </button>
+
+  @if (open()) {
+    <div class="person-menu__dropdown" role="menu">
+      <a class="person-menu__item" role="menuitem" [routerLink]="profileLink()" (click)="close()">Ver perfil</a>
+      <button type="button" class="person-menu__item person-menu__item--danger" role="menuitem" (click)="askToBlock()">
+        Bloquear
+      </button>
+    </div>
+  }
+</div>
+
+<app-block-user-dialog
+  [target]="toBlock()"
+  (blocked)="onBlocked($event)"
+  (closed)="toBlock.set(null)"
+></app-block-user-dialog>

@@ -1,0 +1,50 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-disputes__header {
+  @include list.header;
+}
+
+.admin-disputes__title {
+  @include list.title;
+}
+
+.admin-disputes__subtitle {
+  @include list.subtitle;
+}
+
+.admin-disputes__filters {
+  display: block;
+  margin-bottom: tokens.space(4);
+}
+
+.admin-disputes__list {
+  @include list.list;
+}
+
+.admin-disputes__card-link {
+  @include list.card-link;
+}
+
+.admin-disputes__card-header {
+  @include list.card-header;
+}
+
+.admin-disputes__service {
+  @include list.specialty;
+}
+
+.admin-disputes__parties {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+  margin-bottom: tokens.space(1);
+}
+
+.admin-disputes__description {
+  @include list.description;
+}
+
+.admin-disputes__date {
+  @include list.date;
+}

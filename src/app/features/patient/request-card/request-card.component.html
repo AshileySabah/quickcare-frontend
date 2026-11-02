@@ -69,10 +69,17 @@
         <app-edit-request-action [request]="request()"></app-edit-request-action>
       }
       @if (canRequestAgain()) {
-        <ui-button variant="secondary" size="sm" routerLink="/patient/novo" [queryParams]="{ baseadaEm: request().id }">
-          <ui-icon name="refresh"></ui-icon>
-          Reabrir solicitação
-        </ui-button>
+        @if (blocked()) {
+          <ui-button variant="secondary" size="sm" [disabled]="true">
+            <ui-icon name="refresh"></ui-icon>
+            Reabrir solicitação
+          </ui-button>
+        } @else {
+          <ui-button variant="secondary" size="sm" routerLink="/patient/novo" [queryParams]="{ baseadaEm: request().id }">
+            <ui-icon name="refresh"></ui-icon>
+            Reabrir solicitação
+          </ui-button>
+        }
       }
       @if (canCancel()) {
         <ui-button variant="danger-outline" size="sm" (click)="cancel.emit(request())">

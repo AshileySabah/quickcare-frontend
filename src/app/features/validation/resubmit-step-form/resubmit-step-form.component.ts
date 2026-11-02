@@ -23,6 +23,7 @@ import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/s
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type FieldName =
   | 'name'
@@ -46,7 +47,7 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
 @Component({
   selector: 'app-resubmit-step-form',
   standalone: true,
-  imports: [
+  imports: [InvalidFieldFocusDirective, 
     ReactiveFormsModule,
     ButtonComponent,
     FilePickerComponent,

@@ -142,6 +142,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'bloqueados',
+        data: { role: 'professional' },
+        loadComponent: () =>
+          import('./features/user-blocks/blocked-users/blocked-users.component').then(
+            (m) => m.BlockedUsersComponent,
+          ),
+      },
+      {
         path: 'propostas/:id/editar',
         loadComponent: () =>
           import('./features/professional/proposal-edit/proposal-edit.component').then(
@@ -204,6 +212,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'bloqueados',
+        data: { role: 'patient' },
+        loadComponent: () =>
+          import('./features/user-blocks/blocked-users/blocked-users.component').then(
+            (m) => m.BlockedUsersComponent,
+          ),
+      },
+      {
         path: 'perfil',
         loadComponent: () =>
           import('./features/patient/edit-profile/patient-edit-profile.component').then(
@@ -252,6 +268,42 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/validation-detail/admin-validation-detail.component').then(
             (m) => m.AdminValidationDetailComponent,
+          ),
+      },
+      {
+        path: 'disputas',
+        loadComponent: () =>
+          import('./features/admin/disputes/admin-disputes.component').then((m) => m.AdminDisputesComponent),
+      },
+      {
+        path: 'disputas/:id',
+        loadComponent: () =>
+          import('./features/admin/dispute-detail/admin-dispute-detail.component').then(
+            (m) => m.AdminDisputeDetailComponent,
+          ),
+      },
+      {
+        path: 'perfis',
+        loadComponent: () =>
+          import('./features/admin/profiles/admin-profiles.component').then((m) => m.AdminProfilesComponent),
+      },
+      {
+        path: 'perfis/:perfil/:id',
+        loadComponent: () =>
+          import('./features/admin/profile-detail/admin-profile-detail.component').then(
+            (m) => m.AdminProfileDetailComponent,
+          ),
+      },
+      {
+        path: 'solicitacoes',
+        loadComponent: () =>
+          import('./features/admin/requests/admin-requests.component').then((m) => m.AdminRequestsComponent),
+      },
+      {
+        path: 'solicitacoes/:id',
+        loadComponent: () =>
+          import('./features/admin/request-detail/admin-request-detail.component').then(
+            (m) => m.AdminRequestDetailComponent,
           ),
       },
     ],

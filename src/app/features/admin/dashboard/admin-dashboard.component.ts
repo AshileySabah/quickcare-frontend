@@ -9,13 +9,9 @@ import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/emp
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
 
-interface StatusFilter {
-  value: ValidationStatus | null;
-  label: string;
-}
-
-const STATUS_FILTERS: StatusFilter[] = [
+const STATUS_FILTERS: FilterChip<ValidationStatus | null>[] = [
   { value: 'pendente', label: 'Em análise' },
   { value: 'reprovado', label: 'Reprovados' },
   { value: 'aprovado', label: 'Aprovados' },
@@ -26,8 +22,9 @@ const STATUS_FILTERS: StatusFilter[] = [
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [SkeletonListComponent, 
+  imports: [SkeletonListComponent,
     DatePipe,
+    FilterChipsComponent,
     RouterLink,
     CardComponent,
     EmptyStateComponent,

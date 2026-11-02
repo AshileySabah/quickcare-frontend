@@ -23,6 +23,7 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
+import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
 /** A home só lista solicitações ativas; as encerradas ficam no histórico. */
@@ -31,7 +32,8 @@ const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_a
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [HighlightDirective, 
+  imports: [HighlightDirective,
+    OccurrencesCardComponent,
     RouterLink,
     ButtonComponent,
     ConfirmDialogComponent,
@@ -61,6 +63,8 @@ export class PatientDashboardComponent {
 
   /** Etapas da validação, abertas pelo banner; com tudo aprovado o banner some. */
   protected readonly showValidation = signal(false);
+  /** Bloqueado por ocorrências: não cria solicitação (o back também recusa). */
+  protected readonly blocked = signal(false);
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

@@ -17,11 +17,12 @@ import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/err
 import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
+import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 
 @Component({
   selector: 'app-professional-home',
   standalone: true,
-  imports: [ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
+  imports: [OccurrencesCardComponent, ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
   templateUrl: './professional-home.component.html',
   styleUrl: './professional-home.component.scss',
 })

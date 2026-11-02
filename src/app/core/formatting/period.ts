@@ -14,3 +14,9 @@ export function formatPeriod(startIso: string, endIso: string): string {
   }
   return `de ${DAY.format(start)} às ${TIME.format(start)} até ${DAY.format(end)} às ${TIME.format(end)}`;
 }
+
+/** "05/11 às 14:00". */
+export function formatDateTime(iso: string): string {
+  const date = new Date(iso);
+  return `${DAY.format(date)} às ${TIME.format(date)}`;
+}

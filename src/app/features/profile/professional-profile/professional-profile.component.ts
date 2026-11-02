@@ -11,18 +11,20 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 import { ProfileCardComponent, ProfileDetail } from '../../../shared/ui/profile-card/profile-card.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
+import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-action/profile-block-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 /**
  * Perfil de um profissional, como o paciente vê ao comparar propostas. Só
  * aprovados têm perfil visível; os contatos de emergência aparecem para o
- * paciente cujo atendimento com ele já começou.
+ * paciente cujo atendimento com ele já começou. O paciente pode bloquear (ou
+ * desbloquear) o profissional daqui.
  */
 @Component({
   selector: 'app-professional-profile',
   standalone: true,
-  imports: [BackLinkComponent, EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
+  imports: [BackLinkComponent, ProfileBlockActionComponent, EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
   templateUrl: './professional-profile.component.html',
   styleUrl: '../public-profile.scss',
 })

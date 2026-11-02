@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { of } from 'rxjs';
 import { ServiceRequest } from '../../../core/models';
+import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { PatientDashboardComponent } from './patient-dashboard.component';
@@ -74,6 +75,10 @@ describe('PatientDashboardComponent', () => {
       providers: [
         provideRouter([]),
         { provide: RequestService, useValue: requestService },
+        {
+          provide: OccurrenceService,
+          useValue: { summary: () => of({ counting: 0, limit: 3, windowDays: 90, occurrences: [] }) },
+        },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
         {
           provide: AuthService,

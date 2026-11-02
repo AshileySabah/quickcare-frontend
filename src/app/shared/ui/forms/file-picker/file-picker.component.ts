@@ -1,7 +1,5 @@
 import { Component, input, output, signal } from '@angular/core';
-
-const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+import { ACCEPTED_FILE_EXTENSIONS, fileSizeLabel, uploadError } from './file-rules';
 
 let nextInputId = 0;
 
@@ -24,6 +22,8 @@ export class FilePickerComponent {
   protected readonly inputId = `ui-file-picker-${nextInputId++}`;
   protected readonly file = signal<File | null>(null);
   protected readonly localError = signal<string | null>(null);
+  protected readonly accept = ACCEPTED_FILE_EXTENSIONS;
+  protected readonly sizeLabel = fileSizeLabel;
 
   protected onFileSelected(event: Event): void {
     const element = event.target as HTMLInputElement;
@@ -34,13 +34,9 @@ export class FilePickerComponent {
       return;
     }
 
-    if (!ACCEPTED_FILE_TYPES.includes(selected.type)) {
-      this.localError.set(`Formato inválido para "${selected.name}". Envie um arquivo PDF, JPG ou PNG.`);
-      return;
-    }
-
-    if (selected.size > MAX_FILE_SIZE_BYTES) {
-      this.localError.set(`O arquivo "${selected.name}" deve ter no máximo 5MB.`);
+    const error = uploadError(selected);
+    if (error) {
+      this.localError.set(error);
       return;
     }
 

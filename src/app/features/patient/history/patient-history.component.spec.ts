@@ -1,7 +1,9 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
-import { RequestStatus, ServiceRequest } from '../../../core/models';
+import { Block, RequestStatus, ServiceRequest } from '../../../core/models';
+import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { RequestService } from '../../../core/services/request.service';
 import { PatientHistoryComponent } from './patient-history.component';
 
@@ -22,6 +24,20 @@ function request(id: string, status: RequestStatus): ServiceRequest {
 }
 
 describe('PatientHistoryComponent', () => {
+  function render(requests: ServiceRequest[], block: Block | null = null): HTMLElement {
+    TestBed.configureTestingModule({
+      imports: [PatientHistoryComponent],
+      providers: [
+        provideRouter([]),
+        { provide: RequestService, useValue: { list: () => of(requests) } },
+        { provide: OccurrenceService, useValue: { blockFor: () => signal(block) } },
+      ],
+    });
+    const fixture = TestBed.createComponent(PatientHistoryComponent);
+    fixture.detectChanges();
+    return fixture.nativeElement as HTMLElement;
+  }
+
   it('mostra só as solicitações encerradas (concluídas e canceladas), sem editar/cancelar, com reabrir solicitação', () => {
     const requests = [
       request('1', 'aberta'),
@@ -31,20 +47,22 @@ describe('PatientHistoryComponent', () => {
       request('5', 'cancelada'),
     ];
 
-    TestBed.configureTestingModule({
-      imports: [PatientHistoryComponent],
-      providers: [provideRouter([]), { provide: RequestService, useValue: { list: () => of(requests) } }],
-    });
-
-    const fixture = TestBed.createComponent(PatientHistoryComponent);
-    fixture.detectChanges();
-
-    const element = fixture.nativeElement as HTMLElement;
+    const element = render(requests);
     const ids = Array.from(element.querySelectorAll('.request-card__id')).map((item) => item.textContent!.trim());
     const buttons = Array.from(element.querySelectorAll('ui-button')).map((item) => item.textContent!.trim());
 
     expect(ids).toEqual(['#2', '#5']);
     // Sem editar/cancelar; só visualizar e reabrir como uma nova solicitação.
     expect(buttons).toEqual(['Visualizar', 'Reabrir solicitação', 'Visualizar', 'Reabrir solicitação']);
+  });
+
+  it('bloqueado por ocorrências, "Reabrir solicitação" fica desabilitado', () => {
+    const block: Block = { id: '9', level: 1, start: '2026-11-01T12:00:00Z', end: '2026-11-08T12:00:00Z', active: true, undone: false };
+    const element = render([request('2', 'concluida')], block);
+
+    const reopen = Array.from(element.querySelectorAll('ui-button button')).find((button) =>
+      button.textContent!.includes('Reabrir solicitação'),
+    ) as HTMLButtonElement;
+    expect(reopen.disabled).toBeTrue();
   });
 });

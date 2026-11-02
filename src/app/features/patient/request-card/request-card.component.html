@@ -43,11 +43,7 @@
         <div class="request-card__fact">
           <span class="request-card__fact-label">Propostas</span>
           <span class="request-card__fact-value">
-            @if (proposalCount() > 0) {
-              <a class="request-card__proposals-link" [routerLink]="proposalsLink()">{{ proposalCount() }}</a>
-            } @else {
-              0
-            }
+            {{ proposalCount() }}
             <span class="request-card__fact-total">/ {{ totalRequested() }}</span>
           </span>
           <span class="request-card__fact-hint">
@@ -65,14 +61,17 @@
     }
 
     <footer class="request-card__actions">
-      <ui-button variant="info-outline" size="sm" [routerLink]="formLink()">
+      <ui-button variant="info-outline" size="sm" [routerLink]="detailLink()">
         <ui-icon name="eye"></ui-icon>
         Visualizar
       </ui-button>
       @if (canEdit()) {
-        <ui-button variant="secondary" size="sm" [routerLink]="formLink()">
-          <ui-icon name="pencil"></ui-icon>
-          Editar
+        <app-edit-request-action [request]="request()"></app-edit-request-action>
+      }
+      @if (canRequestAgain()) {
+        <ui-button variant="secondary" size="sm" routerLink="/patient/novo" [queryParams]="{ baseadaEm: request().id }">
+          <ui-icon name="refresh"></ui-icon>
+          Reabrir solicitação
         </ui-button>
       }
       @if (canCancel()) {

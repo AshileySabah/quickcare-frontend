@@ -1,3 +1,5 @@
+<ui-back-link fallback="/patient"></ui-back-link>
+
 @switch (pageState()) {
   @case ('loading') {
     <ui-skeleton-list variant="page"></ui-skeleton-list>
@@ -15,12 +17,13 @@
       <section class="request-detail">
         <ui-request-summary [request]="currentRequest" [showVacancies]="true">
           @if (canEdit(currentRequest)) {
-            <ui-button variant="secondary" [routerLink]="['/patient/solicitacoes', currentRequest.id, 'editar']">
-              Editar
-            </ui-button>
+            <app-edit-request-action [request]="currentRequest"></app-edit-request-action>
           }
           @if (canCancel(currentRequest)) {
-            <ui-button variant="danger" (click)="cancelRequest()">Cancelar solicitação</ui-button>
+            <ui-button variant="danger-outline" size="sm" [loading]="isCancelling()" (click)="askToCancel(currentRequest)">
+              <ui-icon name="x-circle"></ui-icon>
+              Cancelar solicitação
+            </ui-button>
           }
         </ui-request-summary>
 
@@ -45,13 +48,23 @@
                 @for (proposal of proposals(); track proposal.id) {
                   <ui-proposal-card
                     [proposal]="proposal"
-                    [professionalName]="proposal.professional.name"
-                    [specialtyName]="professionalDescription(proposal)"
+                    [personName]="proposal.professional.name"
+                    [personAvatarUrl]="proposal.professional.avatarUrl"
+                    [personLink]="['/patient/profissionais', proposal.professional.id]"
+                    [subtitle]="professionalDescription(proposal)"
+                    [notice]="reacceptNotice(proposal, 'patient')"
                   >
                     @if (proposal.status === 'pendente' && canReceiveProposals(currentRequest)) {
-                      <div proposal-actions>
-                        <ui-button (click)="askToAccept(proposal)">Aceitar proposta</ui-button>
-                      </div>
+                      <ui-button-group proposal-actions>
+                        <ui-button variant="secondary" size="sm" (click)="askToAccept(proposal)">
+                          <ui-icon name="check"></ui-icon>
+                          Aceitar proposta
+                        </ui-button>
+                        <ui-button variant="danger-outline" size="sm" (click)="proposalToReject.set(proposal)">
+                          <ui-icon name="x-circle"></ui-icon>
+                          Recusar
+                        </ui-button>
+                      </ui-button-group>
                     }
                   </ui-proposal-card>
                 }
@@ -64,16 +77,43 @@
   }
 }
 
-<ui-modal [open]="proposalToAccept() !== null" titleText="Confirmar aceite" (closed)="closeAcceptModal()">
-  @if (proposalToAccept(); as proposal) {
-    <p class="request-detail__confirm-text">
-      Ao aceitar, {{ proposal.professional.name }} ocupa uma das vagas pedidas. Propostas que não couberem em nenhuma
-      vaga restante serão recusadas automaticamente, e a solicitação entra em andamento quando todas as vagas forem
-      preenchidas.
-    </p>
-    <div class="request-detail__confirm-actions">
-      <ui-button variant="ghost" (click)="closeAcceptModal()">Cancelar</ui-button>
-      <ui-button [loading]="isAccepting()" (click)="confirmAccept()">Confirmar aceite</ui-button>
-    </div>
-  }
-</ui-modal>
+<ui-confirm-dialog
+  [open]="proposalToAccept() !== null"
+  titleText="Aceitar proposta"
+  confirmLabel="Sim, aceitar a proposta"
+  cancelLabel="Não, ainda não"
+  [loading]="isAccepting()"
+  (confirmed)="confirmAccept()"
+  (closed)="closeAcceptModal()"
+  icon="check"
+  [message]="'Aceitar a proposta de ' + proposalToAccept()?.professional?.name + '?'"
+  [consequences]="acceptConsequences"
+></ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="proposalToReject() !== null"
+  titleText="Recusar proposta"
+  confirmLabel="Sim, recusar a proposta"
+  cancelLabel="Não, manter a proposta"
+  confirmVariant="danger"
+  [loading]="isRejecting()"
+  (confirmed)="confirmReject()"
+  (closed)="proposalToReject.set(null)"
+  icon="x-circle"
+  [message]="'Recusar a proposta de ' + proposalToReject()?.professional?.name + '?'"
+  [consequences]="rejectConsequences"
+></ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="confirmingCancel()"
+  titleText="Cancelar solicitação"
+  confirmLabel="Sim, cancelar a solicitação"
+  cancelLabel="Não, manter a solicitação"
+  confirmVariant="danger"
+  [loading]="isCancelling()"
+  (confirmed)="confirmCancel()"
+  (closed)="confirmingCancel.set(false)"
+  icon="x-circle"
+  message="Cancelar esta solicitação, que já tem propostas aceitas?"
+  [consequences]="cancelConsequences"
+></ui-confirm-dialog>

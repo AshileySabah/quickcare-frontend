@@ -1,4 +1,5 @@
 @use 'tokens' as tokens;
+@use 'patterns/card' as card;
 
 .ui-proposal-card__header {
   display: flex;
@@ -8,20 +9,17 @@
   margin-bottom: tokens.space(2);
 }
 
-.ui-proposal-card__professional {
-  display: flex;
-  align-items: center;
-  gap: tokens.space(2);
-  flex-wrap: wrap;
+// O status fica à direita mesmo quando não há pessoa no topo.
+.ui-proposal-card__status {
+  margin-left: auto;
 }
 
-.ui-proposal-card__name {
-  font-size: tokens.font-size('base');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 900);
+.ui-proposal-card__hidden-note {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
 }
 
-.ui-proposal-card__specialty {
+.ui-proposal-card__subtitle {
   font-size: tokens.font-size('sm');
   color: tokens.color('gray', 500);
   margin-bottom: tokens.space(2);
@@ -43,15 +41,8 @@
 .ui-proposal-card__deadline {
   font-size: tokens.font-size('xs');
   color: tokens.color('gray', 500);
-  margin-bottom: tokens.space(3);
 }
 
 .ui-proposal-card__actions {
-  display: flex;
-  gap: tokens.space(2);
-  flex-wrap: wrap;
-
-  &:empty {
-    display: none;
-  }
+  @include card.footer-actions;
 }

@@ -1,0 +1,44 @@
+<section class="public-profile">
+  <ui-back-link fallback="/professional/propostas"></ui-back-link>
+
+  @switch (pageState()) {
+    @case ('loading') {
+      <ui-skeleton-list variant="page"></ui-skeleton-list>
+    }
+    @case ('not-found') {
+      <ui-empty-state
+        title="Perfil não disponível"
+        message="Você vê o perfil de um paciente depois que ele aceita a sua proposta."
+      ></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      @if (profile(); as current) {
+        <ui-profile-card [name]="current.name" [avatarUrl]="current.avatarUrl" [details]="details()"></ui-profile-card>
+
+        @if (current.health) {
+          <ui-health-info-card [group]="healthForm" [readonly]="true"></ui-health-info-card>
+        } @else {
+          <ui-card>
+            <h2 class="public-profile__section-title">Informações de saúde</h2>
+            <p class="public-profile__muted">Ficam visíveis só enquanto o atendimento estiver em curso.</p>
+          </ui-card>
+        }
+
+        @if (current.emergencyContacts) {
+          <ui-emergency-contacts-card
+            [formArray]="healthForm.controls.emergencyContacts"
+            [readonly]="true"
+          ></ui-emergency-contacts-card>
+        } @else if (current.health) {
+          <ui-card>
+            <h2 class="public-profile__section-title">Contato de emergência</h2>
+            <p class="public-profile__muted">Fica visível quando o atendimento começar.</p>
+          </ui-card>
+        }
+      }
+    }
+  }
+</section>

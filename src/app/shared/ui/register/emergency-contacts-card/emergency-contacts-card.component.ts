@@ -16,6 +16,8 @@ export class EmergencyContactsCardComponent {
   private readonly fb = inject(FormBuilder);
 
   formArray = input.required<FormArray<EmergencyContactGroup>>();
+  /** Só mostra os contatos, sem adicionar nem remover (perfil). */
+  readonly = input(false);
 
   protected add(): void {
     this.formArray().push(buildEmergencyContactGroup(this.fb));

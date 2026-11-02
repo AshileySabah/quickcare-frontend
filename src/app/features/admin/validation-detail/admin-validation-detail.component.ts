@@ -18,6 +18,7 @@ import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/vali
 import { PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
 import { ValidationStepCardComponent } from '../validation-step-card/validation-step-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
@@ -29,7 +30,7 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 @Component({
   selector: 'app-admin-validation-detail',
   standalone: true,
-  imports: [SkeletonListComponent, 
+  imports: [BackLinkComponent, SkeletonListComponent, 
     DatePipe,
     RouterLink,
     ButtonComponent,

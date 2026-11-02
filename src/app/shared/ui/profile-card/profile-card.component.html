@@ -1,0 +1,22 @@
+<ui-card>
+  <header class="profile-card__header">
+    <ui-avatar size="lg" [name]="name()" [imageUrl]="avatarUrl()"></ui-avatar>
+    <div class="profile-card__identity">
+      <h1 class="profile-card__name">{{ name() }}</h1>
+      @if (subtitle()) {
+        <p class="profile-card__subtitle">{{ subtitle() }}</p>
+      }
+    </div>
+  </header>
+
+  @if (details().length > 0) {
+    <dl class="profile-card__details">
+      @for (detail of details(); track detail.label) {
+        <div>
+          <dt>{{ detail.label }}</dt>
+          <dd>{{ detail.value }}</dd>
+        </div>
+      }
+    </dl>
+  }
+</ui-card>

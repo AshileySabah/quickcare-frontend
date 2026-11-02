@@ -1,3 +1,5 @@
+<ui-back-link fallback="/professional"></ui-back-link>
+
 @switch (pageState()) {
   @case ('loading') {
     <ui-skeleton-list variant="page"></ui-skeleton-list>
@@ -13,26 +15,45 @@
   @case ('filled') {
     @if (request(); as currentRequest) {
       <section class="professional-request-detail">
-        <ui-request-summary [request]="currentRequest"></ui-request-summary>
+        <ui-request-summary [request]="currentRequest">
+          @if (patient(); as currentPatient) {
+            <ui-person-chip
+              summary-person
+              [name]="currentPatient.name"
+              [avatarUrl]="currentPatient.avatarUrl"
+              caption="Paciente"
+              [link]="['/professional/pacientes', currentPatient.id]"
+            ></ui-person-chip>
+          } @else if (existingProposal()?.status === 'pendente') {
+            <p summary-person class="professional-request-detail__note">O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.</p>
+          }
+        </ui-request-summary>
 
         @if (existingProposal(); as proposal) {
           <ui-card>
             <h2 class="professional-request-detail__form-title">Sua proposta</h2>
             <div class="professional-request-detail__proposal-status">
-              <ui-status-badge [status]="proposal.status"></ui-status-badge>
+              <ui-status-badge kind="proposal" [status]="proposal.status"></ui-status-badge>
             </div>
+            @if (reacceptNotice(proposal, 'professional'); as notice) {
+              <ui-notice>{{ notice }}</ui-notice>
+            }
             <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
             <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
             <p class="professional-request-detail__proposal-detail">Prazo: {{ proposal.deadline | date: 'dd/MM/yyyy' }}</p>
             @if (canEdit(proposal) || canCancel(proposal)) {
               <div class="professional-request-detail__proposal-actions">
                 @if (canEdit(proposal)) {
-                  <ui-button variant="secondary" [routerLink]="['/professional/propostas', proposal.id, 'editar']">
-                    Editar
-                  </ui-button>
+                  <app-edit-proposal-action [proposal]="proposal"></app-edit-proposal-action>
                 }
                 @if (canCancel(proposal)) {
-                  <ui-button variant="danger" [loading]="isCancelling()" (click)="cancelProposal(proposal)">
+                  <ui-button
+                    variant="danger-outline"
+                    size="sm"
+                    [loading]="isCancelling()"
+                    (click)="askToCancel(proposal)"
+                  >
+                    <ui-icon name="x-circle"></ui-icon>
                     Cancelar proposta
                   </ui-button>
                 }
@@ -41,13 +62,32 @@
           </ui-card>
         } @else if (currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') {
           <ui-card>
-            <h2 class="professional-request-detail__form-title">Enviar proposta</h2>
+            @if (previousProposal(); as previous) {
+              <h2 class="professional-request-detail__form-title">Reenviar proposta</h2>
+              <ui-notice>
+                {{
+                  previous.status === 'recusada'
+                    ? 'O paciente recusou a sua proposta anterior.'
+                    : 'Você cancelou a sua proposta anterior.'
+                }}
+                O valor e a abordagem dela já estão preenchidos: ajuste o que quiser, escolha o prazo e envie.
+              </ui-notice>
 
-            <app-proposal-form
-              submitLabel="Enviar proposta"
-              [submitting]="isSubmitting()"
-              (submitted)="submit($event)"
-            ></app-proposal-form>
+              <app-proposal-form
+                submitLabel="Reenviar proposta"
+                [initialValue]="resendValue(previous)"
+                [submitting]="isSubmitting()"
+                (submitted)="submit($event)"
+              ></app-proposal-form>
+            } @else {
+              <h2 class="professional-request-detail__form-title">Enviar proposta</h2>
+
+              <app-proposal-form
+                submitLabel="Enviar proposta"
+                [submitting]="isSubmitting()"
+                (submitted)="submit($event)"
+              ></app-proposal-form>
+            }
           </ui-card>
         } @else {
           <ui-empty-state title="Esta solicitação não está mais recebendo propostas."></ui-empty-state>
@@ -56,3 +96,17 @@
     }
   }
 }
+
+<ui-confirm-dialog
+  [open]="confirmingCancel()"
+  titleText="Cancelar proposta"
+  confirmLabel="Sim, cancelar a proposta"
+  cancelLabel="Não, manter a proposta"
+  confirmVariant="danger"
+  [loading]="isCancelling()"
+  (confirmed)="confirmCancel()"
+  (closed)="confirmingCancel.set(false)"
+  icon="x-circle"
+  message="Cancelar a sua proposta já aceita?"
+  [consequences]="cancelConsequences"
+></ui-confirm-dialog>

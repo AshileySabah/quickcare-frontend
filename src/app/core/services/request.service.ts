@@ -58,7 +58,8 @@ interface SolicitacaoApiResponse {
   totalPropostas: number;
 }
 
-const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
+/** Com propostas aceitas também: as vagas reabrem e as propostas voltam a aguardar aceite. */
+const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 const CANCELABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 const RECEIVING_PROPOSALS_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
 
@@ -73,7 +74,7 @@ export class RequestService {
 
   /** Com alguma proposta aceita a API recusa a edição (ela apagaria as vagas ocupadas). */
   canEdit(request: ServiceRequest): boolean {
-    return EDITABLE_STATUSES.includes(request.status) && !request.professionals.some((professional) => professional.filled > 0);
+    return EDITABLE_STATUSES.includes(request.status);
   }
 
   canCancel(request: ServiceRequest): boolean {
@@ -228,4 +229,23 @@ function toApiPayload(input: CreateRequestInput) {
       : null,
     prazoDesejado: input.desiredDeadline,
   };
+}
+
+/** O que acontece ao cancelar uma solicitação com propostas aceitas (sem aceitas, cancela sem perguntar). */
+export const CANCEL_REQUEST_CONSEQUENCES = [
+  'Os profissionais com propostas aceitas deixam de atender esta solicitação.',
+  'As propostas pendentes serão recusadas e ninguém mais poderá enviar propostas.',
+  'Essa ação não pode ser desfeita.',
+];
+
+/** O que acontece ao editar uma solicitação que já tem propostas aceitas. */
+export const EDIT_REQUEST_WITH_ACCEPTED_CONSEQUENCES = [
+  'As propostas aceitas deixam de estar aceitas e as vagas reabrem.',
+  'Você precisa aceitar de novo a proposta de cada profissional (ou escolher outras).',
+  'Os profissionais são avisados para revisar as propostas.',
+];
+
+/** Alguma vaga já tem proposta aceita: editar faz os aceitos voltarem a aguardar. */
+export function hasAcceptedProposals(request: ServiceRequest): boolean {
+  return request.professionals.some((professional) => professional.filled > 0);
 }

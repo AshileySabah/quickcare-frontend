@@ -1,8 +1,13 @@
 <section class="proposal-edit">
+  <ui-back-link fallback="/professional/propostas"></ui-back-link>
+
   <h1 class="proposal-edit__title">Editar proposta</h1>
   <p class="proposal-edit__subtitle">Atualize os dados da sua proposta.</p>
 
   @if (proposal(); as current) {
+    @if (wasAccepted()) {
+      <ui-notice>Esta proposta já foi aceita. Ao salvar, ela deixa de estar aceita e o paciente precisa aceitá-la de novo.</ui-notice>
+    }
     <app-proposal-form
       [initialValue]="current"
       submitLabel="Salvar alterações"

@@ -1,0 +1,25 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: block;
+  margin-bottom: tokens.space(4);
+}
+
+.back-link {
+  padding: 0;
+  font: inherit;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  &:hover {
+    color: tokens.color('teal', 600);
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+}

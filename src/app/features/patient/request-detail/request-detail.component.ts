@@ -1,16 +1,20 @@
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProposalService } from '../../../core/services/proposal.service';
-import { RequestService } from '../../../core/services/request.service';
-import { Proposal, ServiceRequest } from '../../../core/models';
+import { CANCEL_REQUEST_CONSEQUENCES, RequestService, hasAcceptedProposals } from '../../../core/services/request.service';
+import { Proposal, ServiceRequest, reacceptNotice } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { ButtonGroupComponent } from '../../../shared/ui/button-group/button-group.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
 import { ProposalCardComponent } from '../../../shared/ui/proposal-card/proposal-card.component';
 import { RequestSummaryComponent } from '../../../shared/ui/request-summary/request-summary.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -18,12 +22,11 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [SkeletonListComponent, 
+  imports: [EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
-    ButtonComponent,
+    ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,
     ErrorStateComponent,
-    ModalComponent,
     ProposalCardComponent,
     RequestSummaryComponent,
   ],
@@ -46,6 +49,21 @@ export class RequestDetailComponent {
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
   protected readonly isAccepting = signal(false);
+  protected readonly reacceptNotice = reacceptNotice;
+  protected readonly cancelConsequences = CANCEL_REQUEST_CONSEQUENCES;
+  protected readonly acceptConsequences = [
+    'O profissional ocupa uma das vagas pedidas e passa a ver seus dados.',
+    'Propostas que não couberem nas vagas restantes serão recusadas.',
+    'A solicitação entra em andamento quando todas as vagas forem preenchidas.',
+  ];
+  protected readonly rejectConsequences = [
+    'O profissional verá que a proposta foi recusada.',
+    'Enquanto a solicitação receber propostas, ele pode enviar uma nova.',
+  ];
+  protected readonly confirmingCancel = signal(false);
+  protected readonly proposalToReject = signal<Proposal | null>(null);
+  protected readonly isRejecting = signal(false);
+  protected readonly isCancelling = signal(false);
 
   constructor() {
     this.loadRequest();
@@ -99,15 +117,51 @@ export class RequestDetailComponent {
     return this.requestService.canCancel(request);
   }
 
-  protected cancelRequest(): void {
+  /** Sem propostas aceitas cancela direto; com aceitas, pergunta antes. */
+  protected askToCancel(request: ServiceRequest): void {
+    if (hasAcceptedProposals(request)) {
+      this.confirmingCancel.set(true);
+    } else {
+      this.confirmCancel();
+    }
+  }
+
+  protected confirmCancel(): void {
+    this.isCancelling.set(true);
     this.requestService.cancel(this.requestId).subscribe({
       next: (updated) => {
+        this.isCancelling.set(false);
+        this.confirmingCancel.set(false);
         this.request.set(updated);
         // As propostas pendentes são recusadas junto com o cancelamento.
         this.loadProposals();
         this.toastService.info('Solicitação cancelada.');
       },
-      error: (error: Error) => this.toastService.error(error.message),
+      error: (error: Error) => {
+        this.isCancelling.set(false);
+        this.toastService.error(error.message);
+      },
+    });
+  }
+
+  protected confirmReject(): void {
+    const proposal = this.proposalToReject();
+    if (!proposal) {
+      return;
+    }
+
+    this.isRejecting.set(true);
+    this.proposalService.reject(proposal.id).subscribe({
+      next: () => {
+        this.isRejecting.set(false);
+        this.proposalToReject.set(null);
+        this.toastService.info('Proposta recusada.');
+        this.loadRequest();
+      },
+      error: (error: Error) => {
+        this.isRejecting.set(false);
+        this.toastService.error(error.message);
+      },
     });
   }
 

@@ -1,16 +1,19 @@
 <ui-card class="ui-proposal-card">
   <header class="ui-proposal-card__header">
-    <div class="ui-proposal-card__professional">
-      <span class="ui-proposal-card__name">{{ professionalName() }}</span>
-      @if (professionalValidationStatus()) {
-        <ui-verified-badge [status]="professionalValidationStatus()!"></ui-verified-badge>
-      }
-    </div>
-    <ui-status-badge [status]="proposal().status"></ui-status-badge>
+    @if (personName(); as name) {
+      <ui-person-chip [name]="name" [avatarUrl]="personAvatarUrl()" [link]="personLink()"></ui-person-chip>
+    } @else if (personHiddenNote()) {
+      <p class="ui-proposal-card__hidden-note">{{ personHiddenNote() }}</p>
+    }
+    <ui-status-badge class="ui-proposal-card__status" kind="proposal" [status]="proposal().status"></ui-status-badge>
   </header>
 
-  @if (specialtyName()) {
-    <p class="ui-proposal-card__specialty">{{ specialtyName() }}</p>
+  @if (subtitle()) {
+    <p class="ui-proposal-card__subtitle">{{ subtitle() }}</p>
+  }
+
+  @if (notice()) {
+    <ui-notice>{{ notice() }}</ui-notice>
   }
 
   <p class="ui-proposal-card__price">{{ proposal().price | currency: 'BRL' }}</p>

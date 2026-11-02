@@ -45,7 +45,7 @@ const REQUESTS: ServiceRequest[] = [
         categoryLabel: 'Outros profissionais',
         specialties: [{ id: '31', name: 'Nutrição', category: 'OUTRO' }],
         quantity: 1,
-        filled: 0,
+        filled: 1,
       },
     ],
     createdAt: '2026-09-10T10:00:00Z',
@@ -90,8 +90,8 @@ describe('PatientDashboardComponent', () => {
   });
 
   it('filtra por busca sem diferenciar acentos', () => {
-    const component = fixture.componentInstance as unknown as { filters: { patchValue(value: object): void } };
-    component.filters.patchValue({ search: 'nutricao' });
+    const component = fixture.componentInstance as unknown as { filters: { form: { patchValue(value: object): void } } };
+    component.filters.form.patchValue({ search: 'nutricao' });
     fixture.detectChanges();
 
     expect(cardIds()).toEqual(['#2']);
@@ -99,23 +99,45 @@ describe('PatientDashboardComponent', () => {
 
   it('mostra o total de propostas recebidas informado pela API', () => {
     const card = fixture.nativeElement.querySelectorAll('app-request-card')[1] as HTMLElement;
-    expect(card.querySelector('.request-card__proposals-link')?.textContent?.trim()).toBe('2');
+    const proposals = Array.from(card.querySelectorAll('.request-card__fact') as NodeListOf<HTMLElement>).find((fact) =>
+      fact.textContent?.includes('Propostas'),
+    );
+    expect(proposals?.querySelector('.request-card__fact-value')?.textContent?.trim().startsWith('2')).toBeTrue();
+    expect(proposals?.querySelector('a')).toBeNull();
   });
 
-  it('pede confirmação antes de cancelar e só cancela ao confirmar', () => {
+  function cancelButtonOf(cardId: string): HTMLButtonElement {
+    const card = Array.from(fixture.nativeElement.querySelectorAll('app-request-card') as NodeListOf<HTMLElement>).find(
+      (element) => element.querySelector('.request-card__id')?.textContent?.trim() === cardId,
+    )!;
+    const button = Array.from(card.querySelectorAll('ui-button') as NodeListOf<HTMLElement>).find(
+      (element) => element.textContent!.trim() === 'Cancelar',
+    )!;
+    return button.querySelector('button')!;
+  }
+
+  it('cancela direto, sem modal, quando nenhuma proposta foi aceita', () => {
     requestService.cancel.and.callFake((id) => of({ ...REQUESTS.find((item) => item.id === id)!, status: 'cancelada' }));
 
-    const cancelButton = Array.from(fixture.nativeElement.querySelectorAll('ui-button') as NodeListOf<HTMLElement>).find(
-      (button) => button.textContent!.trim() === 'Cancelar',
-    )!;
-    cancelButton.querySelector('button')!.click();
+    cancelButtonOf('#1').click();
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('[role="dialog"]')).toBeNull();
+    expect(requestService.cancel).toHaveBeenCalledWith('1');
+    expect(cardIds()).toEqual(['#2']);
+  });
+
+  it('com proposta aceita, pede confirmação e só cancela ao confirmar', () => {
+    requestService.cancel.and.callFake((id) => of({ ...REQUESTS.find((item) => item.id === id)!, status: 'cancelada' }));
+
+    cancelButtonOf('#2').click();
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('[role="dialog"]')).not.toBeNull();
     expect(requestService.cancel).not.toHaveBeenCalled();
 
     const confirmButton = Array.from(fixture.nativeElement.querySelectorAll('[role="dialog"] ui-button') as NodeListOf<HTMLElement>).find(
-      (button) => button.textContent!.trim() === 'Sim, cancelar',
+      (button) => button.textContent!.trim() === 'Sim, cancelar a solicitação',
     )!;
     confirmButton.querySelector('button')!.click();
     fixture.detectChanges();

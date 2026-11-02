@@ -1,0 +1,30 @@
+@use 'tokens' as tokens;
+@use 'patterns/details' as details;
+
+.profile-card__header {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(4);
+  margin-bottom: tokens.space(5);
+}
+
+.profile-card__identity {
+  min-width: 0;
+}
+
+.profile-card__name {
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.profile-card__subtitle {
+  margin-top: tokens.space(1);
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('teal', 700);
+}
+
+.profile-card__details {
+  @include details.details-list;
+}

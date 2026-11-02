@@ -21,7 +21,7 @@ function request(id: string, status: RequestStatus): ServiceRequest {
 }
 
 describe('PatientHistoryComponent', () => {
-  it('mostra só as solicitações encerradas (concluídas e canceladas), sem editar/cancelar', () => {
+  it('mostra só as solicitações encerradas (concluídas e canceladas), sem editar/cancelar, com reabrir solicitação', () => {
     const requests = [
       request('1', 'aberta'),
       request('2', 'concluida'),
@@ -43,6 +43,7 @@ describe('PatientHistoryComponent', () => {
     const buttons = Array.from(element.querySelectorAll('ui-button')).map((item) => item.textContent!.trim());
 
     expect(ids).toEqual(['#2', '#5']);
-    expect(buttons.every((label) => label === 'Visualizar')).toBeTrue();
+    // Sem editar/cancelar; só visualizar e reabrir como uma nova solicitação.
+    expect(buttons).toEqual(['Visualizar', 'Reabrir solicitação', 'Visualizar', 'Reabrir solicitação']);
   });
 });

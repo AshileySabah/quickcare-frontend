@@ -1,0 +1,12 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: block;
+  margin-bottom: tokens.space(3);
+  padding: tokens.space(2) tokens.space(3);
+  border-left: 3px solid tokens.semantic('warning');
+  border-radius: tokens.radius('sm');
+  background-color: tokens.semantic('warning-light');
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+}

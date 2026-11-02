@@ -1,4 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { createListFilters } from '../../../core/lists/list-filters';
+import {
+  REQUEST_SORTS,
+  modalityFilter,
+  requestCategoryFilter,
+  requestSearchText,
+  requestStatusFilter,
+} from '../../../core/lists/request-filters';
 import { ListViewState, RequestStatus, ServiceRequest } from '../../../core/models';
 import { RequestService } from '../../../core/services/request.service';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -7,6 +16,7 @@ import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.comp
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 
 /** Solicitações encerradas; as ativas ficam na home. */
 const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
@@ -14,7 +24,7 @@ const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 @Component({
   selector: 'app-patient-history',
   standalone: true,
-  imports: [SkeletonListComponent,
+  imports: [ListFiltersComponent, SkeletonListComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     GridComponent,
@@ -25,10 +35,22 @@ const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
   styleUrl: './patient-history.component.scss',
 })
 export class PatientHistoryComponent {
+  private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
+
+  protected readonly filters = createListFilters(this.fb, this.requests, {
+    searchPlaceholder: 'Descrição, especialidade, bairro...',
+    searchText: requestSearchText,
+    selects: [
+      requestStatusFilter(CLOSED_STATUSES, 'Todas'),
+      modalityFilter((request: ServiceRequest) => request.modality),
+      requestCategoryFilter(this.requests),
+    ],
+    sorts: [REQUEST_SORTS.recentes, REQUEST_SORTS.antigas],
+  });
 
   constructor() {
     this.load();

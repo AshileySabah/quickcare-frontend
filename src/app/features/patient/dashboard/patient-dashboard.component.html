@@ -76,81 +76,9 @@
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ("filled") {
-      <ui-card padding="sm">
-        <form
-          [formGroup]="filters"
-          role="search"
-          (submit)="$event.preventDefault()"
-        >
-          <ui-grid spacing="sm">
-            <ui-grid-item [xs]="12" [lg]="4">
-              <ui-input
-                label="Buscar"
-                formControlName="search"
-                placeholder="Descrição, especialidade, bairro..."
-              ></ui-input>
-            </ui-grid-item>
-            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select
-                label="Status"
-                formControlName="status"
-                [options]="statusOptions"
-                placeholder="Status"
-              ></ui-select>
-            </ui-grid-item>
-            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select
-                label="Modalidade"
-                formControlName="modality"
-                [options]="modalityOptions"
-                placeholder="Todas"
-              ></ui-select>
-            </ui-grid-item>
-            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select
-                label="Categoria"
-                formControlName="category"
-                [options]="categoryOptions()"
-                placeholder="Todas"
-              ></ui-select>
-            </ui-grid-item>
-            <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
-              <ui-select
-                label="Ordenar por"
-                formControlName="sort"
-                [options]="sortOptions"
-                placeholder="Ordenar"
-              ></ui-select>
-            </ui-grid-item>
-          </ui-grid>
-        </form>
-        <div class="patient-dashboard__filters-footer">
-          <span class="patient-dashboard__count">
-            {{ filteredRequests().length }}
-            {{
-              filteredRequests().length === 1 ? "solicitação" : "solicitações"
-            }}
-          </span>
-          @if (hasActiveFilters()) {
-            <ui-button variant="ghost" size="sm" (click)="clearFilters()"
-              >Limpar filtros</ui-button
-            >
-          }
-        </div>
-      </ui-card>
-
-      @if (filteredRequests().length === 0) {
-        <ui-empty-state
-          title="Nenhuma solicitação encontrada"
-          message="Ajuste ou limpe os filtros para ver outras solicitações."
-        >
-          <ui-button variant="secondary" (click)="clearFilters()"
-            >Limpar filtros</ui-button
-          >
-        </ui-empty-state>
-      } @else {
+      <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
         <ui-grid>
-          @for (request of filteredRequests(); track request.id) {
+          @for (request of filters.filtered(); track request.id) {
             <ui-grid-item [xs]="12">
               <app-request-card
                 [request]="request"
@@ -162,36 +90,21 @@
             </ui-grid-item>
           }
         </ui-grid>
-      }
+      </ui-list-filters>
     }
   }
 </section>
 
-<ui-modal
-  [open]="requestToCancel() !== null"
+<ui-confirm-dialog
+  [open]="confirmingCancel()"
   titleText="Cancelar solicitação"
+  confirmLabel="Sim, cancelar a solicitação"
+  cancelLabel="Não, manter a solicitação"
+  confirmVariant="danger"
+  [loading]="isCancelling()"
+  (confirmed)="confirmCancel()"
   (closed)="closeCancelModal()"
->
-  @if (requestToCancel(); as request) {
-    <p class="patient-dashboard__confirm-text">
-      Tem certeza que deseja cancelar a solicitação
-      <strong>#{{ request.id }}</strong
-      >? Os profissionais não poderão mais enviar propostas e essa ação não pode
-      ser desfeita.
-    </p>
-    <div class="patient-dashboard__confirm-actions">
-      <ui-button
-        variant="ghost"
-        [disabled]="isCancelling()"
-        (click)="closeCancelModal()"
-        >Voltar</ui-button
-      >
-      <ui-button
-        variant="danger"
-        [loading]="isCancelling()"
-        (click)="confirmCancel()"
-        >Sim, cancelar</ui-button
-      >
-    </div>
-  }
-</ui-modal>
+  icon="x-circle"
+  message="Cancelar esta solicitação, que já tem propostas aceitas?"
+  [consequences]="cancelConsequences"
+></ui-confirm-dialog>

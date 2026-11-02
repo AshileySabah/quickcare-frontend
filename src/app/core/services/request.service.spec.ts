@@ -218,15 +218,16 @@ describe('RequestService', () => {
     expect(requests).toEqual([]);
   });
 
-  it('permite editar apenas enquanto aberta ou recebendo propostas e sem vagas preenchidas', () => {
+  it('permite editar enquanto a solicitação está em curso, mesmo com vagas preenchidas', () => {
     const base = { status: 'aberta', professionals: [{ quantity: 2, filled: 0 }] } as ServiceRequest;
 
     expect(service.canEdit(base)).toBe(true);
     expect(service.canEdit({ ...base, status: 'recebendo_propostas' })).toBe(true);
-    expect(service.canEdit({ ...base, status: 'em_andamento' })).toBe(false);
     expect(
-      service.canEdit({ ...base, status: 'recebendo_propostas', professionals: [{ ...base.professionals[0], filled: 1 }] }),
-    ).toBe(false);
+      service.canEdit({ ...base, status: 'em_andamento', professionals: [{ ...base.professionals[0], filled: 2 }] }),
+    ).toBe(true);
+    expect(service.canEdit({ ...base, status: 'concluida' })).toBe(false);
+    expect(service.canEdit({ ...base, status: 'cancelada' })).toBe(false);
     expect(service.canCancel({ ...base, status: 'em_andamento' })).toBe(true);
     expect(service.canCancel({ ...base, status: 'concluida' })).toBe(false);
   });

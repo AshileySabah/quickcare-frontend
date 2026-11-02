@@ -15,10 +15,15 @@
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
+  overflow-x: hidden;
   overflow-y: auto;
   background-color: tokens.color('gray', 0);
   border-radius: tokens.radius('lg');
   box-shadow: 0 8px 24px rgba(tokens.color('teal', 900), 0.2);
+
+  &--lg {
+    max-width: 600px;
+  }
 
   &:focus-visible {
     outline: none;

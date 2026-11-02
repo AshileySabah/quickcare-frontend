@@ -25,7 +25,7 @@ import { DeclarationsCardComponent } from '../../../shared/ui/register/declarati
 import { DocumentsCardComponent } from '../../../shared/ui/register/documents-card/documents-card.component';
 import { UploadedDocument } from '../../../shared/ui/forms/document-uploader/document-uploader.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
-import { HealthInfoCardComponent } from './health-info-card/health-info-card.component';
+import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
 import { PasswordCardComponent } from '../../../shared/ui/register/password-card/password-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';

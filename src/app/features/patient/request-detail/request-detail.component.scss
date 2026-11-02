@@ -18,15 +18,3 @@
   flex-direction: column;
   gap: tokens.space(3);
 }
-
-.request-detail__confirm-text {
-  font-size: tokens.font-size('sm');
-  color: tokens.color('gray', 700);
-  margin-bottom: tokens.space(4);
-}
-
-.request-detail__confirm-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: tokens.space(2);
-}

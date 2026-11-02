@@ -11,7 +11,7 @@ import { BasicInfoCardComponent } from '../../../shared/ui/register/basic-info-c
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { HealthInfoCardComponent } from '../register/health-info-card/health-info-card.component';
+import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 

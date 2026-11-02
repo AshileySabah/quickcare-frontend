@@ -1,0 +1,19 @@
+<ng-template #content>
+  <ui-avatar [name]="name()" [imageUrl]="avatarUrl()"></ui-avatar>
+  <span class="person-chip__text">
+    <span class="person-chip__name">{{ name() }}</span>
+    @if (caption()) {
+      <span class="person-chip__caption">{{ caption() }}</span>
+    }
+  </span>
+</ng-template>
+
+@if (link(); as target) {
+  <a class="person-chip person-chip--link" [routerLink]="target" [attr.aria-label]="'Ver perfil de ' + name()">
+    <ng-container [ngTemplateOutlet]="content"></ng-container>
+  </a>
+} @else {
+  <span class="person-chip">
+    <ng-container [ngTemplateOutlet]="content"></ng-container>
+  </span>
+}

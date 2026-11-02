@@ -17,3 +17,9 @@
   font-size: tokens.font-size('sm');
   font-weight: tokens.font-weight('medium');
 }
+
+.ui-avatar--lg {
+  width: 72px;
+  height: 72px;
+  font-size: tokens.font-size('xl');
+}

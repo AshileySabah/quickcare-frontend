@@ -20,13 +20,15 @@
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
-      <ui-grid>
-        @for (request of requests(); track request.id) {
-          <ui-grid-item [xs]="12">
-            <app-request-card [request]="request"></app-request-card>
-          </ui-grid-item>
-        }
-      </ui-grid>
+      <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
+        <ui-grid>
+          @for (request of filters.filtered(); track request.id) {
+            <ui-grid-item [xs]="12">
+              <app-request-card [request]="request" [canRequestAgain]="true"></app-request-card>
+            </ui-grid-item>
+          }
+        </ui-grid>
+      </ui-list-filters>
     }
   }
 </section>

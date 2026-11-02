@@ -6,10 +6,8 @@ export type ValidationStepType = 'IDENTIDADE' | 'CNPJ' | 'REGISTRO_PROFISSIONAL'
 
 export type ValidationStepStatus = 'pendente' | 'aprovada' | 'reprovada';
 
-/** Parecer de uma consulta automática; nunca decide a etapa, só orienta o admin. */
 export type PreValidationOpinion = 'favoravel' | 'desfavoravel' | 'indisponivel' | 'sem-api';
 
-/** Arquivo guardado no storage, com URL assinada temporária (nula se indisponível). */
 export interface StoredFile {
   fileName: string;
   contentType: string;
@@ -24,14 +22,11 @@ export interface ValidationStep {
   label: string;
   status: ValidationStepStatus;
   justification: string | null;
-  /** Documento enviado pelo usuário que foi conferido nesta avaliação. */
   document: StoredFile | null;
-  /** Evidência anexada pelo admin ao decidir. */
   attachment: StoredFile | null;
   reviewedBy: string | null;
   reviewedAt: string | null;
   createdAt: string;
-  /** Avaliações anteriores (reprovadas e reenviadas), da mais recente para a mais antiga. */
   history: ValidationStep[];
 }
 
@@ -78,9 +73,7 @@ export interface ExternalCheck {
   field: string;
   provider: string | null;
   opinion: PreValidationOpinion;
-  /** Explicam o parecer. */
   reasons: string[];
-  /** Informações auxiliares que não pesam no parecer. */
   notes: string[];
 }
 
@@ -98,7 +91,6 @@ export interface StepDecision {
   attachment?: File;
 }
 
-/** Dados corrigidos de uma etapa reprovada; só os campos da etapa são usados. */
 export interface StepResubmission {
   name?: string;
   cpf?: string;

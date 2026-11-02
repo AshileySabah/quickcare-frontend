@@ -61,7 +61,6 @@ const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
 })
 export class StatusBadgeComponent {
   status = input.required<DomainStatus>();
-  /** Solicitação e proposta têm status com o mesmo nome ("cancelada") e significados diferentes. */
   kind = input<'request' | 'proposal' | 'attendance' | 'problem'>('request');
 
   protected readonly presentation = computed<StatusPresentation>(() => {

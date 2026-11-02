@@ -18,18 +18,9 @@ import { JustificationDialogComponent } from '../../../shared/ui/justification-d
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { blockMessage, blockedAction } from '../block-text';
 
-/** Quantas ocorrências recentes aparecem no quadro (as mais novas). */
 const RECENT = 5;
-/** O primeiro bloqueio dura 7 dias; os seguintes, 14, 21... (regra do back). */
 const FIRST_BLOCK_DAYS = 7;
 
-/**
- * As ocorrências do perfil na home: quantas contam (de 3 em 90 dias), o
- * bloqueio atual e as mais recentes, cada uma com o recurso ao admin (uma vez
- * só). O status do recurso aparece só depois de recorrer; aceito, a ocorrência
- * nem vem mais na lista. Só aparece quando há algo para mostrar. As
- * notificações de ocorrência, bloqueio e recurso trazem para cá (?destaque=ocorrencias).
- */
 @Component({
   selector: 'app-occurrences-card',
   standalone: true,
@@ -52,7 +43,6 @@ export class OccurrencesCardComponent implements OnInit {
 
   role = input.required<SwitchableRole>();
 
-  /** Se o perfil está bloqueado agora, para a tela desabilitar a criação. */
   readonly blockedChange = output<boolean>();
 
   protected readonly summary = signal<OccurrenceSummary | null>(null);
@@ -73,10 +63,6 @@ export class OccurrencesCardComponent implements OnInit {
     return block ? blockMessage(this.role(), block) : null;
   });
 
-  /**
-   * As que causaram o bloqueio contam enquanto ele dura e deixam de contar
-   * quando ele termina; depois disso aparecem marcadas ("Já gerou bloqueio").
-   */
   protected readonly ruleText = computed(() => {
     const summary = this.summary();
     if (!summary) {
@@ -102,7 +88,6 @@ export class OccurrencesCardComponent implements OnInit {
   ngOnInit(): void {
     this.occurrenceService.summary(this.role()).subscribe({
       next: (summary) => this.show(summary),
-      // O quadro é complementar: sem ele, a home segue normal.
       error: () => this.summary.set(null),
     });
   }

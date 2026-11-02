@@ -31,7 +31,6 @@ import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-fie
 
 type PageState = 'loading' | 'not-found' | 'error' | 'filled';
 
-/** O que cada evento do histórico do atendimento quer dizer, para o admin. */
 const EVENT_LABELS: Record<string, string> = {
   AGENDADO: 'Proposta aceita: atendimento agendado',
   REACEITE_SOLICITADO: 'Paciente editou a solicitação: aguardando reaceite',
@@ -56,10 +55,6 @@ const DECISION_OPTIONS: SelectOption[] = [
   { value: 'realizado', label: 'Foi realizado' },
 ];
 
-/**
- * Uma disputa: as duas versões com as provas, o histórico do atendimento e a
- * decisão (aconteceu ou não, quem leva ocorrência, justificativa).
- */
 @Component({
   selector: 'app-admin-dispute-detail',
   standalone: true,
@@ -161,7 +156,6 @@ export class AdminDisputeDetailComponent {
     return EVENT_LABELS[type] ?? type;
   }
 
-  /** Sugere: não realizado → ocorrência para quem o relato diz que faltou. O admin muda o que quiser. */
   private suggest(): void {
     const detail = this.detail();
     if (!detail) {

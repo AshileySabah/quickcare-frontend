@@ -1,8 +1,3 @@
-/**
- * O atendimento de uma proposta aceita. Muda sozinho no horário: agendado →
- * em andamento → finalizado → concluído (72h depois do término). Um relato de
- * "não foi realizado" o tira desse ciclo até ser resolvido.
- */
 export type AttendanceStatus =
   | 'agendado'
   | 'aguardando_reaceite'
@@ -26,7 +21,6 @@ export type AttendanceCancellationReason =
   | 'edicao_incompativel'
   | 'admin';
 
-/** Período proposto por um lado, à espera da resposta do outro. */
 export interface AttendanceReschedule {
   start: string;
   end: string;
@@ -43,16 +37,12 @@ export interface Attendance {
   reschedule?: AttendanceReschedule;
   cancelledBy?: AttendanceSide;
   cancellationReason?: AttendanceCancellationReason;
-  /** Cancelar agora contaria como ocorrência (regra das 48h). */
   cancellationCountsAsOccurrence: boolean;
-  /** Falta menos de 48h para o início: editar a solicitação agora pode penalizar o paciente. */
   lateChange: boolean;
-  /** Do início até 72h depois do término, sem relato ainda. */
   canReportProblem: boolean;
   problem?: AttendanceProblem;
 }
 
-/** Por que não foi realizado, segundo quem relatou. */
 export type ProblemReason = 'outro_nao_compareceu' | 'combinado';
 
 export type ProblemStatus = 'aguardando_resposta' | 'confirmado' | 'sem_resposta' | 'em_disputa' | 'decidido';
@@ -64,11 +54,9 @@ export interface ProblemAttachment {
   side: AttendanceSide;
   fileName: string;
   contentType: string;
-  /** Só para o admin; as partes pedem uma URL temporária. */
   url?: string;
 }
 
-/** "Não foi realizado": o relato, a resposta do outro lado e a decisão do admin. */
 export interface AttendanceProblem {
   id: string;
   status: ProblemStatus;
@@ -105,7 +93,6 @@ export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {
   nao_realizado: 'Não realizado',
 };
 
-/** Ainda vai acontecer ou está acontecendo. */
 export const ACTIVE_ATTENDANCE_STATUSES: AttendanceStatus[] = ['agendado', 'aguardando_reaceite', 'em_andamento'];
 
 const CANCELLATION_REASONS: Record<AttendanceCancellationReason, string> = {
@@ -119,7 +106,6 @@ const CANCELLATION_REASONS: Record<AttendanceCancellationReason, string> = {
   admin: 'Um administrador encerrou a solicitação.',
 };
 
-/** Por que o atendimento foi cancelado, dito de forma neutra para os dois lados. */
 export function cancellationDescription(attendance: Attendance): string {
   if (attendance.cancellationReason === 'desistencia') {
     return attendance.cancelledBy === 'paciente' ? 'O paciente cancelou o atendimento.' : 'O profissional cancelou o atendimento.';

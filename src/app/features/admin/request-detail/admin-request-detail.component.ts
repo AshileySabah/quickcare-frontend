@@ -64,7 +64,6 @@ const ACTION_TEXTS: Record<AdminRequestAction, ActionTexts> = {
   },
 };
 
-/** A solicitação no admin: dados, propostas com os atendimentos e a troca de status com justificativa. */
 @Component({
   selector: 'app-admin-request-detail',
   standalone: true,

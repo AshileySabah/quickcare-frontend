@@ -15,12 +15,6 @@ import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-act
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
-/**
- * Perfil de um profissional, como o paciente vê ao comparar propostas. Só
- * aprovados têm perfil visível; os contatos de emergência aparecem para o
- * paciente cujo atendimento com ele já começou. O paciente pode bloquear (ou
- * desbloquear) o profissional daqui.
- */
 @Component({
   selector: 'app-professional-profile',
   standalone: true,
@@ -37,7 +31,6 @@ export class ProfessionalProfileComponent {
   protected readonly pageState = signal<PageState>('loading');
   protected readonly profile = signal<ProfessionalPublicProfile | null>(null);
 
-  /** Alimenta o card de contatos, que trabalha com formulário. */
   protected readonly contactsForm = this.fb.nonNullable.group({
     emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
   });

@@ -7,10 +7,6 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { BlockUserDialogComponent } from '../block-user-dialog/block-user-dialog.component';
 
-/**
- * "Bloquear" (ou "Desbloquear", se quem vê já bloqueou) no perfil de outra
- * pessoa. Avisa a tela (`changed`) para recarregar o perfil.
- */
 @Component({
   selector: 'app-profile-block-action',
   standalone: true,
@@ -54,7 +50,6 @@ export class ProfileBlockActionComponent {
   kind = input.required<BlockTargetKind>();
   personId = input.required<string>();
   name = input.required<string>();
-  /** O bloqueio que quem vê já fez desta pessoa. */
   blockId = input<string | undefined>(undefined);
 
   readonly changed = output<void>();

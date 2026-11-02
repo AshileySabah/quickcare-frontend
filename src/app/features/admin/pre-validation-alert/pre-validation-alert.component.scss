@@ -1,7 +1,6 @@
 @use 'sass:list';
 @use 'tokens' as tokens;
 
-// Cores por parecer: borda, fundo e ícone.
 $opinions: (
   favoravel: (tokens.semantic('success'), tokens.semantic('success-light')),
   desfavoravel: (tokens.semantic('error'), tokens.semantic('error-light')),

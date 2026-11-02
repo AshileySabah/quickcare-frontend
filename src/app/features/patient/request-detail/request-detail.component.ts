@@ -51,7 +51,6 @@ export class RequestDetailComponent {
 
   protected readonly proposalsState = signal<ProposalsState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.proposals);
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
@@ -95,7 +94,6 @@ export class RequestDetailComponent {
     });
   }
 
-  /** Depois de remarcar, cancelar ou responder no atendimento: status e vagas mudam junto. */
   protected refresh(): void {
     this.requestService.getById(this.requestId).subscribe({
       next: (request) => {
@@ -122,7 +120,6 @@ export class RequestDetailComponent {
     });
   }
 
-  /** Ex.: "Enfermeiro(a) — Curativos, Sondagem". */
   protected professionalDescription(proposal: Proposal): string {
     const specialties = proposal.professional.specialties.map((specialty) => specialty.name).join(', ');
     return specialties ? `${proposal.professional.categoryLabel} — ${specialties}` : proposal.professional.categoryLabel;
@@ -140,7 +137,6 @@ export class RequestDetailComponent {
     return this.requestService.canCancel(request);
   }
 
-  /** Sem propostas aceitas cancela direto; com aceitas, pergunta antes. */
   protected askToCancel(request: ServiceRequest): void {
     if (hasAcceptedProposals(request)) {
       this.confirmingCancel.set(true);
@@ -156,7 +152,6 @@ export class RequestDetailComponent {
         this.isCancelling.set(false);
         this.confirmingCancel.set(false);
         this.request.set(updated);
-        // As propostas pendentes são recusadas junto com o cancelamento.
         this.loadProposals();
         this.toastService.info('Solicitação cancelada.');
       },

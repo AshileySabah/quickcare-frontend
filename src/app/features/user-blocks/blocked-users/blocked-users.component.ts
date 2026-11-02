@@ -14,11 +14,6 @@ import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
-/**
- * Quem o perfil em uso bloqueou (pelo menu da conta), com o desbloqueio. O
- * perfil vem da rota (`data.role`): o paciente lista profissionais, o
- * profissional lista pacientes.
- */
 @Component({
   selector: 'app-blocked-users',
   standalone: true,
@@ -47,7 +42,6 @@ export class BlockedUsersComponent {
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly blocked = signal<BlockedUser[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.blocked);
   protected readonly toUnblock = signal<BlockedUser | null>(null);
   protected readonly isUnblocking = signal(false);

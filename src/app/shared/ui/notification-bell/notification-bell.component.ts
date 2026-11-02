@@ -9,11 +9,6 @@ import { IconComponent } from '../icon/icon.component';
 
 const MAX_BADGE = 99;
 
-/**
- * Sino do header: não lidas do perfil em uso e, ao abrir, a lista delas.
- * Abrir uma notificação marca como lida, leva para onde ela aponta e
- * destaca o item de que ela trata.
- */
 @Component({
   selector: 'ui-notification-bell',
   standalone: true,

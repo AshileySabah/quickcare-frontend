@@ -6,7 +6,6 @@ export interface SubNavItem {
   link: string;
 }
 
-/** Abas de navegação dentro de uma seção (ex.: Gerais do admin), cada uma uma rota filha. */
 @Component({
   selector: 'ui-sub-nav',
   standalone: true,
@@ -29,6 +28,5 @@ export interface SubNavItem {
 })
 export class SubNavComponent {
   items = input.required<SubNavItem[]>();
-  /** Para leitores de tela: "Ações gerais". */
   label = input.required<string>();
 }

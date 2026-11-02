@@ -5,7 +5,6 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 const AUTH_PATH = `${environment.apiUrl}/auth/`;
-/** Rotas de /auth/ feitas com a sessão já aberta, que também renovam o token num 401. */
 const AUTH_PATHS_WITH_REFRESH = [`${AUTH_PATH}perfil-ativo`];
 
 export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
@@ -21,8 +20,6 @@ export const csrfInterceptor: HttpInterceptorFn = (req, next) => {
 
   const http = inject(HttpClient);
 
-  // O access token expira em poucos minutos: em um 401, renova pelo refresh
-  // token (cookie) e repete a requisição uma única vez.
   return next(authenticatedReq).pipe(
     catchError((error: unknown) => {
       if (!(error instanceof HttpErrorResponse) || error.status !== 401) {

@@ -5,7 +5,6 @@ import { AuthService } from '../auth/auth.service';
 import { homeRouteFor } from '../auth/home-route';
 import { SwitchableRole } from '../models';
 
-/** Criar perfil só vale para o perfil que a conta ainda não tem; o admin nunca cria. */
 export const newProfileGuard: CanActivateFn = (route) => {
   const authService = inject(AuthService);
   const router = inject(Router);

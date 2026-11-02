@@ -2,11 +2,6 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SubNavComponent, SubNavItem } from '../../../shared/ui/layout/sub-nav/sub-nav.component';
 
-/**
- * Gerais: o que o admin faz por iniciativa própria, sem esperar demanda
- * (contestação, recurso, cadastro): mudar status e situação, nunca conteúdo.
- * O banimento entra aqui na branch 7.
- */
 @Component({
   selector: 'app-admin-general',
   standalone: true,

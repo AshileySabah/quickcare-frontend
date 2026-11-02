@@ -245,7 +245,6 @@ export const routes: Routes = [
             (m) => m.AdminDashboardComponent,
           ),
       },
-      // Endereços antigos das listas (antes do menu Validação | Disputas | Ocorrências | Gerais).
       { path: 'profissionais', pathMatch: 'full', redirectTo: 'validacao' },
       { path: 'pacientes', pathMatch: 'full', redirectTo: 'validacao' },
       { path: 'perfis', pathMatch: 'full', redirectTo: 'ocorrencias' },

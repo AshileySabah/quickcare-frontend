@@ -27,10 +27,6 @@ const PATH: Record<BlockTargetKind, string> = {
   patient: 'pacientes',
 };
 
-/**
- * Bloqueio entre paciente e profissional: vale nos dois sentidos e encerra o
- * que estava vigente entre eles. Só quem bloqueou desbloqueia.
- */
 @Injectable({ providedIn: 'root' })
 export class UserBlockService {
   private readonly http = inject(HttpClient);

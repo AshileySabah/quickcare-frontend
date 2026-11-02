@@ -9,7 +9,6 @@ import { Component, computed, input } from '@angular/core';
 export class AvatarComponent {
   name = input.required<string>();
   imageUrl = input<string | undefined>(undefined);
-  /** `lg` no topo das telas de perfil. */
   size = input<'md' | 'lg'>('md');
 
   protected readonly initials = computed(() => {

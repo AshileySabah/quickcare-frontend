@@ -8,13 +8,8 @@ import { AdminProfileService } from '../../../core/services/admin/admin-profile.
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 
-/** Quantos resultados da busca aparecem para escolher. */
 const MAX_RESULTS = 5;
 
-/**
- * Escolher um paciente ou um profissional pelo nome ou e-mail (qualquer um,
- * não só os da fila). Escolhido, mostra quem é e deixa trocar.
- */
 @Component({
   selector: 'app-admin-person-picker',
   standalone: true,
@@ -27,7 +22,6 @@ export class AdminPersonPickerComponent {
 
   role = input.required<SwitchableRole>();
   label = input.required<string>();
-  /** Mensagem de erro do campo (ex.: "Escolha o paciente."). */
   errorMessage = input<string | null>(null);
   readonly selected = model<AdminProfileSummary | null>(null);
 

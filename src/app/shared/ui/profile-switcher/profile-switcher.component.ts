@@ -11,10 +11,6 @@ const OPTIONS: { role: SwitchableRole; label: string }[] = [
   { role: 'professional', label: 'Profissional' },
 ];
 
-/**
- * Alterna entre paciente e profissional sem sair da conta. Só aparece para
- * quem tem os dois perfis; o atalho para criar o outro fica no menu do avatar.
- */
 @Component({
   selector: 'ui-profile-switcher',
   standalone: true,
@@ -31,7 +27,6 @@ export class ProfileSwitcherComponent {
   protected readonly currentRole = this.authService.role;
   protected readonly switching = signal(false);
 
-  /** Não lidas do perfil que não está em uso, mostradas na opção dele. */
   protected readonly otherUnread = this.notificationService.otherUnread;
 
   protected readonly hasBothProfiles = computed(() => this.authService.profiles().length > 1);

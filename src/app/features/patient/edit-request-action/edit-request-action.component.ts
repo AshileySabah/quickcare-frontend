@@ -10,11 +10,6 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 
-/**
- * Botão "Editar" da solicitação. Sem aceitos, abre a edição direto; com
- * aceitos, antes avisa que eles precisam reaceitar (e, a menos de 48h do
- * atendimento, que perder ou trocar o profissional conta ocorrência).
- */
 @Component({
   selector: 'app-edit-request-action',
   standalone: true,

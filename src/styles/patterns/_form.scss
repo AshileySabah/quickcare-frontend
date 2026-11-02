@@ -1,6 +1,5 @@
 @use '../tokens' as tokens;
 
-/** Título de seção dentro de um card de formulário. */
 @mixin section-title {
   font-size: tokens.font-size('sm');
   font-weight: tokens.font-weight('medium');
@@ -20,7 +19,6 @@
   color: tokens.semantic('error');
 }
 
-// Campo com label, controle, dica e erro: base de ui-input, ui-select e ui-textarea.
 @mixin field {
   display: flex;
   flex-direction: column;
@@ -34,7 +32,6 @@
   color: tokens.color('gray', 700);
 }
 
-/** O controle em si (input, select, textarea); `&--error` marca o inválido. */
 @mixin field-control {
   border: 1px solid tokens.color('gray', 300);
   border-radius: tokens.radius('md');

@@ -10,11 +10,6 @@ import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.comp
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
-/**
- * Valor, período (início e término do atendimento) e abordagem da proposta,
- * para enviar ou editar. Só valida e emite o valor; quem usa decide o que
- * fazer com ele.
- */
 @Component({
   selector: 'app-proposal-form',
   standalone: true,
@@ -25,11 +20,9 @@ import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-fie
 export class ProposalFormComponent {
   private readonly fb = inject(FormBuilder);
 
-  /** Valores de uma proposta existente, ao editar. */
   initialValue = input<ProposalInput | null>(null);
   submitLabel = input.required<string>();
   submitting = input(false);
-  /** Bloqueado por ocorrências: o envio fica desabilitado (o aviso vem de fora). */
   disabled = input(false);
 
   readonly submitted = output<ProposalInput>();
@@ -46,7 +39,6 @@ export class ProposalFormComponent {
     ...PERIOD_ERROR_MESSAGES,
   });
 
-  /** O último valor inicial aplicado: só reinicia o formulário quando o conteúdo muda. */
   private appliedInitial: string | null = null;
 
   constructor() {
@@ -58,7 +50,6 @@ export class ProposalFormComponent {
         this.form.reset({
           price: String(value.price),
           approach: value.approach,
-          // Sem período (reenvio), a pessoa escolhe de novo.
           start: value.start ? toLocalInputValue(value.start) : '',
           end: value.end ? toLocalInputValue(value.end) : '',
         });

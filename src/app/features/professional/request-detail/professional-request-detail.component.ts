@@ -57,27 +57,18 @@ export class ProfessionalRequestDetailComponent {
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
   private readonly publicProfileService = inject(PublicProfileService);
-  /** Bloqueado por ocorrências: o formulário mostra o aviso e não envia. */
   protected readonly blocked = inject(OccurrenceService).blockFor('professional');
 
   private readonly requestId = this.route.snapshot.paramMap.get('id') ?? '';
 
   protected readonly pageState = signal<PageState>('loading');
   protected readonly request = signal<ServiceRequest | null>(null);
-  /** A proposta ativa dele (pendente ou aceita), se houver. */
   protected readonly existingProposal = signal<Proposal | null>(null);
-  /** Sem ativa, a última recusada ou cancelada: preenche o formulário da nova. */
   protected readonly previousProposal = signal<Proposal | null>(null);
-  /**
-   * Valor e abordagem da anterior, sem o período (a pessoa escolhe de novo).
-   * Computed, e não método no template: um objeto novo a cada renderização
-   * reiniciaria o formulário e apagaria o que a pessoa digitou.
-   */
   protected readonly resendValue = computed<ProposalInput | null>(() => {
     const previous = this.previousProposal();
     return previous ? { price: previous.price, approach: previous.approach, start: '', end: '' } : null;
   });
-  /** O paciente só é revelado ao profissional com proposta aceita. */
   protected readonly patient = signal<PatientPublicProfile | null>(null);
   protected readonly isSubmitting = signal(false);
   protected readonly isCancelling = signal(false);
@@ -101,8 +92,6 @@ export class ProfessionalRequestDetailComponent {
 
         this.request.set(request);
 
-        // Para o profissional a API devolve só as propostas dele; recusada ou
-        // cancelada não impede enviar outra.
         this.proposalService.listForRequest(this.requestId).subscribe({
           next: (proposals) => {
             this.existingProposal.set(
@@ -138,15 +127,12 @@ export class ProfessionalRequestDetailComponent {
     });
   }
 
-  /** Valor e abordagem da anterior; o período fica em branco para ele escolher de novo. */
-
   private loadPatient(): void {
     const request = this.request();
     if (!request || this.existingProposal()?.status !== 'aceita') {
       return;
     }
 
-    // Sem o perfil (erro ou acesso negado), a tela segue sem o atalho.
     this.publicProfileService.getPatient(request.patientId).subscribe({
       next: (patient) => this.patient.set(patient ?? null),
       error: () => this.patient.set(null),
@@ -157,7 +143,6 @@ export class ProfessionalRequestDetailComponent {
     return this.proposalService.canEdit(proposal);
   }
 
-  /** Com atendimento ativo, quem cancela é o painel do atendimento (com a regra das 48h). */
   protected canCancel(proposal: Proposal): boolean {
     return this.proposalService.canCancel(proposal) && !this.hasActiveAttendance(proposal);
   }
@@ -170,7 +155,6 @@ export class ProfessionalRequestDetailComponent {
     return formatPeriod(proposal.start, proposal.end);
   }
 
-  /** Depois de uma ação no atendimento: recarrega solicitação e proposta sem piscar a tela. */
   protected refresh(): void {
     this.requestService.getById(this.requestId).subscribe((request) => request && this.request.set(request));
     this.proposalService.listForRequest(this.requestId).subscribe((proposals) => {
@@ -181,7 +165,6 @@ export class ProfessionalRequestDetailComponent {
     });
   }
 
-  /** Pendente cancela direto; já aceita, pergunta antes (a vaga reabre). */
   protected askToCancel(proposal: Proposal): void {
     if (proposal.status === 'aceita') {
       this.confirmingCancel.set(true);

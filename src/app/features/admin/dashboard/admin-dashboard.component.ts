@@ -18,7 +18,6 @@ const PROFILE_FILTERS: FilterChip<ValidationProfile>[] = [
   { value: 'patient', label: 'Pacientes' },
 ];
 
-/** Na URL (?perfil=), para o "Voltar" do detalhe cair na mesma aba. */
 const PROFILE_PARAM: Record<ValidationProfile, string> = { professional: 'profissionais', patient: 'pacientes' };
 
 const STATUS_FILTERS: FilterChip<ValidationStatus | null>[] = [
@@ -28,10 +27,6 @@ const STATUS_FILTERS: FilterChip<ValidationStatus | null>[] = [
   { value: null, label: 'Todos' },
 ];
 
-/**
- * Fila de validação cadastral, de profissionais e de pacientes (filtro no
- * topo, guardado na URL), por situação.
- */
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -61,7 +56,6 @@ export class AdminDashboardComponent {
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly entries = signal<ValidationSummary[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.entries);
   private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 

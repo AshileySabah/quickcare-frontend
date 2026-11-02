@@ -44,7 +44,6 @@ export interface AdminRequestFilters {
   search?: string;
 }
 
-/** Solicitações no admin: busca, detalhe e troca de status (reabrir, concluir ou cancelar) com justificativa. */
 @Injectable({ providedIn: 'root' })
 export class AdminRequestService {
   private readonly http = inject(HttpClient);

@@ -36,10 +36,6 @@ export interface ProfileFilters {
   situation: ProfileSituation;
 }
 
-/**
- * Ocorrências e bloqueios dos perfis: listar, lançar, anular, decidir recurso
- * e remover bloqueio (sempre com justificativa).
- */
 @Injectable({ providedIn: 'root' })
 export class AdminProfileService {
   private readonly http = inject(HttpClient);
@@ -86,7 +82,6 @@ export class AdminProfileService {
     );
   }
 
-  /** Aceitar o recurso anula a ocorrência; negar a mantém. */
   decideAppeal(appealId: string, annul: boolean, justification: string): Observable<AdminProfileDetail> {
     return this.send(
       this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/recursos/${appealId}/decisao`, {
@@ -97,7 +92,6 @@ export class AdminProfileService {
     );
   }
 
-  /** Para o contador no menu; na falha, zero (o menu não quebra). */
   countOpenAppeals(): Observable<number> {
     return this.http.get<{ total: number }>(`${this.baseUrl}/recursos/em-aberto`).pipe(
       map((response) => response.total),
@@ -105,7 +99,6 @@ export class AdminProfileService {
     );
   }
 
-  /** Bloqueio direto, sem as 3 ocorrências: no próximo nível da pessoa (7 dias × nível). */
   applyBlock(role: SwitchableRole, userId: string, justification: string): Observable<AdminProfileDetail> {
     return this.send(
       this.http.post<PerfilDetalheApi>(`${this.baseUrl}/perfis/${PERFIL_API[role]}/${userId}/bloqueios`, {

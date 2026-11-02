@@ -1,9 +1,5 @@
 @use '../tokens' as tokens;
 
-/**
- * Painel que abre do header (menu da conta, notificações): claro, alinhado à
- * direita do gatilho e acima do conteúdo.
- */
 @mixin panel($min-width: 220px) {
   position: absolute;
   top: calc(100% + #{tokens.space(2)});
@@ -19,7 +15,6 @@
   box-shadow: 0 8px 24px rgba(tokens.color('gray', 900), 0.12);
 }
 
-/** Gatilho no header escuro: sem fundo, com foco visível em teal claro. */
 @mixin header-trigger {
   display: flex;
   padding: 0;
@@ -33,7 +28,6 @@
   }
 }
 
-/** Linha clicável do painel. */
 @mixin item {
   display: block;
   width: 100%;

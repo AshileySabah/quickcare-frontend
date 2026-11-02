@@ -60,16 +60,10 @@ export const PERFIL_API: Record<SwitchableRole, 'PACIENTE' | 'PROFISSIONAL'> = {
   professional: 'PROFISSIONAL',
 };
 
-/**
- * As ocorrências do próprio perfil, o bloqueio atual e o recurso ao admin. O
- * bloqueio fica guardado por perfil para as telas de criar solicitação e
- * enviar proposta desabilitarem o botão ({@link blockFor}).
- */
 @Injectable({ providedIn: 'root' })
 export class OccurrenceService {
   private readonly http = inject(HttpClient);
 
-  /** `undefined`: ainda não consultado; `null`: sem bloqueio. */
   private readonly blocks = signal<Partial<Record<SwitchableRole, Block | null>>>({});
 
   summary(role: SwitchableRole): Observable<OccurrenceSummary> {
@@ -82,7 +76,6 @@ export class OccurrenceService {
       );
   }
 
-  /** Recorre de uma ocorrência (uma vez só); devolve o resumo atualizado. */
   appeal(role: SwitchableRole, occurrenceId: string, text: string): Observable<OccurrenceSummary> {
     return this.http
       .post<ResumoApiResponse>(
@@ -97,11 +90,6 @@ export class OccurrenceService {
       );
   }
 
-  /**
-   * O bloqueio atual do perfil. Consulta de novo a cada tela que pede (ele
-   * pode ter sido desfeito ou ter acabado); até a resposta, vale o último
-   * conhecido. Na dúvida (erro), não bloqueia: o back recusa de qualquer forma.
-   */
   blockFor(role: SwitchableRole): Signal<Block | null> {
     this.summary(role)
       .pipe(catchError(() => of(null)))

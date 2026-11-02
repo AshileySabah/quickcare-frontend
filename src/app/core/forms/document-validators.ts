@@ -1,11 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { IdentityDocumentType } from '../models';
 
-/*
- * Validação por algoritmo (formato + dígitos verificadores), igual à do back.
- * Só diz se o número "faz sentido"; se ele existe é conferido pelo admin.
- */
-
 function allSameDigits(value: string): boolean {
   return new Set(value).size === 1;
 }
@@ -50,7 +45,6 @@ export function isValidCnpj(cnpj: string): boolean {
   );
 }
 
-/** Algoritmo do Denatran para os 11 dígitos da CNH. */
 export function isValidCnh(cnh: string): boolean {
   if (!/^\d{11}$/.test(cnh) || allSameDigits(cnh)) {
     return false;
@@ -79,7 +73,6 @@ export function isValidCnh(cnh: string): boolean {
   return d[9] === dv1 && d[10] === dv2;
 }
 
-/** Só o RG de SP tem dígito verificador público; nos demais estados, só o formato. */
 export function isValidRg(rg: string, uf: string): boolean {
   const normalized = rg.toUpperCase();
 
@@ -98,7 +91,6 @@ export function isValidRg(rg: string, uf: string): boolean {
   return /^\d{4,13}[\dX]$/.test(normalized);
 }
 
-/** Mantém só dígitos e o X do dígito verificador. */
 export function normalizeIdentityNumber(value: string): string {
   return value.replace(/[^0-9xX]/g, '').toUpperCase();
 }
@@ -110,7 +102,6 @@ export function cpfValidator(): ValidatorFn {
   };
 }
 
-/** CNPJ é opcional: vazio é aceito. */
 export function cnpjValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const value = control.value as string;
@@ -118,11 +109,6 @@ export function cnpjValidator(): ValidatorFn {
   };
 }
 
-/**
- * Validador de grupo para o documento de identidade: o número depende do
- * tipo (RG/CNH) e, no RG, da UF emissora. Os nomes dos controles são
- * configuráveis para servir ao cadastro e ao reenvio.
- */
 export function identityDocumentValidator(
   typeControl = 'identityDocumentType',
   numberControl = 'identityDocumentNumber',

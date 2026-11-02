@@ -4,10 +4,6 @@ import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 import { blockMessage } from '../block-text';
 
-/**
- * Aviso de bloqueio por ocorrências, nas telas de criar solicitação e enviar
- * proposta (que desabilitam o botão com `OccurrenceService.blockFor`).
- */
 @Component({
   selector: 'app-blocked-notice',
   standalone: true,

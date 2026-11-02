@@ -5,7 +5,6 @@ export interface FilterChip<T> {
   label: string;
 }
 
-/** Filtro de uma escolha só, em pílulas (ex.: situação da lista do admin). */
 @Component({
   selector: 'ui-filter-chips',
   standalone: true,
@@ -29,7 +28,6 @@ export interface FilterChip<T> {
 export class FilterChipsComponent<T> {
   chips = input.required<FilterChip<T>[]>();
   selected = input.required<T>();
-  /** Para leitores de tela: "Filtrar por situação". */
   label = input.required<string>();
 
   readonly selectedChange = output<T>();

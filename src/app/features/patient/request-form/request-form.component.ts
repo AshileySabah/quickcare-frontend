@@ -53,22 +53,17 @@ export class RequestFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly specialtyService = inject(SpecialtyService);
-  /** Bloqueado por ocorrências não cria (editar segue liberado). */
   protected readonly blocked = inject(OccurrenceService).blockFor('patient');
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
-  /** "Reabrir solicitação" no histórico: cria outra, só copiando os dados desta. */
   private readonly baseId = this.editingId ? null : this.route.snapshot.queryParamMap.get('baseadaEm');
 
   protected readonly isEditMode = this.editingId !== null;
   protected readonly isCopy = this.baseId !== null;
   protected readonly isLoading = signal(this.isEditMode || this.isCopy);
   protected readonly isSubmitting = signal(false);
-  /** Solicitação que já não pode ser editada (em andamento, concluída...) abre só para visualização. */
   protected readonly readOnlyRequest = signal<ServiceRequest | null>(null);
-  /** Com propostas aceitas, salvar reabre as vagas (a tela avisa). */
   protected readonly hasAcceptedProposals = signal(false);
-  /** Próximo atendimento em menos de 48h: perder ou trocar o profissional agora conta ocorrência. */
   protected readonly lateChange = signal(false);
 
   protected readonly categories = signal<ProfessionalCategoryInfo[]>([]);
@@ -84,7 +79,6 @@ export class RequestFormComponent {
     description: ['', [Validators.required, Validators.minLength(20)]],
     modality: ['online' as Modality, Validators.required],
     desiredDeadline: ['', Validators.required],
-    // Só é validado (habilitado) quando a modalidade é presencial.
     address: buildAddressGroup(this.fb),
   });
 
@@ -117,7 +111,6 @@ export class RequestFormComponent {
     }
   }
 
-  /** Mesmos dados, sem vínculo com a original; o prazo fica em branco (o antigo já passou ou não serve). */
   private loadRequestToCopy(id: string): void {
     const fail = () => this.toastService.error('Não foi possível copiar a solicitação. Preencha os dados.');
 
@@ -203,8 +196,6 @@ export class RequestFormComponent {
       return;
     }
 
-
-    // getRawValue: o address-card desabilita os campos preenchidos pelo CEP.
     const { professionals, description, modality, desiredDeadline, address } = this.form.getRawValue();
     const input = {
       professionals: professionals.map((professional) => ({

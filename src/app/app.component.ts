@@ -10,6 +10,5 @@ import { ToastContainerComponent } from './shared/ui/feedback/toast/toast-contai
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  /** Criado já na primeira navegação, para ler o `?destaque=` de links abertos de fora (e-mail). */
   private readonly highlightService = inject(HighlightService);
 }

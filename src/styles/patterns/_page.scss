@@ -1,10 +1,5 @@
 @use '../tokens' as tokens;
 
-/**
- * A coluna do conteúdo das telas logadas: largura máxima, centralizada e com
- * o recuo lateral do app-shell. Quem fica fora do fluxo (ex.: o paginador
- * fixo no rodapé) usa a mesma, para alinhar com a lista.
- */
 @mixin content-column {
   width: 100%;
   max-width: 960px;

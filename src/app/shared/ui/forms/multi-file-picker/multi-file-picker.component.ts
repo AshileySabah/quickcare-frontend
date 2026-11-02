@@ -3,11 +3,6 @@ import { ACCEPTED_FILE_EXTENSIONS, fileSizeLabel, uploadError } from '../file-pi
 
 let nextInputId = 0;
 
-/**
- * Vários arquivos (até `max`), com as mesmas regras e o mesmo visual do
- * `ui-file-picker`: a lista dos escolhidos, remover cada um e o botão
- * enquanto couber mais.
- */
 @Component({
   selector: 'ui-multi-file-picker',
   standalone: true,
@@ -56,7 +51,6 @@ export class MultiFilePickerComponent {
     this.update(this.files().filter((_, position) => position !== index));
   }
 
-  /** Para o componente pai limpar depois de enviar. */
   clear(): void {
     this.localError.set(null);
     this.update([]);

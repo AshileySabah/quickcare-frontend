@@ -31,11 +31,6 @@ type Dialog =
   | { kind: 'unblock'; blockId: string }
   | { kind: 'block' };
 
-/**
- * O perfil no admin: ocorrências (lançar, anular, decidir recurso), bloqueio
- * (aplicar direto ou remover) e o histórico. Vem da fila de Ocorrências ou da
- * busca de Gerais › Usuários.
- */
 @Component({
   selector: 'app-admin-profile-detail',
   standalone: true,
@@ -76,7 +71,6 @@ export class AdminProfileDetailComponent {
   private readonly blockedAction = this.role === 'patient' ? 'criar solicitações' : 'enviar propostas';
   protected readonly activeBlock = computed(() => this.detail()?.summary.block);
 
-  /** Textos do modal aberto (o mesmo componente serve às três ações). */
   protected readonly dialogTexts = computed(() => {
     const dialog = this.dialog();
     const detail = this.detail();

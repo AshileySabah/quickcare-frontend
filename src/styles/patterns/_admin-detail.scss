@@ -1,6 +1,5 @@
 @use '../tokens' as tokens;
 
-/** Telas de detalhe do admin (disputa, perfil, solicitação): cards empilhados. */
 @mixin page {
   display: flex;
   flex-direction: column;
@@ -42,7 +41,6 @@
   gap: tokens.space(2);
 }
 
-/** Histórico: data à esquerda, o que aconteceu ao lado. */
 @mixin timeline {
   display: flex;
   flex-direction: column;

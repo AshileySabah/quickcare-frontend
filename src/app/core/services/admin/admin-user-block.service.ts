@@ -17,10 +17,6 @@ interface BloqueioUsuarioAdminApi {
   criadoEm: string;
 }
 
-/**
- * Bloqueios entre paciente e profissional no admin (Gerais): todos, bloquear
- * dois usuários entre si e remover qualquer um, sempre com justificativa.
- */
 @Injectable({ providedIn: 'root' })
 export class AdminUserBlockService {
   private readonly http = inject(HttpClient);
@@ -34,7 +30,6 @@ export class AdminUserBlockService {
     );
   }
 
-  /** Ids de usuário do paciente e do profissional (os da busca de perfis). */
   block(patientUserId: string, professionalUserId: string, justification: string): Observable<AdminUserBlock> {
     return this.http
       .post<BloqueioUsuarioAdminApi>(this.baseUrl, {

@@ -63,7 +63,6 @@ export class PatientRegisterComponent {
   private readonly ufService = inject(UfService);
   private readonly profileService = inject(ProfileService);
 
-  /** Rota /criar-perfil/paciente: quem já é profissional cria o perfil de paciente sem refazer a conta. */
   protected readonly isNewProfile = inject(ActivatedRoute).snapshot.data['newProfileRole'] === 'patient';
 
   protected readonly isSubmitting = signal(false);

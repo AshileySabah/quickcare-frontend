@@ -41,13 +41,11 @@ interface DisputaDetalheApi {
   acoes: AcaoAdminApi[];
 }
 
-/** Relatos de "não foi realizado" e disputas, para o admin decidir. */
 @Injectable({ providedIn: 'root' })
 export class AdminDisputeService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/admin/disputas`;
 
-  /** Sem status, todos. */
   list(status: ProblemStatus[] = []): Observable<DisputeSummary[]> {
     return this.http
       .get<DisputaResumoApi[]>(this.baseUrl, { params: { status: status.map((item) => item.toUpperCase()) } })
@@ -57,7 +55,6 @@ export class AdminDisputeService {
       );
   }
 
-  /** Quantas aguardam decisão, para o contador no menu. */
   countOpen(): Observable<number> {
     return this.http.get<{ total: number }>(`${this.baseUrl}/em-aberto`).pipe(
       map((response) => response.total),

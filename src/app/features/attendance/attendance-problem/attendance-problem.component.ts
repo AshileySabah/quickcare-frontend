@@ -26,12 +26,6 @@ const TEXT_ERRORS = {
   },
 };
 
-/**
- * "Não foi realizado": relatar (com até 3 anexos), e o outro lado confirmar
- * ou contestar em 7 dias. Sem resposta, vale o relato, mas ainda dá para
- * contestar; contestado, um administrador decide. Fica dentro do painel do
- * atendimento.
- */
 @Component({
   selector: 'app-attendance-problem',
   standalone: true,
@@ -87,7 +81,6 @@ export class AttendanceProblemComponent {
     this.attendanceService.canContestProblem(this.attendance(), this.viewer()),
   );
 
-  /** "Carla Mendes" para o paciente; "O paciente" para o profissional. */
   private readonly other = computed(() =>
     this.viewer() === 'patient' ? (this.counterpartName() ?? 'O profissional') : 'O paciente',
   );
@@ -116,7 +109,6 @@ export class AttendanceProblemComponent {
       : 'Foi combinado entre vocês: ninguém leva ocorrência.',
   ]);
 
-  /** A frase sobre em que pé o relato está, para quem vê. */
   protected readonly statusText = computed(() => {
     const problem = this.problem();
     if (!problem) {

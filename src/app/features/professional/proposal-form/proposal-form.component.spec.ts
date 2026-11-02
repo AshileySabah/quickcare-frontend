@@ -58,7 +58,6 @@ describe('ProposalFormComponent', () => {
     type('start', '2027-11-15T17:05');
     type('end', '2027-11-23T17:05');
 
-    // A tela entrega um objeto novo com o mesmo conteúdo (como numa nova renderização).
     fixture.componentRef.setInput('initialValue', { ...resend });
     fixture.detectChanges();
     submit();

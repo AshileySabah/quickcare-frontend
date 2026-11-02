@@ -32,14 +32,12 @@ export type NotificationType =
   | 'cadastro_aprovado'
   | 'etapa_reprovada';
 
-/** Notificação in-app de um dos perfis do usuário. */
 export interface AppNotification {
   id: string;
   profile: SwitchableRole;
   type: NotificationType;
   title: string;
   message: string;
-  /** Rota do front para onde a notificação leva. */
   link?: string;
   read: boolean;
   createdAt: string;

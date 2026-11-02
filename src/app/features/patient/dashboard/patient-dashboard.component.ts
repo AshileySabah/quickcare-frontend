@@ -26,7 +26,6 @@ import { RequestCardComponent } from '../request-card/request-card.component';
 import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
-/** A home só lista solicitações ativas; as encerradas ficam no histórico. */
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
 @Component({
@@ -55,15 +54,12 @@ export class PatientDashboardComponent {
   private readonly toastService = inject(ToastService);
   private readonly authService = inject(AuthService);
 
-  /** Sem cadastro aprovado, o paciente acompanha a validação mas ainda não cria solicitações. */
   protected readonly validationStatus = computed(() => {
     const user = this.authService.currentUser();
     return user?.role === 'patient' ? user.validationStatus : 'aprovado';
   });
 
-  /** Etapas da validação, abertas pelo banner; com tudo aprovado o banner some. */
   protected readonly showValidation = signal(false);
-  /** Bloqueado por ocorrências: não cria solicitação (o back também recusa). */
   protected readonly blocked = signal(false);
 
   protected readonly viewState = signal<ListViewState>('loading');
@@ -114,7 +110,6 @@ export class PatientDashboardComponent {
     return this.requestService.canCancel(request);
   }
 
-  /** Sem propostas aceitas cancela direto; com aceitas, pergunta antes. */
   protected askToCancel(request: ServiceRequest): void {
     this.requestToCancel.set(request);
     if (hasAcceptedProposals(request)) {
@@ -142,7 +137,6 @@ export class PatientDashboardComponent {
 
     this.requestService.cancel(request.id).subscribe({
       next: (updated) => {
-        // Cancelada = encerrada: sai da home e passa a aparecer no histórico.
         const remaining = this.requests().filter((item) => item.id !== updated.id);
         this.requests.set(remaining);
         this.viewState.set(remaining.length === 0 ? 'empty' : 'filled');

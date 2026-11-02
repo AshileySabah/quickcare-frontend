@@ -4,12 +4,6 @@ import { UserBlockService } from '../../../core/services/user-block.service';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 
-/**
- * Confirma o bloqueio de um profissional (pelo paciente) ou de um paciente
- * (pelo profissional), avisando antes o que acaba entre os dois: as propostas
- * pendentes e os atendimentos em curso (que ficam no histórico) e se isso
- * conta ocorrência. O bloqueado não é avisado do bloqueio.
- */
 @Component({
   selector: 'app-block-user-dialog',
   standalone: true,
@@ -34,7 +28,6 @@ export class BlockUserDialogComponent {
   private readonly userBlockService = inject(UserBlockService);
   private readonly toastService = inject(ToastService);
 
-  /** Aberto enquanto houver alguém a bloquear. */
   target = input<BlockTarget | null>(null);
 
   readonly blocked = output<BlockedUser>();
@@ -78,7 +71,6 @@ export class BlockUserDialogComponent {
   });
 
   constructor() {
-    // A cada abertura, confere de novo o que acaba (pode ter mudado).
     effect(() => {
       const target = this.target();
       untracked(() => {

@@ -11,7 +11,6 @@ import { ProfissionalSolicitadoApi, toRequestedProfessional } from './request.se
 export interface ProposalInput {
   price: number;
   approach: string;
-  /** ISO (com fuso); o formulário converte do horário local. */
   start: string;
   end: string;
 }
@@ -22,7 +21,6 @@ interface PropostaApiResponse {
   id: number;
   solicitacao: {
     id: number;
-    /** Só vêm com a proposta aceita. */
     pacienteId?: number;
     pacienteNome?: string;
     pacienteAvatarUrl?: string;
@@ -55,11 +53,6 @@ const ACTIVE_REQUEST_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
 const RECEIVING_REQUEST_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
 
-/**
- * Entre as propostas do profissional numa mesma solicitação, a recusada ou
- * cancelada mais recente, que serve de base para enviar outra. Nenhuma se ele
- * já tem uma ativa (pendente ou aceita).
- */
 export function resendBase(proposals: Proposal[]): Proposal | null {
   if (proposals.some((proposal) => ALTERABLE_STATUSES.includes(proposal.status))) {
     return null;
@@ -76,24 +69,14 @@ export class ProposalService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/propostas`;
 
-  /**
-   * Pendente ou já aceita (deixa de estar aceita e o paciente aceita de novo),
-   * com a solicitação em curso. Depois que o atendimento começou, só remarcar.
-   */
   canEdit(proposal: Proposal): boolean {
     return this.canCancel(proposal) && proposal.attendance?.status !== 'em_andamento';
   }
 
-  /** A aceita cancela o atendimento (a regra das 48h decide se conta ocorrência). */
   canCancel(proposal: Proposal): boolean {
     return ALTERABLE_STATUSES.includes(proposal.status) && ACTIVE_REQUEST_STATUSES.includes(proposal.request.status);
   }
 
-  /**
-   * Recusada ou cancelada, com a solicitação ainda recebendo propostas: o
-   * profissional pode enviar outra. Só a mais recente de cada solicitação
-   * oferece isso, e nenhuma se já houver uma ativa (mine = todas as dele).
-   */
   canResend(proposal: Proposal, mine: Proposal[]): boolean {
     if (!RECEIVING_REQUEST_STATUSES.includes(proposal.request.status)) {
       return false;
@@ -102,7 +85,6 @@ export class ProposalService {
     return resendBase(sameRequest)?.id === proposal.id;
   }
 
-  /** Paciente dono: todas as não canceladas. Profissional: só as dele. */
   listForRequest(requestId: string): Observable<Proposal[]> {
     return this.http.get<PropostaApiResponse[]>(requestProposalsUrl(requestId)).pipe(
       map((response) => response.map(toProposal)),
@@ -110,7 +92,6 @@ export class ProposalService {
     );
   }
 
-  /** Propostas do profissional logado, das mais recentes para as mais antigas. */
   listMine(): Observable<Proposal[]> {
     return this.http.get<PropostaApiResponse[]>(this.baseUrl).pipe(
       map((response) => response.map(toProposal)),
@@ -151,8 +132,6 @@ export class ProposalService {
     );
   }
 
-  /** Paciente aceita: as demais pendentes são recusadas e a solicitação entra em andamento. */
-  /** O paciente recusa uma proposta pendente. */
   reject(id: string): Observable<Proposal> {
     return this.http.patch<PropostaApiResponse>(`${this.baseUrl}/${id}/recusar`, {}).pipe(
       map(toProposal),
@@ -220,14 +199,12 @@ function toApiPayload(input: ProposalInput) {
   };
 }
 
-/** O que acontece ao cancelar uma proposta já aceita (a pendente cancela sem perguntar). */
 export const CANCEL_ACCEPTED_PROPOSAL_CONSEQUENCES = [
   'O atendimento é cancelado e a vaga reabre para outros profissionais.',
   'O paciente é avisado.',
   'A proposta vai para o histórico.',
 ];
 
-/** O que acontece ao editar uma proposta já aceita (alerta antes de abrir a edição). */
 export const EDIT_ACCEPTED_PROPOSAL_CONSEQUENCES = [
   'Ela deixa de estar aceita: o atendimento marcado é cancelado e a vaga reabre.',
   'O paciente precisa aceitar ou recusar a proposta de novo (ou escolher outra).',

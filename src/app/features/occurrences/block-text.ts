@@ -1,7 +1,6 @@
 import { formatDateTime } from '../../core/formatting/period';
 import { Block, SwitchableRole } from '../../core/models';
 
-/** O que o bloqueio impede em cada perfil (o resto segue normalmente). */
 export function blockedAction(role: SwitchableRole): string {
   return role === 'patient' ? 'criar solicitações' : 'enviar propostas';
 }

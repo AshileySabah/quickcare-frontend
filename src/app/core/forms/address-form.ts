@@ -2,7 +2,6 @@ import { AbstractControl, FormBuilder, Validators } from '@angular/forms';
 import { Address } from '../models';
 import { FieldMessages, fieldErrorsFor } from './field-errors';
 
-/** Endereço com os campos do `ui-address-card`; o complemento é o único opcional. */
 export function buildAddressGroup(fb: FormBuilder) {
   return fb.nonNullable.group({
     cep: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
@@ -15,7 +14,6 @@ export function buildAddressGroup(fb: FormBuilder) {
   });
 }
 
-/** Valor do grupo para o modelo: complemento em branco vira ausente. */
 export function toAddress(value: Address): Address {
   return { ...value, complement: value.complement || undefined };
 }
@@ -25,7 +23,6 @@ const ADDRESS_MESSAGES: FieldMessages = {
   state: { pattern: 'Informe a sigla do estado (ex.: SP).' },
 };
 
-/** O `fieldError` do `ui-address-card`. */
 export function addressFieldErrorsFor(addressGroup: AbstractControl): (fieldName: string) => string | null {
   return fieldErrorsFor(addressGroup, ADDRESS_MESSAGES);
 }

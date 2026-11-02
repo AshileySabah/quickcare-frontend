@@ -17,12 +17,6 @@ import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-act
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
-/**
- * Perfil do paciente, como o profissional com proposta aceita vê. A saúde
- * chega enquanto a solicitação está em curso; os contatos de emergência, só
- * depois que o atendimento começou. Os dois usam os cards do cadastro, só
- * para leitura. O profissional pode bloquear (ou desbloquear) o paciente daqui.
- */
 @Component({
   selector: 'app-patient-profile',
   standalone: true,
@@ -47,7 +41,6 @@ export class PatientProfileComponent {
   protected readonly pageState = signal<PageState>('loading');
   protected readonly profile = signal<PatientPublicProfile | null>(null);
 
-  /** Alimenta os cards de saúde e de contatos, que trabalham com formulário. */
   protected readonly healthForm = this.fb.nonNullable.group({
     allergies: [''],
     healthConditions: [''],

@@ -21,7 +21,6 @@ const STATUS_FILTERS: FilterChip<RequestStatus | null>[] = [
   ...(Object.entries(REQUEST_STATUS_LABELS) as [RequestStatus, string][]).map(([value, label]) => ({ value, label })),
 ];
 
-/** Todas as solicitações, para o admin achar uma e mudar o status. */
 @Component({
   selector: 'app-admin-requests',
   standalone: true,
@@ -48,7 +47,6 @@ export class AdminRequestsComponent {
   protected readonly search = new FormControl('', { nonNullable: true });
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<AdminRequestSummary[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.requests);
 
   constructor() {

@@ -3,7 +3,6 @@ import { Component, computed, input, output } from '@angular/core';
 import { PreValidationOpinion, PreValidationResult } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 
-/** Estado da pré-validação de uma etapa na tela do admin (não é salvo no back). */
 export type PreValidationState =
   | { status: 'loading' }
   | { status: 'done'; result: PreValidationResult }

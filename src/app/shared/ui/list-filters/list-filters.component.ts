@@ -11,17 +11,10 @@ import { GridComponent } from '../layout/grid/grid.component';
 import { PaginatorComponent } from '../paginator/paginator.component';
 
 export interface ItemNoun {
-  /** "solicitação", "proposta"... */
   one: string;
   other: string;
 }
 
-/**
- * Card de filtros (busca, selects, ordenação, contador e "Limpar filtros")
- * por cima de uma lista, e a paginação embaixo. A lista entra projetada
- * (iterando `filters.page.items()`); quando nada bate com os filtros, aparece
- * o estado vazio no lugar dela.
- */
 @Component({
   selector: 'ui-list-filters',
   standalone: true,
@@ -40,7 +33,6 @@ export interface ItemNoun {
   styleUrl: './list-filters.component.scss',
 })
 export class ListFiltersComponent {
-  /** `any`: o componente só exibe; o tipo dos itens fica com quem cria os filtros. */
   filters = input.required<ListFilters<any>>();
   noun = input.required<ItemNoun>();
 

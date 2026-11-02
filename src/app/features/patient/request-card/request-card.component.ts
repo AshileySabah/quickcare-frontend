@@ -15,13 +15,11 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const URGENT_DEADLINE_DAYS = 3;
 const ACTIVE_STATUSES = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
-/** Dias de hoje até o dia da data, no fuso local. Negativo = já passou. */
 function daysFromToday(date: Date): number {
   const startOfDay = (value: Date) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
   return Math.round((startOfDay(date) - startOfDay(new Date())) / MS_PER_DAY);
 }
 
-/** "yyyy-MM-dd" como data local (new Date("yyyy-MM-dd") seria meia-noite UTC). */
 function parseLocalDate(isoDate: string): Date {
   const [year, month, day] = isoDate.split('-').map(Number);
   return new Date(year, month - 1, day);
@@ -46,20 +44,16 @@ function parseLocalDate(isoDate: string): Date {
 })
 export class RequestCardComponent {
   request = input.required<ServiceRequest>();
-  /** Quantos profissionais já enviaram proposta. */
   proposalCount = input(0);
   canEdit = input(false);
   canCancel = input(false);
-  /** No histórico: abre uma nova solicitação com os dados desta. */
   canRequestAgain = input(false);
-  /** Bloqueado por ocorrências: "Reabrir solicitação" (cria outra) fica desabilitado. */
   blocked = input(false);
 
   cancel = output<ServiceRequest>();
 
   protected readonly specialtyNames = requestedSpecialtyNames;
 
-  /** Visualizar só mostra a solicitação e as propostas; editar é uma ação à parte (app-edit-request-action). */
   protected readonly detailLink = computed(() => ['/patient/solicitacoes', this.request().id]);
 
   protected readonly totalRequested = computed(() =>
@@ -83,7 +77,6 @@ export class RequestCardComponent {
     return days === -1 ? 'venceu ontem' : `venceu há ${-days} dias`;
   });
 
-  /** Só destaca o prazo enquanto a solicitação ainda está ativa. */
   protected readonly deadlineUrgent = computed(
     () => ACTIVE_STATUSES.includes(this.request().status) && this.daysToDeadline() <= URGENT_DEADLINE_DAYS,
   );

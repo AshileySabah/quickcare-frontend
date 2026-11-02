@@ -2,10 +2,6 @@ import { Component, input } from '@angular/core';
 
 export type IconName = 'eye' | 'pencil' | 'x-circle' | 'check' | 'refresh' | 'bell' | 'calendar' | 'alert' | 'paperclip' | 'chevron-down' | 'ban';
 
-/**
- * Ícones de traço (24×24, stroke = currentColor), herdam a cor do texto em volta.
- * Decorativos por padrão: o texto do botão/link ao lado já dá o significado.
- */
 @Component({
   selector: 'ui-icon',
   standalone: true,

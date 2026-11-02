@@ -9,7 +9,6 @@ import { Component, ElementRef, effect, input, output, viewChild } from '@angula
 export class ModalComponent {
   open = input.required<boolean>();
   titleText = input.required<string>();
-  /** `md` (480px) para conteúdo simples; `lg` (600px) quando há botões com texto longo lado a lado. */
   size = input<'md' | 'lg'>('md');
 
   closed = output<void>();

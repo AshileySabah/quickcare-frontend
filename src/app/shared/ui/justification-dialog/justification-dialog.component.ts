@@ -9,12 +9,6 @@ import { InvalidFieldFocusDirective } from '../forms/invalid-field-focus.directi
 
 const MAX_LENGTH = 1000;
 
-/**
- * Confirmação que pede um texto: a justificativa das ações do admin (anular
- * ocorrência, remover bloqueio, mudar status...), que vai para a auditoria e
- * para a notificação de quem foi afetado, ou o recurso do usuário contra uma
- * ocorrência. Conteúdo extra (ex.: as opções da decisão) entra antes do campo.
- */
 @Component({
   selector: 'ui-justification-dialog',
   standalone: true,
@@ -77,7 +71,6 @@ export class JustificationDialogComponent {
   });
 
   constructor() {
-    // Cada abertura começa em branco.
     effect(() => {
       if (this.open()) {
         untracked(() => this.form.reset({ justification: '' }));

@@ -4,11 +4,6 @@ import { HighlightService } from '../../../core/services/highlight.service';
 const HIGHLIGHT_CLASS = 'ui-highlight--active';
 const HIGHLIGHT_DURATION_MS = 3600;
 
-/**
- * Marca um item que pode ser alvo de uma notificação (`uiHighlight="proposta-12"`).
- * Quando pedem para destacá-lo, rola até ele e faz o contorno verde pulsar.
- * Funciona também se o item só aparece depois (lista carregada da API).
- */
 @Directive({
   selector: '[uiHighlight]',
   standalone: true,
@@ -29,7 +24,6 @@ export class HighlightDirective {
       }
       untracked(() => {
         this.highlightService.consume(target);
-        // Espera o layout assentar (a lista acabou de renderizar).
         setTimeout(() => this.flash());
       });
     });
@@ -40,7 +34,6 @@ export class HighlightDirective {
   private flash(): void {
     this.element.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    // Reinicia a animação se o mesmo item for destacado de novo.
     this.element.classList.remove(HIGHLIGHT_CLASS);
     void this.element.offsetWidth;
     this.element.classList.add(HIGHLIGHT_CLASS);

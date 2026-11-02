@@ -19,13 +19,6 @@ import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-fie
 
 type PendingAction = 'reaccept' | 'decline-reaccept' | 'accept-reschedule' | 'decline-reschedule' | 'reschedule' | 'cancel';
 
-/**
- * O atendimento de uma proposta aceita, do ponto de vista de quem vê:
- * status e período, a remarcação pendente (responder ou aguardar), o reaceite
- * depois que o paciente editou, as ações de remarcar e cancelar e o relato
- * de "não foi realizado". O atendimento muda de estado sozinho no horário:
- * não há iniciar nem finalizar.
- */
 @Component({
   selector: 'app-attendance-panel',
   standalone: true,
@@ -50,10 +43,8 @@ export class AttendancePanelComponent {
 
   attendance = input.required<Attendance>();
   viewer = input.required<AttendanceViewer>();
-  /** Nome da outra parte, quando ela já é revelada (o paciente vê o do profissional). */
   counterpartName = input<string | undefined>(undefined);
 
-  /** O atendimento depois da ação; quem usa recarrega a proposta. */
   readonly changed = output<Attendance>();
 
   protected readonly pending = signal<PendingAction | null>(null);
@@ -122,7 +113,6 @@ export class AttendancePanelComponent {
   protected openReschedule(): void {
     const attendance = this.attendance();
     this.rescheduleForm.reset({ start: toLocalInputValue(attendance.start), end: toLocalInputValue(attendance.end) });
-    // Já começou: só o término muda.
     if (this.started()) {
       this.rescheduleForm.controls.start.disable();
     } else {

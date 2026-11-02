@@ -6,11 +6,6 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
 import { BlockUserDialogComponent } from '../block-user-dialog/block-user-dialog.component';
 
-/**
- * Avatar e nome da outra parte (numa proposta ou solicitação). O clique abre
- * o menu "Ver perfil" / "Bloquear"; bloquear confirma num modal e avisa a
- * tela (`blocked`), que recarrega o que mudou.
- */
 @Component({
   selector: 'app-person-menu',
   standalone: true,
@@ -19,9 +14,7 @@ import { BlockUserDialogComponent } from '../block-user-dialog/block-user-dialog
   styleUrl: './person-menu.component.scss',
 })
 export class PersonMenuComponent {
-  /** Profissional (quem vê é o paciente) ou paciente (quem vê é o profissional). */
   kind = input.required<BlockTargetKind>();
-  /** Id do perfil da pessoa. */
   personId = input.required<string>();
   name = input.required<string>();
   avatarUrl = input<string | undefined>(undefined);

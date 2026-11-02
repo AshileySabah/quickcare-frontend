@@ -1,6 +1,5 @@
 @use '../tokens' as tokens;
 
-/** Lista de rótulo e valor (`dl` com `div > dt + dd`) em colunas que se ajustam à largura. */
 @mixin details-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

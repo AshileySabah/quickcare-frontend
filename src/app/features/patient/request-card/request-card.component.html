@@ -22,7 +22,6 @@
 
     <p class="request-card__description">{{ request().description }}</p>
 
-    <!-- Celular: um bloco por linha; a partir de tablet (sm): três lado a lado. -->
     <ui-grid spacing="sm">
       <ui-grid-item [xs]="12" [sm]="4">
         <div class="request-card__fact">
@@ -34,7 +33,6 @@
       <ui-grid-item [xs]="12" [sm]="4">
         <div class="request-card__fact" [class.request-card__fact--urgent]="deadlineUrgent()">
           <span class="request-card__fact-label">Prazo desejado</span>
-          <!-- 'UTC': a data vem sem hora (yyyy-MM-dd); sem isso o fuso de Brasília mostra o dia anterior. -->
           <span class="request-card__fact-value">{{ request().desiredDeadline | date: 'dd/MM/yyyy' : 'UTC' }}</span>
           <span class="request-card__fact-hint">{{ deadlineHint() }}</span>
         </div>

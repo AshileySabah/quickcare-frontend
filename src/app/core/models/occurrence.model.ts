@@ -21,7 +21,6 @@ export const APPEAL_STATUS_LABELS: Record<AppealStatus, string> = {
   anulada: 'Recurso aceito',
 };
 
-/** O usuário discorda da ocorrência (uma vez só); o admin mantém ou anula. */
 export interface OccurrenceAppeal {
   id: string;
   status: AppealStatus;
@@ -29,11 +28,9 @@ export interface OccurrenceAppeal {
   createdAt: string;
   decidedAt?: string;
   decisionJustification?: string;
-  /** Só para o admin. */
   decidedBy?: string;
 }
 
-/** Uma falta que conta contra o perfil; anulada pelo admin, deixa de contar. */
 export interface Occurrence {
   id: string;
   reason: OccurrenceReason;
@@ -44,17 +41,13 @@ export interface Occurrence {
   annulledAt?: string;
   justification?: string;
   annulmentJustification?: string;
-  /** Só para o admin. */
   createdBy?: string;
   annulledBy?: string;
-  /** Ainda dá para recorrer (uma vez, enquanto vale, motivo que admite recurso). */
   canAppeal: boolean;
   appeal?: OccurrenceAppeal;
-  /** Entrou num bloqueio que já terminou: não conta mais. */
   alreadyBlocked: boolean;
 }
 
-/** Sem criar solicitação (paciente) ou enviar proposta (profissional) até `end`. */
 export interface Block {
   id: string;
   level: number;
@@ -64,14 +57,11 @@ export interface Block {
   removedAt?: string;
   removedBy?: string;
   removalJustification?: string;
-  /** Desfeito: anularam ocorrência dele e as que sobraram não chegam ao limite. */
   undone: boolean;
-  /** Aplicado direto pelo admin (sem as 3 ocorrências): quem e por quê. */
   appliedBy?: string;
   justification?: string;
 }
 
-/** O que o próprio perfil vê: quantas contam agora, o limite, o bloqueio atual e o histórico. */
 export interface OccurrenceSummary {
   counting: number;
   limit: number;

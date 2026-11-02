@@ -1,9 +1,5 @@
 @use '../tokens' as tokens;
 
-/**
- * Rodapé de ações de um card (solicitação, proposta): linha divisória e
- * botões à direita. Some quando não há nenhuma ação.
- */
 @mixin footer-actions {
   display: flex;
   flex-wrap: wrap;

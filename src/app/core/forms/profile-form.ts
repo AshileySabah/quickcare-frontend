@@ -3,7 +3,6 @@ import { Address, DocumentType, EmergencyContact, Gender } from '../models';
 import { setEmergencyContacts } from './emergency-contact-form';
 import { FieldMessages, fieldErrorsFor } from './field-errors';
 
-/** Dados da conta no cadastro; já existem quando quem está logado cria o outro perfil. */
 const ACCOUNT_FIELDS = [
   'name',
   'email',
@@ -16,7 +15,6 @@ const ACCOUNT_FIELDS = [
   'confirmPassword',
 ];
 
-/** Desabilitados, os campos da conta saem da validação do formulário de novo perfil. */
 export function disableAccountFields(form: FormGroup): void {
   ACCOUNT_FIELDS.forEach((field) => form.get(field)?.disable());
 }
@@ -27,13 +25,11 @@ const MISSING_DOCUMENT_MESSAGES: Partial<Record<DocumentType, string>> = {
   REGISTRO_PROFISSIONAL: 'Envie um documento que valide seu registro profissional.',
 };
 
-/** Mensagem do primeiro documento obrigatório que não foi enviado; nula se estão todos. */
 export function missingDocumentMessage(documents: { type: string }[], required: DocumentType[]): string | null {
   const missing = required.find((type) => !documents.some((document) => document.type === type));
   return missing ? (MISSING_DOCUMENT_MESSAGES[missing] ?? null) : null;
 }
 
-/** Campos dos cadastros e da edição de perfil (paciente e profissional) com mensagem própria. */
 const PROFILE_MESSAGES: FieldMessages = {
   cpf: { pattern: 'CPF deve conter 11 dígitos, sem pontuação.' },
   cnpj: { pattern: 'CNPJ deve conter 14 dígitos, sem pontuação.' },
@@ -46,11 +42,6 @@ const PROFILE_MESSAGES: FieldMessages = {
   lgpdConsent: { required: 'Esta confirmação é obrigatória.' },
 };
 
-/**
- * O `fieldError` dos formulários de perfil. Além dos erros de cada campo,
- * mostra os de grupo do documento de identidade (número e UF são conferidos
- * juntos pelo `identityDocumentValidator`).
- */
 export function profileFieldErrorsFor(form: AbstractControl): (fieldName: string) => string | null {
   const fieldError = fieldErrorsFor(form, PROFILE_MESSAGES);
   return (fieldName) => fieldError(fieldName) ?? identityDocumentError(form, fieldName);
@@ -72,7 +63,6 @@ function identityDocumentError(form: AbstractControl, fieldName: string): string
   return null;
 }
 
-/** A confirmação compara com `password` pelo `passwordsMatchValidator` do grupo. */
 export function confirmPasswordError(form: AbstractControl): string | null {
   const control = form.get('confirmPassword');
 
@@ -94,11 +84,6 @@ interface ProfileBaseData {
   address: Address;
 }
 
-/**
- * Ao criar o outro perfil da conta, começa com o que já foi informado no
- * perfil atual (nascimento, gênero, contatos de emergência e endereço); a
- * pessoa pode alterar antes de enviar.
- */
 export function prefillFromOtherProfile(form: FormGroup, fb: FormBuilder, profile: ProfileBaseData): void {
   setEmergencyContacts(form, fb, profile.emergencyContacts);
   form.patchValue({

@@ -60,7 +60,6 @@
     outline-offset: 2px;
   }
 
-  // teal 300 sobre o teal 800 do header: contraste ~6:1.
   &--active {
     color: tokens.color('teal', 300);
     border-bottom-color: tokens.color('teal', 300);

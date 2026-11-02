@@ -10,7 +10,6 @@ const PRESENTATION: Record<ValidationStatus | ValidationStepStatus, { label: str
   reprovada: { label: 'Reprovada', variant: 'error' },
 };
 
-/** Status da validação cadastral (do cadastro como um todo ou de uma etapa). */
 @Component({
   selector: 'ui-validation-status-badge',
   standalone: true,

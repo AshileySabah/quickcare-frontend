@@ -29,7 +29,6 @@ const STATUS_BY_FILTER: Record<DisputeFilter, ProblemStatus[]> = {
   todos: [],
 };
 
-/** Relatos de "não foi realizado": os contestados esperam a decisão do admin. */
 @Component({
   selector: 'app-admin-disputes',
   standalone: true,
@@ -53,7 +52,6 @@ export class AdminDisputesComponent {
   protected readonly selected = signal<DisputeFilter>('em_disputa');
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly disputes = signal<DisputeSummary[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.disputes);
   protected readonly period = formatPeriod;
 

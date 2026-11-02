@@ -48,7 +48,6 @@ export interface AtendimentoApiResponse {
   problema?: ProblemaApiResponse;
 }
 
-/** "Não foi realizado": por quê, o que aconteceu e até 3 provas. */
 export interface ProblemReportInput {
   reason: ProblemReason;
   description: string;
@@ -60,33 +59,24 @@ export interface ProblemContestInput {
   files: File[];
 }
 
-/** Quantos anexos cada lado pode mandar no relato ou na contestação (o back confere). */
 export const MAX_PROBLEM_ATTACHMENTS = 3;
 
 export interface RescheduleInput {
-  /** ISO (com fuso). */
   start: string;
   end: string;
 }
 
-/** O que cada lado pode fazer com o atendimento, conforme o status. */
 export type AttendanceViewer = 'patient' | 'professional';
 
-/**
- * Ações sobre o atendimento de uma proposta aceita. O atendimento em si vem
- * dentro da proposta; depois de cada ação a tela recarrega a proposta.
- */
 @Injectable({ providedIn: 'root' })
 export class AttendanceService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/atendimentos`;
 
-  /** Remarcar e cancelar valem a qualquer momento até o término. */
   canChange(attendance: Attendance): boolean {
     return attendance.status === 'agendado' || attendance.status === 'em_andamento';
   }
 
-  /** A remarcação pendente foi pedida pelo outro lado: quem vê responde. */
   canAnswerReschedule(attendance: Attendance, viewer: AttendanceViewer): boolean {
     return !!attendance.reschedule && attendance.reschedule.requestedBy !== sideOf(viewer);
   }
@@ -124,7 +114,6 @@ export class AttendanceService {
     return this.patch(`${id}/cancelar`, 'Não foi possível cancelar o atendimento.');
   }
 
-  /** Quem relatou aguarda; o outro lado confirma ou contesta (inclusive depois do prazo, se ficou sem resposta). */
   canAnswerProblem(attendance: Attendance, viewer: AttendanceViewer): boolean {
     const problem = attendance.problem;
     return !!problem && problem.reportedBy !== sideOf(viewer) && problem.status === 'aguardando_resposta';
@@ -153,7 +142,6 @@ export class AttendanceService {
       'Não foi possível enviar a contestação.');
   }
 
-  /** URL temporária para abrir um anexo do relato ou da contestação. */
   attachmentUrl(attendanceId: string, attachmentId: string): Observable<string> {
     return this.http.get<{ url: string }>(`${this.baseUrl}/${attendanceId}/problema/anexos/${attachmentId}`).pipe(
       map((response) => response.url),

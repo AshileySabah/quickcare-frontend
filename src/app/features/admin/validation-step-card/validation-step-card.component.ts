@@ -25,7 +25,6 @@ interface LookupLink {
   url: string;
 }
 
-/** Sites oficiais para o admin conferir por fora quando não há API (ou ela falhou). */
 const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
   IDENTIDADE: {
     label: 'Situação do CPF na Receita',
@@ -67,7 +66,6 @@ export class ValidationStepCardComponent {
   validationId = input.required<string>();
   step = input.required<ValidationStep>();
   data = input.required<RegistrationData>();
-  /** Rótulo do conselho da categoria (CRM, COREN...), para a etapa de registro. */
   registrationLabel = input('Registro profissional');
   preValidation = input<PreValidationState | undefined>(undefined);
 
@@ -83,7 +81,6 @@ export class ValidationStepCardComponent {
     justification: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
   });
 
-  /** Última sugestão aplicada, para não apagar o que o admin já escreveu por conta própria. */
   private lastSuggestion = '';
 
   protected readonly isPending = computed(() => this.step().status === 'pendente');

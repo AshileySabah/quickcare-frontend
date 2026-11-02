@@ -20,12 +20,6 @@ import { AdminPersonPickerComponent } from '../person-picker/admin-person-picker
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
-/**
- * Gerais › Bloqueios entre usuários: todos (de quem quer que tenha
- * bloqueado), bloquear um paciente e um profissional entre si e remover
- * qualquer um, com justificativa. O bloqueio do admin não aparece para os dois
- * e só o admin desfaz.
- */
 @Component({
   selector: 'app-admin-user-blocks',
   standalone: true,
@@ -55,13 +49,11 @@ export class AdminUserBlocksComponent {
   protected readonly search = new FormControl('', { nonNullable: true });
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly blocks = signal<AdminUserBlock[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.blocks);
 
   protected readonly creating = signal(false);
   protected readonly patient = signal<AdminProfileSummary | null>(null);
   protected readonly professional = signal<AdminProfileSummary | null>(null);
-  /** Só aparece depois de tentar confirmar sem escolher. */
   protected readonly showPickerErrors = signal(false);
   protected readonly toRemove = signal<AdminUserBlock | null>(null);
   protected readonly saving = signal(false);

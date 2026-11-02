@@ -1,6 +1,5 @@
 import { AdminAction, AdminActionType, AdminParty } from '../../models';
 
-/** Pedaços das respostas do admin que se repetem entre disputas, perfis e solicitações. */
 export interface ParteApi {
   usuarioId: number;
   nome: string;

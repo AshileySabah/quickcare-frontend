@@ -33,7 +33,6 @@ export class ProfessionalHomeComponent {
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
 
-  /** A categoria já é a do profissional; o que muda entre as solicitações é a especialidade. */
   protected readonly filters = createListFilters(this.fb, this.requests, {
     searchPlaceholder: 'Descrição, especialidade, bairro...',
     searchText: requestSearchText,

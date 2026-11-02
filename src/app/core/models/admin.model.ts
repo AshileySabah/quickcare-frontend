@@ -4,7 +4,6 @@ import { ProposalStatus } from './proposal.model';
 import { RequestStatus, ServiceModality, ServiceRequest } from './service-request.model';
 import { SwitchableRole, ValidationStatus } from './user.model';
 
-/** Uma pessoa envolvida, como o admin vê (com e-mail, para contato). */
 export interface AdminParty {
   userId: string;
   name: string;
@@ -46,7 +45,6 @@ export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   solicitacao_cancelada: 'Solicitação cancelada',
 };
 
-/** Auditoria: o que um admin fez e por quê. */
 export interface AdminAction {
   type: AdminActionType;
   admin?: string;
@@ -54,8 +52,6 @@ export interface AdminAction {
   justification: string;
   createdAt: string;
 }
-
-// ------------------------------------------------------------- disputas
 
 export interface DisputeSummary {
   id: string;
@@ -74,7 +70,6 @@ export interface DisputeSummary {
   contestedAt?: string;
 }
 
-/** Um evento do histórico do atendimento (auditoria). */
 export interface AttendanceEvent {
   type: string;
   author?: string;
@@ -95,12 +90,9 @@ export interface DisputeDetail {
 
 export interface DisputeDecisionInput {
   decision: ProblemDecision;
-  /** Quem leva ocorrência: nenhum, um ou os dois. */
   occurrenceFor: AttendanceSide[];
   justification: string;
 }
-
-// --------------------------------------------------------------- perfis
 
 export type ProfileSituation = 'todos' | 'com_ocorrencias' | 'com_recurso' | 'bloqueados';
 
@@ -112,7 +104,6 @@ export interface AdminProfileSummary {
   validationStatus: ValidationStatus;
   banned: boolean;
   counting: number;
-  /** Recursos de ocorrência esperando decisão. */
   openAppeals: number;
   block?: Block;
 }
@@ -125,8 +116,6 @@ export interface AdminProfileDetail {
   blocks: Block[];
   actions: AdminAction[];
 }
-
-// ---------------------------------------------------------- solicitações
 
 export type AdminRequestAction = 'reabrir' | 'concluir' | 'cancelar';
 
@@ -168,8 +157,6 @@ export interface AdminRequestDetail {
   actions: AdminAction[];
 }
 
-// ----------------------------------------------------- propostas (Gerais)
-
 export type AdminProposalAction = 'recusar' | 'cancelar' | 'reativar';
 
 export const ADMIN_PROPOSAL_ACTION_LABELS: Record<AdminProposalAction, string> = {
@@ -178,7 +165,6 @@ export const ADMIN_PROPOSAL_ACTION_LABELS: Record<AdminProposalAction, string> =
   reativar: 'Reativar',
 };
 
-/** Uma proposta na lista geral do admin, com o que dá para fazer com ela agora. */
 export interface AdminProposalSummary {
   id: string;
   status: ProposalStatus;
@@ -195,8 +181,6 @@ export interface AdminProposalSummary {
   createdAt: string;
 }
 
-// ------------------------------------------ bloqueios entre usuários (Gerais)
-
 export type UserBlockAuthor = 'paciente' | 'profissional' | 'admin';
 
 export const USER_BLOCK_AUTHOR_LABELS: Record<UserBlockAuthor, string> = {
@@ -210,7 +194,6 @@ export interface AdminUserBlock {
   patient: AdminParty;
   professional: AdminParty;
   blockedBy: UserBlockAuthor;
-  /** Só quando foi o admin. */
   createdBy?: string;
   justification?: string;
   createdAt: string;

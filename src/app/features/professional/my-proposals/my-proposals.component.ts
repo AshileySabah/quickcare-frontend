@@ -21,7 +21,6 @@ import { AttendancePanelComponent } from '../../attendance/attendance-panel/atte
 import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
 
-/** Como no histórico do paciente: encerrada é a proposta que já não anda mais. */
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
 const CLOSED_REQUEST_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 
@@ -30,11 +29,6 @@ function isClosed(proposal: Proposal): boolean {
     CLOSED_PROPOSAL_STATUSES.includes(proposal.status) || CLOSED_REQUEST_STATUSES.includes(proposal.request.status)
   );
 }
-
-/**
- * "Minhas propostas" mostra as ativas (pendentes e aceitas em solicitações em
- * curso); a rota de histórico (data.view = 'history') mostra as encerradas.
- */
 
 @Component({
   selector: 'app-my-proposals',
@@ -47,10 +41,8 @@ export class MyProposalsComponent {
   private readonly fb = inject(FormBuilder);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
-  /** Bloqueado por ocorrências, "Reenviar proposta" fica desabilitado. */
   protected readonly blocked = inject(OccurrenceService).blockFor('professional');
 
-  /** No lugar do paciente, enquanto a proposta não é aceita. */
   protected readonly patientHiddenNote = 'O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.';
 
   protected readonly isHistory = inject(ActivatedRoute).snapshot.data['view'] === 'history';
@@ -100,7 +92,6 @@ export class MyProposalsComponent {
     return this.proposalService.canEdit(proposal);
   }
 
-  /** Com atendimento ativo, quem cancela é o painel do atendimento (com a regra das 48h). */
   protected canCancel(proposal: Proposal): boolean {
     return (
       this.proposalService.canCancel(proposal) && (!proposal.attendance || proposal.attendance.status === 'cancelado')
@@ -111,7 +102,6 @@ export class MyProposalsComponent {
     return this.proposalService.canResend(proposal, this.proposals());
   }
 
-  /** Pendente cancela direto; já aceita, pergunta antes (a vaga reabre). */
   protected askToCancel(proposal: Proposal): void {
     this.proposalToCancel.set(proposal);
     if (proposal.status === 'aceita') {

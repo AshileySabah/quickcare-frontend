@@ -40,10 +40,6 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
   { value: 'CNH', label: 'CNH' },
 ];
 
-/**
- * Correção de uma etapa reprovada: o usuário ajusta os dados daquela etapa e
- * envia um novo documento, abrindo uma nova avaliação.
- */
 @Component({
   selector: 'app-resubmit-step-form',
   standalone: true,
@@ -105,7 +101,6 @@ export class ResubmitStepFormComponent implements OnInit {
       registrationUf: data.registrationUf ?? '',
     });
 
-    // Só os campos da etapa reenviada são obrigatórios.
     const required: Record<string, ValidatorFn[]> =
       this.step().type === 'IDENTIDADE'
         ? {

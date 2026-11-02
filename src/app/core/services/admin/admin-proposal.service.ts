@@ -34,7 +34,6 @@ export interface AdminProposalFilters {
   search?: string;
 }
 
-/** Propostas no admin (Gerais): busca e troca de status (recusar, cancelar, reativar) com justificativa. */
 @Injectable({ providedIn: 'root' })
 export class AdminProposalService {
   private readonly http = inject(HttpClient);

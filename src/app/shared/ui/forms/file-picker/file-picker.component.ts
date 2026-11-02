@@ -3,7 +3,6 @@ import { ACCEPTED_FILE_EXTENSIONS, fileSizeLabel, uploadError } from './file-rul
 
 let nextInputId = 0;
 
-/** Seleção de um único arquivo (PDF, JPG ou PNG até 5MB), com as mesmas regras do back. */
 @Component({
   selector: 'ui-file-picker',
   standalone: true,
@@ -45,7 +44,6 @@ export class FilePickerComponent {
     this.fileChange.emit(selected);
   }
 
-  /** Também usado pelo componente pai para limpar depois de enviar. */
   clear(): void {
     this.file.set(null);
     this.localError.set(null);

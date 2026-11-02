@@ -52,7 +52,6 @@ describe('PatientHistoryComponent', () => {
     const buttons = Array.from(element.querySelectorAll('ui-button')).map((item) => item.textContent!.trim());
 
     expect(ids).toEqual(['#2', '#5']);
-    // Sem editar/cancelar; só visualizar e reabrir como uma nova solicitação.
     expect(buttons).toEqual(['Visualizar', 'Reabrir solicitação', 'Visualizar', 'Reabrir solicitação']);
   });
 

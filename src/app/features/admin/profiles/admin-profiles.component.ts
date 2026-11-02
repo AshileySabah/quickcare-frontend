@@ -16,18 +16,12 @@ import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
-/** A fila do que chegou por demanda (menu Ocorrências). */
 const SITUATIONS: FilterChip<ProfileSituation>[] = [
   { value: 'com_recurso', label: 'Com recurso' },
   { value: 'bloqueados', label: 'Bloqueados' },
   { value: 'com_ocorrencias', label: 'Com ocorrências' },
 ];
 
-/**
- * `demand`: a fila de Ocorrências (recurso a decidir, ocorrências, bloqueados).
- * `all`: Gerais › Usuários, qualquer paciente ou profissional, para o admin
- * lançar ocorrência ou bloquear por conta própria.
- */
 export type AdminProfilesMode = 'demand' | 'all';
 
 const ROLES: FilterChip<SwitchableRole | null>[] = [
@@ -36,11 +30,6 @@ const ROLES: FilterChip<SwitchableRole | null>[] = [
   { value: 'professional', label: 'Profissionais' },
 ];
 
-/**
- * Perfis de pacientes e profissionais (ver {@link AdminProfilesMode}): o admin
- * entra no perfil para lançar ou anular ocorrência, decidir recurso, aplicar
- * ou remover bloqueio. O modo vem da rota (`data.mode`).
- */
 @Component({
   selector: 'app-admin-profiles',
   standalone: true,
@@ -71,7 +60,6 @@ export class AdminProfilesComponent {
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly profiles = signal<AdminProfileSummary[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.profiles);
 
   constructor() {

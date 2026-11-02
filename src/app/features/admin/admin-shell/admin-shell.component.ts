@@ -6,12 +6,6 @@ import { AdminDisputeService } from '../../../core/services/admin/admin-dispute.
 import { AdminProfileService } from '../../../core/services/admin/admin-profile.service';
 import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
 
-/**
- * O admin não tem tela de perfil: o menu da conta mostra só "Sair". O menu
- * separa o que chega por demanda (Validação, Disputas, Ocorrências, com a
- * contagem do que aguarda decisão, atualizada a cada navegação) do que o
- * admin faz por iniciativa própria (Gerais).
- */
 @Component({
   selector: 'app-admin-shell',
   standalone: true,

@@ -34,7 +34,6 @@ const STATUS_FILTERS: FilterChip<ProposalStatus | null>[] = [
   ...(Object.entries(PROPOSAL_STATUS_LABELS) as [ProposalStatus, string][]).map(([value, label]) => ({ value, label })),
 ];
 
-/** O que cada ação faz, para o modal de confirmação. */
 const ACTION_CONSEQUENCES: Record<AdminProposalAction, string[]> = {
   recusar: ['A proposta sai do páreo, sem ocorrência para ninguém.', 'O paciente e o profissional recebem a justificativa.'],
   cancelar: [
@@ -48,10 +47,6 @@ const ACTION_CONSEQUENCES: Record<AdminProposalAction, string[]> = {
   ],
 };
 
-/**
- * Gerais › Propostas: todas as propostas, para o admin recusar a pendente,
- * cancelar a aceita ou reativar a recusada/cancelada, com justificativa.
- */
 @Component({
   selector: 'app-admin-proposals',
   standalone: true,
@@ -85,7 +80,6 @@ export class AdminProposalsComponent {
   protected readonly search = new FormControl('', { nonNullable: true });
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly proposals = signal<AdminProposalSummary[]>([]);
-  /** A lista vem paginada (5 por página por padrão). */
   protected readonly pager = createPagination(this.proposals);
 
   protected readonly pending = signal<{ proposal: AdminProposalSummary; action: AdminProposalAction } | null>(null);

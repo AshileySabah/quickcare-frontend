@@ -1,7 +1,5 @@
 @use 'tokens' as tokens;
 
-// Fica no header escuro (teal 800) do ui-app-shell: inativo só com o texto
-// branco, ativo com o oval verde.
 .profile-switcher {
   display: inline-flex;
   padding: 2px;
@@ -33,13 +31,11 @@
     outline-offset: 1px;
   }
 
-  // Sem opacidade: o texto continua legível no fundo escuro.
   &:disabled {
     cursor: not-allowed;
     color: tokens.color('teal', 200);
   }
 
-  // teal 900 sobre teal 300: contraste ~6,7:1.
   &--active {
     color: tokens.color('teal', 900);
     background-color: tokens.color('teal', 300);
@@ -56,7 +52,6 @@
   font-weight: tokens.font-weight('regular');
 }
 
-// Não lidas do outro perfil: chama atenção sem competir com o oval ativo.
 .profile-switcher__unread {
   min-width: 16px;
   height: 16px;

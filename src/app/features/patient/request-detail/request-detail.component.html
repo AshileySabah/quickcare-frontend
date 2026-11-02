@@ -67,6 +67,15 @@
                         </ui-button>
                       </ui-button-group>
                     }
+                    @if (proposal.attendance; as attendance) {
+                      <app-attendance-panel
+                        proposal-attendance
+                        viewer="patient"
+                        [attendance]="attendance"
+                        [counterpartName]="proposal.professional.name"
+                        (changed)="refresh()"
+                      ></app-attendance-panel>
+                    }
                   </ui-proposal-card>
                 }
               </div>

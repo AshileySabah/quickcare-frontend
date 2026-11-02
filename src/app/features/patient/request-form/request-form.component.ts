@@ -5,7 +5,7 @@ import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/ad
 import { fieldErrorsFor } from '../../../core/forms/field-errors';
 import { buildRequestedProfessionalGroup } from '../../../core/forms/requested-professional-form';
 import { ProfessionalCategory, ProfessionalCategoryInfo, ServiceRequest, Specialty } from '../../../core/models';
-import { RequestService, hasAcceptedProposals } from '../../../core/services/request.service';
+import { RequestService, hasAcceptedProposals, isLateChange } from '../../../core/services/request.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
@@ -63,6 +63,8 @@ export class RequestFormComponent {
   protected readonly readOnlyRequest = signal<ServiceRequest | null>(null);
   /** Com propostas aceitas, salvar reabre as vagas (a tela avisa). */
   protected readonly hasAcceptedProposals = signal(false);
+  /** Próximo atendimento em menos de 48h: perder ou trocar o profissional agora conta ocorrência. */
+  protected readonly lateChange = signal(false);
 
   protected readonly categories = signal<ProfessionalCategoryInfo[]>([]);
   protected readonly specialties = signal<Specialty[]>([]);
@@ -142,6 +144,7 @@ export class RequestFormComponent {
 
         this.fillForm(request);
         this.hasAcceptedProposals.set(hasAcceptedProposals(request));
+        this.lateChange.set(isLateChange(request));
 
         if (!this.requestService.canEdit(request)) {
           this.readOnlyRequest.set(request);

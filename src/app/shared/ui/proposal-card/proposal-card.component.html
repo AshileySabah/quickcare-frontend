@@ -20,7 +20,11 @@
 
   <p class="ui-proposal-card__approach">{{ proposal().approach }}</p>
 
-  <p class="ui-proposal-card__deadline">Prazo: {{ proposal().deadline | date: 'dd/MM/yyyy' }}</p>
+  @if (!proposal().attendance) {
+    <p class="ui-proposal-card__deadline">Quando: {{ period() }}</p>
+  }
+
+  <ng-content select="[proposal-attendance]"></ng-content>
 
   <div class="ui-proposal-card__actions">
     <ng-content select="[proposal-actions]"></ng-content>

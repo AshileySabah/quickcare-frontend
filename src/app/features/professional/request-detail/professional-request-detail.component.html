@@ -40,7 +40,15 @@
             }
             <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
             <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
-            <p class="professional-request-detail__proposal-detail">Prazo: {{ proposal.deadline | date: 'dd/MM/yyyy' }}</p>
+            @if (proposal.attendance; as attendance) {
+              <app-attendance-panel
+                viewer="professional"
+                [attendance]="attendance"
+                (changed)="refresh()"
+              ></app-attendance-panel>
+            } @else {
+              <p class="professional-request-detail__proposal-detail">Quando: {{ period(proposal) }}</p>
+            }
             @if (canEdit(proposal) || canCancel(proposal)) {
               <div class="professional-request-detail__proposal-actions">
                 @if (canEdit(proposal)) {

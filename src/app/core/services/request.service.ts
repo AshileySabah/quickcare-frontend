@@ -56,9 +56,11 @@ interface SolicitacaoApiResponse {
   criadoEm: string;
   atualizadoEm: string;
   totalPropostas: number;
+  atendimentoEmAndamento: boolean;
+  proximoAtendimentoInicio?: string;
 }
 
-/** Com propostas aceitas também: as vagas reabrem e as propostas voltam a aguardar aceite. */
+/** Com aceitos também: eles reaceitam ou recusam a nova versão. */
 const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 const CANCELABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 const RECEIVING_PROPOSALS_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas'];
@@ -72,9 +74,9 @@ export class RequestService {
   private readonly requestsSignal = signal<ServiceRequest[]>([]);
   readonly requests = this.requestsSignal.asReadonly();
 
-  /** Com alguma proposta aceita a API recusa a edição (ela apagaria as vagas ocupadas). */
+  /** Em curso e sem atendimento acontecendo agora (nesse caso, remarca ou cancela o atendimento). */
   canEdit(request: ServiceRequest): boolean {
-    return EDITABLE_STATUSES.includes(request.status);
+    return EDITABLE_STATUSES.includes(request.status) && !request.attendanceInProgress;
   }
 
   canCancel(request: ServiceRequest): boolean {
@@ -146,16 +148,6 @@ export class RequestService {
     );
   }
 
-  complete(id: string): Observable<ServiceRequest> {
-    return this.http.patch<SolicitacaoApiResponse>(`${this.baseUrl}/${id}/concluir`, {}).pipe(
-      map(toServiceRequest),
-      tap((request) => this.cache(request)),
-      catchError((error: unknown) =>
-        throwError(() => normalizeError(error, 'Não foi possível concluir a solicitação.')),
-      ),
-    );
-  }
-
   private cache(request: ServiceRequest): void {
     this.requestsSignal.update((requests) =>
       requests.some((item) => item.id === request.id)
@@ -186,6 +178,8 @@ function toServiceRequest(response: SolicitacaoApiResponse): ServiceRequest {
     desiredDeadline: response.prazoDesejado,
     status: response.status.toLowerCase() as RequestStatus,
     proposalCount: response.totalPropostas,
+    attendanceInProgress: response.atendimentoEmAndamento,
+    nextAttendanceStart: response.proximoAtendimentoInicio,
     createdAt: response.criadoEm,
     updatedAt: response.atualizadoEm,
   };
@@ -233,17 +227,26 @@ function toApiPayload(input: CreateRequestInput) {
 
 /** O que acontece ao cancelar uma solicitação com propostas aceitas (sem aceitas, cancela sem perguntar). */
 export const CANCEL_REQUEST_CONSEQUENCES = [
-  'Os profissionais com propostas aceitas deixam de atender esta solicitação.',
+  'Os atendimentos marcados são cancelados e os profissionais são avisados.',
   'As propostas pendentes serão recusadas e ninguém mais poderá enviar propostas.',
   'Essa ação não pode ser desfeita.',
 ];
 
 /** O que acontece ao editar uma solicitação que já tem propostas aceitas. */
 export const EDIT_REQUEST_WITH_ACCEPTED_CONSEQUENCES = [
-  'As propostas aceitas deixam de estar aceitas e as vagas reabrem.',
-  'Você precisa aceitar de novo a proposta de cada profissional (ou escolher outras).',
-  'Os profissionais são avisados para revisar as propostas.',
+  'Os profissionais aceitos precisam reaceitar a nova versão; eles podem recusar sem penalidade.',
+  'Enquanto eles não respondem, a solicitação volta a receber propostas e você pode aceitar outra para a vaga.',
+  'Se faltar menos de 48h para o atendimento, trocar ou perder o profissional conta como ocorrência para você.',
 ];
+
+const LATE_CHANGE_MS = 48 * 60 * 60 * 1000;
+
+/** O próximo atendimento começa em menos de 48h: editar agora pode contar ocorrência. */
+export function isLateChange(request: ServiceRequest, now: Date = new Date()): boolean {
+  return (
+    !!request.nextAttendanceStart && new Date(request.nextAttendanceStart).getTime() - now.getTime() < LATE_CHANGE_MS
+  );
+}
 
 /** Alguma vaga já tem proposta aceita: editar faz os aceitos voltarem a aguardar. */
 export function hasAcceptedProposals(request: ServiceRequest): boolean {

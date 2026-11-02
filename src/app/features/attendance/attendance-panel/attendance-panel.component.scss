@@ -1,0 +1,51 @@
+@use 'tokens' as tokens;
+
+// Fica dentro do card da proposta, separado do que foi oferecido por uma linha.
+.attendance-panel {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  margin-top: tokens.space(3);
+  padding-top: tokens.space(3);
+  border-top: 1px solid tokens.color('gray', 100);
+}
+
+.attendance-panel__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: tokens.space(2);
+}
+
+.attendance-panel__title {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.attendance-panel__period {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(2);
+  margin: 0;
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.attendance-panel__note {
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.attendance-panel__actions {
+  justify-content: flex-end;
+}
+
+.attendance-panel__reschedule {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-top: tokens.space(4);
+}

@@ -6,12 +6,21 @@
       <h1 class="request-form__title">Solicitação #{{ request.id }}</h1>
       <ui-status-badge [status]="request.status"></ui-status-badge>
     </div>
-    <p class="request-form__subtitle">Esta solicitação não pode mais ser editada; os dados abaixo são só para consulta.</p>
+    <p class="request-form__subtitle">
+      {{
+        request.attendanceInProgress
+          ? 'Há um atendimento acontecendo agora: para mudar o horário, remarque pelo atendimento. Os dados abaixo são só para consulta.'
+          : 'Esta solicitação não pode mais ser editada; os dados abaixo são só para consulta.'
+      }}
+    </p>
   } @else {
     @if (hasAcceptedProposals()) {
       <ui-notice>
-        Esta solicitação já tem propostas aceitas. Ao salvar, as vagas reabrem e você precisa aceitar de novo a proposta
-        de cada profissional (ou escolher outras).
+        Esta solicitação já tem profissionais aceitos. Ao salvar, eles precisam reaceitar a nova versão (podem recusar
+        sem penalidade). Enquanto isso, a solicitação volta a receber propostas e você pode aceitar outra para a vaga.
+        @if (lateChange()) {
+          Como falta menos de 48h para um atendimento, perder ou trocar o profissional conta como ocorrência para você.
+        }
       </ui-notice>
     }
     @if (isCopy) {

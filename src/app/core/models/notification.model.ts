@@ -10,6 +10,15 @@ export type NotificationType =
   | 'solicitacao_alterada'
   | 'solicitacao_cancelada'
   | 'solicitacao_concluida'
+  | 'reaceite_aceito'
+  | 'reaceite_recusado'
+  | 'atendimento_substituido'
+  | 'remarcacao_solicitada'
+  | 'remarcacao_aceita'
+  | 'remarcacao_recusada'
+  | 'atendimento_cancelado'
+  | 'lembrete_atendimento'
+  | 'atendimento_finalizado'
   | 'cadastro_aprovado'
   | 'etapa_reprovada';
 

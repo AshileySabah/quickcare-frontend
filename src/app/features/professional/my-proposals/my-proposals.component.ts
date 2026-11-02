@@ -17,6 +17,7 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
+import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 
 /** Como no histórico do paciente: encerrada é a proposta que já não anda mais. */
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
@@ -35,7 +36,7 @@ function isClosed(proposal: Proposal): boolean {
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
+  imports: [AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })
@@ -94,8 +95,11 @@ export class MyProposalsComponent {
     return this.proposalService.canEdit(proposal);
   }
 
+  /** Com atendimento ativo, quem cancela é o painel do atendimento (com a regra das 48h). */
   protected canCancel(proposal: Proposal): boolean {
-    return this.proposalService.canCancel(proposal);
+    return (
+      this.proposalService.canCancel(proposal) && (!proposal.attendance || proposal.attendance.status === 'cancelado')
+    );
   }
 
   protected canResend(proposal: Proposal): boolean {

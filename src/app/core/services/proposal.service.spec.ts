@@ -37,7 +37,8 @@ function apiResponse(overrides: Record<string, unknown> = {}) {
     },
     valor: 180.5,
     abordagem: 'Curativos diários com relatório semanal de evolução.',
-    prazo: '2026-11-20',
+    inicio: '2026-11-20T11:00:00Z',
+    termino: '2026-11-20T21:00:00Z',
     status: 'PENDENTE',
     criadoEm: '2026-10-01T10:00:00Z',
     atualizadoEm: '2026-10-01T10:00:00Z',
@@ -63,7 +64,7 @@ describe('ProposalService', () => {
     let created!: Proposal;
 
     service
-      .submit('50', { price: 180.5, approach: 'Curativos diários com relatório semanal de evolução.', deadline: '2026-11-20' })
+      .submit('50', { price: 180.5, approach: 'Curativos diários com relatório semanal de evolução.', start: '2026-11-20T11:00:00Z', end: '2026-11-20T21:00:00Z' })
       .subscribe((proposal) => (created = proposal));
 
     const req = httpMock.expectOne(REQUEST_PROPOSALS_URL);
@@ -71,7 +72,8 @@ describe('ProposalService', () => {
     expect(req.request.body).toEqual({
       valor: 180.5,
       abordagem: 'Curativos diários com relatório semanal de evolução.',
-      prazo: '2026-11-20',
+      inicio: '2026-11-20T11:00:00Z',
+      termino: '2026-11-20T21:00:00Z',
     });
     req.flush(apiResponse());
 
@@ -107,7 +109,7 @@ describe('ProposalService', () => {
   });
 
   it('edita via PUT', () => {
-    service.update('100', { price: 200, approach: 'Abordagem revisada para o teste.', deadline: '2026-11-25' }).subscribe();
+    service.update('100', { price: 200, approach: 'Abordagem revisada para o teste.', start: '2026-11-25T11:00:00Z', end: '2026-11-25T21:00:00Z' }).subscribe();
 
     const req = httpMock.expectOne(`${PROPOSALS_URL}/100`);
     expect(req.request.method).toBe('PUT');
@@ -147,7 +149,7 @@ describe('ProposalService', () => {
   it('propaga a mensagem de erro da API', () => {
     let error: Error | undefined;
     service
-      .submit('50', { price: 100, approach: 'Abordagem qualquer para o teste.', deadline: '2026-11-20' })
+      .submit('50', { price: 100, approach: 'Abordagem qualquer para o teste.', start: '2026-11-20T11:00:00Z', end: '2026-11-20T21:00:00Z' })
       .subscribe({ error: (err: Error) => (error = err) });
 
     httpMock.expectOne(REQUEST_PROPOSALS_URL).flush(

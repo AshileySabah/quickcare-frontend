@@ -12,11 +12,22 @@
 
     <ui-grid-item [xs]="12" [sm]="6">
       <ui-input
-        label="Prazo estimado"
-        type="date"
-        formControlName="deadline"
+        label="Início do atendimento"
+        type="datetime-local"
+        formControlName="start"
         [required]="true"
-        [errorMessage]="fieldError('deadline')"
+        [errorMessage]="fieldError('start')"
+      ></ui-input>
+    </ui-grid-item>
+
+    <ui-grid-item [xs]="12" [sm]="6">
+      <ui-input
+        label="Término do atendimento"
+        type="datetime-local"
+        formControlName="end"
+        [required]="true"
+        [errorMessage]="fieldError('end')"
+        hint="O atendimento começa e termina sozinho nesses horários."
       ></ui-input>
     </ui-grid-item>
 

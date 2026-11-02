@@ -31,7 +31,7 @@
     }
     @case ('filled') {
       <div class="admin-disputes__list">
-        @for (dispute of disputes(); track dispute.id) {
+        @for (dispute of pager.items(); track dispute.id) {
           <a class="admin-disputes__card-link" [routerLink]="['/admin/disputas', dispute.id]">
             <ui-card [interactive]="true">
               <div class="admin-disputes__card-header">
@@ -56,6 +56,7 @@
           </a>
         }
       </div>
+      <ui-paginator [pagination]="pager" label="Páginas de disputas"></ui-paginator>
     }
   }
 </section>

@@ -20,7 +20,7 @@
     @case ('filled') {
       <ui-card>
         <ul class="blocked-users__list">
-          @for (user of blocked(); track user.id) {
+          @for (user of pager.items(); track user.id) {
             <li class="blocked-users__item">
               <ui-person-chip
                 [name]="user.name"
@@ -32,6 +32,7 @@
           }
         </ul>
       </ui-card>
+      <ui-paginator [pagination]="pager" label="Páginas de usuários bloqueados"></ui-paginator>
     }
   }
 </section>

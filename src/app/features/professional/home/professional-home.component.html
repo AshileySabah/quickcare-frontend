@@ -26,7 +26,7 @@
     @case ('filled') {
       <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
         <div class="professional-home__list">
-          @for (request of filters.filtered(); track request.id) {
+          @for (request of filters.page.items(); track request.id) {
             <a class="professional-home__card-link" [routerLink]="['/professional/solicitacoes', request.id]">
               <ui-card [interactive]="true">
                 <div class="professional-home__card-header">

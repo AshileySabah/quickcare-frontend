@@ -18,6 +18,8 @@ import { EditRequestActionComponent } from '../../../features/patient/edit-reque
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -25,7 +27,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [PersonMenuComponent, AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [PaginatorComponent, PersonMenuComponent, AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,
@@ -49,6 +51,8 @@ export class RequestDetailComponent {
 
   protected readonly proposalsState = signal<ProposalsState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
+  /** A lista vem paginada (5 por página por padrão). */
+  protected readonly pager = createPagination(this.proposals);
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
   protected readonly isAccepting = signal(false);

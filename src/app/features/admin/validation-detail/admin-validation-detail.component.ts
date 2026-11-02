@@ -69,9 +69,7 @@ export class AdminValidationDetailComponent {
     this.load();
   }
 
-  protected get backLink(): string {
-    return this.profile === 'professional' ? '/admin/profissionais' : '/admin/pacientes';
-  }
+  protected readonly backLink = '/admin/validacao';
 
   protected load(): void {
     this.pageState.set('loading');

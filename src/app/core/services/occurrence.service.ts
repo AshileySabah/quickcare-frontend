@@ -43,6 +43,8 @@ export interface BloqueioApiResponse {
   removidoPor?: string;
   justificativaRemocao?: string;
   desfeito: boolean;
+  aplicadoPor?: string;
+  justificativa?: string;
 }
 
 interface ResumoApiResponse {
@@ -164,5 +166,7 @@ export function toBlock(response: BloqueioApiResponse): Block {
     removedBy: response.removidoPor,
     removalJustification: response.justificativaRemocao,
     undone: response.desfeito,
+    appliedBy: response.aplicadoPor,
+    justification: response.justificativa,
   };
 }

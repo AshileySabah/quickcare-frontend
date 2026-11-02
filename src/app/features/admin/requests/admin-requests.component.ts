@@ -13,6 +13,8 @@ import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/s
 import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 const STATUS_FILTERS: FilterChip<RequestStatus | null>[] = [
   { value: null, label: 'Todas' },
@@ -23,7 +25,7 @@ const STATUS_FILTERS: FilterChip<RequestStatus | null>[] = [
 @Component({
   selector: 'app-admin-requests',
   standalone: true,
-  imports: [
+  imports: [PaginatorComponent, 
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
@@ -46,6 +48,8 @@ export class AdminRequestsComponent {
   protected readonly search = new FormControl('', { nonNullable: true });
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<AdminRequestSummary[]>([]);
+  /** A lista vem paginada (5 por página por padrão). */
+  protected readonly pager = createPagination(this.requests);
 
   constructor() {
     this.search.valueChanges

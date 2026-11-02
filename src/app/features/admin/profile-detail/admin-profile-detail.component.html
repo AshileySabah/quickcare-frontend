@@ -42,6 +42,11 @@
               <ui-button variant="secondary" size="sm" (click)="dialog.set({ kind: 'unblock', blockId: block.id })">
                 Remover bloqueio
               </ui-button>
+            } @else {
+              <ui-button variant="danger-outline" size="sm" (click)="dialog.set({ kind: 'block' })">
+                <ui-icon name="ban"></ui-icon>
+                Aplicar bloqueio
+              </ui-button>
             }
           </div>
           @if (activeBlock(); as block) {
@@ -59,6 +64,9 @@
                   <span class="profile-detail__muted">{{ block.start | date: 'dd/MM/yyyy' }}</span>
                   <span>
                     Nível {{ block.level }}, até {{ block.end | date: 'dd/MM/yyyy' }}
+                    @if (block.appliedBy) {
+                      · aplicado por {{ block.appliedBy }}: {{ block.justification }}
+                    }
                     @if (block.undone) {
                       · desfeito em {{ block.removedAt | date: 'dd/MM/yyyy' }}: {{ block.removalJustification }}
                     } @else if (block.removedAt) {

@@ -105,6 +105,16 @@ export class AdminProfileService {
     );
   }
 
+  /** Bloqueio direto, sem as 3 ocorrências: no próximo nível da pessoa (7 dias × nível). */
+  applyBlock(role: SwitchableRole, userId: string, justification: string): Observable<AdminProfileDetail> {
+    return this.send(
+      this.http.post<PerfilDetalheApi>(`${this.baseUrl}/perfis/${PERFIL_API[role]}/${userId}/bloqueios`, {
+        justificativa: justification.trim(),
+      }),
+      'Não foi possível aplicar o bloqueio.',
+    );
+  }
+
   removeBlock(blockId: string, justification: string): Observable<AdminProfileDetail> {
     return this.send(
       this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/bloqueios/${blockId}/remover`, {

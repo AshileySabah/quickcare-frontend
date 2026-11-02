@@ -8,8 +8,9 @@ import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-s
 
 /**
  * O admin não tem tela de perfil: o menu da conta mostra só "Sair". O menu
- * mostra quantas disputas e quantos recursos de ocorrência aguardam decisão
- * (atualiza a cada navegação).
+ * separa o que chega por demanda (Validação, Disputas, Ocorrências, com a
+ * contagem do que aguarda decisão, atualizada a cada navegação) do que o
+ * admin faz por iniciativa própria (Gerais).
  */
 @Component({
   selector: 'app-admin-shell',
@@ -26,11 +27,10 @@ export class AdminShellComponent {
   private readonly openAppeals = signal(0);
 
   protected readonly navItems = computed<ShellNavItem[]>(() => [
-    { label: 'Profissionais', link: '/admin/profissionais' },
-    { label: 'Pacientes', link: '/admin/pacientes' },
+    { label: 'Validação', link: '/admin/validacao' },
     { label: 'Disputas', link: '/admin/disputas', count: this.openDisputes() },
-    { label: 'Ocorrências', link: '/admin/perfis', count: this.openAppeals() },
-    { label: 'Solicitações', link: '/admin/solicitacoes' },
+    { label: 'Ocorrências', link: '/admin/ocorrencias', count: this.openAppeals() },
+    { label: 'Gerais', link: '/admin/gerais' },
   ]);
 
   constructor() {

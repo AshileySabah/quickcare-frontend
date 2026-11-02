@@ -1,10 +1,18 @@
 <section class="admin-dashboard">
   <header class="admin-dashboard__header">
     <div>
-      <h1 class="admin-dashboard__title">{{ title }}</h1>
+      <h1 class="admin-dashboard__title">Validação cadastral</h1>
       <p class="admin-dashboard__subtitle">Confira cada etapa do cadastro e aprove ou reprove com justificativa.</p>
     </div>
   </header>
+
+  <ui-filter-chips
+    class="admin-dashboard__filters"
+    label="Filtrar por perfil"
+    [chips]="profileFilters"
+    [selected]="profile()"
+    (selectedChange)="selectProfile($event)"
+  ></ui-filter-chips>
 
   <ui-filter-chips
     class="admin-dashboard__filters"
@@ -29,7 +37,7 @@
     }
     @case ('filled') {
       <div class="admin-dashboard__list">
-        @for (entry of entries(); track entry.id) {
+        @for (entry of pager.items(); track entry.id) {
           <a class="admin-dashboard__card-link" [routerLink]="[detailBasePath, entry.id]">
             <ui-card [interactive]="true">
               <div class="admin-dashboard__card-header">
@@ -45,6 +53,7 @@
           </a>
         }
       </div>
+      <ui-paginator [pagination]="pager" label="Páginas de cadastros"></ui-paginator>
     }
   }
 </section>

@@ -1,0 +1,46 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-user-blocks__header {
+  @include list.header;
+}
+
+.admin-user-blocks__title {
+  @include list.title;
+}
+
+.admin-user-blocks__subtitle {
+  @include list.subtitle;
+}
+
+.admin-user-blocks__filters {
+  margin-bottom: tokens.space(4);
+}
+
+.admin-user-blocks__list {
+  @include list.list;
+}
+
+.admin-user-blocks__card-header {
+  @include list.card-header;
+}
+
+.admin-user-blocks__people {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.admin-user-blocks__date {
+  @include list.date;
+}
+
+.admin-user-blocks__text {
+  margin: tokens.space(2) 0 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+}
+
+.admin-user-blocks__actions {
+  margin-top: tokens.space(3);
+}

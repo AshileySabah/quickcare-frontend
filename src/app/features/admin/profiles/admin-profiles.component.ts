@@ -2,7 +2,7 @@ import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { AdminProfileSummary, ListViewState, ProfileSituation, SwitchableRole } from '../../../core/models';
 import { AdminProfileService } from '../../../core/services/admin/admin-profile.service';
@@ -13,13 +13,22 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
+/** A fila do que chegou por demanda (menu Ocorrências). */
 const SITUATIONS: FilterChip<ProfileSituation>[] = [
   { value: 'com_recurso', label: 'Com recurso' },
   { value: 'bloqueados', label: 'Bloqueados' },
   { value: 'com_ocorrencias', label: 'Com ocorrências' },
-  { value: 'todos', label: 'Todos' },
 ];
+
+/**
+ * `demand`: a fila de Ocorrências (recurso a decidir, ocorrências, bloqueados).
+ * `all`: Gerais › Usuários, qualquer paciente ou profissional, para o admin
+ * lançar ocorrência ou bloquear por conta própria.
+ */
+export type AdminProfilesMode = 'demand' | 'all';
 
 const ROLES: FilterChip<SwitchableRole | null>[] = [
   { value: null, label: 'Pacientes e profissionais' },
@@ -27,11 +36,15 @@ const ROLES: FilterChip<SwitchableRole | null>[] = [
   { value: 'professional', label: 'Profissionais' },
 ];
 
-/** Perfis com ocorrências e bloqueios: o admin entra para lançar, anular ou desbloquear. */
+/**
+ * Perfis de pacientes e profissionais (ver {@link AdminProfilesMode}): o admin
+ * entra no perfil para lançar ou anular ocorrência, decidir recurso, aplicar
+ * ou remover bloqueio. O modo vem da rota (`data.mode`).
+ */
 @Component({
   selector: 'app-admin-profiles',
   standalone: true,
-  imports: [
+  imports: [PaginatorComponent, 
     DatePipe,
     ReactiveFormsModule,
     RouterLink,
@@ -49,14 +62,17 @@ const ROLES: FilterChip<SwitchableRole | null>[] = [
 export class AdminProfilesComponent {
   private readonly profileService = inject(AdminProfileService);
 
+  protected readonly mode: AdminProfilesMode = inject(ActivatedRoute).snapshot.data['mode'] ?? 'demand';
   protected readonly situations = SITUATIONS;
   protected readonly roles = ROLES;
-  protected readonly situation = signal<ProfileSituation>('com_ocorrencias');
+  protected readonly situation = signal<ProfileSituation>(this.mode === 'all' ? 'todos' : 'com_ocorrencias');
   protected readonly role = signal<SwitchableRole | null>(null);
   protected readonly search = new FormControl('', { nonNullable: true });
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly profiles = signal<AdminProfileSummary[]>([]);
+  /** A lista vem paginada (5 por página por padrão). */
+  protected readonly pager = createPagination(this.profiles);
 
   constructor() {
     this.search.valueChanges

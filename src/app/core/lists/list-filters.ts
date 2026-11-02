@@ -2,6 +2,7 @@ import { Signal, computed } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { map } from 'rxjs';
+import { Pagination, createPagination } from './pagination';
 
 /** Valor dos selects que não filtra nada ("Todas", "Todos"). */
 export const ALL = 'todos';
@@ -39,6 +40,8 @@ export interface ListFilters<T> {
   readonly form: FormGroup<Record<string, FormControl<string>>>;
   readonly config: ListFiltersConfig<T>;
   readonly filtered: Signal<T[]>;
+  /** A página atual do que passou nos filtros (5 por padrão); a lista mostra `page.items()`. */
+  readonly page: Pagination<T>;
   readonly hasActive: Signal<boolean>;
   clear(): void;
 }
@@ -49,8 +52,8 @@ export function normalize(text: string): string {
 }
 
 /**
- * Busca livre, selects e ordenação sobre uma lista já carregada. Usa
- * `toSignal`, então precisa ser criado no construtor ou num campo do componente.
+ * Busca livre, selects, ordenação e paginação sobre uma lista já carregada.
+ * Usa `toSignal`, então precisa ser criado no construtor ou num campo do componente.
  */
 export function createListFilters<T>(fb: FormBuilder, items: Signal<T[]>, config: ListFiltersConfig<T>): ListFilters<T> {
   const defaults: Record<string, string> = { search: '', sort: config.sorts[0]?.value ?? '' };
@@ -78,5 +81,5 @@ export function createListFilters<T>(fb: FormBuilder, items: Signal<T[]>, config
 
   const hasActive = computed(() => Object.keys(defaults).some((key) => values()[key] !== defaults[key]));
 
-  return { form, config, filtered, hasActive, clear: () => form.reset(defaults) };
+  return { form, config, filtered, page: createPagination(filtered), hasActive, clear: () => form.reset(defaults) };
 }

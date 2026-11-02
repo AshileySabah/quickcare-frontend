@@ -28,7 +28,7 @@
     }
     @case ('filled') {
       <div class="admin-requests__list">
-        @for (request of requests(); track request.id) {
+        @for (request of pager.items(); track request.id) {
           <a class="admin-requests__card-link" [routerLink]="['/admin/solicitacoes', request.id]">
             <ui-card [interactive]="true">
               <div class="admin-requests__card-header">
@@ -51,6 +51,7 @@
           </a>
         }
       </div>
+      <ui-paginator [pagination]="pager" label="Páginas de solicitações"></ui-paginator>
     }
   }
 </section>

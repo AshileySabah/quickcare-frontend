@@ -45,7 +45,7 @@
             }
             @case ('filled') {
               <div class="request-detail__proposals-list">
-                @for (proposal of proposals(); track proposal.id) {
+                @for (proposal of pager.items(); track proposal.id) {
                   <ui-proposal-card
                     [uiHighlight]="'proposta-' + proposal.id"
                     [proposal]="proposal"
@@ -85,6 +85,7 @@
                   </ui-proposal-card>
                 }
               </div>
+              <ui-paginator [pagination]="pager" label="Páginas de propostas"></ui-paginator>
             }
           }
         </div>

@@ -1,21 +1,31 @@
 <section class="admin-profiles">
   <header class="admin-profiles__header">
     <div>
-      <h1 class="admin-profiles__title">Ocorrências e bloqueios</h1>
-      <p class="admin-profiles__subtitle">
-        3 ocorrências em 90 dias bloqueiam o perfil de criar solicitações ou enviar propostas.
-      </p>
+      @if (mode === 'all') {
+        <h1 class="admin-profiles__title">Usuários</h1>
+        <p class="admin-profiles__subtitle">
+          Busque qualquer paciente ou profissional para lançar ocorrência ou aplicar bloqueio por conta própria.
+        </p>
+      } @else {
+        <h1 class="admin-profiles__title">Ocorrências e bloqueios</h1>
+        <p class="admin-profiles__subtitle">
+          Recursos a decidir, perfis com ocorrências e bloqueados. 3 ocorrências em 90 dias bloqueiam o perfil de
+          criar solicitações ou enviar propostas.
+        </p>
+      }
     </div>
   </header>
 
   <div class="admin-profiles__filters">
     <ui-input label="Buscar" placeholder="Nome ou e-mail" [formControl]="search"></ui-input>
-    <ui-filter-chips
-      label="Filtrar por situação"
-      [chips]="situations"
-      [selected]="situation()"
-      (selectedChange)="selectSituation($event)"
-    ></ui-filter-chips>
+    @if (mode === 'demand') {
+      <ui-filter-chips
+        label="Filtrar por situação"
+        [chips]="situations"
+        [selected]="situation()"
+        (selectedChange)="selectSituation($event)"
+      ></ui-filter-chips>
+    }
     <ui-filter-chips
       label="Filtrar por perfil"
       [chips]="roles"
@@ -29,14 +39,17 @@
       <ui-skeleton-list></ui-skeleton-list>
     }
     @case ('empty') {
-      <ui-empty-state title="Nenhum perfil encontrado" message="Ninguém nesta situação com esses filtros."></ui-empty-state>
+      <ui-empty-state
+        title="Nenhum perfil encontrado"
+        [message]="mode === 'all' ? 'Ninguém com esse nome ou e-mail.' : 'Ninguém nesta situação com esses filtros.'"
+      ></ui-empty-state>
     }
     @case ('error') {
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
       <div class="admin-profiles__list">
-        @for (profile of profiles(); track profile.role + profile.userId) {
+        @for (profile of pager.items(); track profile.role + profile.userId) {
           <a class="admin-profiles__card-link" [routerLink]="['/admin/perfis', profile.role, profile.userId]">
             <ui-card [interactive]="true">
               <div class="admin-profiles__card-header">
@@ -58,6 +71,7 @@
           </a>
         }
       </div>
+      <ui-paginator [pagination]="pager" label="Páginas de perfis"></ui-paginator>
     }
   }
 </section>

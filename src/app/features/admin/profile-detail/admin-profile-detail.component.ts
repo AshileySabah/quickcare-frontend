@@ -28,9 +28,14 @@ type Dialog =
   | { kind: 'add' }
   | { kind: 'annul'; occurrence: Occurrence }
   | { kind: 'appeal'; occurrence: Occurrence; annul: boolean }
-  | { kind: 'unblock'; blockId: string };
+  | { kind: 'unblock'; blockId: string }
+  | { kind: 'block' };
 
-/** O perfil no admin: ocorrências (lançar, anular, decidir recurso), bloqueio atual (remover) e o histórico. */
+/**
+ * O perfil no admin: ocorrências (lançar, anular, decidir recurso), bloqueio
+ * (aplicar direto ou remover) e o histórico. Vem da fila de Ocorrências ou da
+ * busca de Gerais › Usuários.
+ */
 @Component({
   selector: 'app-admin-profile-detail',
   standalone: true,
@@ -58,7 +63,7 @@ export class AdminProfileDetailComponent {
 
   private readonly role = this.route.snapshot.paramMap.get('perfil') as SwitchableRole;
   private readonly userId = this.route.snapshot.paramMap.get('id') ?? '';
-  protected readonly backLink = '/admin/perfis';
+  protected readonly backLink = '/admin/ocorrencias';
   protected readonly pageState = signal<PageState>('loading');
   protected readonly detail = signal<AdminProfileDetail | null>(null);
   protected readonly dialog = signal<Dialog | null>(null);
@@ -130,6 +135,20 @@ export class AdminProfileDetailComponent {
               cancel: 'Não, voltar',
               variant: 'danger' as const,
             };
+      case 'block':
+        return {
+          title: 'Aplicar bloqueio',
+          message: `Bloquear ${name} de ${this.blockedAction}?`,
+          consequences: [
+            'Dura 7 dias × o próximo nível da pessoa (7, 14, 21...), como se ela chegasse a ' + detail.limit + ' ocorrências.',
+            'Não depende das ocorrências: anular uma delas não o desfaz. Para liberar, remova o bloqueio.',
+            'O que já está em andamento continua normalmente.',
+            'A pessoa recebe uma notificação com a justificativa.',
+          ],
+          confirm: 'Sim, aplicar o bloqueio',
+          cancel: 'Não, voltar',
+          variant: 'danger' as const,
+        };
       case 'unblock':
         return {
           title: 'Remover bloqueio',
@@ -176,11 +195,14 @@ export class AdminProfileDetailComponent {
           ? this.profileService.annulOccurrence(dialog.occurrence.id, justification)
           : dialog.kind === 'appeal'
             ? this.profileService.decideAppeal(dialog.occurrence.appeal!.id, dialog.annul, justification)
-            : this.profileService.removeBlock(dialog.blockId, justification);
+            : dialog.kind === 'block'
+              ? this.profileService.applyBlock(this.role, this.userId, justification)
+              : this.profileService.removeBlock(dialog.blockId, justification);
     const success = {
       add: 'Ocorrência lançada.',
       annul: 'Ocorrência anulada.',
       appeal: 'Recurso decidido.',
+      block: 'Bloqueio aplicado.',
       unblock: 'Bloqueio removido.',
     }[dialog.kind];
 

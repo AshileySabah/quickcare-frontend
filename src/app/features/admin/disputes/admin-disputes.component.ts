@@ -10,6 +10,8 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 import { StatusBadgeComponent } from '../../../shared/ui/feedback/status-badge/status-badge.component';
 import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 type DisputeFilter = 'em_disputa' | 'aguardando' | 'encerrados' | 'todos';
 
@@ -31,7 +33,7 @@ const STATUS_BY_FILTER: Record<DisputeFilter, ProblemStatus[]> = {
 @Component({
   selector: 'app-admin-disputes',
   standalone: true,
-  imports: [
+  imports: [PaginatorComponent, 
     DatePipe,
     RouterLink,
     CardComponent,
@@ -51,6 +53,8 @@ export class AdminDisputesComponent {
   protected readonly selected = signal<DisputeFilter>('em_disputa');
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly disputes = signal<DisputeSummary[]>([]);
+  /** A lista vem paginada (5 por página por padrão). */
+  protected readonly pager = createPagination(this.disputes);
   protected readonly period = formatPeriod;
 
   constructor() {

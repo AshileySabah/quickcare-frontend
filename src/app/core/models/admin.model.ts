@@ -17,6 +17,12 @@ export type AdminActionType =
   | 'recurso_aceito'
   | 'recurso_negado'
   | 'bloqueio_removido'
+  | 'bloqueio_aplicado'
+  | 'bloqueio_usuario_criado'
+  | 'bloqueio_usuario_removido'
+  | 'proposta_recusada'
+  | 'proposta_cancelada'
+  | 'proposta_reativada'
   | 'disputa_decidida'
   | 'solicitacao_reaberta'
   | 'solicitacao_concluida'
@@ -28,6 +34,12 @@ export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   recurso_aceito: 'Recurso aceito (ocorrência anulada)',
   recurso_negado: 'Recurso negado (ocorrência mantida)',
   bloqueio_removido: 'Bloqueio removido',
+  bloqueio_aplicado: 'Bloqueio aplicado pelo administrador',
+  bloqueio_usuario_criado: 'Bloqueio entre usuários criado',
+  bloqueio_usuario_removido: 'Bloqueio entre usuários removido',
+  proposta_recusada: 'Proposta recusada',
+  proposta_cancelada: 'Proposta cancelada',
+  proposta_reativada: 'Proposta reativada',
   disputa_decidida: 'Disputa decidida',
   solicitacao_reaberta: 'Solicitação reaberta',
   solicitacao_concluida: 'Solicitação concluída',
@@ -154,4 +166,52 @@ export interface AdminRequestDetail {
   proposals: AdminProposal[];
   allowedActions: AdminRequestAction[];
   actions: AdminAction[];
+}
+
+// ----------------------------------------------------- propostas (Gerais)
+
+export type AdminProposalAction = 'recusar' | 'cancelar' | 'reativar';
+
+export const ADMIN_PROPOSAL_ACTION_LABELS: Record<AdminProposalAction, string> = {
+  recusar: 'Recusar',
+  cancelar: 'Cancelar',
+  reativar: 'Reativar',
+};
+
+/** Uma proposta na lista geral do admin, com o que dá para fazer com ela agora. */
+export interface AdminProposalSummary {
+  id: string;
+  status: ProposalStatus;
+  requestId: string;
+  requestStatus: RequestStatus;
+  service: string;
+  patient: AdminParty;
+  professional: AdminParty;
+  price: number;
+  start: string;
+  end: string;
+  attendanceStatus?: AttendanceStatus;
+  allowedActions: AdminProposalAction[];
+  createdAt: string;
+}
+
+// ------------------------------------------ bloqueios entre usuários (Gerais)
+
+export type UserBlockAuthor = 'paciente' | 'profissional' | 'admin';
+
+export const USER_BLOCK_AUTHOR_LABELS: Record<UserBlockAuthor, string> = {
+  paciente: 'Bloqueado pelo paciente',
+  profissional: 'Bloqueado pelo profissional',
+  admin: 'Bloqueado pelo administrador',
+};
+
+export interface AdminUserBlock {
+  id: string;
+  patient: AdminParty;
+  professional: AdminParty;
+  blockedBy: UserBlockAuthor;
+  /** Só quando foi o admin. */
+  createdBy?: string;
+  justification?: string;
+  createdAt: string;
 }

@@ -11,6 +11,8 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 /**
  * Quem o perfil em uso bloqueou (pelo menu da conta), com o desbloqueio. O
@@ -20,7 +22,7 @@ import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.
 @Component({
   selector: 'app-blocked-users',
   standalone: true,
-  imports: [
+  imports: [PaginatorComponent, 
     DatePipe,
     ButtonComponent,
     CardComponent,
@@ -45,6 +47,8 @@ export class BlockedUsersComponent {
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly blocked = signal<BlockedUser[]>([]);
+  /** A lista vem paginada (5 por página por padrão). */
+  protected readonly pager = createPagination(this.blocked);
   protected readonly toUnblock = signal<BlockedUser | null>(null);
   protected readonly isUnblocking = signal(false);
 

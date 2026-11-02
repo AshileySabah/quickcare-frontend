@@ -26,7 +26,7 @@
     @case ('filled') {
       <ui-list-filters [filters]="filters" [noun]="{ one: 'proposta', other: 'propostas' }">
         <div class="my-proposals__list">
-          @for (proposal of filters.filtered(); track proposal.id) {
+          @for (proposal of filters.page.items(); track proposal.id) {
             <ui-proposal-card
               [proposal]="proposal"
               [personHiddenNote]="proposal.status === 'pendente' ? patientHiddenNote : null"

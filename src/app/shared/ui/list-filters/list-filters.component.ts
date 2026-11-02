@@ -8,6 +8,7 @@ import { SelectComponent } from '../forms/select/select.component';
 import { CardComponent } from '../layout/card/card.component';
 import { GridItemComponent } from '../layout/grid/grid-item.component';
 import { GridComponent } from '../layout/grid/grid.component';
+import { PaginatorComponent } from '../paginator/paginator.component';
 
 export interface ItemNoun {
   /** "solicitação", "proposta"... */
@@ -17,8 +18,9 @@ export interface ItemNoun {
 
 /**
  * Card de filtros (busca, selects, ordenação, contador e "Limpar filtros")
- * por cima de uma lista. A lista entra projetada; quando nada bate com os
- * filtros, aparece o estado vazio no lugar dela.
+ * por cima de uma lista, e a paginação embaixo. A lista entra projetada
+ * (iterando `filters.page.items()`); quando nada bate com os filtros, aparece
+ * o estado vazio no lugar dela.
  */
 @Component({
   selector: 'ui-list-filters',
@@ -31,6 +33,7 @@ export interface ItemNoun {
     GridComponent,
     GridItemComponent,
     InputComponent,
+    PaginatorComponent,
     SelectComponent,
   ],
   templateUrl: './list-filters.component.html',

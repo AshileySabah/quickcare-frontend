@@ -1,0 +1,32 @@
+<div class="person-picker">
+  @if (selected(); as person) {
+    <span class="person-picker__label">{{ label() }}</span>
+    <div class="person-picker__chosen">
+      <span>
+        <span class="person-picker__name">{{ person.name }}</span>
+        <span class="person-picker__email">{{ person.email }}</span>
+      </span>
+      <ui-button variant="ghost" size="sm" (click)="selected.set(null)">Trocar</ui-button>
+    </div>
+  } @else {
+    <ui-input
+      [label]="label()"
+      placeholder="Digite o nome ou o e-mail"
+      [formControl]="search"
+      [required]="true"
+      [errorMessage]="errorMessage()"
+    ></ui-input>
+    @if (results().length) {
+      <ul class="person-picker__results" role="listbox" [attr.aria-label]="label()">
+        @for (person of results(); track person.userId) {
+          <li>
+            <button type="button" class="person-picker__option" role="option" (click)="choose(person)">
+              <span class="person-picker__name">{{ person.name }}</span>
+              <span class="person-picker__email">{{ person.email }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

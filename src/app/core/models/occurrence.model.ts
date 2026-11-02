@@ -66,6 +66,9 @@ export interface Block {
   removalJustification?: string;
   /** Desfeito: anularam ocorrência dele e as que sobraram não chegam ao limite. */
   undone: boolean;
+  /** Aplicado direto pelo admin (sem as 3 ocorrências): quem e por quê. */
+  appliedBy?: string;
+  justification?: string;
 }
 
 /** O que o próprio perfil vê: quantas contam agora, o limite, o bloqueio atual e o histórico. */

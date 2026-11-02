@@ -40,4 +40,5 @@
   </ui-empty-state>
 } @else {
   <ng-content></ng-content>
+  <ui-paginator [pagination]="filters().page" [label]="'Páginas de ' + noun().other"></ui-paginator>
 }

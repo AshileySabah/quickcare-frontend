@@ -91,7 +91,7 @@ export class AdminRequestDetailComponent {
   private readonly toastService = inject(ToastService);
 
   private readonly id = this.route.snapshot.paramMap.get('id') ?? '';
-  protected readonly backLink = '/admin/solicitacoes';
+  protected readonly backLink = '/admin/gerais/solicitacoes';
   protected readonly pageState = signal<PageState>('loading');
   protected readonly detail = signal<AdminRequestDetail | null>(null);
   protected readonly pendingAction = signal<AdminRequestAction | null>(null);

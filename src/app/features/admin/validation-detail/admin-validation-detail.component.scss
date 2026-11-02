@@ -6,11 +6,6 @@
   gap: tokens.space(5);
 }
 
-.validation-detail__back {
-  align-self: flex-start;
-  font-size: tokens.font-size('sm');
-  color: tokens.color('teal', 700);
-}
 
 .validation-detail__header {
   display: flex;

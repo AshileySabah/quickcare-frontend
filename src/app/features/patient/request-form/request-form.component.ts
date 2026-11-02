@@ -1,11 +1,11 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
 import { fieldErrorsFor } from '../../../core/forms/field-errors';
 import { buildRequestedProfessionalGroup } from '../../../core/forms/requested-professional-form';
 import { ProfessionalCategory, ProfessionalCategoryInfo, ServiceRequest, Specialty } from '../../../core/models';
-import { RequestService } from '../../../core/services/request.service';
+import { RequestService, hasAcceptedProposals } from '../../../core/services/request.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
@@ -19,13 +19,15 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { RequestedProfessionalsCardComponent } from './requested-professionals-card/requested-professionals-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
+import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 
 type Modality = 'online' | 'presencial';
 
 @Component({
   selector: 'app-request-form',
   standalone: true,
-  imports: [SkeletonListComponent, 
+  imports: [NoticeComponent, BackLinkComponent, SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     ButtonComponent,
@@ -34,7 +36,6 @@ type Modality = 'online' | 'presencial';
     GridItemComponent,
     InputComponent,
     RequestedProfessionalsCardComponent,
-    RouterLink,
     SelectComponent,
     StatusBadgeComponent,
     TextareaComponent,
@@ -51,12 +52,17 @@ export class RequestFormComponent {
   private readonly specialtyService = inject(SpecialtyService);
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
+  /** "Reabrir solicitação" no histórico: cria outra, só copiando os dados desta. */
+  private readonly baseId = this.editingId ? null : this.route.snapshot.queryParamMap.get('baseadaEm');
 
   protected readonly isEditMode = this.editingId !== null;
-  protected readonly isLoading = signal(this.isEditMode);
+  protected readonly isCopy = this.baseId !== null;
+  protected readonly isLoading = signal(this.isEditMode || this.isCopy);
   protected readonly isSubmitting = signal(false);
   /** Solicitação que já não pode ser editada (em andamento, concluída...) abre só para visualização. */
   protected readonly readOnlyRequest = signal<ServiceRequest | null>(null);
+  /** Com propostas aceitas, salvar reabre as vagas (a tela avisa). */
+  protected readonly hasAcceptedProposals = signal(false);
 
   protected readonly categories = signal<ProfessionalCategoryInfo[]>([]);
   protected readonly specialties = signal<Specialty[]>([]);
@@ -99,7 +105,30 @@ export class RequestFormComponent {
 
     if (this.editingId) {
       this.loadRequestToEdit(this.editingId);
+    } else if (this.baseId) {
+      this.loadRequestToCopy(this.baseId);
     }
+  }
+
+  /** Mesmos dados, sem vínculo com a original; o prazo fica em branco (o antigo já passou ou não serve). */
+  private loadRequestToCopy(id: string): void {
+    const fail = () => this.toastService.error('Não foi possível copiar a solicitação. Preencha os dados.');
+
+    this.requestService.getById(id).subscribe({
+      next: (request) => {
+        if (request) {
+          this.fillForm(request);
+          this.form.controls.desiredDeadline.reset('');
+        } else {
+          fail();
+        }
+        this.isLoading.set(false);
+      },
+      error: () => {
+        fail();
+        this.isLoading.set(false);
+      },
+    });
   }
 
   private loadRequestToEdit(id: string): void {
@@ -112,6 +141,7 @@ export class RequestFormComponent {
         }
 
         this.fillForm(request);
+        this.hasAcceptedProposals.set(hasAcceptedProposals(request));
 
         if (!this.requestService.canEdit(request)) {
           this.readOnlyRequest.set(request);
@@ -164,6 +194,7 @@ export class RequestFormComponent {
       this.form.markAllAsTouched();
       return;
     }
+
 
     // getRawValue: o address-card desabilita os campos preenchidos pelo CEP.
     const { professionals, description, modality, desiredDeadline, address } = this.form.getRawValue();

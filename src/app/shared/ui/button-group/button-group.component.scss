@@ -1,0 +1,8 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+}

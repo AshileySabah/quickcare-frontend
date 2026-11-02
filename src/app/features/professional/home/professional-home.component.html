@@ -22,26 +22,28 @@
       <ui-error-state (retry)="load()"></ui-error-state>
     }
     @case ('filled') {
-      <div class="professional-home__list">
-        @for (request of requests(); track request.id) {
-          <a class="professional-home__card-link" [routerLink]="['/professional/solicitacoes', request.id]">
-            <ui-card [interactive]="true">
-              <div class="professional-home__card-header">
-                <span class="professional-home__modality">
-                  {{ request.modality === 'presencial' ? 'Presencial' : 'Online' }}
-                </span>
-                <ui-status-badge [status]="request.status"></ui-status-badge>
-              </div>
-              <p class="professional-home__date">{{ professionalsSummary(request) }}</p>
-              <p class="professional-home__description">{{ request.description }}</p>
-              <p class="professional-home__date">
-                Prazo desejado: {{ request.desiredDeadline | date: 'dd/MM/yyyy' }}
-                · {{ request.proposalCount }} {{ request.proposalCount === 1 ? 'proposta' : 'propostas' }}
-              </p>
-            </ui-card>
-          </a>
-        }
-      </div>
+      <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
+        <div class="professional-home__list">
+          @for (request of filters.filtered(); track request.id) {
+            <a class="professional-home__card-link" [routerLink]="['/professional/solicitacoes', request.id]">
+              <ui-card [interactive]="true">
+                <div class="professional-home__card-header">
+                  <span class="professional-home__modality">
+                    {{ request.modality === 'presencial' ? 'Presencial' : 'Online' }}
+                  </span>
+                  <ui-status-badge [status]="request.status"></ui-status-badge>
+                </div>
+                <p class="professional-home__date">{{ professionalsSummary(request) }}</p>
+                <p class="professional-home__description">{{ request.description }}</p>
+                <p class="professional-home__date">
+                  Prazo desejado: {{ request.desiredDeadline | date: 'dd/MM/yyyy' }}
+                  · {{ request.proposalCount }} {{ request.proposalCount === 1 ? 'proposta' : 'propostas' }}
+                </p>
+              </ui-card>
+            </a>
+          }
+        </div>
+      </ui-list-filters>
     }
   }
 </section>

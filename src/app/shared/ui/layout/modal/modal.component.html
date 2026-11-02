@@ -2,6 +2,7 @@
   <div class="ui-modal__backdrop" (click)="onBackdropClick()">
     <div
       class="ui-modal__dialog"
+      [class.ui-modal__dialog--lg]="size() === 'lg'"
       #dialog
       role="dialog"
       aria-modal="true"

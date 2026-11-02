@@ -1,4 +1,5 @@
 @use 'tokens' as tokens;
+@use 'patterns/card' as card;
 
 .professional-request-detail {
   display: flex;
@@ -30,8 +31,10 @@
 }
 
 .professional-request-detail__proposal-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: tokens.space(2);
-  margin-top: tokens.space(4);
+  @include card.footer-actions;
+}
+
+.professional-request-detail__note {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
 }

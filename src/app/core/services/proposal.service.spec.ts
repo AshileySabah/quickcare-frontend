@@ -2,8 +2,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
-import { Proposal } from '../models';
-import { ProposalService } from './proposal.service';
+import { Proposal, reacceptNotice } from '../models';
+import { ProposalService, resendBase } from './proposal.service';
 
 const PROPOSALS_URL = `${environment.apiUrl}/propostas`;
 const REQUEST_PROPOSALS_URL = `${environment.apiUrl}/solicitacoes/50/propostas`;
@@ -13,6 +13,7 @@ function apiResponse(overrides: Record<string, unknown> = {}) {
     id: 100,
     solicitacao: {
       id: 50,
+      pacienteId: 3,
       pacienteNome: 'Paciente Teste',
       profissionais: [
         {
@@ -155,5 +156,37 @@ describe('ProposalService', () => {
     );
 
     expect(error?.message).toBe('Você já enviou uma proposta para esta solicitação. Edite ou cancele a existente.');
+  });
+
+  it('edita e cancela proposta pendente ou aceita enquanto a solicitação está em curso', () => {
+    const base = { status: 'aceita', request: { status: 'em_andamento' } } as Proposal;
+
+    expect(service.canEdit(base)).toBeTrue();
+    expect(service.canCancel({ ...base, status: 'pendente' })).toBeTrue();
+    expect(service.canEdit({ ...base, status: 'recusada' })).toBeFalse();
+    expect(service.canEdit({ ...base, request: { ...base.request, status: 'concluida' } })).toBeFalse();
+  });
+
+  it('oferece nova proposta só na última recusada ou cancelada, sem outra ativa e com a solicitação recebendo', () => {
+    const closed = (id: string, status: Proposal['status'], createdAt: string, requestStatus = 'recebendo_propostas') =>
+      ({ id, requestId: '50', status, createdAt, request: { status: requestStatus } }) as Proposal;
+    const older = closed('1', 'cancelada', '2026-10-01');
+    const latest = closed('2', 'recusada', '2026-10-05');
+
+    expect(service.canResend(latest, [older, latest])).toBeTrue();
+    expect(service.canResend(older, [older, latest])).toBeFalse();
+    expect(service.canResend(latest, [older, latest, { ...closed('3', 'pendente', '2026-10-06') }])).toBeFalse();
+    expect(service.canResend(closed('4', 'recusada', '2026-10-05', 'em_andamento'), [])).toBeFalse();
+    expect(resendBase([older, latest])?.id).toBe('2');
+  });
+
+  it('mapeia o motivo de a proposta aguardar novo aceite', () => {
+    let proposal: Proposal | undefined;
+    service.getById('100').subscribe((result) => (proposal = result));
+
+    httpMock.expectOne(`${PROPOSALS_URL}/100`).flush(apiResponse({ motivoReaceite: 'PROPOSTA_ALTERADA' }));
+
+    expect(proposal?.reacceptReason).toBe('proposta_alterada');
+    expect(reacceptNotice(proposal!, 'patient')).toContain('Aceite de novo');
   });
 });

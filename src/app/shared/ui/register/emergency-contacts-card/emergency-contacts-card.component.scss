@@ -15,6 +15,10 @@
   gap: tokens.space(3);
   align-items: flex-end;
   margin-bottom: tokens.space(3);
+
+  &--readonly {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .emergency-contacts-card__remove {

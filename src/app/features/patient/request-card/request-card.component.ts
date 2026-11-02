@@ -9,6 +9,7 @@ import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const URGENT_DEADLINE_DAYS = 3;
@@ -29,7 +30,7 @@ function parseLocalDate(isoDate: string): Date {
 @Component({
   selector: 'app-request-card',
   standalone: true,
-  imports: [
+  imports: [EditRequestActionComponent, 
     DatePipe,
     RouterLink,
     BadgeComponent,
@@ -49,13 +50,15 @@ export class RequestCardComponent {
   proposalCount = input(0);
   canEdit = input(false);
   canCancel = input(false);
+  /** No histórico: abre uma nova solicitação com os dados desta. */
+  canRequestAgain = input(false);
 
   cancel = output<ServiceRequest>();
 
   protected readonly specialtyNames = requestedSpecialtyNames;
 
-  protected readonly formLink = computed(() => ['/patient/solicitacoes', this.request().id, 'editar']);
-  protected readonly proposalsLink = computed(() => ['/patient/solicitacoes', this.request().id]);
+  /** Visualizar só mostra a solicitação e as propostas; editar é uma ação à parte (app-edit-request-action). */
+  protected readonly detailLink = computed(() => ['/patient/solicitacoes', this.request().id]);
 
   protected readonly totalRequested = computed(() =>
     this.request().professionals.reduce((total, professional) => total + professional.quantity, 0),

@@ -58,3 +58,11 @@ export function formatRequestAddress(address: Address): string {
   const complement = address.complement ? ` - ${address.complement}` : '';
   return `${address.street}, ${address.number}${complement} — ${address.neighborhood}, ${address.city}/${address.state}`;
 }
+
+export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
+  aberta: 'Aberta',
+  recebendo_propostas: 'Recebendo propostas',
+  em_andamento: 'Em andamento',
+  concluida: 'Concluída',
+  cancelada: 'Cancelada',
+};

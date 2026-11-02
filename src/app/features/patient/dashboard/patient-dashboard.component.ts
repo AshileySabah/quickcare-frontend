@@ -1,61 +1,47 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { map } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ListViewState, requestedSpecialtyNames, RequestStatus, ServiceRequest } from '../../../core/models';
-import { RequestService } from '../../../core/services/request.service';
+import { createListFilters } from '../../../core/lists/list-filters';
+import {
+  REQUEST_SORTS,
+  modalityFilter,
+  requestCategoryFilter,
+  requestSearchText,
+  requestStatusFilter,
+} from '../../../core/lists/request-filters';
+import { ListViewState, RequestStatus, ServiceRequest } from '../../../core/models';
+import { CANCEL_REQUEST_CONSEQUENCES, RequestService, hasAcceptedProposals } from '../../../core/services/request.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
-import { InputComponent } from '../../../shared/ui/forms/input/input.component';
-import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
-import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
-import { ModalComponent } from '../../../shared/ui/layout/modal/modal.component';
+import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
-import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
-
-type StatusFilter = 'ativas' | RequestStatus;
-type SortOrder = 'recentes' | 'antigas' | 'prazo';
 
 /** A home só lista solicitações ativas; as encerradas ficam no histórico. */
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
-const DEFAULT_FILTERS = {
-  search: '',
-  status: 'ativas' as StatusFilter,
-  modality: '',
-  category: '',
-  sort: 'recentes' as SortOrder,
-};
-
-/** Minúsculas e sem acento, para a busca ignorar "Nutrição" vs "nutricao". */
-function normalize(text: string): string {
-  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
-}
-
 @Component({
   selector: 'app-patient-dashboard',
   standalone: true,
-  imports: [SkeletonListComponent, 
-    ReactiveFormsModule,
+  imports: [
     RouterLink,
     ButtonComponent,
-    CardComponent,
+    ConfirmDialogComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     GridComponent,
     GridItemComponent,
-    InputComponent,
-    ModalComponent,
+    ListFiltersComponent,
     MyValidationComponent,
     RequestCardComponent,
-    SelectComponent,
+    SkeletonListComponent,
   ],
   templateUrl: './patient-dashboard.component.html',
   styleUrl: './patient-dashboard.component.scss',
@@ -80,64 +66,18 @@ export class PatientDashboardComponent {
 
   protected readonly requestToCancel = signal<ServiceRequest | null>(null);
   protected readonly isCancelling = signal(false);
+  protected readonly cancelConsequences = CANCEL_REQUEST_CONSEQUENCES;
+  protected readonly confirmingCancel = signal(false);
 
-  protected readonly filters = this.fb.nonNullable.group({ ...DEFAULT_FILTERS });
-  private readonly filterValues = toSignal(this.filters.valueChanges.pipe(map(() => this.filters.getRawValue())), {
-    initialValue: this.filters.getRawValue(),
-  });
-
-  protected readonly statusOptions: SelectOption[] = [
-    { value: 'ativas', label: 'Todas as ativas' },
-    { value: 'aberta', label: 'Aberta' },
-    { value: 'recebendo_propostas', label: 'Recebendo propostas' },
-    { value: 'em_andamento', label: 'Em andamento' },
-  ];
-
-  protected readonly modalityOptions: SelectOption[] = [
-    { value: 'online', label: 'Online' },
-    { value: 'presencial', label: 'Presencial' },
-  ];
-
-  protected readonly sortOptions: SelectOption[] = [
-    { value: 'recentes', label: 'Mais recentes' },
-    { value: 'antigas', label: 'Mais antigas' },
-    { value: 'prazo', label: 'Prazo mais próximo' },
-  ];
-
-  /** Só as categorias que aparecem nas solicitações do paciente. */
-  protected readonly categoryOptions = computed<SelectOption[]>(() => {
-    const labels = new Map<string, string>();
-    for (const request of this.requests()) {
-      for (const professional of request.professionals) {
-        labels.set(professional.category, professional.categoryLabel);
-      }
-    }
-    return [...labels].map(([value, label]) => ({ value, label }));
-  });
-
-  protected readonly filteredRequests = computed(() => {
-    const { search, status, modality, category, sort } = this.filterValues();
-    const term = normalize(search.trim());
-
-    const filtered = this.requests().filter((request) => {
-      if (status !== 'ativas' && request.status !== status) return false;
-      if (modality && request.modality !== modality) return false;
-      if (category && !request.professionals.some((professional) => professional.category === category)) return false;
-      return !term || normalize(this.searchableText(request)).includes(term);
-    });
-
-    return filtered.sort((a, b) => {
-      if (sort === 'prazo') return a.desiredDeadline.localeCompare(b.desiredDeadline);
-      if (sort === 'antigas') return a.createdAt.localeCompare(b.createdAt);
-      return b.createdAt.localeCompare(a.createdAt);
-    });
-  });
-
-  protected readonly hasActiveFilters = computed(() => {
-    const values = this.filterValues();
-    return (Object.keys(DEFAULT_FILTERS) as (keyof typeof DEFAULT_FILTERS)[]).some(
-      (key) => values[key] !== DEFAULT_FILTERS[key],
-    );
+  protected readonly filters = createListFilters(this.fb, this.requests, {
+    searchPlaceholder: 'Descrição, especialidade, bairro...',
+    searchText: requestSearchText,
+    selects: [
+      requestStatusFilter(ACTIVE_STATUSES, 'Todas as ativas'),
+      modalityFilter((request: ServiceRequest) => request.modality),
+      requestCategoryFilter(this.requests),
+    ],
+    sorts: [REQUEST_SORTS.recentes, REQUEST_SORTS.antigas, REQUEST_SORTS.prazo],
   });
 
   constructor() {
@@ -157,10 +97,6 @@ export class PatientDashboardComponent {
     });
   }
 
-  protected clearFilters(): void {
-    this.filters.reset({ ...DEFAULT_FILTERS });
-  }
-
   protected proposalCount(request: ServiceRequest): number {
     return request.proposalCount;
   }
@@ -173,12 +109,19 @@ export class PatientDashboardComponent {
     return this.requestService.canCancel(request);
   }
 
+  /** Sem propostas aceitas cancela direto; com aceitas, pergunta antes. */
   protected askToCancel(request: ServiceRequest): void {
     this.requestToCancel.set(request);
+    if (hasAcceptedProposals(request)) {
+      this.confirmingCancel.set(true);
+    } else {
+      this.confirmCancel();
+    }
   }
 
   protected closeCancelModal(): void {
     if (!this.isCancelling()) {
+      this.confirmingCancel.set(false);
       this.requestToCancel.set(null);
     }
   }
@@ -199,6 +142,7 @@ export class PatientDashboardComponent {
         this.requests.set(remaining);
         this.viewState.set(remaining.length === 0 ? 'empty' : 'filled');
         this.isCancelling.set(false);
+        this.confirmingCancel.set(false);
         this.requestToCancel.set(null);
         this.toastService.info('Solicitação cancelada. Ela agora aparece no histórico.');
       },
@@ -209,12 +153,4 @@ export class PatientDashboardComponent {
     });
   }
 
-  private searchableText(request: ServiceRequest): string {
-    return [
-      request.id,
-      request.description,
-      ...request.professionals.map((professional) => `${professional.categoryLabel} ${requestedSpecialtyNames(professional)}`),
-      request.address ? `${request.address.neighborhood} ${request.address.city}` : '',
-    ].join(' ');
-  }
 }

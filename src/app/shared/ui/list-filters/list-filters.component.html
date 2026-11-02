@@ -1,0 +1,43 @@
+<ui-card padding="sm">
+  <form [formGroup]="filters().form" role="search" (submit)="$event.preventDefault()">
+    <ui-grid spacing="sm">
+      <ui-grid-item [xs]="12" [lg]="4">
+        <ui-input label="Buscar" formControlName="search" [placeholder]="filters().config.searchPlaceholder"></ui-input>
+      </ui-grid-item>
+      @for (select of filters().config.selects; track select.key) {
+        <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+          <ui-select
+            [label]="select.label"
+            [formControlName]="select.key"
+            [options]="optionsOf(select)"
+            [placeholder]="select.allLabel"
+          ></ui-select>
+        </ui-grid-item>
+      }
+      @if (filters().config.sorts.length > 1) {
+        <ui-grid-item [xs]="12" [sm]="6" [lg]="2">
+          <ui-select label="Ordenar por" formControlName="sort" [options]="sortOptions()" placeholder="Ordenar"></ui-select>
+        </ui-grid-item>
+      }
+    </ui-grid>
+  </form>
+  <div class="list-filters__footer">
+    <span class="list-filters__count">
+      {{ filters().filtered().length }} {{ filters().filtered().length === 1 ? noun().one : noun().other }}
+    </span>
+    @if (filters().hasActive()) {
+      <ui-button variant="ghost" size="sm" (click)="filters().clear()">Limpar filtros</ui-button>
+    }
+  </div>
+</ui-card>
+
+@if (filters().filtered().length === 0) {
+  <ui-empty-state
+    [title]="'Nenhuma ' + noun().one + ' encontrada'"
+    message="Ajuste ou limpe os filtros para ver outros resultados."
+  >
+    <ui-button variant="secondary" (click)="filters().clear()">Limpar filtros</ui-button>
+  </ui-empty-state>
+} @else {
+  <ng-content></ng-content>
+}

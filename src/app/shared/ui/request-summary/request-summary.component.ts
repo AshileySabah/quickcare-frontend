@@ -12,7 +12,8 @@ import { CardComponent } from '../layout/card/card.component';
 /**
  * Card com o resumo de uma solicitação (o que foi pedido, modalidade,
  * endereço e prazo), igual para paciente e profissional. As ações de cada
- * tela entram projetadas no rodapé do card.
+ * tela entram projetadas no rodapé do card; a outra parte (avatar), com
+ * `[summary-person]`, logo abaixo do título.
  */
 @Component({
   selector: 'ui-request-summary',

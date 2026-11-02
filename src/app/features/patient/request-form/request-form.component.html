@@ -1,4 +1,6 @@
 <section class="request-form">
+  <ui-back-link fallback="/patient"></ui-back-link>
+
   @if (readOnlyRequest(); as request) {
     <div class="request-form__title-row">
       <h1 class="request-form__title">Solicitação #{{ request.id }}</h1>
@@ -6,6 +8,18 @@
     </div>
     <p class="request-form__subtitle">Esta solicitação não pode mais ser editada; os dados abaixo são só para consulta.</p>
   } @else {
+    @if (hasAcceptedProposals()) {
+      <ui-notice>
+        Esta solicitação já tem propostas aceitas. Ao salvar, as vagas reabrem e você precisa aceitar de novo a proposta
+        de cada profissional (ou escolher outras).
+      </ui-notice>
+    }
+    @if (isCopy) {
+      <ui-notice>
+        Os dados da solicitação anterior já estão preenchidos. Revise o que mudou, informe o novo prazo e envie: ela
+        será uma nova solicitação.
+      </ui-notice>
+    }
     <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
     <p class="request-form__subtitle">
       {{
@@ -69,7 +83,6 @@
       }
 
       <div class="request-form__actions">
-        <ui-button variant="ghost" routerLink="/patient">Voltar</ui-button>
         @if (readOnlyRequest() === null) {
           <ui-button type="submit" [loading]="isSubmitting()">
             {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}

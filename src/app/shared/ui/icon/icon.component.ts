@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-export type IconName = 'eye' | 'pencil' | 'x-circle';
+export type IconName = 'eye' | 'pencil' | 'x-circle' | 'check' | 'refresh';
 
 /**
  * Ícones de traço (24×24, stroke = currentColor), herdam a cor do texto em volta.
@@ -31,6 +31,13 @@ export type IconName = 'eye' | 'pencil' | 'x-circle';
         @case ('pencil') {
           <path d="M12 20h9" />
           <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+        }
+        @case ('check') {
+          <path d="M20 6 9 17l-5-5" />
+        }
+        @case ('refresh') {
+          <path d="M3 12a9 9 0 1 0 3-6.7L3 8" />
+          <path d="M3 3v5h5" />
         }
         @case ('x-circle') {
           <circle cx="12" cy="12" r="10" />

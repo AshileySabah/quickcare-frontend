@@ -1,0 +1,32 @@
+<section class="public-profile">
+  <ui-back-link fallback="/patient"></ui-back-link>
+
+  @switch (pageState()) {
+    @case ('loading') {
+      <ui-skeleton-list variant="page"></ui-skeleton-list>
+    }
+    @case ('not-found') {
+      <ui-empty-state title="Perfil não encontrado" message="Este profissional não está mais disponível."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      @if (profile(); as current) {
+        <ui-profile-card
+          [name]="current.name"
+          [avatarUrl]="current.avatarUrl"
+          [subtitle]="current.categoryLabel"
+          [details]="details()"
+        ></ui-profile-card>
+
+        @if (current.emergencyContacts) {
+          <ui-emergency-contacts-card
+            [formArray]="contactsForm.controls.emergencyContacts"
+            [readonly]="true"
+          ></ui-emergency-contacts-card>
+        }
+      }
+    }
+  }
+</section>

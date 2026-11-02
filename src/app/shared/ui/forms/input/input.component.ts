@@ -24,6 +24,8 @@ export class InputComponent implements ControlValueAccessor {
   hint = input<string | null>(null);
   errorMessage = input<string | null>(null);
   required = input(false);
+  /** Só leitura: mostra o valor sem deixar editar (diferente de desabilitado). */
+  readonly = input(false);
   mask = input<InputMask | null>(null);
   maxLength = input<number | null>(null);
   autocomplete = input<string>('off');

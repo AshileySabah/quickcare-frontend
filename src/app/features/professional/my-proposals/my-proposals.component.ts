@@ -1,13 +1,22 @@
 import { Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
+import { createListFilters } from '../../../core/lists/list-filters';
+import { PROPOSAL_SORTS, proposalSearchText, proposalStatusFilter } from '../../../core/lists/proposal-filters';
+import { modalityFilter } from '../../../core/lists/request-filters';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { ProposalService } from '../../../core/services/proposal.service';
-import { ListViewState, Proposal, ProposalStatus, requestedProfessionalsSummary, RequestStatus } from '../../../core/models';
+import { ProposalService, CANCEL_ACCEPTED_PROPOSAL_CONSEQUENCES } from '../../../core/services/proposal.service';
+import { ListViewState, Proposal, ProposalStatus, reacceptNotice, requestedProfessionalsSummary, RequestStatus } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { ButtonGroupComponent } from '../../../shared/ui/button-group/button-group.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ProposalCardComponent } from '../../../shared/ui/proposal-card/proposal-card.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { IconComponent } from '../../../shared/ui/icon/icon.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
+import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
+import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 
 /** Como no histórico do paciente: encerrada é a proposta que já não anda mais. */
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
@@ -26,13 +35,17 @@ function isClosed(proposal: Proposal): boolean {
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [SkeletonListComponent, RouterLink, ButtonComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
+  imports: [ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })
 export class MyProposalsComponent {
+  private readonly fb = inject(FormBuilder);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
+
+  /** No lugar do paciente, enquanto a proposta não é aceita. */
+  protected readonly patientHiddenNote = 'O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.';
 
   protected readonly isHistory = inject(ActivatedRoute).snapshot.data['view'] === 'history';
 
@@ -41,7 +54,21 @@ export class MyProposalsComponent {
   protected readonly visibleProposals = computed(() =>
     this.proposals().filter((proposal) => isClosed(proposal) === this.isHistory),
   );
-  protected readonly cancellingId = signal<string | null>(null);
+
+  protected readonly filters = createListFilters(this.fb, this.visibleProposals, {
+    searchPlaceholder: 'Paciente, especialidade, abordagem...',
+    searchText: proposalSearchText,
+    selects: [
+      proposalStatusFilter(this.isHistory ? ['aceita', 'recusada', 'cancelada'] : ['pendente', 'aceita']),
+      modalityFilter((proposal: Proposal) => proposal.request.modality),
+    ],
+    sorts: PROPOSAL_SORTS,
+  });
+  protected readonly proposalToCancel = signal<Proposal | null>(null);
+  protected readonly reacceptNotice = reacceptNotice;
+  protected readonly confirmingCancel = signal(false);
+  protected readonly cancelConsequences = CANCEL_ACCEPTED_PROPOSAL_CONSEQUENCES;
+  protected readonly isCancelling = signal(false);
 
   constructor() {
     this.load();
@@ -71,20 +98,47 @@ export class MyProposalsComponent {
     return this.proposalService.canCancel(proposal);
   }
 
-  protected cancelProposal(id: string): void {
-    this.cancellingId.set(id);
+  protected canResend(proposal: Proposal): boolean {
+    return this.proposalService.canResend(proposal, this.proposals());
+  }
 
-    this.proposalService.cancel(id).subscribe({
+  /** Pendente cancela direto; já aceita, pergunta antes (a vaga reabre). */
+  protected askToCancel(proposal: Proposal): void {
+    this.proposalToCancel.set(proposal);
+    if (proposal.status === 'aceita') {
+      this.confirmingCancel.set(true);
+    } else {
+      this.confirmCancel();
+    }
+  }
+
+  protected closeCancelDialog(): void {
+    this.confirmingCancel.set(false);
+    this.proposalToCancel.set(null);
+  }
+
+  protected confirmCancel(): void {
+    const proposal = this.proposalToCancel();
+    if (!proposal) {
+      return;
+    }
+
+    this.isCancelling.set(true);
+    this.proposalService.cancel(proposal.id).subscribe({
       next: (updated) => {
-        this.cancellingId.set(null);
-        this.proposals.update((proposals) => proposals.map((proposal) => (proposal.id === id ? updated : proposal)));
+        this.isCancelling.set(false);
+        this.closeCancelDialog();
+        this.proposals.update((proposals) => proposals.map((item) => (item.id === updated.id ? updated : item)));
         if (this.visibleProposals().length === 0) {
           this.viewState.set('empty');
         }
         this.toastService.info('Proposta cancelada. Ela foi para o histórico.');
       },
       error: (error: Error) => {
-        this.cancellingId.set(null);
+        this.isCancelling.set(false);
+        if (!this.confirmingCancel()) {
+          this.proposalToCancel.set(null);
+        }
         this.toastService.error(error.message);
       },
     });

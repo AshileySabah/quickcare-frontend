@@ -7,6 +7,10 @@
     <ui-status-badge [status]="request().status"></ui-status-badge>
   </header>
 
+  <div class="request-summary__person">
+    <ng-content select="[summary-person]"></ng-content>
+  </div>
+
   <p class="request-summary__description">{{ request().description }}</p>
 
   <dl class="request-summary__meta">

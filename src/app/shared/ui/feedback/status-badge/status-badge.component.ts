@@ -1,6 +1,6 @@
 import { Component, computed, input } from '@angular/core';
 import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
-import { ProposalStatus, RequestStatus } from '../../../../core/models';
+import { PROPOSAL_STATUS_LABELS, ProposalStatus, REQUEST_STATUS_LABELS, RequestStatus } from '../../../../core/models';
 
 export type DomainStatus = RequestStatus | ProposalStatus;
 
@@ -9,15 +9,19 @@ interface StatusPresentation {
   variant: BadgeVariant;
 }
 
-const STATUS_PRESENTATION: Record<DomainStatus, StatusPresentation> = {
-  aberta: { label: 'Aberta', variant: 'neutral' },
-  recebendo_propostas: { label: 'Recebendo propostas', variant: 'info' },
-  em_andamento: { label: 'Em andamento', variant: 'primary' },
-  concluida: { label: 'Concluída', variant: 'success' },
-  cancelada: { label: 'Cancelada', variant: 'error' },
-  pendente: { label: 'Pendente', variant: 'neutral' },
-  aceita: { label: 'Aceita', variant: 'success' },
-  recusada: { label: 'Recusada', variant: 'error' },
+const REQUEST_VARIANTS: Record<RequestStatus, BadgeVariant> = {
+  aberta: 'neutral',
+  recebendo_propostas: 'info',
+  em_andamento: 'primary',
+  concluida: 'success',
+  cancelada: 'error',
+};
+
+const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
+  pendente: 'neutral',
+  aceita: 'success',
+  recusada: 'error',
+  cancelada: 'neutral',
 };
 
 @Component({
@@ -28,6 +32,15 @@ const STATUS_PRESENTATION: Record<DomainStatus, StatusPresentation> = {
 })
 export class StatusBadgeComponent {
   status = input.required<DomainStatus>();
+  /** Solicitação e proposta têm status com o mesmo nome ("cancelada") e significados diferentes. */
+  kind = input<'request' | 'proposal'>('request');
 
-  protected readonly presentation = computed(() => STATUS_PRESENTATION[this.status()]);
+  protected readonly presentation = computed<StatusPresentation>(() => {
+    if (this.kind() === 'proposal') {
+      const status = this.status() as ProposalStatus;
+      return { label: PROPOSAL_STATUS_LABELS[status], variant: PROPOSAL_VARIANTS[status] };
+    }
+    const status = this.status() as RequestStatus;
+    return { label: REQUEST_STATUS_LABELS[status], variant: REQUEST_VARIANTS[status] };
+  });
 }

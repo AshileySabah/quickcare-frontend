@@ -47,8 +47,13 @@
     color: tokens.color('gray', 400);
   }
 
-  &:hover:not(:disabled) {
+  &:hover:not(:disabled):not([readonly]) {
     border-color: tokens.color('gray', 400);
+  }
+
+  &[readonly] {
+    background-color: tokens.color('gray', 50);
+    cursor: default;
   }
 
   &:focus-visible {

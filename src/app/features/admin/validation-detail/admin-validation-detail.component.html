@@ -13,7 +13,7 @@
   @case ('filled') {
     @if (detail(); as current) {
       <section class="validation-detail">
-        <a class="validation-detail__back" [routerLink]="backLink">← Voltar para a lista</a>
+        <ui-back-link [fallback]="backLink"></ui-back-link>
 
         <ui-card>
           <div class="validation-detail__header">

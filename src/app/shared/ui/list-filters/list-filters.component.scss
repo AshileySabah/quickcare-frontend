@@ -1,0 +1,21 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+.list-filters__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  min-height: 32px;
+  margin-top: tokens.space(2);
+}
+
+.list-filters__count {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+}

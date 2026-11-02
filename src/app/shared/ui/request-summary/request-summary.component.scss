@@ -1,4 +1,6 @@
 @use 'tokens' as tokens;
+@use 'patterns/card' as card;
+@use 'patterns/details' as details;
 
 .request-summary__header {
   display: flex;
@@ -29,35 +31,22 @@
 }
 
 .request-summary__meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: tokens.space(3);
-
-  dt {
-    font-size: tokens.font-size('xs');
-    color: tokens.color('gray', 500);
-    margin-bottom: tokens.space(1);
-  }
-
-  dd {
-    font-size: tokens.font-size('sm');
-    color: tokens.color('gray', 900);
-    margin: 0;
-  }
+  @include details.details-list;
 }
 
 .request-summary__vacancies {
   color: tokens.color('gray', 700);
 }
 
-// Sem ações projetadas, o rodapé some e não deixa espaço sobrando.
-.request-summary__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: tokens.space(2);
-  margin-top: tokens.space(4);
+// Quem é a outra parte (avatar do paciente para o profissional), logo abaixo do título.
+.request-summary__person {
+  margin-bottom: tokens.space(4);
 
   &:empty {
     display: none;
   }
+}
+
+.request-summary__actions {
+  @include card.footer-actions;
 }

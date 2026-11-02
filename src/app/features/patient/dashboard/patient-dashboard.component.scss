@@ -38,29 +38,3 @@
     background-color: tokens.semantic('error-light');
   }
 }
-
-.patient-dashboard__filters-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: tokens.space(2);
-  min-height: 32px;
-  margin-top: tokens.space(2);
-}
-
-.patient-dashboard__count {
-  font-size: tokens.font-size('sm');
-  color: tokens.color('gray', 500);
-}
-
-.patient-dashboard__confirm-text {
-  font-size: tokens.font-size('sm');
-  color: tokens.color('gray', 700);
-  margin-bottom: tokens.space(4);
-}
-
-.patient-dashboard__confirm-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: tokens.space(2);
-}

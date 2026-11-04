@@ -1,6 +1,5 @@
 export type UserRole = 'patient' | 'professional' | 'admin';
 
-/** Situação da validação cadastral feita pelo admin (paciente e profissional). */
 export type ValidationStatus = 'pendente' | 'aprovado' | 'reprovado';
 
 export type IdentityDocumentType = 'RG' | 'CNH';
@@ -55,7 +54,6 @@ export interface Address {
 
 export type ProfessionalCategory = 'MEDICO' | 'ENFERMEIRO' | 'CUIDADOR' | 'OUTRO';
 
-/** Como o profissional atende, no formato da API. */
 export type AttendanceModality = 'PRESENCIAL' | 'REMOTO' | 'AMBOS';
 
 export const ATTENDANCE_MODALITY_LABELS: Record<AttendanceModality, string> = {
@@ -89,10 +87,8 @@ export interface Admin extends BaseUser {
 
 export type User = Patient | Professional | Admin;
 
-/** Perfis entre os quais o usuário alterna; o admin nunca tem outro. */
 export type SwitchableRole = 'patient' | 'professional';
 
-/** Um perfil do usuário, para o seletor de perfil. */
 export interface ProfileSummary {
   role: SwitchableRole;
   banned: boolean;

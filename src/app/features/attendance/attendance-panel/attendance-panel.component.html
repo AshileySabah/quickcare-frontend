@@ -65,6 +65,15 @@
       }
     </ui-button-group>
   }
+
+  @if (attendance().problem || attendance().canReportProblem) {
+    <app-attendance-problem
+      [attendance]="attendance()"
+      [viewer]="viewer()"
+      [counterpartName]="counterpartName()"
+      (changed)="changed.emit($event)"
+    ></app-attendance-problem>
+  }
 </section>
 
 <ui-confirm-dialog

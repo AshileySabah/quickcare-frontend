@@ -23,7 +23,7 @@ import {
   ValidationSummary,
 } from '../models';
 
-type StatusValidacaoApi = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
+export type StatusValidacaoApi = 'PENDENTE' | 'APROVADO' | 'REPROVADO';
 type StatusEtapaApi = 'PENDENTE' | 'APROVADA' | 'REPROVADA';
 type ParecerApi = 'FAVORAVEL' | 'DESFAVORAVEL' | 'INDISPONIVEL' | 'SEM_API';
 type PerfilApi = 'PACIENTE' | 'PROFISSIONAL';
@@ -111,14 +111,12 @@ interface PreValidacaoApi {
   consultadoEm: string;
 }
 
-/** Validação cadastral: fila e decisões do admin, e acompanhamento/reenvio do próprio usuário. */
 @Injectable({ providedIn: 'root' })
 export class ValidationService {
   private readonly http = inject(HttpClient);
   private readonly adminUrl = `${environment.apiUrl}/admin/validacoes`;
   private readonly selfUrl = `${environment.apiUrl}/validacao`;
 
-  /** Sem `status`, traz todos os cadastros do perfil. */
   list(profile: ValidationProfile, status?: ValidationStatus): Observable<ValidationSummary[]> {
     const params = status ? { status: toStatusApi(status) } : undefined;
     return this.http.get<ValidacaoResumoApi[]>(`${this.adminUrl}/${adminSegment(profile)}`, { params }).pipe(

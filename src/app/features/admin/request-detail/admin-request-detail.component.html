@@ -1,0 +1,128 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Solicitação não encontrada" message="O link pode estar incorreto.">
+      <ui-button [routerLink]="backLink">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (detail(); as current) {
+      <section class="request-detail">
+        <ui-back-link [fallback]="backLink"></ui-back-link>
+
+        <ui-card>
+          <div class="request-detail__header">
+            <div>
+              <h1 class="request-detail__title">#{{ current.summary.id }} · {{ current.summary.service }}</h1>
+              <p class="request-detail__muted">
+                <a [routerLink]="['/admin/perfis', 'patient', current.summary.patient.userId]">{{ current.summary.patient.name }}</a>
+                · {{ current.summary.patient.email }}
+              </p>
+            </div>
+            <ui-status-badge [status]="current.summary.status"></ui-status-badge>
+          </div>
+
+          <dl class="request-detail__meta">
+            <div>
+              <dt>Modalidade</dt>
+              <dd>{{ current.summary.modality === 'presencial' ? 'Presencial' : 'Online' }}</dd>
+            </div>
+            @if (current.request.address; as requestAddress) {
+              <div>
+                <dt>Endereço</dt>
+                <dd>{{ address(requestAddress) }}</dd>
+              </div>
+            }
+            <div>
+              <dt>Prazo desejado</dt>
+              <dd>{{ current.summary.desiredDate | date: 'dd/MM/yyyy' }}</dd>
+            </div>
+            <div>
+              <dt>Vagas</dt>
+              <dd>{{ current.summary.filledSlots }} de {{ current.summary.slots }} preenchidas</dd>
+            </div>
+            <div>
+              <dt>Criada em</dt>
+              <dd>{{ current.summary.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+          </dl>
+          <p class="request-detail__text">{{ current.request.description }}</p>
+
+          @if (current.allowedActions.length) {
+            <ui-button-group class="request-detail__actions">
+              @for (action of current.allowedActions; track action) {
+                <ui-button [variant]="actionVariant(action)" size="sm" (click)="pendingAction.set(action)">
+                  {{ actionLabels[action] }}
+                </ui-button>
+              }
+            </ui-button-group>
+          }
+        </ui-card>
+
+        <ui-card>
+          <h2 class="request-detail__section-title">Propostas e atendimentos</h2>
+          <ul class="request-detail__proposals">
+            @for (proposal of current.proposals; track proposal.id) {
+              <li class="request-detail__proposal">
+                <div class="request-detail__proposal-header">
+                  <a [routerLink]="['/admin/perfis', 'professional', proposal.professional.userId]">{{ proposal.professional.name }}</a>
+                  <ui-status-badge kind="proposal" [status]="proposal.status"></ui-status-badge>
+                </div>
+                <p class="request-detail__muted">
+                  {{ proposal.price | currency: 'BRL' }} · {{ period(proposal.start, proposal.end) }}
+                </p>
+                @if (proposal.attendance; as attendance) {
+                  <p class="request-detail__attendance">
+                    Atendimento:
+                    <ui-status-badge kind="attendance" [status]="attendance.status"></ui-status-badge>
+                    {{ period(attendance.start, attendance.end) }}
+                    @if (attendance.problem) {
+                      · <a [routerLink]="['/admin/disputas', attendance.problem.id]">ver relato</a>
+                    }
+                  </p>
+                }
+              </li>
+            } @empty {
+              <li class="request-detail__muted">Nenhuma proposta.</li>
+            }
+          </ul>
+        </ui-card>
+
+        @if (current.actions.length) {
+          <ui-card>
+            <h2 class="request-detail__section-title">Ações de administradores</h2>
+            <ul class="request-detail__timeline">
+              @for (action of current.actions; track $index) {
+                <li>
+                  <span class="request-detail__muted">{{ action.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span>{{ historyLabels[action.type] }} por {{ action.admin }} ({{ action.detail }}): {{ action.justification }}</span>
+                </li>
+              }
+            </ul>
+          </ui-card>
+        }
+      </section>
+    }
+  }
+}
+
+@if (texts(); as dialogTexts) {
+  <ui-justification-dialog
+    [open]="true"
+    titleText="Mudar o status"
+    icon="alert"
+    [message]="dialogTexts.message"
+    [consequences]="dialogTexts.consequences"
+    [confirmLabel]="dialogTexts.confirm"
+    cancelLabel="Não, manter como está"
+    [confirmVariant]="dialogTexts.variant"
+    [loading]="saving()"
+    (confirmed)="confirm($event)"
+    (closed)="closeDialog()"
+  ></ui-justification-dialog>
+}

@@ -45,16 +45,26 @@
             }
             @case ('filled') {
               <div class="request-detail__proposals-list">
-                @for (proposal of proposals(); track proposal.id) {
+                @for (proposal of pager.items(); track proposal.id) {
                   <ui-proposal-card
                     [uiHighlight]="'proposta-' + proposal.id"
                     [proposal]="proposal"
-                    [personName]="proposal.professional.name"
-                    [personAvatarUrl]="proposal.professional.avatarUrl"
-                    [personLink]="['/patient/profissionais', proposal.professional.id]"
                     [subtitle]="professionalDescription(proposal)"
                     [notice]="reacceptNotice(proposal, 'patient')"
                   >
+                    @if (proposal.professional.unavailable) {
+                      <ui-person-chip proposal-person [unavailable]="true"></ui-person-chip>
+                    } @else {
+                      <app-person-menu
+                        proposal-person
+                        kind="professional"
+                        [personId]="proposal.professional.id"
+                        [name]="proposal.professional.name"
+                        [avatarUrl]="proposal.professional.avatarUrl"
+                        [profileLink]="['/patient/profissionais', proposal.professional.id]"
+                        (blocked)="refresh()"
+                      ></app-person-menu>
+                    }
                     @if (proposal.status === 'pendente' && canReceiveProposals(currentRequest)) {
                       <ui-button-group proposal-actions>
                         <ui-button variant="secondary" size="sm" (click)="askToAccept(proposal)">
@@ -72,13 +82,14 @@
                         proposal-attendance
                         viewer="patient"
                         [attendance]="attendance"
-                        [counterpartName]="proposal.professional.name"
+                        [counterpartName]="proposal.professional.unavailable ? unavailableLabel : proposal.professional.name"
                         (changed)="refresh()"
                       ></app-attendance-panel>
                     }
                   </ui-proposal-card>
                 }
               </div>
+              <ui-paginator [pagination]="pager" label="Páginas de propostas"></ui-paginator>
             }
           }
         </div>

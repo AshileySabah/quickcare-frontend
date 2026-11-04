@@ -6,10 +6,6 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 
-/**
- * Botão "Editar" da proposta. Pendente, abre a edição direto; já aceita,
- * antes avisa que ela deixa de estar aceita e o paciente precisa aceitar de novo.
- */
 @Component({
   selector: 'app-edit-proposal-action',
   standalone: true,

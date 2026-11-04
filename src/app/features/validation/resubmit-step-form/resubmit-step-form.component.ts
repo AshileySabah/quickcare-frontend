@@ -23,6 +23,7 @@ import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/s
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type FieldName =
   | 'name'
@@ -39,14 +40,10 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
   { value: 'CNH', label: 'CNH' },
 ];
 
-/**
- * Correção de uma etapa reprovada: o usuário ajusta os dados daquela etapa e
- * envia um novo documento, abrindo uma nova avaliação.
- */
 @Component({
   selector: 'app-resubmit-step-form',
   standalone: true,
-  imports: [
+  imports: [InvalidFieldFocusDirective, 
     ReactiveFormsModule,
     ButtonComponent,
     FilePickerComponent,
@@ -104,7 +101,6 @@ export class ResubmitStepFormComponent implements OnInit {
       registrationUf: data.registrationUf ?? '',
     });
 
-    // Só os campos da etapa reenviada são obrigatórios.
     const required: Record<string, ValidatorFn[]> =
       this.step().type === 'IDENTIDADE'
         ? {

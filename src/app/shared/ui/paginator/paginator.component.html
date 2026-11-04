@@ -1,0 +1,52 @@
+<nav class="ui-paginator" [attr.aria-label]="label()">
+  <div class="ui-paginator__size">
+    <ui-select label="Por página" [options]="sizeOptions" [formControl]="sizeControl"></ui-select>
+  </div>
+
+  <ul class="ui-paginator__pages">
+    <li>
+      <button
+        type="button"
+        class="ui-paginator__button"
+        aria-label="Página anterior"
+        [disabled]="pagination().page() === 1"
+        (click)="goTo(pagination().page() - 1)"
+      >
+        ‹
+      </button>
+    </li>
+    @for (page of pages(); track $index) {
+      <li>
+        @if (page === null) {
+          <span class="ui-paginator__gap" aria-hidden="true">…</span>
+        } @else {
+          <button
+            type="button"
+            class="ui-paginator__button"
+            [class.ui-paginator__button--current]="page === pagination().page()"
+            [attr.aria-current]="page === pagination().page() ? 'page' : null"
+            [attr.aria-label]="'Página ' + page"
+            (click)="goTo(page)"
+          >
+            {{ page }}
+          </button>
+        }
+      </li>
+    }
+    <li>
+      <button
+        type="button"
+        class="ui-paginator__button"
+        aria-label="Próxima página"
+        [disabled]="pagination().page() === pagination().totalPages()"
+        (click)="goTo(pagination().page() + 1)"
+      >
+        ›
+      </button>
+    </li>
+  </ul>
+
+  <p class="ui-paginator__summary">
+    Mostrando {{ pagination().range().from }}–{{ pagination().range().to }} de {{ pagination().total() }}
+  </p>
+</nav>

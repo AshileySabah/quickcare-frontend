@@ -22,9 +22,9 @@
     @case ('filled') {
       <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
         <ui-grid>
-          @for (request of filters.filtered(); track request.id) {
+          @for (request of filters.page.items(); track request.id) {
             <ui-grid-item [xs]="12">
-              <app-request-card [request]="request" [canRequestAgain]="true"></app-request-card>
+              <app-request-card [request]="request" [canRequestAgain]="true" [blocked]="!!blocked()"></app-request-card>
             </ui-grid-item>
           }
         </ui-grid>

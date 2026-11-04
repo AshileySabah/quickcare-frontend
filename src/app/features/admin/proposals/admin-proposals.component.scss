@@ -1,0 +1,52 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-proposals__header {
+  @include list.header;
+}
+
+.admin-proposals__title {
+  @include list.title;
+}
+
+.admin-proposals__subtitle {
+  @include list.subtitle;
+}
+
+.admin-proposals__filters {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(4);
+}
+
+.admin-proposals__list {
+  @include list.list;
+}
+
+.admin-proposals__card-header {
+  @include list.card-header;
+}
+
+.admin-proposals__service {
+  @include list.specialty;
+}
+
+.admin-proposals__people {
+  margin-bottom: tokens.space(1);
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.admin-proposals__description {
+  @include list.description;
+}
+
+.admin-proposals__date {
+  @include list.date;
+}
+
+.admin-proposals__actions {
+  margin-top: tokens.space(3);
+}

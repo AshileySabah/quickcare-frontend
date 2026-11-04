@@ -52,11 +52,12 @@ import { ProfessionalPracticeCardComponent } from './professional-practice-card/
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 @Component({
   selector: 'app-professional-register',
   standalone: true,
-  imports: [AuthLayoutComponent, 
+  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     AddressCardComponent,
@@ -81,7 +82,6 @@ export class ProfessionalRegisterComponent implements OnInit {
   private readonly toastService = inject(ToastService);
   private readonly profileService = inject(ProfileService);
 
-  /** Rota /criar-perfil/profissional: quem já é paciente cria o perfil de profissional sem refazer a conta. */
   protected readonly isNewProfile = inject(ActivatedRoute).snapshot.data['newProfileRole'] === 'professional';
 
   protected readonly isSubmitting = signal(false);
@@ -166,10 +166,6 @@ export class ProfessionalRegisterComponent implements OnInit {
   constructor() {
     requireRadiusWhenPresencial(this.form.controls.attendsPresencial, this.form.controls.raioAtendimentoKm);
 
-    // Registration belongs to the professional's own council (CRM, COREN...), not to
-    // each specialty. Cuidadores have no regulating council, so they carry no
-    // registration number at all — this toggles the field's required-ness and resets
-    // the specialty selection whenever the category changes.
     this.form.controls.category.valueChanges.subscribe((category) => {
       this.selectedCategory.set(category);
       this.form.controls.specialtyIds.setValue([]);
@@ -188,8 +184,6 @@ export class ProfessionalRegisterComponent implements OnInit {
       registrationUfControl.updateValueAndValidity();
     });
 
-    // Category "Outros profissionais" is single-specialty, so its picker writes into
-    // a dedicated control that mirrors into the shared specialtyIds array.
     this.form.controls.specialtySingle.valueChanges.subscribe((specialtyId) => {
       if (this.form.controls.category.value === 'OUTRO') {
         this.form.controls.specialtyIds.setValue(specialtyId ? [specialtyId] : []);

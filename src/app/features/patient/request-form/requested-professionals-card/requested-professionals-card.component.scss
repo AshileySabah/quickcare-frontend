@@ -9,7 +9,6 @@
   @include form.hint;
 }
 
-// Celular: campos empilhados com o botão de remover ao lado da categoria.
 .requested-professionals-card__row {
   display: grid;
   grid-template-columns: 1fr 40px;
@@ -44,7 +43,6 @@
 }
 
 .requested-professionals-card__remove {
-  // Alinha com os campos, descontando a altura do label.
   margin-top: 26px;
   height: 40px;
   width: 40px;

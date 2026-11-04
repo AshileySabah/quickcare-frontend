@@ -1,0 +1,101 @@
+@use 'tokens' as tokens;
+@use 'patterns/admin-detail' as admin;
+
+.profile-detail {
+  @include admin.page;
+}
+
+.profile-detail__header {
+  @include admin.header;
+}
+
+.profile-detail__title {
+  @include admin.title;
+}
+
+.profile-detail__muted {
+  @include admin.muted;
+}
+
+.profile-detail__text {
+  margin: tokens.space(1) 0 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+}
+
+.profile-detail__section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  margin-bottom: tokens.space(3);
+}
+
+.profile-detail__section-title {
+  @include admin.section-title;
+  margin: 0;
+}
+
+.profile-detail__timeline {
+  @include admin.timeline;
+  margin-top: tokens.space(3);
+}
+
+.profile-detail__occurrences {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-detail__occurrence {
+  padding-bottom: tokens.space(3);
+  border-bottom: 1px solid tokens.color('gray', 100);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+
+  &--annulled .profile-detail__occurrence-reason {
+    text-decoration: line-through;
+    color: tokens.color('gray', 500);
+  }
+}
+
+.profile-detail__occurrence-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+}
+
+.profile-detail__occurrence-reason {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.profile-detail__appeal {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  margin-top: tokens.space(2);
+  padding: tokens.space(3);
+  background-color: tokens.color('gray', 50);
+  border-radius: tokens.radius('md');
+}
+
+.profile-detail__appeal-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}

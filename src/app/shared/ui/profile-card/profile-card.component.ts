@@ -7,10 +7,6 @@ export interface ProfileDetail {
   value: string;
 }
 
-/**
- * Topo das telas de perfil (profissional e paciente): foto, nome, uma linha
- * de apoio e os dados em lista.
- */
 @Component({
   selector: 'ui-profile-card',
   standalone: true,

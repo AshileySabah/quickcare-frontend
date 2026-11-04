@@ -1,0 +1,78 @@
+@use 'tokens' as tokens;
+@use 'patterns/details' as details;
+@use 'patterns/admin-detail' as admin;
+
+.dispute-detail {
+  @include admin.page;
+}
+
+.dispute-detail__header {
+  @include admin.header;
+}
+
+.dispute-detail__title {
+  @include admin.title;
+}
+
+.dispute-detail__subtitle,
+.dispute-detail__muted {
+  @include admin.muted;
+}
+
+.dispute-detail__meta {
+  @include details.details-list;
+  margin: 0;
+}
+
+.dispute-detail__versions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: tokens.space(4);
+}
+
+.dispute-detail__section-title {
+  @include admin.section-title;
+}
+
+.dispute-detail__subsection-title {
+  @include admin.section-title;
+  margin-top: tokens.space(4);
+  font-size: tokens.font-size('sm');
+}
+
+.dispute-detail__text {
+  margin: tokens.space(2) 0 tokens.space(3);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+  white-space: pre-line;
+}
+
+.dispute-detail__decision {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}
+
+.dispute-detail__fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  margin: 0;
+  padding: 0;
+  border: none;
+
+  legend {
+    margin-bottom: tokens.space(2);
+    font-size: tokens.font-size('sm');
+    font-weight: tokens.font-weight('medium');
+    color: tokens.color('gray', 700);
+  }
+}
+
+.dispute-detail__actions {
+  @include admin.actions;
+}
+
+.dispute-detail__timeline {
+  @include admin.timeline;
+}

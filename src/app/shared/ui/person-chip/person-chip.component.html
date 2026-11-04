@@ -1,15 +1,19 @@
 <ng-template #content>
-  <ui-avatar [name]="name()" [imageUrl]="avatarUrl()"></ui-avatar>
+  <ui-avatar
+    [name]="displayName()"
+    [imageUrl]="unavailable() ? undefined : avatarUrl()"
+    [unavailable]="unavailable()"
+  ></ui-avatar>
   <span class="person-chip__text">
-    <span class="person-chip__name">{{ name() }}</span>
+    <span class="person-chip__name" [class.person-chip__name--unavailable]="unavailable()">{{ displayName() }}</span>
     @if (caption()) {
       <span class="person-chip__caption">{{ caption() }}</span>
     }
   </span>
 </ng-template>
 
-@if (link(); as target) {
-  <a class="person-chip person-chip--link" [routerLink]="target" [attr.aria-label]="'Ver perfil de ' + name()">
+@if (target(); as route) {
+  <a class="person-chip person-chip--link" [routerLink]="route" [attr.aria-label]="'Ver perfil de ' + displayName()">
     <ng-container [ngTemplateOutlet]="content"></ng-container>
   </a>
 } @else {

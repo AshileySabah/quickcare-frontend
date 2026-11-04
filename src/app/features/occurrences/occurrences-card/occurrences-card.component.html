@@ -1,0 +1,61 @@
+@if (visible()) {
+  <ui-card class="occurrences-card" uiHighlight="ocorrencias">
+    <header class="occurrences-card__header">
+      <span class="occurrences-card__title">
+        <ui-icon name="alert"></ui-icon>
+        Ocorrências
+      </span>
+      @if (summary()?.block) {
+        <ui-badge variant="error">Bloqueado</ui-badge>
+      }
+    </header>
+
+    @if (blockText(); as text) {
+      <ui-notice>{{ text }}</ui-notice>
+    }
+
+    <p class="occurrences-card__rule">{{ ruleText() }}</p>
+
+    <ul class="occurrences-card__list">
+      @for (occurrence of recentOccurrences(); track occurrence.id) {
+        <li class="occurrences-card__item" [class.occurrences-card__item--annulled]="occurrence.annulled">
+          <div class="occurrences-card__line">
+            <span class="occurrences-card__date">{{ occurrence.createdAt | date: 'dd/MM/yyyy' }}</span>
+            <span class="occurrences-card__reason">{{ labels[occurrence.reason] }}</span>
+            @if (occurrence.annulled) {
+              <ui-badge variant="neutral">Anulada</ui-badge>
+            } @else if (occurrence.alreadyBlocked) {
+              <ui-badge variant="neutral">Já gerou bloqueio</ui-badge>
+            }
+            @if (!occurrence.annulled && occurrence.appeal) {
+              <ui-badge [variant]="appealVariant(occurrence)">{{ appealLabels[occurrence.appeal.status] }}</ui-badge>
+            }
+            @if (occurrence.canAppeal) {
+              <ui-button class="occurrences-card__appeal" variant="info-outline" size="sm" (click)="toAppeal.set(occurrence)">
+                Recorrer
+              </ui-button>
+            }
+          </div>
+          @if (occurrence.appeal?.status === 'mantida' && occurrence.appeal?.decisionJustification) {
+            <p class="occurrences-card__decision">Motivo: {{ occurrence.appeal?.decisionJustification }}</p>
+          }
+        </li>
+      }
+    </ul>
+  </ui-card>
+}
+
+<ui-justification-dialog
+  [open]="toAppeal() !== null"
+  titleText="Recorrer da ocorrência"
+  icon="alert"
+  [message]="toAppeal() ? 'Recorrer da ocorrência “' + labels[toAppeal()!.reason] + '”?' : ''"
+  [consequences]="appealConsequences"
+  fieldLabel="Por que ela não deveria contar?"
+  hint="Conte o que aconteceu. O administrador lê antes de decidir."
+  confirmLabel="Sim, enviar o recurso"
+  cancelLabel="Não, manter a ocorrência"
+  [loading]="isAppealing()"
+  (confirmed)="confirmAppeal($event)"
+  (closed)="toAppeal.set(null)"
+></ui-justification-dialog>

@@ -36,12 +36,6 @@ export class DocumentUploaderComponent {
   protected readonly entries = signal<DocumentEntry[]>([]);
   protected readonly localError = signal<string | null>(null);
 
-  /**
-   * Every option except "Outro" is a document the backend requires before the
-   * cadastro is accepted — mirrored here as a checklist so the user sees
-   * exactly what's missing, the same way the password requirements checklist
-   * shows what's still unmet.
-   */
   protected readonly requiredOptions = computed(() => this.typeOptions().filter((option) => option.value !== 'OUTRO'));
 
   protected readonly requiredStatus = computed(() =>
@@ -82,9 +76,6 @@ export class DocumentUploaderComponent {
     this.localError.set(null);
 
     const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-    // The first document is almost always the identity/CPF proof, so it's preselected
-    // to save a click. Every document after that starts blank — the user must choose
-    // its type explicitly rather than have us guess.
     const defaultType = this.entries().length === 0 ? 'VALIDACAO_CPF' : '';
 
     this.entries.update((current) => [...current, { id: nextEntryId++, file, type: defaultType, previewUrl }]);

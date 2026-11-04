@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-/** Aviso em destaque dentro de um card ou formulário (ex.: a proposta aguarda novo aceite). */
 @Component({
   selector: 'ui-notice',
   standalone: true,

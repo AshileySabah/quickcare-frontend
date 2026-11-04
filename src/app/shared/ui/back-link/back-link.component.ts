@@ -2,11 +2,6 @@ import { Location } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 import { Router } from '@angular/router';
 
-/**
- * "← Voltar" no topo das telas internas (detalhe, edição, perfil). Volta para
- * a tela anterior; aberta direto pelo link, sem histórico no app, vai para o
- * `fallback`.
- */
 @Component({
   selector: 'ui-back-link',
   standalone: true,

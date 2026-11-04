@@ -12,7 +12,6 @@ import { TextareaComponent } from '../../forms/textarea/textarea.component';
   templateUrl: './health-info-card.component.html',
   styleUrl: './health-info-card.component.scss',
 })
-/** Alergias, condições e medicamentos; `readonly` mostra o que foi informado sem editar (perfil). */
 export class HealthInfoCardComponent {
   group = input.required<FormGroup>();
   readonly = input(false);

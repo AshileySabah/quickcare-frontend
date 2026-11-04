@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { StoredFile } from '../../../core/models';
 
-/** Arquivo guardado no storage: nome, tamanho e link temporário para abrir. */
 @Component({
   selector: 'ui-stored-file',
   standalone: true,

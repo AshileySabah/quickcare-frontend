@@ -88,7 +88,6 @@
     }
   }
 
-
   &__main {
     display: flex;
     flex-direction: column;
@@ -157,7 +156,6 @@
     }
   }
 
-  // Classes usadas pelo conteúdo projetado de cada tela.
   &__title {
     font-size: tokens.font-size('xl');
     font-weight: tokens.font-weight('medium');
@@ -198,7 +196,6 @@
     }
   }
 
-  // Seções do formulário de cadastro, empilhadas.
   &__sections {
     display: flex;
     flex-direction: column;

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-/** Botões lado a lado, com espaço entre eles e quebra de linha em telas estreitas. */
 @Component({
   selector: 'ui-button-group',
   standalone: true,

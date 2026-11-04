@@ -1,0 +1,102 @@
+<section class="admin-user-blocks">
+  <header class="admin-user-blocks__header">
+    <div>
+      <h1 class="admin-user-blocks__title">Bloqueios entre usuários</h1>
+      <p class="admin-user-blocks__subtitle">
+        Paciente e profissional que não se veem mais. Bloqueie dois usuários entre si ou remova um bloqueio.
+      </p>
+    </div>
+    <ui-button (click)="openCreate()">
+      <ui-icon name="ban"></ui-icon>
+      Bloquear usuários
+    </ui-button>
+  </header>
+
+  <div class="admin-user-blocks__filters">
+    <ui-input label="Buscar" placeholder="Nome ou e-mail do paciente ou do profissional" [formControl]="search"></ui-input>
+  </div>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Nenhum bloqueio entre usuários" message="Ninguém bloqueado com esses filtros."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-user-blocks__list">
+        @for (block of pager.items(); track block.id) {
+          <ui-card>
+            <div class="admin-user-blocks__card-header">
+              <span class="admin-user-blocks__people">
+                <a [routerLink]="['/admin/perfis', 'patient', block.patient.userId]">{{ block.patient.name }}</a>
+                (paciente) ×
+                <a [routerLink]="['/admin/perfis', 'professional', block.professional.userId]">{{ block.professional.name }}</a>
+                (profissional)
+              </span>
+              <ui-badge [variant]="block.blockedBy === 'admin' ? 'warning' : 'neutral'">
+                {{ authorLabels[block.blockedBy] }}
+              </ui-badge>
+            </div>
+            <p class="admin-user-blocks__date">
+              Desde {{ block.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+              @if (block.createdBy) {
+                · por {{ block.createdBy }}
+              }
+            </p>
+            @if (block.justification) {
+              <p class="admin-user-blocks__text">{{ block.justification }}</p>
+            }
+            <div class="admin-user-blocks__actions">
+              <ui-button variant="secondary" size="sm" (click)="toRemove.set(block)">Remover bloqueio</ui-button>
+            </div>
+          </ui-card>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de bloqueios"></ui-paginator>
+    }
+  }
+</section>
+
+<ui-justification-dialog
+  [open]="creating()"
+  titleText="Bloquear usuários entre si"
+  icon="ban"
+  message="Escolha o paciente e o profissional que não devem mais se ver."
+  [consequences]="createConsequences"
+  confirmLabel="Sim, bloquear os dois"
+  cancelLabel="Não, voltar"
+  confirmVariant="danger"
+  [loading]="saving()"
+  (confirmed)="confirmCreate($event)"
+  (closed)="closeCreate()"
+>
+  <app-admin-person-picker
+    role="patient"
+    label="Paciente"
+    [(selected)]="patient"
+    [errorMessage]="showPickerErrors() && !patient() ? 'Escolha o paciente.' : null"
+  ></app-admin-person-picker>
+  <app-admin-person-picker
+    role="professional"
+    label="Profissional"
+    [(selected)]="professional"
+    [errorMessage]="showPickerErrors() && !professional() ? 'Escolha o profissional.' : null"
+  ></app-admin-person-picker>
+</ui-justification-dialog>
+
+<ui-justification-dialog
+  [open]="toRemove() !== null"
+  titleText="Remover bloqueio"
+  icon="refresh"
+  [message]="'Remover o bloqueio entre ' + (toRemove()?.patient?.name ?? '') + ' e ' + (toRemove()?.professional?.name ?? '') + '?'"
+  [consequences]="removeConsequences"
+  confirmLabel="Sim, remover o bloqueio"
+  cancelLabel="Não, manter o bloqueio"
+  [loading]="saving()"
+  (confirmed)="confirmRemove($event)"
+  (closed)="closeRemove()"
+></ui-justification-dialog>

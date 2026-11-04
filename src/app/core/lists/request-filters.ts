@@ -8,8 +8,6 @@ import {
 } from '../models';
 import { FilterOption, ListSelectFilter, ListSort } from './list-filters';
 
-/** Filtros e ordenações de solicitação, usados pelas listas do paciente e do profissional. */
-
 export const MODALITY_OPTIONS: FilterOption[] = [
   { value: 'online', label: 'Online' },
   { value: 'presencial', label: 'Presencial' },
@@ -25,7 +23,6 @@ export function requestStatusFilter(statuses: RequestStatus[], allLabel: string)
   };
 }
 
-/** `modalityOf` permite filtrar itens que carregam uma solicitação (ex.: propostas). */
 export function modalityFilter<T>(modalityOf: (item: T) => ServiceModality): ListSelectFilter<T> {
   return {
     key: 'modality',
@@ -36,7 +33,6 @@ export function modalityFilter<T>(modalityOf: (item: T) => ServiceModality): Lis
   };
 }
 
-/** Só as categorias que aparecem na lista. */
 export function requestCategoryFilter(requests: Signal<ServiceRequest[]>): ListSelectFilter<ServiceRequest> {
   return {
     key: 'category',
@@ -53,7 +49,6 @@ export function requestCategoryFilter(requests: Signal<ServiceRequest[]>): ListS
   };
 }
 
-/** Só as especialidades que aparecem na lista. */
 export function requestSpecialtyFilter(requests: Signal<ServiceRequest[]>): ListSelectFilter<ServiceRequest> {
   return {
     key: 'specialty',
@@ -85,7 +80,6 @@ export const REQUEST_SORTS: Record<'recentes' | 'antigas' | 'prazo', ListSort<Se
   },
 };
 
-/** O que a busca livre procura numa solicitação. */
 export function requestSearchText(request: ServiceRequest): string {
   return [
     request.id,

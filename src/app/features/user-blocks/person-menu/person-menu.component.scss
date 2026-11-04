@@ -1,0 +1,58 @@
+@use 'tokens' as tokens;
+@use 'patterns/dropdown' as dropdown;
+
+.person-menu {
+  position: relative;
+  display: inline-block;
+  min-width: 0;
+}
+
+.person-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.space(1);
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-radius: tokens.radius('md');
+  cursor: pointer;
+
+  &:hover ::ng-deep .person-chip__name {
+    color: tokens.color('teal', 700);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+}
+
+.person-menu__chevron {
+  color: tokens.color('gray', 500);
+}
+
+.person-menu__dropdown {
+  @include dropdown.panel(180px);
+  right: auto;
+  left: 0;
+  padding: tokens.space(2) 0;
+}
+
+.person-menu__item {
+  @include dropdown.item;
+  text-decoration: none;
+
+  &--danger {
+    color: tokens.semantic('error');
+
+    &:hover,
+    &:focus-visible {
+      color: tokens.semantic('error');
+    }
+  }
+}

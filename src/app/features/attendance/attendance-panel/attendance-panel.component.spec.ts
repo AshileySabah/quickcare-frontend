@@ -15,6 +15,7 @@ function attendance(overrides: Partial<Attendance> = {}): Attendance {
     acceptedAt: '2026-11-01T12:00:00Z',
     cancellationCountsAsOccurrence: false,
     lateChange: false,
+    canReportProblem: false,
     ...overrides,
   };
 }
@@ -88,6 +89,7 @@ describe('AttendancePanelComponent', () => {
       aceitoEm: '2026-11-02T12:00:00Z',
       cancelamentoContaOcorrencia: false,
       alteracaoTardia: false,
+      podeRelatarProblema: false,
     });
 
     expect(changed).toHaveBeenCalledWith(jasmine.objectContaining({ status: 'agendado' }));

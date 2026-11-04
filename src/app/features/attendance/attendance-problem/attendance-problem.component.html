@@ -1,0 +1,168 @@
+@if (problem(); as problem) {
+  <div class="attendance-problem" aria-label="Relato de atendimento não realizado">
+    <p class="attendance-problem__title">
+      <ui-icon name="alert"></ui-icon>
+      Relato: o atendimento não foi realizado
+    </p>
+
+    <div class="attendance-problem__entry">
+      <p class="attendance-problem__author">
+        {{ authorOf(problem.reportedBy) }} · {{ reasonLabel(problem.reason) }}
+      </p>
+      <p class="attendance-problem__text">“{{ problem.description }}”</p>
+      @if (reportAttachments().length) {
+        <ul class="attendance-problem__attachments">
+          @for (attachment of reportAttachments(); track attachment.id) {
+            <li>
+              <ui-button
+                variant="ghost"
+                size="sm"
+                [loading]="openingAttachment() === attachment.id"
+                (click)="openAttachment(attachment)"
+              >
+                <ui-icon name="paperclip"></ui-icon>
+                {{ attachment.fileName }}
+              </ui-button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+
+    @if (problem.contestation) {
+      <div class="attendance-problem__entry">
+        <p class="attendance-problem__author">{{ authorOf(problem.reportedBy === 'paciente' ? 'profissional' : 'paciente') }} · Contestou</p>
+        <p class="attendance-problem__text">“{{ problem.contestation }}”</p>
+        @if (contestAttachments().length) {
+          <ul class="attendance-problem__attachments">
+            @for (attachment of contestAttachments(); track attachment.id) {
+              <li>
+                <ui-button
+                  variant="ghost"
+                  size="sm"
+                  [loading]="openingAttachment() === attachment.id"
+                  (click)="openAttachment(attachment)"
+                >
+                  <ui-icon name="paperclip"></ui-icon>
+                  {{ attachment.fileName }}
+                </ui-button>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    @if (statusText(); as text) {
+      <ui-notice>{{ text }}</ui-notice>
+    }
+
+    @if (canAnswer() || canContest()) {
+      <ui-button-group class="attendance-problem__actions">
+        @if (canAnswer()) {
+          <ui-button variant="secondary" size="sm" (click)="dialog.set('confirm')">
+            <ui-icon name="check"></ui-icon>
+            Confirmar que não foi realizado
+          </ui-button>
+        }
+        @if (canContest()) {
+          <ui-button variant="danger-outline" size="sm" (click)="openContest()">
+            <ui-icon name="x-circle"></ui-icon>
+            {{ problem.status === 'sem_resposta' ? 'Contestar com o administrador' : 'Contestar' }}
+          </ui-button>
+        }
+      </ui-button-group>
+    }
+  </div>
+} @else if (attendance().canReportProblem) {
+  <ui-button-group class="attendance-problem__actions">
+    <ui-button variant="danger-outline" size="sm" (click)="openReport()">
+      <ui-icon name="alert"></ui-icon>
+      Não foi realizado
+    </ui-button>
+  </ui-button-group>
+}
+
+<ui-confirm-dialog
+  [open]="dialog() === 'report'"
+  titleText="Atendimento não realizado"
+  icon="alert"
+  message="Conte o que aconteceu."
+  [consequences]="reportConsequences()"
+  confirmLabel="Enviar relato"
+  cancelLabel="Não, voltar"
+  confirmVariant="danger"
+  [loading]="loading()"
+  (confirmed)="submitReport()"
+  (closed)="closeDialog()"
+>
+  @if (dialog() === 'report') {
+    <form class="attendance-problem__form" [formGroup]="reportForm" (ngSubmit)="submitReport()">
+      <ui-select
+        label="O que houve"
+        formControlName="reason"
+        [options]="reasonOptions()"
+        [required]="true"
+        [errorMessage]="reportError('reason')"
+      ></ui-select>
+      <ui-textarea
+        label="O que aconteceu"
+        formControlName="description"
+        placeholder="Ex.: esperei no horário combinado e ninguém apareceu nem avisou."
+        [required]="true"
+        [maxLength]="2000"
+        [errorMessage]="reportError('description')"
+      ></ui-textarea>
+      <ui-multi-file-picker
+        label="Provas (opcional)"
+        [max]="maxFiles"
+        [disabled]="loading()"
+        (filesChange)="setFiles($event)"
+      ></ui-multi-file-picker>
+    </form>
+  }
+</ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="dialog() === 'confirm'"
+  titleText="Confirmar que não foi realizado"
+  icon="check"
+  message="Confirmar que o atendimento não foi realizado?"
+  [consequences]="confirmConsequences()"
+  confirmLabel="Sim, confirmar"
+  cancelLabel="Não, voltar"
+  [loading]="loading()"
+  (confirmed)="confirm()"
+  (closed)="closeDialog()"
+></ui-confirm-dialog>
+
+<ui-confirm-dialog
+  [open]="dialog() === 'contest'"
+  titleText="Contestar o relato"
+  icon="x-circle"
+  message="Conte a sua versão do que aconteceu."
+  [consequences]="['Um administrador analisa as duas versões e as provas, e decide.', 'Até a decisão, o atendimento fica em disputa.']"
+  confirmLabel="Enviar contestação"
+  cancelLabel="Não, voltar"
+  [loading]="loading()"
+  (confirmed)="submitContest()"
+  (closed)="closeDialog()"
+>
+  @if (dialog() === 'contest') {
+    <form class="attendance-problem__form" [formGroup]="contestForm" (ngSubmit)="submitContest()">
+      <ui-textarea
+        label="A sua versão"
+        formControlName="description"
+        [required]="true"
+        [maxLength]="2000"
+        [errorMessage]="contestError('description')"
+      ></ui-textarea>
+      <ui-multi-file-picker
+        label="Provas (opcional)"
+        [max]="maxFiles"
+        [disabled]="loading()"
+        (filesChange)="setFiles($event)"
+      ></ui-multi-file-picker>
+    </form>
+  }
+</ui-confirm-dialog>

@@ -29,6 +29,9 @@
         será uma nova solicitação.
       </ui-notice>
     }
+    @if (!isEditMode) {
+      <app-blocked-notice role="patient"></app-blocked-notice>
+    }
     <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
     <p class="request-form__subtitle">
       {{
@@ -93,7 +96,7 @@
 
       <div class="request-form__actions">
         @if (readOnlyRequest() === null) {
-          <ui-button type="submit" [loading]="isSubmitting()">
+          <ui-button type="submit" [loading]="isSubmitting()" [disabled]="!isEditMode && !!blocked()">
             {{ isEditMode ? 'Salvar alterações' : 'Criar solicitação' }}
           </ui-button>
         }

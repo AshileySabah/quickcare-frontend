@@ -16,7 +16,15 @@
     }
     @case ('filled') {
       @if (profile(); as current) {
-        <ui-profile-card [name]="current.name" [avatarUrl]="current.avatarUrl" [details]="details()"></ui-profile-card>
+        <ui-profile-card [name]="current.name" [avatarUrl]="current.avatarUrl" [details]="details()">
+          <app-profile-block-action
+            profile-actions
+            kind="patient"
+            [personId]="current.id"
+            [name]="current.name"
+            (changed)="load()"
+          ></app-profile-block-action>
+        </ui-profile-card>
 
         @if (current.health) {
           <ui-health-info-card [group]="healthForm" [readonly]="true"></ui-health-info-card>

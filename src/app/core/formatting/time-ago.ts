@@ -2,7 +2,6 @@ const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
 
-/** "agora", "há 5 min", "há 3 h", "ontem", "há 4 dias" ou a data, para o que passou de uma semana. */
 export function timeAgo(isoDate: string, now: Date = new Date()): string {
   const date = new Date(isoDate);
   const elapsed = now.getTime() - date.getTime();

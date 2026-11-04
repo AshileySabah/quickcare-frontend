@@ -30,6 +30,7 @@ import { PasswordCardComponent } from '../../../shared/ui/register/password-card
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
   { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
@@ -39,7 +40,7 @@ const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
 @Component({
   selector: 'app-patient-register',
   standalone: true,
-  imports: [AuthLayoutComponent, 
+  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     AddressCardComponent,
@@ -62,7 +63,6 @@ export class PatientRegisterComponent {
   private readonly ufService = inject(UfService);
   private readonly profileService = inject(ProfileService);
 
-  /** Rota /criar-perfil/paciente: quem já é profissional cria o perfil de paciente sem refazer a conta. */
   protected readonly isNewProfile = inject(ActivatedRoute).snapshot.data['newProfileRole'] === 'patient';
 
   protected readonly isSubmitting = signal(false);

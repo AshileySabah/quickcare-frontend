@@ -14,13 +14,14 @@ import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/err
 import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type PageState = 'loading' | 'error' | 'ready';
 
 @Component({
   selector: 'app-patient-edit-profile',
   standalone: true,
-  imports: [SkeletonListComponent, 
+  imports: [InvalidFieldFocusDirective, SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     AvatarUploadComponent,

@@ -1,0 +1,62 @@
+<section class="admin-disputes">
+  <header class="admin-disputes__header">
+    <div>
+      <h1 class="admin-disputes__title">Disputas</h1>
+      <p class="admin-disputes__subtitle">
+        Atendimentos relatados como não realizados. Os contestados esperam a sua decisão.
+      </p>
+    </div>
+  </header>
+
+  <ui-filter-chips
+    class="admin-disputes__filters"
+    label="Filtrar por situação"
+    [chips]="filters"
+    [selected]="selected()"
+    (selectedChange)="select($event)"
+  ></ui-filter-chips>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state
+        title="Nada por aqui"
+        [message]="selected() === 'em_disputa' ? 'Nenhuma disputa aguardando decisão.' : 'Nenhum relato nesta situação.'"
+      ></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-disputes__list">
+        @for (dispute of pager.items(); track dispute.id) {
+          <a class="admin-disputes__card-link" [routerLink]="['/admin/disputas', dispute.id]">
+            <ui-card [interactive]="true">
+              <div class="admin-disputes__card-header">
+                <span class="admin-disputes__service">{{ dispute.service }}</span>
+                <ui-status-badge kind="problem" [status]="dispute.status"></ui-status-badge>
+              </div>
+              <p class="admin-disputes__parties">
+                {{ dispute.patient.name }} (paciente) · {{ dispute.professional.name }} (profissional)
+              </p>
+              <p class="admin-disputes__description">
+                Relatado por {{ reporter(dispute) }} ·
+                {{ dispute.reason === 'combinado' ? 'Combinado entre os dois' : 'O outro não compareceu' }}
+              </p>
+              <p class="admin-disputes__date">
+                Atendimento {{ period(dispute.start, dispute.end) }} · relatado em
+                {{ dispute.createdAt | date: 'dd/MM/yyyy' }}
+                @if (dispute.contestedAt) {
+                  · contestado em {{ dispute.contestedAt | date: 'dd/MM/yyyy' }}
+                }
+              </p>
+            </ui-card>
+          </a>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de disputas"></ui-paginator>
+    }
+  }
+</section>

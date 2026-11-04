@@ -1,8 +1,7 @@
 <ui-card class="ui-proposal-card">
   <header class="ui-proposal-card__header">
-    @if (personName(); as name) {
-      <ui-person-chip [name]="name" [avatarUrl]="personAvatarUrl()" [link]="personLink()"></ui-person-chip>
-    } @else if (personHiddenNote()) {
+    <ng-content select="[proposal-person]"></ng-content>
+    @if (personHiddenNote()) {
       <p class="ui-proposal-card__hidden-note">{{ personHiddenNote() }}</p>
     }
     <ui-status-badge class="ui-proposal-card__status" kind="proposal" [status]="proposal().status"></ui-status-badge>

@@ -17,13 +17,18 @@
       <section class="professional-request-detail">
         <ui-request-summary [request]="currentRequest" [uiHighlight]="'solicitacao-' + currentRequest.id">
           @if (patient(); as currentPatient) {
-            <ui-person-chip
+            <app-person-menu
               summary-person
+              kind="patient"
+              [personId]="currentPatient.id"
               [name]="currentPatient.name"
               [avatarUrl]="currentPatient.avatarUrl"
               caption="Paciente"
-              [link]="['/professional/pacientes', currentPatient.id]"
-            ></ui-person-chip>
+              [profileLink]="['/professional/pacientes', currentPatient.id]"
+              (blocked)="refresh()"
+            ></app-person-menu>
+          } @else if (patientUnavailable()) {
+            <ui-person-chip summary-person [unavailable]="true" caption="Paciente"></ui-person-chip>
           } @else if (existingProposal()?.status === 'pendente') {
             <p summary-person class="professional-request-detail__note">O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.</p>
           }
@@ -81,17 +86,21 @@
                 O valor e a abordagem dela já estão preenchidos: ajuste o que quiser, escolha o prazo e envie.
               </ui-notice>
 
+              <app-blocked-notice role="professional"></app-blocked-notice>
               <app-proposal-form
                 submitLabel="Reenviar proposta"
-                [initialValue]="resendValue(previous)"
+                [initialValue]="resendValue()"
+                [disabled]="!!blocked()"
                 [submitting]="isSubmitting()"
                 (submitted)="submit($event)"
               ></app-proposal-form>
             } @else {
               <h2 class="professional-request-detail__form-title">Enviar proposta</h2>
 
+              <app-blocked-notice role="professional"></app-blocked-notice>
               <app-proposal-form
                 submitLabel="Enviar proposta"
+                [disabled]="!!blocked()"
                 [submitting]="isSubmitting()"
                 (submitted)="submit($event)"
               ></app-proposal-form>

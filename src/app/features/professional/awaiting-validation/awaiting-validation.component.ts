@@ -5,11 +5,6 @@ import { AppShellComponent } from '../../../shared/ui/layout/app-shell/app-shell
 import { MyValidationComponent } from '../../validation/my-validation/my-validation.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 
-/**
- * Profissional sem cadastro aprovado: acompanha as etapas e reenvia as
- * reprovadas. Usa o mesmo layout das áreas logadas, mas sem itens de menu nem
- * "Meu perfil", que ficam bloqueados até a aprovação.
- */
 @Component({
   selector: 'app-awaiting-validation',
   standalone: true,

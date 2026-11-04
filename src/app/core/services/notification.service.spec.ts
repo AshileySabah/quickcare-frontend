@@ -24,7 +24,6 @@ function apiNotification(overrides: Record<string, unknown> = {}) {
   };
 }
 
-/** Cliente STOMP falso: guarda a configuração e a assinatura feita no onConnect. */
 class FakeStompClient {
   connected = true;
   activate = jasmine.createSpy('activate');

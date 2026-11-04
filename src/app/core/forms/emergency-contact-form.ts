@@ -10,7 +10,6 @@ export function buildEmergencyContactGroup(fb: FormBuilder) {
 
 export type EmergencyContactGroup = ReturnType<typeof buildEmergencyContactGroup>;
 
-/** Recria os contatos do `emergencyContacts` do formulário com os valores informados. */
 export function setEmergencyContacts(form: FormGroup, fb: FormBuilder, contacts: EmergencyContact[]): void {
   const array = form.get('emergencyContacts') as FormArray<EmergencyContactGroup>;
   array.clear();

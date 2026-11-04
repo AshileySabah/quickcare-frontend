@@ -1,0 +1,51 @@
+@use 'tokens' as tokens;
+@use 'patterns/dropdown' as dropdown;
+
+.person-picker {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  margin-bottom: tokens.space(3);
+}
+
+.person-picker__label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.person-picker__chosen {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  padding: tokens.space(2) tokens.space(3);
+  border: 1px solid tokens.color('teal', 300);
+  border-radius: tokens.radius('md');
+  background-color: tokens.color('teal', 50);
+}
+
+.person-picker__name {
+  display: block;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.person-picker__email {
+  display: block;
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}
+
+.person-picker__results {
+  margin: 0;
+  padding: tokens.space(1) 0;
+  list-style: none;
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('md');
+}
+
+.person-picker__option {
+  @include dropdown.item;
+}

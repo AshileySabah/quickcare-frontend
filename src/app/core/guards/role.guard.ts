@@ -9,8 +9,6 @@ export const roleGuard: CanActivateFn = (route) => {
   const router = inject(Router);
   const allowedRoles = route.data['roles'] as UserRole[] | undefined;
 
-  // Os guards de uma rota rodam em paralelo: espera a sessão ser restaurada
-  // em vez de ler o usuário direto (que ainda é null logo após um reload).
   return authService.ensureSession().pipe(
     map((user) => {
       if (!user) {

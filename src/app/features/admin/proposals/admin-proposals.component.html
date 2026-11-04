@@ -1,0 +1,91 @@
+<section class="admin-proposals">
+  <header class="admin-proposals__header">
+    <div>
+      <h1 class="admin-proposals__title">Propostas</h1>
+      <p class="admin-proposals__subtitle">
+        Recuse a pendente, cancele a aceita ou reative a recusada/cancelada. Ninguém leva ocorrência.
+      </p>
+    </div>
+  </header>
+
+  <div class="admin-proposals__filters">
+    <ui-input
+      label="Buscar"
+      placeholder="Nome ou e-mail do profissional ou do paciente, ou o número"
+      [formControl]="search"
+    ></ui-input>
+    <ui-filter-chips
+      label="Filtrar por status"
+      [chips]="statusFilters"
+      [selected]="status()"
+      (selectedChange)="selectStatus($event)"
+    ></ui-filter-chips>
+  </div>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Nenhuma proposta encontrada" message="Ajuste a busca ou os filtros."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-proposals__list">
+        @for (proposal of pager.items(); track proposal.id) {
+          <ui-card>
+            <div class="admin-proposals__card-header">
+              <span class="admin-proposals__service">#{{ proposal.id }} · {{ proposal.service }}</span>
+              <ui-status-badge kind="proposal" [status]="proposal.status"></ui-status-badge>
+            </div>
+            <p class="admin-proposals__people">
+              {{ proposal.professional.name }} → {{ proposal.patient.name }}
+            </p>
+            <p class="admin-proposals__description">
+              {{ proposal.price | currency: 'BRL' }} · {{ period(proposal) }}
+              @if (proposal.attendanceStatus) {
+                · atendimento {{ attendanceLabels[proposal.attendanceStatus].toLowerCase() }}
+              }
+            </p>
+            <p class="admin-proposals__date">
+              <a [routerLink]="['/admin/solicitacoes', proposal.requestId]">Solicitação #{{ proposal.requestId }}</a>
+              · enviada em {{ proposal.createdAt | date: 'dd/MM/yyyy' }}
+            </p>
+            @if (proposal.allowedActions.length) {
+              <ui-button-group class="admin-proposals__actions">
+                @for (action of proposal.allowedActions; track action) {
+                  <ui-button
+                    size="sm"
+                    [variant]="action === 'reativar' ? 'secondary' : 'danger-outline'"
+                    (click)="pending.set({ proposal, action })"
+                  >
+                    {{ actionLabels[action] }}
+                  </ui-button>
+                }
+              </ui-button-group>
+            }
+          </ui-card>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de propostas"></ui-paginator>
+    }
+  }
+</section>
+
+@if (dialogTexts(); as texts) {
+  <ui-justification-dialog
+    [open]="true"
+    [titleText]="texts.title"
+    icon="alert"
+    [message]="texts.message"
+    [consequences]="texts.consequences"
+    [confirmLabel]="texts.confirm"
+    [cancelLabel]="texts.cancel"
+    [confirmVariant]="texts.variant"
+    [loading]="saving()"
+    (confirmed)="confirm($event)"
+    (closed)="closeDialog()"
+  ></ui-justification-dialog>
+}

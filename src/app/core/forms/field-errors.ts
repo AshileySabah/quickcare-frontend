@@ -1,9 +1,7 @@
-import { AbstractControl } from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
-/** Mensagem por chave de erro, para um campo: { pattern: 'CEP deve ter 8 dígitos.' }. */
 export type ErrorMessages = Partial<Record<string, string>>;
 
-/** Mensagens específicas por campo; o que não estiver aqui usa a mensagem padrão do erro. */
 export type FieldMessages = Partial<Record<string, ErrorMessages>>;
 
 const DEFAULT_MESSAGES: ErrorMessages = {
@@ -12,25 +10,46 @@ const DEFAULT_MESSAGES: ErrorMessages = {
   weakPassword: 'A senha não atende aos requisitos mínimos.',
   cpfInvalid: 'CPF inválido.',
   cnpjInvalid: 'CNPJ inválido.',
+  pattern: 'Formato inválido.',
 };
 
-/** Mensagem do primeiro erro de um campo já tocado; nada enquanto a pessoa não passou por ele. */
+const FALLBACK_MESSAGE = 'Valor inválido.';
+
+function messageWithLimit(key: string, error: ValidationErrors[string]): string | null {
+  switch (key) {
+    case 'minlength':
+      return `Use pelo menos ${characters(error.requiredLength)}.`;
+    case 'maxlength':
+      return `Use no máximo ${characters(error.requiredLength)}.`;
+    case 'min':
+      return `O valor mínimo é ${error.min}.`;
+    case 'max':
+      return `O valor máximo é ${error.max}.`;
+    default:
+      return null;
+  }
+}
+
+function characters(count: number): string {
+  return count === 1 ? '1 caractere' : `${count} caracteres`;
+}
+
 export function controlError(control: AbstractControl | null, messages: ErrorMessages = {}): string | null {
   if (!control?.touched || !control.errors) {
     return null;
   }
 
-  for (const key of Object.keys(control.errors)) {
-    const message = messages[key] ?? DEFAULT_MESSAGES[key];
+  const errors = control.errors;
+  for (const key of Object.keys(errors)) {
+    const message = messages[key] ?? DEFAULT_MESSAGES[key] ?? messageWithLimit(key, errors[key]);
     if (message) {
       return message;
     }
   }
 
-  return null;
+  return FALLBACK_MESSAGE;
 }
 
-/** O `fieldError` que os cards de formulário recebem: busca o campo pelo nome dentro do grupo. */
 export function fieldErrorsFor(group: AbstractControl, messages: FieldMessages = {}): (fieldName: string) => string | null {
   return (fieldName) => controlError(group.get(fieldName), messages[fieldName]);
 }

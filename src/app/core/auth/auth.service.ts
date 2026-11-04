@@ -29,14 +29,12 @@ import {
 } from './auth-api.model';
 import { normalizeError } from '../http/api-error';
 
-/** Documento oficial com foto conferido na etapa de identidade. */
 export interface IdentityDocumentInput {
   identityDocumentType: IdentityDocumentType;
   identityDocumentNumber: string;
   identityDocumentUf?: string;
 }
 
-/** Dados da conta, informados só no primeiro cadastro. */
 interface AccountInput extends IdentityDocumentInput {
   name: string;
   email: string;
@@ -46,7 +44,6 @@ interface AccountInput extends IdentityDocumentInput {
   avatar?: Blob;
 }
 
-/** Dados do perfil de paciente; quem já tem conta cria o perfil só com eles. */
 export interface PatientProfileInput {
   birthDate: string;
   gender: Gender;
@@ -60,7 +57,6 @@ export interface PatientProfileInput {
   documents: RegistrationDocument[];
 }
 
-/** Dados do perfil de profissional; quem já tem conta cria o perfil só com eles. */
 export interface ProfessionalProfileInput {
   cnpj?: string;
   category: ProfessionalCategory;
@@ -105,18 +101,10 @@ export class AuthService {
   );
 
   private readonly profilesSignal = signal<ProfileSummary[]>([]);
-  /** Perfis de paciente/profissional do usuário (vazio para o admin). */
   readonly profiles = this.profilesSignal.asReadonly();
 
-  /** Tentativa única de recuperar a sessão pelos cookies, compartilhada entre os guards. */
   private sessionRestore$?: Observable<User | null>;
 
-  /**
-   * A sessão vive em memória e some ao recarregar a página, mas os cookies
-   * HttpOnly continuam lá: na primeira navegação protegida, busca o usuário em
-   * /auth/me (renovando o access token se ele já expirou). Depois disso, só
-   * devolve o usuário atual — logout continua valendo sem nova consulta.
-   */
   ensureSession(): Observable<User | null> {
     const user = this.currentUserSignal();
     if (user) {
@@ -163,7 +151,6 @@ export class AuthService {
       );
   }
 
-  /** Troca o perfil ativo sem sair da conta; o back guarda a escolha para o próximo login. */
   switchProfile(role: SwitchableRole): Observable<User> {
     const user = this.currentUserSignal();
     if (user?.role === role) {
@@ -258,10 +245,6 @@ export class AuthService {
     return session.user;
   }
 
-  /**
-   * Abre no último perfil usado, se ainda estiver ativo; senão, no primeiro
-   * ativo pela prioridade (o admin nunca tem outro perfil).
-   */
   private toSession(response: LoginApiResponse): Session {
     const ativos = response.perfis.filter((perfil) => perfil.status === 'ATIVO');
     const prioridade: PerfilStatusApi['tipo'][] = ['ADMIN', 'PROFISSIONAL', 'PACIENTE'];
@@ -351,7 +334,6 @@ export class AuthService {
     return patient;
   }
 
-
   registerPatient(input: PatientRegistration): Observable<User> {
     const dados = { ...accountPayload(input), ...patientProfilePayload(input) };
 
@@ -396,7 +378,6 @@ export class AuthService {
       );
   }
 
-  /** Quem já está logado cria o outro perfil, que já passa a ser o ativo. */
   createPatientProfile(input: PatientProfileInput): Observable<User> {
     return this.createProfile('paciente', toFormData(patientProfilePayload(input), input.documents));
   }
@@ -430,7 +411,6 @@ export class AuthService {
       );
   }
 
-  /** Atualiza o status depois de um reenvio, sem precisar entrar de novo. */
   updateValidationStatus(validationStatus: ValidationStatus): void {
     const user = this.currentUserSignal();
     if (!user || user.role === 'admin') {
@@ -515,10 +495,6 @@ function professionalProfilePayload(input: ProfessionalProfileInput) {
   };
 }
 
-/**
- * O back amarra cada arquivo ao tipo pela posição: `documentos[i]` é do tipo
- * `tiposDocumento[i]`.
- */
 function toFormData(dados: object, documents: RegistrationDocument[], avatar?: Blob): FormData {
   const formData = new FormData();
   formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));

@@ -6,12 +6,14 @@
         Acompanhe prazos, status e propostas das suas solicitações ativas.
       </p>
     </div>
-    @if (validationStatus() === "aprovado") {
+    @if (validationStatus() === "aprovado" && !blocked()) {
       <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
     } @else {
       <ui-button [disabled]="true">Nova solicitação</ui-button>
     }
   </header>
+
+  <app-occurrences-card role="patient" (blockedChange)="blocked.set($event)"></app-occurrences-card>
 
   @if (validationStatus() !== "aprovado") {
     <div
@@ -78,7 +80,7 @@
     @case ("filled") {
       <ui-list-filters [filters]="filters" [noun]="{ one: 'solicitação', other: 'solicitações' }">
         <ui-grid>
-          @for (request of filters.filtered(); track request.id) {
+          @for (request of filters.page.items(); track request.id) {
             <ui-grid-item [xs]="12">
               <app-request-card
                 [request]="request"

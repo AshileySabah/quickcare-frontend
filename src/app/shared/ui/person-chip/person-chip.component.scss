@@ -33,6 +33,11 @@
   font-size: tokens.font-size('base');
   font-weight: tokens.font-weight('medium');
   color: tokens.color('gray', 900);
+
+  &--unavailable {
+    font-style: italic;
+    color: tokens.color('gray', 500);
+  }
 }
 
 .person-chip__caption {

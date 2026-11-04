@@ -51,10 +51,6 @@ interface PerfilPublicoPacienteApi {
   contatosEmergencia?: ContatoEmergenciaApi[];
 }
 
-/**
- * Perfil de outro usuário. Devolve `undefined` quando o perfil não existe ou
- * quem pediu não pode vê-lo (a API responde 404 nos dois casos).
- */
 @Injectable({ providedIn: 'root' })
 export class PublicProfileService {
   private readonly http = inject(HttpClient);

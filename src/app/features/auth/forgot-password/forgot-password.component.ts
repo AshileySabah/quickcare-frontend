@@ -8,13 +8,14 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 const RESEND_COOLDOWN_SECONDS = 60;
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [AuthLayoutComponent, 
+  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, 
     ReactiveFormsModule,
     RouterLink,
     ButtonComponent,

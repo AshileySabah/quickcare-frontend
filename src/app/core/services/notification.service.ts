@@ -33,18 +33,11 @@ const QUEUE = '/user/queue/notificacoes';
 const RECONNECT_DELAY_MS = 10_000;
 const HEARTBEAT_MS = 10_000;
 
-/** Cria o cliente STOMP; os testes trocam por um falso. */
 export const STOMP_CLIENT_FACTORY = new InjectionToken<(config: StompConfig) => Client>('STOMP_CLIENT_FACTORY', {
   providedIn: 'root',
   factory: () => (config) => new Client(config),
 });
 
-/**
- * Notificações do perfil em uso e as não lidas de cada perfil. Enquanto houver
- * sessão de paciente ou profissional, fica conectado ao WebSocket e recebe as
- * novas em tempo real; a cada (re)conexão recarrega pela API, para não perder
- * o que chegou com a conexão caída (o Render hiberna).
- */
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
   private readonly http = inject(HttpClient);
@@ -57,16 +50,13 @@ export class NotificationService {
   private readonly loadingSignal = signal(false);
   private readonly failedSignal = signal(false);
   private client: Client | null = null;
-  /** A primeira conexão já vem com a lista carregada; as seguintes recarregam. */
   private connectedBefore = false;
 
-  /** Do perfil em uso, das mais recentes para as mais antigas. */
   readonly notifications = this.notificationsSignal.asReadonly();
   readonly unread = this.unreadSignal.asReadonly();
   readonly loading = this.loadingSignal.asReadonly();
   readonly failed = this.failedSignal.asReadonly();
 
-  /** O admin não tem notificações. */
   readonly activeRole = computed<SwitchableRole | null>(() => {
     const role = this.authService.role();
     return role === 'patient' || role === 'professional' ? role : null;
@@ -75,13 +65,11 @@ export class NotificationService {
     const role = this.activeRole();
     return role ? this.unreadSignal()[role] : 0;
   });
-  /** Não lidas do outro perfil, para o indicador no seletor. */
   readonly otherUnread = computed(() => {
     const role = this.activeRole();
     return role ? this.unreadSignal()[role === 'patient' ? 'professional' : 'patient'] : 0;
   });
 
-  /** Muda ao entrar, sair ou alternar de perfil. */
   private readonly sessionKey = computed(() => {
     const user = this.authService.currentUser();
     const role = this.activeRole();
@@ -95,7 +83,6 @@ export class NotificationService {
     });
   }
 
-  /** Recarrega a lista do perfil em uso e as não lidas. */
   reload(): void {
     const role = this.activeRole();
     if (!role) {
@@ -106,7 +93,6 @@ export class NotificationService {
     this.failedSignal.set(false);
     this.list(role).subscribe({
       next: (notifications) => {
-        // Só aplica se o perfil não mudou enquanto carregava.
         if (this.activeRole() === role) {
           this.notificationsSignal.set(notifications);
         }
@@ -186,14 +172,11 @@ export class NotificationService {
       reconnectDelay: RECONNECT_DELAY_MS,
       heartbeatIncoming: HEARTBEAT_MS,
       heartbeatOutgoing: HEARTBEAT_MS,
-      // O handshake usa o cookie do access token, que expira em minutos: uma
-      // chamada pela API antes de cada conexão renova o token (interceptor).
       beforeConnect: async () => {
         await firstValueFrom(this.loadUnread()).catch(() => undefined);
       },
       onConnect: () => {
         this.client?.subscribe(QUEUE, (message) => this.receive(message));
-        // Pode ter chegado algo enquanto a conexão estava caída.
         if (this.connectedBefore) {
           this.reload();
         }

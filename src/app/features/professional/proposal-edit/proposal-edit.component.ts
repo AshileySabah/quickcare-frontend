@@ -24,7 +24,6 @@ export class ProposalEditComponent {
 
   protected readonly proposal = signal<ProposalInput | null>(null);
   protected readonly isSubmitting = signal(false);
-  /** A proposta aceita volta a aguardar o aceite ao salvar (a tela avisa). */
   protected readonly wasAccepted = signal(false);
 
   constructor() {

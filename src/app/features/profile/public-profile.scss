@@ -1,12 +1,10 @@
 @use 'tokens' as tokens;
 
-// Estilo comum das telas de perfil de outro usuário (profissional e paciente).
 .public-profile {
   display: flex;
   flex-direction: column;
   gap: tokens.space(5);
 }
-
 
 .public-profile__section-title {
   font-size: tokens.font-size('lg');

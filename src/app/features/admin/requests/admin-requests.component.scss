@@ -1,0 +1,52 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-requests__header {
+  @include list.header;
+}
+
+.admin-requests__title {
+  @include list.title;
+}
+
+.admin-requests__subtitle {
+  @include list.subtitle;
+}
+
+.admin-requests__filters {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(4);
+}
+
+.admin-requests__list {
+  @include list.list;
+}
+
+.admin-requests__card-link {
+  @include list.card-link;
+}
+
+.admin-requests__card-header {
+  @include list.card-header;
+}
+
+.admin-requests__patient {
+  margin-bottom: tokens.space(1);
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.admin-requests__service {
+  @include list.specialty;
+}
+
+.admin-requests__description {
+  @include list.description;
+}
+
+.admin-requests__date {
+  @include list.date;
+}

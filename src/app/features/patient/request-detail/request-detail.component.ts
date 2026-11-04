@@ -17,6 +17,10 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confir
 import { EditRequestActionComponent } from '../../../features/patient/edit-request-action/edit-request-action.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
+import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
+import { PersonChipComponent, UNAVAILABLE_PROFILE_LABEL } from '../../../shared/ui/person-chip/person-chip.component';
+import { createPagination } from '../../../core/lists/pagination';
+import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
@@ -24,7 +28,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [PaginatorComponent, PersonMenuComponent, PersonChipComponent,AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,
@@ -37,6 +41,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 })
 export class RequestDetailComponent {
   private readonly route = inject(ActivatedRoute);
+  protected readonly unavailableLabel = UNAVAILABLE_PROFILE_LABEL;
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
@@ -48,6 +53,7 @@ export class RequestDetailComponent {
 
   protected readonly proposalsState = signal<ProposalsState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
+  protected readonly pager = createPagination(this.proposals);
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
   protected readonly isAccepting = signal(false);
@@ -90,7 +96,6 @@ export class RequestDetailComponent {
     });
   }
 
-  /** Depois de remarcar, cancelar ou responder no atendimento: status e vagas mudam junto. */
   protected refresh(): void {
     this.requestService.getById(this.requestId).subscribe({
       next: (request) => {
@@ -117,7 +122,6 @@ export class RequestDetailComponent {
     });
   }
 
-  /** Ex.: "Enfermeiro(a) — Curativos, Sondagem". */
   protected professionalDescription(proposal: Proposal): string {
     const specialties = proposal.professional.specialties.map((specialty) => specialty.name).join(', ');
     return specialties ? `${proposal.professional.categoryLabel} — ${specialties}` : proposal.professional.categoryLabel;
@@ -135,7 +139,6 @@ export class RequestDetailComponent {
     return this.requestService.canCancel(request);
   }
 
-  /** Sem propostas aceitas cancela direto; com aceitas, pergunta antes. */
   protected askToCancel(request: ServiceRequest): void {
     if (hasAcceptedProposals(request)) {
       this.confirmingCancel.set(true);
@@ -151,7 +154,6 @@ export class RequestDetailComponent {
         this.isCancelling.set(false);
         this.confirmingCancel.set(false);
         this.request.set(updated);
-        // As propostas pendentes são recusadas junto com o cancelamento.
         this.loadProposals();
         this.toastService.info('Solicitação cancelada.');
       },

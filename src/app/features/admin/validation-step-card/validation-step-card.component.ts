@@ -18,13 +18,13 @@ import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.co
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { PreValidationAlertComponent, PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 interface LookupLink {
   label: string;
   url: string;
 }
 
-/** Sites oficiais para o admin conferir por fora quando não há API (ou ela falhou). */
 const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
   IDENTIDADE: {
     label: 'Situação do CPF na Receita',
@@ -43,7 +43,7 @@ const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
 @Component({
   selector: 'app-validation-step-card',
   standalone: true,
-  imports: [
+  imports: [InvalidFieldFocusDirective, 
     DatePipe,
     ReactiveFormsModule,
     ButtonComponent,
@@ -66,7 +66,6 @@ export class ValidationStepCardComponent {
   validationId = input.required<string>();
   step = input.required<ValidationStep>();
   data = input.required<RegistrationData>();
-  /** Rótulo do conselho da categoria (CRM, COREN...), para a etapa de registro. */
   registrationLabel = input('Registro profissional');
   preValidation = input<PreValidationState | undefined>(undefined);
 
@@ -82,7 +81,6 @@ export class ValidationStepCardComponent {
     justification: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(1000)]],
   });
 
-  /** Última sugestão aplicada, para não apagar o que o admin já escreveu por conta própria. */
   private lastSuggestion = '';
 
   protected readonly isPending = computed(() => this.step().status === 'pendente');

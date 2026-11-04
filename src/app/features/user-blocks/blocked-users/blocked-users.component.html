@@ -1,0 +1,46 @@
+<section class="blocked-users">
+  <header class="blocked-users__header">
+    <h1 class="blocked-users__title">Usuários bloqueados</h1>
+    <p class="blocked-users__subtitle">
+      Vocês não trocam solicitações nem propostas enquanto o bloqueio valer. Desbloquear não traz de volta o que foi
+      encerrado.
+    </p>
+  </header>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Você não bloqueou ninguém" [message]="emptyMessage"></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <ui-card>
+        <ul class="blocked-users__list">
+          @for (user of pager.items(); track user.id) {
+            <li class="blocked-users__item">
+              <ui-person-chip
+                [name]="user.name"
+                [avatarUrl]="user.avatarUrl"
+                [caption]="'Bloqueado em ' + (user.createdAt | date: 'dd/MM/yyyy')"
+              ></ui-person-chip>
+              <ui-button variant="secondary" size="sm" (click)="toUnblock.set({ blockId: user.id, name: user.name })">
+                Desbloquear
+              </ui-button>
+            </li>
+          }
+        </ul>
+      </ui-card>
+      <ui-paginator [pagination]="pager" label="Páginas de usuários bloqueados"></ui-paginator>
+    }
+  }
+</section>
+
+<app-unblock-user-dialog
+  [target]="toUnblock()"
+  (unblocked)="onUnblocked($event)"
+  (closed)="toUnblock.set(null)"
+></app-unblock-user-dialog>

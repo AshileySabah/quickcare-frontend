@@ -18,7 +18,15 @@
           [avatarUrl]="current.avatarUrl"
           [subtitle]="current.categoryLabel"
           [details]="details()"
-        ></ui-profile-card>
+        >
+          <app-profile-block-action
+            profile-actions
+            kind="professional"
+            [personId]="current.id"
+            [name]="current.name"
+            (changed)="load()"
+          ></app-profile-block-action>
+        </ui-profile-card>
 
         @if (current.emergencyContacts) {
           <ui-emergency-contacts-card

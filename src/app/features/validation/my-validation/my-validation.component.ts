@@ -14,7 +14,6 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 
 type ViewState = 'loading' | 'error' | 'filled';
 
-/** Andamento da validação do próprio cadastro, com reenvio das etapas reprovadas. */
 @Component({
   selector: 'app-my-validation',
   standalone: true,

@@ -3,13 +3,15 @@ import { BadgeComponent, BadgeVariant } from '../badge/badge.component';
 import {
   ATTENDANCE_STATUS_LABELS,
   AttendanceStatus,
+  PROBLEM_STATUS_LABELS,
   PROPOSAL_STATUS_LABELS,
+  ProblemStatus,
   ProposalStatus,
   REQUEST_STATUS_LABELS,
   RequestStatus,
 } from '../../../../core/models';
 
-export type DomainStatus = RequestStatus | ProposalStatus | AttendanceStatus;
+export type DomainStatus = RequestStatus | ProposalStatus | AttendanceStatus | ProblemStatus;
 
 interface StatusPresentation {
   label: string;
@@ -31,6 +33,17 @@ const ATTENDANCE_VARIANTS: Record<AttendanceStatus, BadgeVariant> = {
   finalizado: 'success',
   concluido: 'success',
   cancelado: 'error',
+  problema_relatado: 'warning',
+  em_disputa: 'warning',
+  nao_realizado: 'error',
+};
+
+const PROBLEM_VARIANTS: Record<ProblemStatus, BadgeVariant> = {
+  aguardando_resposta: 'info',
+  confirmado: 'neutral',
+  sem_resposta: 'neutral',
+  em_disputa: 'warning',
+  decidido: 'success',
 };
 
 const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
@@ -48,13 +61,16 @@ const PROPOSAL_VARIANTS: Record<ProposalStatus, BadgeVariant> = {
 })
 export class StatusBadgeComponent {
   status = input.required<DomainStatus>();
-  /** Solicitação e proposta têm status com o mesmo nome ("cancelada") e significados diferentes. */
-  kind = input<'request' | 'proposal' | 'attendance'>('request');
+  kind = input<'request' | 'proposal' | 'attendance' | 'problem'>('request');
 
   protected readonly presentation = computed<StatusPresentation>(() => {
     if (this.kind() === 'attendance') {
       const status = this.status() as AttendanceStatus;
       return { label: ATTENDANCE_STATUS_LABELS[status], variant: ATTENDANCE_VARIANTS[status] };
+    }
+    if (this.kind() === 'problem') {
+      const status = this.status() as ProblemStatus;
+      return { label: PROBLEM_STATUS_LABELS[status], variant: PROBLEM_VARIANTS[status] };
     }
     if (this.kind() === 'proposal') {
       const status = this.status() as ProposalStatus;

@@ -8,26 +8,22 @@ import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
+import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
-/**
- * Valor, período (início e término do atendimento) e abordagem da proposta,
- * para enviar ou editar. Só valida e emite o valor; quem usa decide o que
- * fazer com ele.
- */
 @Component({
   selector: 'app-proposal-form',
   standalone: true,
-  imports: [ReactiveFormsModule, ButtonComponent, GridComponent, GridItemComponent, InputComponent, TextareaComponent],
+  imports: [InvalidFieldFocusDirective, ReactiveFormsModule, ButtonComponent, GridComponent, GridItemComponent, InputComponent, TextareaComponent],
   templateUrl: './proposal-form.component.html',
   styleUrl: './proposal-form.component.scss',
 })
 export class ProposalFormComponent {
   private readonly fb = inject(FormBuilder);
 
-  /** Valores de uma proposta existente, ao editar. */
   initialValue = input<ProposalInput | null>(null);
   submitLabel = input.required<string>();
   submitting = input(false);
+  disabled = input(false);
 
   readonly submitted = output<ProposalInput>();
 
@@ -43,14 +39,17 @@ export class ProposalFormComponent {
     ...PERIOD_ERROR_MESSAGES,
   });
 
+  private appliedInitial: string | null = null;
+
   constructor() {
     effect(() => {
       const value = this.initialValue();
-      if (value) {
+      const key = value ? JSON.stringify(value) : null;
+      if (value && key !== this.appliedInitial) {
+        this.appliedInitial = key;
         this.form.reset({
           price: String(value.price),
           approach: value.approach,
-          // Sem período (reenvio), a pessoa escolhe de novo.
           start: value.start ? toLocalInputValue(value.start) : '',
           end: value.end ? toLocalInputValue(value.end) : '',
         });

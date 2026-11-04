@@ -1,16 +1,18 @@
 import { Component, computed, input } from '@angular/core';
+import { IconComponent } from '../../icon/icon.component';
 
 @Component({
   selector: 'ui-avatar',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './avatar.component.html',
   styleUrl: './avatar.component.scss',
 })
 export class AvatarComponent {
   name = input.required<string>();
   imageUrl = input<string | undefined>(undefined);
-  /** `lg` no topo das telas de perfil. */
   size = input<'md' | 'lg'>('md');
+  unavailable = input(false);
 
   protected readonly initials = computed(() => {
     const parts = this.name().trim().split(/\s+/).filter(Boolean);

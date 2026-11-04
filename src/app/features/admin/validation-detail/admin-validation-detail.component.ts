@@ -22,11 +22,6 @@ import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.compon
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
-/**
- * Validação de um cadastro, etapa por etapa. A pré-validação com APIs de
- * terceiros é opcional: pode rodar em todas as etapas pendentes de uma vez
- * (uma consulta por etapa, em paralelo) ou em cada uma separadamente.
- */
 @Component({
   selector: 'app-admin-validation-detail',
   standalone: true,
@@ -69,9 +64,7 @@ export class AdminValidationDetailComponent {
     this.load();
   }
 
-  protected get backLink(): string {
-    return this.profile === 'professional' ? '/admin/profissionais' : '/admin/pacientes';
-  }
+  protected readonly backLink = '/admin/validacao';
 
   protected load(): void {
     this.pageState.set('loading');
@@ -89,7 +82,6 @@ export class AdminValidationDetailComponent {
     });
   }
 
-  /** Dispara uma consulta por etapa pendente; cada seção mostra o próprio andamento. */
   protected preValidateAll(): void {
     for (const step of this.pendingSteps()) {
       this.preValidate(step.type);

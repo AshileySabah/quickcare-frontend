@@ -9,7 +9,7 @@
   @if (file(); as selected) {
     <div class="ui-file-picker__selected">
       <span class="ui-file-picker__file-name">{{ selected.name }}</span>
-      <span class="ui-file-picker__file-size">{{ (selected.size / 1024 / 1024).toFixed(2) }} MB</span>
+      <span class="ui-file-picker__file-size">{{ sizeLabel(selected) }}</span>
       <button type="button" class="ui-file-picker__remove" [disabled]="disabled()" (click)="clear()">Remover</button>
     </div>
   } @else {
@@ -19,7 +19,7 @@
         class="ui-file-picker__input"
         [id]="inputId"
         type="file"
-        accept=".pdf,.jpg,.jpeg,.png"
+        [accept]="accept"
         [disabled]="disabled()"
         (change)="onFileSelected($event)"
       />

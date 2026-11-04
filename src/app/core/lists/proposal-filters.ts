@@ -1,8 +1,6 @@
 import { PROPOSAL_STATUS_LABELS, Proposal, ProposalStatus, requestedProfessionalsSummary } from '../models';
 import { ListSelectFilter, ListSort } from './list-filters';
 
-/** Filtros e ordenações das propostas do profissional (Minhas propostas e Histórico). */
-
 export function proposalStatusFilter(statuses: ProposalStatus[]): ListSelectFilter<Proposal> {
   return {
     key: 'status',
@@ -20,7 +18,6 @@ export const PROPOSAL_SORTS: ListSort<Proposal>[] = [
   { value: 'menor-valor', label: 'Menor valor', compare: (a, b) => a.price - b.price },
 ];
 
-/** Paciente (quando já revelado), o que foi pedido e a abordagem da proposta. */
 export function proposalSearchText(proposal: Proposal): string {
   return [proposal.request.patientName ?? '', requestedProfessionalsSummary(proposal.request), proposal.approach].join(' ');
 }

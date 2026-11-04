@@ -8,18 +8,13 @@ import { SelectComponent } from '../forms/select/select.component';
 import { CardComponent } from '../layout/card/card.component';
 import { GridItemComponent } from '../layout/grid/grid-item.component';
 import { GridComponent } from '../layout/grid/grid.component';
+import { PaginatorComponent } from '../paginator/paginator.component';
 
 export interface ItemNoun {
-  /** "solicitação", "proposta"... */
   one: string;
   other: string;
 }
 
-/**
- * Card de filtros (busca, selects, ordenação, contador e "Limpar filtros")
- * por cima de uma lista. A lista entra projetada; quando nada bate com os
- * filtros, aparece o estado vazio no lugar dela.
- */
 @Component({
   selector: 'ui-list-filters',
   standalone: true,
@@ -31,13 +26,13 @@ export interface ItemNoun {
     GridComponent,
     GridItemComponent,
     InputComponent,
+    PaginatorComponent,
     SelectComponent,
   ],
   templateUrl: './list-filters.component.html',
   styleUrl: './list-filters.component.scss',
 })
 export class ListFiltersComponent {
-  /** `any`: o componente só exibe; o tipo dos itens fica com quem cria os filtros. */
   filters = input.required<ListFilters<any>>();
   noun = input.required<ItemNoun>();
 

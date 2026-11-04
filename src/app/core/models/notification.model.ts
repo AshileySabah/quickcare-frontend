@@ -19,17 +19,25 @@ export type NotificationType =
   | 'atendimento_cancelado'
   | 'lembrete_atendimento'
   | 'atendimento_finalizado'
+  | 'problema_relatado'
+  | 'problema_confirmado'
+  | 'problema_sem_resposta'
+  | 'problema_contestado'
+  | 'disputa_decidida'
+  | 'ocorrencia_registrada'
+  | 'ocorrencia_anulada'
+  | 'bloqueio_aplicado'
+  | 'bloqueio_removido'
+  | 'solicitacao_alterada_admin'
   | 'cadastro_aprovado'
   | 'etapa_reprovada';
 
-/** Notificação in-app de um dos perfis do usuário. */
 export interface AppNotification {
   id: string;
   profile: SwitchableRole;
   type: NotificationType;
   title: string;
   message: string;
-  /** Rota do front para onde a notificação leva. */
   link?: string;
   read: boolean;
   createdAt: string;

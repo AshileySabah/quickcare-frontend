@@ -1,0 +1,82 @@
+@use 'tokens' as tokens;
+@use 'patterns/details' as details;
+@use 'patterns/admin-detail' as admin;
+
+.request-detail {
+  @include admin.page;
+}
+
+.request-detail__header {
+  @include admin.header;
+}
+
+.request-detail__title {
+  @include admin.title;
+}
+
+.request-detail__muted {
+  @include admin.muted;
+}
+
+.request-detail__meta {
+  @include details.details-list;
+  margin: 0;
+}
+
+.request-detail__text {
+  margin: tokens.space(3) 0 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+  white-space: pre-line;
+}
+
+.request-detail__actions {
+  @include admin.actions;
+  margin-top: tokens.space(4);
+}
+
+.request-detail__section-title {
+  @include admin.section-title;
+}
+
+.request-detail__proposals {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.request-detail__proposal {
+  padding-bottom: tokens.space(3);
+  border-bottom: 1px solid tokens.color('gray', 100);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.request-detail__proposal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  margin-bottom: tokens.space(1);
+  font-weight: tokens.font-weight('medium');
+}
+
+.request-detail__attendance {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+  margin: tokens.space(1) 0 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+}
+
+.request-detail__timeline {
+  @include admin.timeline;
+}

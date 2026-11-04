@@ -17,8 +17,8 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
+import { OccurrenceService } from '../../../core/services/occurrence.service';
 
-/** Solicitações encerradas; as ativas ficam na home. */
 const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 
 @Component({
@@ -37,6 +37,7 @@ const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 export class PatientHistoryComponent {
   private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
+  protected readonly blocked = inject(OccurrenceService).blockFor('patient');
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);
@@ -61,7 +62,6 @@ export class PatientHistoryComponent {
 
     this.requestService.list().subscribe({
       next: (requests) => {
-        // O back já devolve das mais recentes para as mais antigas.
         const closed = requests.filter((request) => CLOSED_STATUSES.includes(request.status));
         this.requests.set(closed);
         this.viewState.set(closed.length === 0 ? 'empty' : 'filled');

@@ -1,7 +1,6 @@
 export interface PerfilStatusApi {
   tipo: 'ADMIN' | 'PACIENTE' | 'PROFISSIONAL';
   status: 'ATIVO' | 'BANIDO';
-  /** Nulo para o admin, que não passa pela validação cadastral. */
   statusValidacao: 'PENDENTE' | 'APROVADO' | 'REPROVADO' | null;
 }
 
@@ -11,7 +10,6 @@ export interface LoginApiResponse {
   email: string;
   avatarUrl: string | null;
   perfis: PerfilStatusApi[];
-  /** Perfil em que a sessão abre, se ainda estiver ativo. */
   ultimoPerfil: 'PACIENTE' | 'PROFISSIONAL' | null;
 }
 

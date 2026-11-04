@@ -9,15 +9,18 @@
           [routerLink]="item.link"
           routerLinkActive="app-shell__link--active"
           [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
-          >{{ item.label }}</a
-        >
+          >{{ item.label }}
+          @if (item.count) {
+            <span class="app-shell__count" [attr.aria-label]="item.count + ' aguardando'">{{ item.count }}</span>
+          }
+        </a>
       }
     </nav>
 
     <div class="app-shell__user">
       <ui-profile-switcher></ui-profile-switcher>
       <ui-notification-bell></ui-notification-bell>
-      <ui-user-menu [profileLink]="profileLink()"></ui-user-menu>
+      <ui-user-menu [profileLink]="profileLink()" [blockedUsersLink]="blockedUsersLink()"></ui-user-menu>
     </div>
   </header>
 

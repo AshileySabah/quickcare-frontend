@@ -1,9 +1,5 @@
 import { Directive, ElementRef, HostListener, inject, input, output } from '@angular/core';
 
-/**
- * Para painéis que abrem por cima da tela (menus do header): avisa quando
- * clicam fora do elemento ou apertam Esc, enquanto `uiDismissibleOpen` for true.
- */
 @Directive({
   selector: '[uiDismissible]',
   standalone: true,

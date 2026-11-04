@@ -30,7 +30,6 @@ export class RequestedProfessionalsCardComponent implements OnInit {
   formArray = input.required<FormArray<RequestedProfessionalGroup>>();
   categories = input.required<ProfessionalCategoryInfo[]>();
   specialties = input.required<Specialty[]>();
-  /** Só visualização: esconde adicionar/remover (os campos já vêm desabilitados pelo form). */
   readOnly = input(false);
 
   private readonly rows = signal<RowValue[]>([]);
@@ -39,7 +38,6 @@ export class RequestedProfessionalsCardComponent implements OnInit {
     this.categories().map((category) => ({ value: category.value, label: category.label })),
   );
 
-  /** Especialidades da categoria escolhida em cada linha. */
   protected readonly specialtyOptionsByRow = computed<MultiSelectOption[][]>(() =>
     this.rows().map((row) =>
       this.specialties()
@@ -68,7 +66,6 @@ export class RequestedProfessionalsCardComponent implements OnInit {
     this.formArray().removeAt(index);
   }
 
-  /** As especialidades dependem da categoria: trocar a categoria limpa a escolha anterior. */
   protected onCategoryChange(index: number): void {
     this.formArray().at(index).controls.specialtyIds.setValue([]);
   }

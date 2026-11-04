@@ -12,6 +12,7 @@ import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-s
       navLabel="Navegação do profissional"
       [navItems]="navItems"
       profileLink="/professional/perfil"
+      documentsLink="/professional/documentos"
       blockedUsersLink="/professional/bloqueados"
     >
       <router-outlet></router-outlet>

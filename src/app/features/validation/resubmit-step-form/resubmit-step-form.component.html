@@ -1,21 +1,17 @@
 <form class="resubmit-form" [formGroup]="form" (ngSubmit)="submit()">
-  <p class="resubmit-form__title">Corrija os dados e envie um novo documento</p>
+  <p class="resubmit-form__title">{{ title() }}</p>
+  @if (note(); as text) {
+    <p class="resubmit-form__note">{{ text }}</p>
+  }
 
   <ui-grid>
-    @switch (step().type) {
-      @case ('IDENTIDADE') {
-        <ui-grid-item [xs]="12">
-          <ui-input
-            label="Nome completo"
-            formControlName="name"
-            [required]="true"
-            [maxLength]="150"
-            [errorMessage]="fieldError('name')"
-          ></ui-input>
-        </ui-grid-item>
+    @switch (type()) {
+      @case ('CPF') {
         <ui-grid-item [xs]="12" [sm]="6">
           <ui-input label="CPF" formControlName="cpf" mask="cpf" [required]="true" [errorMessage]="fieldError('cpf')"></ui-input>
         </ui-grid-item>
+      }
+      @case ('IDENTIDADE') {
         <ui-grid-item [xs]="12" [sm]="6">
           <ui-select
             label="Documento de identidade"
@@ -46,6 +42,25 @@
             ></ui-select>
           </ui-grid-item>
         }
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Data de nascimento"
+            type="date"
+            formControlName="birthDate"
+            [required]="true"
+            [errorMessage]="fieldError('birthDate')"
+          ></ui-input>
+        </ui-grid-item>
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-select
+            label="Gênero"
+            formControlName="gender"
+            [options]="genderOptions"
+            [required]="true"
+            placeholder="Selecione"
+            [errorMessage]="fieldError('gender')"
+          ></ui-select>
+        </ui-grid-item>
       }
       @case ('CNPJ') {
         <ui-grid-item [xs]="12" [sm]="6">
@@ -76,7 +91,8 @@
 
     <ui-grid-item [xs]="12">
       <ui-file-picker
-        label="Novo documento"
+        label="Documento que comprova"
+        hint="PDF, JPG ou PNG, até 5MB. O administrador confere os dados com este documento."
         [required]="true"
         [disabled]="isSubmitting()"
         [errorMessage]="documentError()"
@@ -86,6 +102,9 @@
   </ui-grid>
 
   <div class="resubmit-form__actions">
-    <ui-button type="submit" [loading]="isSubmitting()">Reenviar para análise</ui-button>
+    @if (step()?.status !== 'reprovada') {
+      <ui-button variant="secondary" [disabled]="isSubmitting()" (click)="cancelled.emit()">Cancelar</ui-button>
+    }
+    <ui-button type="submit" [loading]="isSubmitting()">Enviar para validação</ui-button>
   </div>
 </form>

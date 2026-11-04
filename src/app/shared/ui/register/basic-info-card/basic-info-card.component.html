@@ -107,26 +107,30 @@
         </ui-grid-item>
       }
 
-      <ui-grid-item [xs]="12" [sm]="6">
-        <ui-input
-          label="Data de nascimento"
-          type="date"
-          formControlName="birthDate"
-          [required]="true"
-          [errorMessage]="fieldError()('birthDate')"
-        ></ui-input>
-      </ui-grid-item>
+      @if (showBirthDate()) {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-input
+            label="Data de nascimento"
+            type="date"
+            formControlName="birthDate"
+            [required]="true"
+            [errorMessage]="fieldError()('birthDate')"
+          ></ui-input>
+        </ui-grid-item>
+      }
 
-      <ui-grid-item [xs]="12" [sm]="6">
-        <ui-select
-          label="Gênero"
-          formControlName="gender"
-          [options]="genderOptions"
-          [required]="true"
-          placeholder="Selecione"
-          [errorMessage]="fieldError()('gender')"
-        ></ui-select>
-      </ui-grid-item>
+      @if (showGender()) {
+        <ui-grid-item [xs]="12" [sm]="6">
+          <ui-select
+            label="Gênero"
+            formControlName="gender"
+            [options]="genderOptions"
+            [required]="true"
+            placeholder="Selecione"
+            [errorMessage]="fieldError()('gender')"
+          ></ui-select>
+        </ui-grid-item>
+      }
     </ui-grid>
   </div>
 </ui-card>

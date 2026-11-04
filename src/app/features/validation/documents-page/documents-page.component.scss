@@ -1,0 +1,19 @@
+@use 'patterns/request-list' as list;
+@use 'patterns/edit-profile' as editProfile;
+
+.documents-page {
+  @include editProfile.page;
+}
+
+.documents-page__header {
+  @include list.header;
+  flex-direction: column;
+}
+
+.documents-page__title {
+  @include list.title;
+}
+
+.documents-page__subtitle {
+  @include list.subtitle;
+}

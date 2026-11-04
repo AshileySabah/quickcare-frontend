@@ -1,6 +1,8 @@
 <section class="my-proposals">
   <h1 class="my-proposals__title">{{ isHistory ? 'Histórico' : 'Minhas propostas' }}</h1>
 
+  <app-blocked-notice role="professional"></app-blocked-notice>
+
   @switch (viewState()) {
     @case ('loading') {
       <ui-skeleton-list [count]="2"></ui-skeleton-list>

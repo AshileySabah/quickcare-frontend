@@ -9,6 +9,7 @@ import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/emp
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
 import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
@@ -20,8 +21,11 @@ const PROFILE_FILTERS: FilterChip<ValidationProfile>[] = [
 
 const PROFILE_PARAM: Record<ValidationProfile, string> = { professional: 'profissionais', patient: 'pacientes' };
 
-const STATUS_FILTERS: FilterChip<ValidationStatus | null>[] = [
+type StatusFilter = ValidationStatus | 'revalidacao' | null;
+
+const STATUS_FILTERS: FilterChip<StatusFilter>[] = [
   { value: 'pendente', label: 'Em análise' },
+  { value: 'revalidacao', label: 'Em revalidação' },
   { value: 'reprovado', label: 'Reprovados' },
   { value: 'aprovado', label: 'Aprovados' },
   { value: null, label: 'Todos' },
@@ -38,6 +42,7 @@ const STATUS_FILTERS: FilterChip<ValidationStatus | null>[] = [
     EmptyStateComponent,
     ErrorStateComponent,
     ValidationStatusBadgeComponent,
+    BadgeComponent,
   ],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.scss',
@@ -52,7 +57,7 @@ export class AdminDashboardComponent {
   );
   protected readonly profileFilters = PROFILE_FILTERS;
   protected readonly statusFilters = STATUS_FILTERS;
-  protected readonly selectedStatus = signal<ValidationStatus | null>('pendente');
+  protected readonly selectedStatus = signal<StatusFilter>('pendente');
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly entries = signal<ValidationSummary[]>([]);
@@ -74,7 +79,7 @@ export class AdminDashboardComponent {
     this.load();
   }
 
-  protected selectStatus(status: ValidationStatus | null): void {
+  protected selectStatus(status: StatusFilter): void {
     this.selectedStatus.set(status);
     this.load();
   }

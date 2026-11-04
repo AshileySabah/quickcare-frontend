@@ -2,7 +2,7 @@ import { Address, Gender, IdentityDocumentType, ProfessionalCategory, Validation
 
 export type ValidationProfile = 'patient' | 'professional';
 
-export type ValidationStepType = 'IDENTIDADE' | 'CNPJ' | 'REGISTRO_PROFISSIONAL';
+export type ValidationStepType = 'CPF' | 'IDENTIDADE' | 'CNPJ' | 'REGISTRO_PROFISSIONAL';
 
 export type ValidationStepStatus = 'pendente' | 'aprovada' | 'reprovada';
 
@@ -53,6 +53,7 @@ export interface ValidationDetail {
   id: string;
   profile: ValidationProfile;
   status: ValidationStatus;
+  revalidating: boolean;
   registeredAt: string;
   data: RegistrationData;
   steps: ValidationStep[];
@@ -65,6 +66,7 @@ export interface ValidationSummary {
   email: string;
   category: ProfessionalCategory | null;
   status: ValidationStatus;
+  revalidating: boolean;
   registeredAt: string;
   pendingSteps: number;
 }
@@ -92,13 +94,14 @@ export interface StepDecision {
 }
 
 export interface StepResubmission {
-  name?: string;
   cpf?: string;
   identityDocumentType?: IdentityDocumentType;
   identityDocumentNumber?: string;
   identityDocumentUf?: string;
+  birthDate?: string;
+  gender?: Gender;
   cnpj?: string;
   registrationNumber?: string;
   registrationUf?: string;
-  document: File;
+  document?: File;
 }

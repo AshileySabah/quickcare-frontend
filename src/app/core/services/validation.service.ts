@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Signal, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
 import {
@@ -79,6 +79,7 @@ interface ValidacaoDetalheApi {
   id: number;
   perfil: PerfilApi;
   statusValidacao: StatusValidacaoApi;
+  emRevalidacao: boolean;
   cadastradoEm: string;
   dados: DadosCadastraisApi;
   etapas: EtapaApi[];
@@ -91,6 +92,7 @@ interface ValidacaoResumoApi {
   email: string;
   categoria: ProfessionalCategory | null;
   statusValidacao: StatusValidacaoApi;
+  emRevalidacao: boolean;
   cadastradoEm: string;
   etapasPendentes: number;
 }
@@ -116,9 +118,11 @@ export class ValidationService {
   private readonly http = inject(HttpClient);
   private readonly adminUrl = `${environment.apiUrl}/admin/validacoes`;
   private readonly selfUrl = `${environment.apiUrl}/validacao`;
+  private readonly revalidating = signal<Partial<Record<ValidationProfile, boolean>>>({});
 
-  list(profile: ValidationProfile, status?: ValidationStatus): Observable<ValidationSummary[]> {
-    const params = status ? { status: toStatusApi(status) } : undefined;
+  list(profile: ValidationProfile, filter?: ValidationStatus | 'revalidacao'): Observable<ValidationSummary[]> {
+    const params: Record<string, string> =
+      filter === 'revalidacao' ? { emRevalidacao: 'true' } : filter ? { status: toStatusApi(filter) } : {};
     return this.http.get<ValidacaoResumoApi[]>(`${this.adminUrl}/${adminSegment(profile)}`, { params }).pipe(
       map((response) => response.map(toSummary)),
       catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível carregar os cadastros.'))),
@@ -167,9 +171,17 @@ export class ValidationService {
       );
   }
 
+  revalidatingFor(profile: ValidationProfile): Signal<boolean> {
+    this.getMine(profile)
+      .pipe(catchError(() => of(null)))
+      .subscribe();
+    return computed(() => this.revalidating()[profile] ?? false);
+  }
+
   getMine(profile: ValidationProfile): Observable<ValidationDetail> {
     return this.http.get<ValidacaoDetalheApi>(`${this.selfUrl}/${selfSegment(profile)}`).pipe(
       map(toDetail),
+      tap((detail) => this.rememberRevalidation(profile, detail)),
       catchError((error: unknown) =>
         throwError(() => normalizeError(error, 'Não foi possível carregar a validação do seu cadastro.')),
       ),
@@ -178,11 +190,12 @@ export class ValidationService {
 
   resubmit(profile: ValidationProfile, step: ValidationStepType, input: StepResubmission): Observable<ValidationDetail> {
     const dados = {
-      nome: input.name,
       cpf: input.cpf,
       documentoIdentidadeTipo: input.identityDocumentType,
       documentoIdentidadeNumero: input.identityDocumentNumber,
       documentoIdentidadeUf: input.identityDocumentUf || undefined,
+      dataNascimento: input.birthDate,
+      genero: input.gender,
       cnpj: input.cnpj,
       registroProfissional: input.registrationNumber,
       registroProfissionalUf: input.registrationUf,
@@ -190,14 +203,21 @@ export class ValidationService {
 
     const formData = new FormData();
     formData.append('dados', new Blob([JSON.stringify(dados)], { type: 'application/json' }));
-    formData.append('documento', input.document, input.document.name);
+    if (input.document) {
+      formData.append('documento', input.document, input.document.name);
+    }
 
     return this.http
       .post<ValidacaoDetalheApi>(`${this.selfUrl}/${selfSegment(profile)}/etapas/${step}/reenvio`, formData)
       .pipe(
         map(toDetail),
-        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível reenviar a etapa.'))),
+        tap((detail) => this.rememberRevalidation(profile, detail)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível enviar para validação.'))),
       );
+  }
+
+  private rememberRevalidation(profile: ValidationProfile, detail: ValidationDetail): void {
+    this.revalidating.update((current) => ({ ...current, [profile]: detail.revalidating }));
   }
 }
 
@@ -256,6 +276,7 @@ function toDetail(response: ValidacaoDetalheApi): ValidationDetail {
     id: String(response.id),
     profile: toProfile(response.perfil),
     status: toValidationStatus(response.statusValidacao),
+    revalidating: response.emRevalidacao === true,
     registeredAt: response.cadastradoEm,
     data: {
       name: dados.nome,
@@ -295,6 +316,7 @@ function toSummary(response: ValidacaoResumoApi): ValidationSummary {
     email: response.email,
     category: response.categoria,
     status: toValidationStatus(response.statusValidacao),
+    revalidating: response.emRevalidacao === true,
     registeredAt: response.cadastradoEm,
     pendingSteps: response.etapasPendentes,
   };

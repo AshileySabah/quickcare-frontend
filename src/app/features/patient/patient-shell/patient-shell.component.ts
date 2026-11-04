@@ -7,7 +7,7 @@ import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-s
   standalone: true,
   imports: [RouterOutlet, AppShellComponent],
   template: `
-    <ui-app-shell homeLink="/patient" navLabel="Navegação do paciente" [navItems]="navItems" profileLink="/patient/perfil" blockedUsersLink="/patient/bloqueados">
+    <ui-app-shell homeLink="/patient" navLabel="Navegação do paciente" [navItems]="navItems" profileLink="/patient/perfil" documentsLink="/patient/documentos" blockedUsersLink="/patient/bloqueados">
       <router-outlet></router-outlet>
     </ui-app-shell>
   `,

@@ -17,6 +17,12 @@
   @include list.subtitle;
 }
 
+@mixin note {
+  margin-top: tokens.space(2);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+}
+
 @mixin sections {
   display: flex;
   flex-direction: column;

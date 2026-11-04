@@ -5,7 +5,19 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
 import { AuthService } from '../auth/auth.service';
-import { Address, AttendanceModality, EmergencyContact, Gender } from '../models';
+import { Address, AttendanceModality, EmergencyContact, Gender, ProfessionalCategory } from '../models';
+
+export interface ProfileDeclarations {
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+}
+
+export interface ProfessionalRegistration {
+  category: ProfessionalCategory;
+  specialtyIds: string[];
+  registrationNumber: string;
+  registrationUf: string;
+}
 
 interface BaseProfile {
   name: string;
@@ -16,6 +28,7 @@ interface BaseProfile {
   gender: Gender;
   emergencyContacts: EmergencyContact[];
   address: Address;
+  declarations: ProfileDeclarations;
 }
 
 export interface PatientProfile extends BaseProfile {
@@ -28,13 +41,12 @@ export interface ProfessionalProfile extends BaseProfile {
   hasLiabilityInsurance: boolean;
   modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
+  registration: ProfessionalRegistration;
 }
 
 interface BaseProfileUpdate {
   name: string;
   phone: string;
-  birthDate: string;
-  gender: Gender;
   emergencyContacts: EmergencyContact[];
   address: Address;
   avatar?: Blob;
@@ -73,6 +85,14 @@ interface BasePerfilApi {
   bairro: string;
   cidade: string;
   uf: string;
+  declaracoes?: { confirmacaoInformacoesVerdadeiras: boolean; consentimentoLgpd: boolean };
+}
+
+interface RegistroApi {
+  categoria: ProfessionalCategory;
+  especialidadeIds: number[];
+  registroProfissional: string | null;
+  registroProfissionalUf: string | null;
 }
 
 interface PerfilPacienteApi extends BasePerfilApi {
@@ -85,6 +105,7 @@ interface PerfilProfissionalApi extends BasePerfilApi {
   possuiSeguroResponsabilidadeCivil: boolean;
   modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
+  registro?: RegistroApi;
 }
 
 interface PerfilAtualizadoApi<T> {
@@ -165,6 +186,19 @@ function toBaseProfile(api: BasePerfilApi): BaseProfile {
       city: api.cidade,
       state: api.uf,
     },
+    declarations: {
+      infoConfirmedTrue: api.declaracoes?.confirmacaoInformacoesVerdadeiras ?? false,
+      lgpdConsent: api.declaracoes?.consentimentoLgpd ?? false,
+    },
+  };
+}
+
+function toRegistration(api: RegistroApi | undefined): ProfessionalRegistration {
+  return {
+    category: api?.categoria ?? ('' as ProfessionalCategory),
+    specialtyIds: (api?.especialidadeIds ?? []).map(String),
+    registrationNumber: api?.registroProfissional ?? '',
+    registrationUf: api?.registroProfissionalUf ?? '',
   };
 }
 
@@ -183,6 +217,7 @@ function toProfessionalProfile(api: PerfilProfissionalApi): ProfessionalProfile 
     hasLiabilityInsurance: api.possuiSeguroResponsabilidadeCivil,
     modalidadeAtendimento: api.modalidadeAtendimento,
     raioAtendimentoKm: api.raioAtendimentoKm,
+    registration: toRegistration(api.registro),
   };
 }
 
@@ -190,8 +225,6 @@ function toBaseDados(input: BaseProfileUpdate) {
   return {
     nome: input.name,
     telefone: input.phone,
-    dataNascimento: input.birthDate,
-    genero: input.gender,
     contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
     cep: input.address.cep,
     logradouro: input.address.street,

@@ -13,6 +13,8 @@ import { AuthService, ProfessionalProfileInput } from '../../../core/auth/auth.s
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
 import { addressFieldErrorsFor, buildAddressGroup, toAddress } from '../../../core/forms/address-form';
 import {
+  PERSONAL_DOCUMENT_OPTIONS,
+  PERSONAL_DOCUMENT_TYPES,
   confirmPasswordError,
   disableAccountFields,
   missingDocumentMessage,
@@ -105,7 +107,7 @@ export class ProfessionalRegisterComponent implements OnInit {
   );
 
   protected readonly documentTypeOptions = computed<SelectOption[]>(() => {
-    const options: SelectOption[] = [{ value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' }];
+    const options: SelectOption[] = [...PERSONAL_DOCUMENT_OPTIONS];
 
     if (this.hasCnpj()) {
       options.push({ value: 'VALIDACAO_CNPJ', label: 'CNPJ' });
@@ -252,7 +254,7 @@ export class ProfessionalRegisterComponent implements OnInit {
 
   protected submit(): void {
     const documents = this.documents();
-    const requiredDocuments: DocumentType[] = ['VALIDACAO_CPF'];
+    const requiredDocuments: DocumentType[] = [...PERSONAL_DOCUMENT_TYPES];
     if (this.requiresCnpjDocument) {
       requiredDocuments.push('VALIDACAO_CNPJ');
     }

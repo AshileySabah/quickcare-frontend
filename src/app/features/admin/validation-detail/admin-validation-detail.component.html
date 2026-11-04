@@ -24,8 +24,18 @@
                 {{ current.registeredAt | date: 'dd/MM/yyyy' }}
               </p>
             </div>
-            <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+            @if (current.revalidating) {
+              <ui-badge variant="info">Em revalidação</ui-badge>
+            } @else {
+              <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+            }
           </div>
+          @if (current.revalidating) {
+            <p class="validation-detail__subtitle">
+              Cadastro já aprovado que alterou dados ou documentos. Enquanto as etapas abaixo não forem aprovadas, a
+              pessoa usa a plataforma normalmente, mas não cria novas solicitações nem envia novas propostas.
+            </p>
+          }
 
           <dl class="validation-detail__meta">
             <div>
@@ -79,18 +89,31 @@
           </div>
         }
 
-        @for (step of current.steps; track step.id) {
+        @for (step of visibleSteps(); track step.id) {
+          <ng-container *ngTemplateOutlet="stepCard; context: { $implicit: step, current: current }"></ng-container>
+        }
+
+        @if (unchangedSteps().length > 0) {
+          <details class="validation-detail__unchanged">
+            <summary>Etapas sem alteração, já aprovadas ({{ unchangedSteps().length }})</summary>
+            @for (step of unchangedSteps(); track step.id) {
+              <ng-container *ngTemplateOutlet="stepCard; context: { $implicit: step, current: current }"></ng-container>
+            }
+          </details>
+        }
+
+        <ng-template #stepCard let-step let-current="current">
           <app-validation-step-card
             [profile]="profile"
             [validationId]="current.id"
             [step]="step"
             [data]="current.data"
             [registrationLabel]="registrationLabel(current)"
-            [preValidation]="preValidations()[step.type]"
+            [preValidation]="preValidationOf(step)"
             (preValidate)="preValidate(step.type)"
             (decided)="onDecided(step.type, $event)"
           ></app-validation-step-card>
-        }
+        </ng-template>
       </section>
     }
   }

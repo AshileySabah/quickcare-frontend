@@ -1,6 +1,10 @@
 @use 'tokens' as tokens;
 
-.my-validation,
+.my-validation {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
 
 .my-validation__summary {
   display: flex;
@@ -24,45 +28,7 @@
   }
 }
 
-.my-validation__step {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(3);
-}
-
-.my-validation__step-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: tokens.space(2);
-}
-
-.my-validation__step-title {
-  font-size: tokens.font-size('base');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 900);
-}
-
 .my-validation__muted {
   font-size: tokens.font-size('sm');
   color: tokens.color('gray', 500);
-}
-
-.my-validation__reason {
-  display: flex;
-  flex-direction: column;
-  gap: tokens.space(2);
-}
-
-.my-validation__reason-label {
-  font-size: tokens.font-size('xs');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('gray', 500);
-}
-
-.my-validation__reason-text {
-  font-size: tokens.font-size('sm');
-  color: tokens.color('gray', 900);
-  white-space: pre-line;
 }

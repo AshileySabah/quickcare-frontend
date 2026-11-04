@@ -20,6 +20,7 @@ import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filte
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
+import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
 
 const CLOSED_PROPOSAL_STATUSES: ProposalStatus[] = ['recusada', 'cancelada'];
 const CLOSED_REQUEST_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
@@ -33,7 +34,7 @@ function isClosed(proposal: Proposal): boolean {
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [PersonMenuComponent, AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
+  imports: [PersonMenuComponent, PersonChipComponent,AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })

@@ -18,6 +18,7 @@ import { EditRequestActionComponent } from '../../../features/patient/edit-reque
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
+import { PersonChipComponent, UNAVAILABLE_PROFILE_LABEL } from '../../../shared/ui/person-chip/person-chip.component';
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
@@ -27,7 +28,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [PaginatorComponent, PersonMenuComponent, AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [PaginatorComponent, PersonMenuComponent, PersonChipComponent,AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     RouterLink,
     ButtonComponent, ButtonGroupComponent,
     EmptyStateComponent,
@@ -40,6 +41,7 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 })
 export class RequestDetailComponent {
   private readonly route = inject(ActivatedRoute);
+  protected readonly unavailableLabel = UNAVAILABLE_PROFILE_LABEL;
   private readonly requestService = inject(RequestService);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);

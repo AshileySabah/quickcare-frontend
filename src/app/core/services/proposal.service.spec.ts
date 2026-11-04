@@ -101,6 +101,25 @@ describe('ProposalService', () => {
     expect(proposals.map((proposal) => proposal.status)).toEqual(['pendente', 'aceita']);
   });
 
+  it('marca o perfil como indisponível quando há bloqueio entre os dois', () => {
+    let proposals: Proposal[] = [];
+    service.listForRequest('50').subscribe((result) => (proposals = result));
+
+    const base = apiResponse();
+    httpMock.expectOne(REQUEST_PROPOSALS_URL).flush([
+      apiResponse({ profissional: { ...base.profissional, nome: null, avatarUrl: null, perfilIndisponivel: true } }),
+      apiResponse({ id: 101, solicitacao: { ...base.solicitacao, pacienteId: undefined, pacienteNome: undefined, pacienteIndisponivel: true } }),
+      apiResponse({ id: 102 }),
+    ]);
+
+    expect(proposals[0].professional.unavailable).toBeTrue();
+    expect(proposals[0].professional.name).toBe('');
+    expect(proposals[1].request.patientUnavailable).toBeTrue();
+    expect(proposals[1].request.patientName).toBeUndefined();
+    expect(proposals[2].professional.unavailable).toBeFalse();
+    expect(proposals[2].request.patientUnavailable).toBeFalse();
+  });
+
   it('lista as propostas do profissional logado', () => {
     service.listMine().subscribe();
     const req = httpMock.expectOne(PROPOSALS_URL);

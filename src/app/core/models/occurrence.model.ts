@@ -3,7 +3,8 @@ export type OccurrenceReason =
   | 'alteracao_tardia_solicitacao'
   | 'nao_comparecimento'
   | 'decisao_disputa'
-  | 'manual';
+  | 'manual'
+  | 'bloqueio_tardio';
 
 export const OCCURRENCE_REASON_LABELS: Record<OccurrenceReason, string> = {
   cancelamento_atendimento: 'Cancelou um atendimento fora da tolerância de 48h',
@@ -11,6 +12,7 @@ export const OCCURRENCE_REASON_LABELS: Record<OccurrenceReason, string> = {
   nao_comparecimento: 'Não compareceu a um atendimento',
   decisao_disputa: 'Decisão de disputa pelo administrador',
   manual: 'Registrada pelo administrador',
+  bloqueio_tardio: 'Bloqueou alguém a menos de 48h de um atendimento aceito',
 };
 
 export type AppealStatus = 'em_analise' | 'mantida' | 'anulada';

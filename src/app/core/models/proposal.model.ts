@@ -14,6 +14,7 @@ export interface ProposalProfessional {
   category: ProfessionalCategory;
   categoryLabel: string;
   specialties: Specialty[];
+  unavailable: boolean;
 }
 
 export interface ProposalRequestSummary {
@@ -21,6 +22,7 @@ export interface ProposalRequestSummary {
   patientId?: string;
   patientName?: string;
   patientAvatarUrl?: string;
+  patientUnavailable: boolean;
   professionals: RequestedProfessional[];
   modality: ServiceModality;
   desiredDeadline: string;

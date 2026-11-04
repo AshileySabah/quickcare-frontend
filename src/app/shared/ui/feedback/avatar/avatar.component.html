@@ -1,4 +1,8 @@
-@if (imageUrl()) {
+@if (unavailable()) {
+  <span class="ui-avatar ui-avatar--initials" [class.ui-avatar--lg]="size() === 'lg'" [attr.aria-label]="name()">
+    <ui-icon name="ban" [size]="size() === 'lg' ? 24 : 16"></ui-icon>
+  </span>
+} @else if (imageUrl()) {
   <img class="ui-avatar" [class.ui-avatar--lg]="size() === 'lg'" [src]="imageUrl()" [alt]="name()" />
 } @else {
   <span class="ui-avatar ui-avatar--initials" [class.ui-avatar--lg]="size() === 'lg'" [attr.aria-label]="name()">{{ initials() }}</span>

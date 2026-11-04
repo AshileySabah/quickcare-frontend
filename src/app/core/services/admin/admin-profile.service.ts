@@ -4,7 +4,14 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../../environments/environment';
 import { normalizeError } from '../../http/api-error';
-import { AdminProfileDetail, AdminProfileSummary, ProfileSituation, SwitchableRole } from '../../models';
+import {
+  AdminProfileDetail,
+  AdminProfileSummary,
+  BlockReasonStatus,
+  LateBlockReason,
+  ProfileSituation,
+  SwitchableRole,
+} from '../../models';
 import { BloqueioApiResponse, OcorrenciaApiResponse, PERFIL_API, toBlock, toOccurrence } from '../occurrence.service';
 import { StatusValidacaoApi, toValidationStatus } from '../validation.service';
 import { AcaoAdminApi, toAdminAction } from './admin-api';
@@ -27,7 +34,23 @@ interface PerfilDetalheApi {
   janelaDias: number;
   ocorrencias: OcorrenciaApiResponse[];
   bloqueios: BloqueioApiResponse[];
+  motivosDeBloqueio: MotivoBloqueioApi[];
   acoes: AcaoAdminApi[];
+}
+
+interface MotivoBloqueioApi {
+  id: number;
+  status: 'EM_ANALISE' | 'ACEITO' | 'NEGADO';
+  texto: string;
+  bloqueado: string;
+  solicitacaoId: number;
+  servico: string;
+  inicioDoAtendimento: string;
+  aceitoEm: string;
+  criadoEm: string;
+  decididoEm?: string;
+  decididoPor?: string;
+  justificativaDecisao?: string;
 }
 
 export interface ProfileFilters {
@@ -92,6 +115,16 @@ export class AdminProfileService {
     );
   }
 
+  decideBlockReason(reasonId: string, accept: boolean, justification: string): Observable<AdminProfileDetail> {
+    return this.send(
+      this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/motivos-de-bloqueio/${reasonId}/decisao`, {
+        aceitar: accept,
+        justificativa: justification.trim(),
+      }),
+      'Não foi possível decidir o motivo do bloqueio.',
+    );
+  }
+
   countOpenAppeals(): Observable<number> {
     return this.http.get<{ total: number }>(`${this.baseUrl}/recursos/em-aberto`).pipe(
       map((response) => response.total),
@@ -146,6 +179,24 @@ function toDetail(response: PerfilDetalheApi): AdminProfileDetail {
     windowDays: response.janelaDias,
     occurrences: response.ocorrencias.map(toOccurrence),
     blocks: response.bloqueios.map(toBlock),
+    blockReasons: (response.motivosDeBloqueio ?? []).map(toBlockReason),
     actions: response.acoes.map(toAdminAction),
+  };
+}
+
+function toBlockReason(api: MotivoBloqueioApi): LateBlockReason {
+  return {
+    id: String(api.id),
+    status: api.status.toLowerCase() as BlockReasonStatus,
+    text: api.texto,
+    blockedName: api.bloqueado,
+    requestId: String(api.solicitacaoId),
+    service: api.servico,
+    attendanceStart: api.inicioDoAtendimento,
+    acceptedAt: api.aceitoEm,
+    createdAt: api.criadoEm,
+    decidedAt: api.decididoEm,
+    decidedBy: api.decididoPor,
+    decisionJustification: api.justificativaDecisao,
   };
 }

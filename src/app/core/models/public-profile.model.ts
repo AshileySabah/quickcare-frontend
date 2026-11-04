@@ -16,7 +16,6 @@ export interface ProfessionalPublicProfile {
   memberSince: string;
   completedServices: number;
   emergencyContacts?: EmergencyContact[];
-  blockId?: string;
 }
 
 export interface PatientHealthInfo {
@@ -35,5 +34,4 @@ export interface PatientPublicProfile {
   memberSince: string;
   health?: PatientHealthInfo;
   emergencyContacts?: EmergencyContact[];
-  blockId?: string;
 }

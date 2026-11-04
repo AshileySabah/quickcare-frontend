@@ -4,35 +4,34 @@ import { ActivatedRoute } from '@angular/router';
 import { BlockedUser, ListViewState, SwitchableRole } from '../../../core/models';
 import { UserBlockService } from '../../../core/services/user-block.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
-import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
+import { UnblockTarget, UnblockUserDialogComponent } from '../unblock-user-dialog/unblock-user-dialog.component';
 
 @Component({
   selector: 'app-blocked-users',
   standalone: true,
-  imports: [PaginatorComponent, 
+  imports: [
+    PaginatorComponent,
     DatePipe,
     ButtonComponent,
     CardComponent,
-    ConfirmDialogComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     PersonChipComponent,
     SkeletonListComponent,
+    UnblockUserDialogComponent,
   ],
   templateUrl: './blocked-users.component.html',
   styleUrl: './blocked-users.component.scss',
 })
 export class BlockedUsersComponent {
   private readonly userBlockService = inject(UserBlockService);
-  private readonly toastService = inject(ToastService);
 
   protected readonly role: SwitchableRole = inject(ActivatedRoute).snapshot.data['role'];
   protected readonly emptyMessage =
@@ -43,13 +42,7 @@ export class BlockedUsersComponent {
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly blocked = signal<BlockedUser[]>([]);
   protected readonly pager = createPagination(this.blocked);
-  protected readonly toUnblock = signal<BlockedUser | null>(null);
-  protected readonly isUnblocking = signal(false);
-
-  protected readonly unblockConsequences = [
-    'Vocês voltam a poder trocar solicitações e propostas.',
-    'O que foi encerrado no bloqueio não volta.',
-  ];
+  protected readonly toUnblock = signal<UnblockTarget | null>(null);
 
   constructor() {
     this.load();
@@ -66,26 +59,11 @@ export class BlockedUsersComponent {
     });
   }
 
-  protected confirmUnblock(): void {
-    const user = this.toUnblock();
-    if (!user) {
-      return;
+  protected onUnblocked(blockId: string): void {
+    this.toUnblock.set(null);
+    this.blocked.update((list) => list.filter((item) => item.id !== blockId));
+    if (this.blocked().length === 0) {
+      this.viewState.set('empty');
     }
-    this.isUnblocking.set(true);
-    this.userBlockService.unblock(user.id).subscribe({
-      next: () => {
-        this.isUnblocking.set(false);
-        this.toUnblock.set(null);
-        this.toastService.success(`Você desbloqueou ${user.name}.`);
-        this.blocked.update((list) => list.filter((item) => item.id !== user.id));
-        if (this.blocked().length === 0) {
-          this.viewState.set('empty');
-        }
-      },
-      error: (error: Error) => {
-        this.isUnblocking.set(false);
-        this.toastService.error(error.message);
-      },
-    });
   }
 }

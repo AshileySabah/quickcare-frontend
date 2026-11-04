@@ -45,6 +45,11 @@
   color: tokens.color('gray', 600);
 }
 
+.confirm-dialog__warning {
+  font-weight: tokens.font-weight('medium');
+  color: tokens.semantic('error');
+}
+
 .confirm-dialog__actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

@@ -7,10 +7,13 @@
     }
     <div class="confirm-dialog__text">
       <p class="confirm-dialog__message">{{ message() }}</p>
-      @if (consequences().length > 0) {
+      @if (consequences().length > 0 || warning()) {
         <ul class="confirm-dialog__consequences">
           @for (consequence of consequences(); track consequence) {
             <li>{{ consequence }}</li>
+          }
+          @if (warning(); as text) {
+            <li class="confirm-dialog__warning">{{ text }}</li>
           }
         </ul>
       }

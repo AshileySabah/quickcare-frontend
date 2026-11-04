@@ -17,6 +17,6 @@ export interface BlockedUser {
 export interface BlockPreview {
   name: string;
   pendingProposals: number;
-  activeAttendances: number;
-  countsAsOccurrence: boolean;
+  acceptedProposals: number;
+  late: boolean;
 }

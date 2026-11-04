@@ -15,6 +15,8 @@ export type AdminActionType =
   | 'ocorrencia_anulada'
   | 'recurso_aceito'
   | 'recurso_negado'
+  | 'motivo_bloqueio_aceito'
+  | 'motivo_bloqueio_negado'
   | 'bloqueio_removido'
   | 'bloqueio_aplicado'
   | 'bloqueio_usuario_criado'
@@ -32,6 +34,8 @@ export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   ocorrencia_anulada: 'Ocorrência anulada',
   recurso_aceito: 'Recurso aceito (ocorrência anulada)',
   recurso_negado: 'Recurso negado (ocorrência mantida)',
+  motivo_bloqueio_aceito: 'Motivo de bloqueio aceito (sem ocorrência)',
+  motivo_bloqueio_negado: 'Motivo de bloqueio negado (ocorrência lançada)',
   bloqueio_removido: 'Bloqueio removido',
   bloqueio_aplicado: 'Bloqueio aplicado pelo administrador',
   bloqueio_usuario_criado: 'Bloqueio entre usuários criado',
@@ -108,12 +112,36 @@ export interface AdminProfileSummary {
   block?: Block;
 }
 
+export type BlockReasonStatus = 'em_analise' | 'aceito' | 'negado';
+
+export const BLOCK_REASON_STATUS_LABELS: Record<BlockReasonStatus, string> = {
+  em_analise: 'Em análise',
+  aceito: 'Aceito, sem ocorrência',
+  negado: 'Negado, ocorrência lançada',
+};
+
+export interface LateBlockReason {
+  id: string;
+  status: BlockReasonStatus;
+  text: string;
+  blockedName: string;
+  requestId: string;
+  service: string;
+  attendanceStart: string;
+  acceptedAt: string;
+  createdAt: string;
+  decidedAt?: string;
+  decidedBy?: string;
+  decisionJustification?: string;
+}
+
 export interface AdminProfileDetail {
   summary: AdminProfileSummary;
   limit: number;
   windowDays: number;
   occurrences: Occurrence[];
   blocks: Block[];
+  blockReasons: LateBlockReason[];
   actions: AdminAction[];
 }
 

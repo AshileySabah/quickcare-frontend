@@ -28,14 +28,16 @@ interface PropostaApiResponse {
     modalidade: 'PRESENCIAL' | 'ONLINE';
     prazoDesejado: string;
     status: string;
+    pacienteIndisponivel?: boolean;
   };
   profissional: {
     id: number;
-    nome: string;
+    nome: string | null;
     avatarUrl: string | null;
     categoria: ProfessionalCategory;
     categoriaRotulo: string;
     especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
+    perfilIndisponivel?: boolean;
   };
   valor: number;
   abordagem: string;
@@ -158,8 +160,9 @@ function toProposal(response: PropostaApiResponse): Proposal {
     professionalId: String(response.profissional.id),
     professional: {
       id: String(response.profissional.id),
-      name: response.profissional.nome,
+      name: response.profissional.nome ?? '',
       avatarUrl: response.profissional.avatarUrl ?? undefined,
+      unavailable: response.profissional.perfilIndisponivel === true,
       category: response.profissional.categoria,
       categoryLabel: response.profissional.categoriaRotulo,
       specialties: response.profissional.especialidades.map((especialidade) => ({
@@ -173,6 +176,7 @@ function toProposal(response: PropostaApiResponse): Proposal {
       patientId: response.solicitacao.pacienteId === undefined ? undefined : String(response.solicitacao.pacienteId),
       patientName: response.solicitacao.pacienteNome,
       patientAvatarUrl: response.solicitacao.pacienteAvatarUrl,
+      patientUnavailable: response.solicitacao.pacienteIndisponivel === true,
       professionals: response.solicitacao.profissionais.map(toRequestedProfessional),
       modality: response.solicitacao.modalidade === 'PRESENCIAL' ? 'presencial' : 'online',
       desiredDeadline: response.solicitacao.prazoDesejado,

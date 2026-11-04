@@ -27,7 +27,9 @@
                 [avatarUrl]="user.avatarUrl"
                 [caption]="'Bloqueado em ' + (user.createdAt | date: 'dd/MM/yyyy')"
               ></ui-person-chip>
-              <ui-button variant="secondary" size="sm" (click)="toUnblock.set(user)">Desbloquear</ui-button>
+              <ui-button variant="secondary" size="sm" (click)="toUnblock.set({ blockId: user.id, name: user.name })">
+                Desbloquear
+              </ui-button>
             </li>
           }
         </ul>
@@ -37,15 +39,8 @@
   }
 </section>
 
-<ui-confirm-dialog
-  [open]="toUnblock() !== null"
-  titleText="Desbloquear"
-  icon="refresh"
-  [message]="'Desbloquear ' + (toUnblock()?.name ?? '') + '?'"
-  [consequences]="unblockConsequences"
-  confirmLabel="Sim, desbloquear"
-  cancelLabel="Não, manter o bloqueio"
-  [loading]="isUnblocking()"
-  (confirmed)="confirmUnblock()"
+<app-unblock-user-dialog
+  [target]="toUnblock()"
+  (unblocked)="onUnblocked($event)"
   (closed)="toUnblock.set(null)"
-></ui-confirm-dialog>
+></app-unblock-user-dialog>

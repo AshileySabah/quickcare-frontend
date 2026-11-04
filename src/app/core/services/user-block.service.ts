@@ -18,8 +18,8 @@ interface BloqueioUsuarioApi {
 interface PreviaBloqueioApi {
   nome: string;
   propostasPendentes: number;
-  atendimentosVigentes: number;
-  contaOcorrencia: boolean;
+  propostasAceitas: number;
+  bloqueioTardio: boolean;
 }
 
 const PATH: Record<BlockTargetKind, string> = {
@@ -45,16 +45,17 @@ export class UserBlockService {
       map((api) => ({
         name: api.nome,
         pendingProposals: api.propostasPendentes,
-        activeAttendances: api.atendimentosVigentes,
-        countsAsOccurrence: api.contaOcorrencia,
+        acceptedProposals: api.propostasAceitas,
+        late: api.bloqueioTardio,
       })),
       catchError(fail('Não foi possível conferir o bloqueio.')),
     );
   }
 
-  block(kind: BlockTargetKind, id: string): Observable<BlockedUser> {
+  block(kind: BlockTargetKind, id: string, reason?: string): Observable<BlockedUser> {
+    const motivo = reason?.trim();
     return this.http
-      .post<BloqueioUsuarioApi>(`${environment.apiUrl}/bloqueios/${PATH[kind]}/${id}`, {})
+      .post<BloqueioUsuarioApi>(`${environment.apiUrl}/bloqueios/${PATH[kind]}/${id}`, motivo ? { motivo } : {})
       .pipe(map(toBlockedUser), catchError(fail('Não foi possível bloquear.')));
   }
 

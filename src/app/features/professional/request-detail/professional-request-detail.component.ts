@@ -1,6 +1,7 @@
 import { CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
 import {
   CANCEL_ACCEPTED_PROPOSAL_CONSEQUENCES,
   ProposalInput,
@@ -36,7 +37,7 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 @Component({
   selector: 'app-professional-request-detail',
   standalone: true,
-  imports: [BlockedNoticeComponent, HighlightDirective, AttendancePanelComponent, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [BlockedNoticeComponent, PersonChipComponent,HighlightDirective, AttendancePanelComponent, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     CurrencyPipe,
     RouterLink,
     ButtonComponent,
@@ -65,6 +66,9 @@ export class ProfessionalRequestDetailComponent {
   protected readonly request = signal<ServiceRequest | null>(null);
   protected readonly existingProposal = signal<Proposal | null>(null);
   protected readonly previousProposal = signal<Proposal | null>(null);
+  protected readonly patientUnavailable = computed(
+    () => !!(this.existingProposal() ?? this.previousProposal())?.request.patientUnavailable,
+  );
   protected readonly resendValue = computed<ProposalInput | null>(() => {
     const previous = this.previousProposal();
     return previous ? { price: previous.price, approach: previous.approach, start: '', end: '' } : null;

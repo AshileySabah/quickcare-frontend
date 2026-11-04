@@ -6,6 +6,8 @@ import {
   ADMIN_ACTION_LABELS,
   APPEAL_STATUS_LABELS,
   AdminProfileDetail,
+  BLOCK_REASON_STATUS_LABELS,
+  LateBlockReason,
   OCCURRENCE_REASON_LABELS,
   Occurrence,
   SwitchableRole,
@@ -28,6 +30,7 @@ type Dialog =
   | { kind: 'add' }
   | { kind: 'annul'; occurrence: Occurrence }
   | { kind: 'appeal'; occurrence: Occurrence; annul: boolean }
+  | { kind: 'blockReason'; reason: LateBlockReason; accept: boolean }
   | { kind: 'unblock'; blockId: string }
   | { kind: 'block' };
 
@@ -66,6 +69,7 @@ export class AdminProfileDetailComponent {
   protected readonly reasonLabels = OCCURRENCE_REASON_LABELS;
   protected readonly actionLabels = ADMIN_ACTION_LABELS;
   protected readonly appealLabels = APPEAL_STATUS_LABELS;
+  protected readonly blockReasonLabels = BLOCK_REASON_STATUS_LABELS;
 
   protected readonly roleLabel = this.role === 'patient' ? 'Paciente' : 'Profissional';
   private readonly blockedAction = this.role === 'patient' ? 'criar solicitações' : 'enviar propostas';
@@ -129,6 +133,31 @@ export class AdminProfileDetailComponent {
               cancel: 'Não, voltar',
               variant: 'danger' as const,
             };
+      case 'blockReason':
+        return dialog.accept
+          ? {
+              title: 'Aceitar motivo',
+              message: `Aceitar o motivo do bloqueio de ${dialog.reason.blockedName}?`,
+              consequences: [
+                'Nenhuma ocorrência é lançada por esse bloqueio.',
+                'A pessoa recebe uma notificação com a justificativa.',
+              ],
+              confirm: 'Sim, aceitar o motivo',
+              cancel: 'Não, voltar',
+              variant: 'primary' as const,
+            }
+          : {
+              title: 'Negar motivo',
+              message: `Negar o motivo e lançar uma ocorrência para ${name}?`,
+              consequences: [
+                `A ocorrência conta como as outras: com ${detail.limit} em ${detail.windowDays} dias, o perfil fica bloqueado de ${this.blockedAction}.`,
+                'Não cabe recurso: o motivo já foi analisado.',
+                'A pessoa recebe uma notificação com a justificativa.',
+              ],
+              confirm: 'Sim, negar e lançar',
+              cancel: 'Não, voltar',
+              variant: 'danger' as const,
+            };
       case 'block':
         return {
           title: 'Aplicar bloqueio',
@@ -182,20 +211,12 @@ export class AdminProfileDetailComponent {
     if (!dialog) {
       return;
     }
-    const request$: Observable<AdminProfileDetail> =
-      dialog.kind === 'add'
-        ? this.profileService.addOccurrence(this.role, this.userId, justification)
-        : dialog.kind === 'annul'
-          ? this.profileService.annulOccurrence(dialog.occurrence.id, justification)
-          : dialog.kind === 'appeal'
-            ? this.profileService.decideAppeal(dialog.occurrence.appeal!.id, dialog.annul, justification)
-            : dialog.kind === 'block'
-              ? this.profileService.applyBlock(this.role, this.userId, justification)
-              : this.profileService.removeBlock(dialog.blockId, justification);
+    const request$ = this.requestFor(dialog, justification);
     const success = {
       add: 'Ocorrência lançada.',
       annul: 'Ocorrência anulada.',
       appeal: 'Recurso decidido.',
+      blockReason: 'Motivo do bloqueio decidido.',
       block: 'Bloqueio aplicado.',
       unblock: 'Bloqueio removido.',
     }[dialog.kind];
@@ -213,6 +234,23 @@ export class AdminProfileDetailComponent {
         this.toastService.error(error.message);
       },
     });
+  }
+
+  private requestFor(dialog: Dialog, justification: string): Observable<AdminProfileDetail> {
+    switch (dialog.kind) {
+      case 'add':
+        return this.profileService.addOccurrence(this.role, this.userId, justification);
+      case 'annul':
+        return this.profileService.annulOccurrence(dialog.occurrence.id, justification);
+      case 'appeal':
+        return this.profileService.decideAppeal(dialog.occurrence.appeal!.id, dialog.annul, justification);
+      case 'blockReason':
+        return this.profileService.decideBlockReason(dialog.reason.id, dialog.accept, justification);
+      case 'block':
+        return this.profileService.applyBlock(this.role, this.userId, justification);
+      case 'unblock':
+        return this.profileService.removeBlock(dialog.blockId, justification);
+    }
   }
 
   protected closeDialog(): void {

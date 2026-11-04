@@ -79,6 +79,46 @@
           }
         </ui-card>
 
+        @if (current.blockReasons.length) {
+          <ui-card>
+            <h2 class="profile-detail__section-title">Motivos de bloqueio a menos de 48h</h2>
+            <ul class="profile-detail__occurrences">
+              @for (reason of current.blockReasons; track reason.id) {
+                <li class="profile-detail__occurrence">
+                  <div class="profile-detail__occurrence-header">
+                    <span class="profile-detail__occurrence-reason">Bloqueou {{ reason.blockedName }}</span>
+                    <ui-badge [variant]="reason.status === 'em_analise' ? 'info' : reason.status === 'negado' ? 'error' : 'success'">
+                      {{ blockReasonLabels[reason.status] }}
+                    </ui-badge>
+                  </div>
+                  <p class="profile-detail__muted">
+                    Em {{ reason.createdAt | date: 'dd/MM/yyyy HH:mm' }} ·
+                    <a [routerLink]="['/admin/solicitacoes', reason.requestId]">{{ reason.service }}</a> ·
+                    atendimento em {{ reason.attendanceStart | date: 'dd/MM/yyyy HH:mm' }}, aceito em
+                    {{ reason.acceptedAt | date: 'dd/MM/yyyy HH:mm' }}
+                  </p>
+                  <p class="profile-detail__text">{{ reason.text }}</p>
+                  @if (reason.status === 'em_analise') {
+                    <ui-button-group>
+                      <ui-button variant="secondary" size="sm" (click)="dialog.set({ kind: 'blockReason', reason, accept: true })">
+                        Aceitar, sem ocorrência
+                      </ui-button>
+                      <ui-button variant="danger-outline" size="sm" (click)="dialog.set({ kind: 'blockReason', reason, accept: false })">
+                        Negar e lançar ocorrência
+                      </ui-button>
+                    </ui-button-group>
+                  } @else {
+                    <p class="profile-detail__muted">
+                      Decidido por {{ reason.decidedBy }} em {{ reason.decidedAt | date: 'dd/MM/yyyy' }}:
+                      {{ reason.decisionJustification }}
+                    </p>
+                  }
+                </li>
+              }
+            </ul>
+          </ui-card>
+        }
+
         <ui-card>
           <div class="profile-detail__section-header">
             <h2 class="profile-detail__section-title">Ocorrências</h2>

@@ -15,6 +15,7 @@ export class ConfirmDialogComponent {
   titleText = input.required<string>();
   message = input.required<string>();
   consequences = input<string[]>([]);
+  warning = input<string | null>(null);
   icon = input<IconName | null>(null);
   confirmLabel = input.required<string>();
   cancelLabel = input.required<string>();

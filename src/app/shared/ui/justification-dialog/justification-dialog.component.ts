@@ -20,6 +20,7 @@ const MAX_LENGTH = 1000;
       [icon]="icon()"
       [message]="message()"
       [consequences]="consequences()"
+      [warning]="warning()"
       [confirmLabel]="confirmLabel()"
       [cancelLabel]="cancelLabel()"
       [confirmVariant]="confirmVariant()"
@@ -34,7 +35,7 @@ const MAX_LENGTH = 1000;
             [label]="fieldLabel()"
             formControlName="justification"
             [hint]="hint()"
-            [required]="true"
+            [required]="required()"
             [maxLength]="maxLength"
             [errorMessage]="fieldError('justification')"
           ></ui-textarea>
@@ -51,12 +52,14 @@ export class JustificationDialogComponent {
   titleText = input.required<string>();
   message = input.required<string>();
   consequences = input<string[]>([]);
+  warning = input<string | null>(null);
   icon = input<IconName | null>(null);
   confirmLabel = input.required<string>();
   cancelLabel = input.required<string>();
   confirmVariant = input<ButtonVariant>('primary');
   loading = input(false);
   fieldLabel = input('Justificativa');
+  required = input(true);
   hint = input<string | null>('Fica registrada na auditoria e vai na notificação para quem foi afetado.');
 
   readonly confirmed = output<string>();
@@ -64,7 +67,7 @@ export class JustificationDialogComponent {
 
   protected readonly maxLength = MAX_LENGTH;
   protected readonly form = this.fb.nonNullable.group({
-    justification: ['', [Validators.required, Validators.maxLength(MAX_LENGTH)]],
+    justification: ['', [Validators.maxLength(MAX_LENGTH)]],
   });
   protected readonly fieldError = fieldErrorsFor(this.form, {
     justification: { maxlength: `Use no máximo ${MAX_LENGTH} caracteres.` },
@@ -80,8 +83,10 @@ export class JustificationDialogComponent {
 
   protected confirm(): void {
     const justification = this.form.getRawValue().justification.trim();
-    if (this.form.invalid || !justification) {
-      this.form.controls.justification.setErrors({ required: true });
+    if (this.form.invalid || (this.required() && !justification)) {
+      if (!justification) {
+        this.form.controls.justification.setErrors({ required: true });
+      }
       this.form.markAllAsTouched();
       return;
     }

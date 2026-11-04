@@ -55,7 +55,7 @@
               <div class="admin-profiles__card-header">
                 <span class="admin-profiles__name">{{ profile.name }}</span>
                 @if (profile.openAppeals > 0) {
-                  <ui-badge variant="info">Recurso a decidir</ui-badge>
+                  <ui-badge variant="info">Para analisar</ui-badge>
                 } @else if (profile.block) {
                   <ui-badge variant="error">Bloqueado até {{ profile.block.end | date: 'dd/MM' }}</ui-badge>
                 } @else if (profile.counting > 0) {

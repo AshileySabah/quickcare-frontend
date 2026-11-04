@@ -27,6 +27,8 @@
               [profileLink]="['/professional/pacientes', currentPatient.id]"
               (blocked)="refresh()"
             ></app-person-menu>
+          } @else if (patientUnavailable()) {
+            <ui-person-chip summary-person [unavailable]="true" caption="Paciente"></ui-person-chip>
           } @else if (existingProposal()?.status === 'pendente') {
             <p summary-person class="professional-request-detail__note">O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.</p>
           }

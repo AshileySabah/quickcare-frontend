@@ -17,7 +17,7 @@ import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
 const SITUATIONS: FilterChip<ProfileSituation>[] = [
-  { value: 'com_recurso', label: 'Com recurso' },
+  { value: 'com_recurso', label: 'Recurso ou motivo a analisar' },
   { value: 'bloqueados', label: 'Bloqueados' },
   { value: 'com_ocorrencias', label: 'Com ocorrências' },
 ];

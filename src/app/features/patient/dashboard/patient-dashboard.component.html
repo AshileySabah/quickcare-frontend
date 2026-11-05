@@ -6,14 +6,16 @@
         Acompanhe prazos, status e propostas das suas solicitações ativas.
       </p>
     </div>
-    @if (validationStatus() === "aprovado" && !blocked()) {
+    @if (validationStatus() === "aprovado" && !lock()) {
       <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
     } @else {
       <ui-button [disabled]="true">Nova solicitação</ui-button>
     }
   </header>
 
-  <app-occurrences-card role="patient" (blockedChange)="blocked.set($event)"></app-occurrences-card>
+  <app-blocked-notice role="patient" [revalidationOnly]="true"></app-blocked-notice>
+
+  <app-occurrences-card role="patient"></app-occurrences-card>
 
   @if (validationStatus() !== "aprovado") {
     <div

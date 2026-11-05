@@ -1,31 +1,34 @@
 import { Component, OnInit, Signal, inject, input, signal } from '@angular/core';
-import { Block, SwitchableRole } from '../../../core/models';
-import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { SwitchableRole } from '../../../core/models';
+import { CreationLock, CreationLockService } from '../../../core/services/creation-lock.service';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
-import { blockMessage } from '../block-text';
+import { creationLockMessage } from '../block-text';
 
 @Component({
   selector: 'app-blocked-notice',
   standalone: true,
   imports: [NoticeComponent],
   template: `
-    @if (block(); as current) {
-      <ui-notice>{{ message(current) }}</ui-notice>
+    @if (lock(); as current) {
+      @if (!revalidationOnly() || current.reason === 'revalidation') {
+        <ui-notice>{{ message(current) }}</ui-notice>
+      }
     }
   `,
 })
 export class BlockedNoticeComponent implements OnInit {
-  private readonly occurrenceService = inject(OccurrenceService);
+  private readonly creationLockService = inject(CreationLockService);
 
   role = input.required<SwitchableRole>();
+  revalidationOnly = input(false);
 
-  protected block: Signal<Block | null> = signal(null);
+  protected lock: Signal<CreationLock | null> = signal(null);
 
   ngOnInit(): void {
-    this.block = this.occurrenceService.blockFor(this.role());
+    this.lock = this.creationLockService.lockFor(this.role());
   }
 
-  protected message(block: Block): string {
-    return blockMessage(this.role(), block);
+  protected message(lock: CreationLock): string {
+    return creationLockMessage(this.role(), lock);
   }
 }

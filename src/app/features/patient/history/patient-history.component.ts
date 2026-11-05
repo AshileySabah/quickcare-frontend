@@ -17,7 +17,7 @@ import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { RequestCardComponent } from '../request-card/request-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
-import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { CreationLockService } from '../../../core/services/creation-lock.service';
 
 const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 
@@ -37,7 +37,7 @@ const CLOSED_STATUSES: RequestStatus[] = ['concluida', 'cancelada'];
 export class PatientHistoryComponent {
   private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
-  protected readonly blocked = inject(OccurrenceService).blockFor('patient');
+  protected readonly blocked = inject(CreationLockService).lockFor('patient');
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

@@ -1,10 +1,11 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   ProfessionalCategoryInfo,
   ValidationDetail,
   ValidationProfile,
+  ValidationStep,
   ValidationStepType,
 } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
@@ -18,6 +19,7 @@ import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/vali
 import { PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
 import { ValidationStepCardComponent } from '../validation-step-card/validation-step-card.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
@@ -25,7 +27,7 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 @Component({
   selector: 'app-admin-validation-detail',
   standalone: true,
-  imports: [BackLinkComponent, SkeletonListComponent, 
+  imports: [BackLinkComponent, SkeletonListComponent, NgTemplateOutlet,
     DatePipe,
     RouterLink,
     ButtonComponent,
@@ -34,6 +36,7 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
     ErrorStateComponent,
     ValidationStatusBadgeComponent,
     ValidationStepCardComponent,
+    BadgeComponent,
   ],
   templateUrl: './admin-validation-detail.component.html',
   styleUrl: './admin-validation-detail.component.scss',
@@ -52,6 +55,17 @@ export class AdminValidationDetailComponent {
   private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   protected readonly pendingSteps = computed(() => this.detail()?.steps.filter((step) => step.status === 'pendente') ?? []);
+  protected readonly visibleSteps = computed(() => {
+    const detail = this.detail();
+    if (!detail) {
+      return [];
+    }
+    return detail.revalidating ? detail.steps.filter((step) => step.status !== 'aprovada') : detail.steps;
+  });
+  protected readonly unchangedSteps = computed(() => {
+    const detail = this.detail();
+    return detail?.revalidating ? detail.steps.filter((step) => step.status === 'aprovada') : [];
+  });
 
   protected readonly preValidatingCount = computed(
     () => Object.values(this.preValidations()).filter((state) => state?.status === 'loading').length,
@@ -86,6 +100,10 @@ export class AdminValidationDetailComponent {
     for (const step of this.pendingSteps()) {
       this.preValidate(step.type);
     }
+  }
+
+  protected preValidationOf(step: ValidationStep): PreValidationState | undefined {
+    return this.preValidations()[step.type];
   }
 
   protected preValidate(stepType: ValidationStepType): void {

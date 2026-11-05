@@ -76,9 +76,7 @@ export class DocumentUploaderComponent {
     this.localError.set(null);
 
     const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
-    const defaultType = this.entries().length === 0 ? 'VALIDACAO_CPF' : '';
-
-    this.entries.update((current) => [...current, { id: nextEntryId++, file, type: defaultType, previewUrl }]);
+    this.entries.update((current) => [...current, { id: nextEntryId++, file, type: '', previewUrl }]);
   }
 
   protected updateType(id: number, type: string): void {

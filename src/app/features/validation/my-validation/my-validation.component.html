@@ -8,65 +8,55 @@
   @case ('filled') {
     @if (detail(); as current) {
       <div class="my-validation">
-        <div [class]="'my-validation__summary my-validation__summary--' + current.status">
-          @switch (current.status) {
-            @case ('aprovado') {
-              <strong>Cadastro aprovado</strong>
-              <p>Seus dados foram validados pela nossa equipe.</p>
-            }
-            @case ('reprovado') {
-              <strong>Algumas etapas foram reprovadas</strong>
-              <p>Veja o motivo de cada uma, corrija o que for preciso e reenvie. A etapa volta para análise.</p>
-            }
-            @default {
-              <strong>Cadastro em análise</strong>
-              <p>Nossa equipe está conferindo seus dados e documentos, etapa por etapa.</p>
+        <div [class]="'my-validation__summary my-validation__summary--' + (current.revalidating ? 'pendente' : current.status)">
+          @if (current.revalidating) {
+            <strong>Dados em revalidação</strong>
+            <p>
+              Você continua usando a plataforma normalmente, mas não pode {{ blockedAction() }} até o administrador
+              concluir. Se algo for reprovado, corrija e envie de novo.
+            </p>
+          } @else {
+            @switch (current.status) {
+              @case ('aprovado') {
+                <strong>Cadastro aprovado</strong>
+                <p>Para alterar algum dado, use o lápis do card: ele volta para análise junto com o novo documento.</p>
+              }
+              @case ('reprovado') {
+                <strong>Algo foi reprovado</strong>
+                <p>Veja o motivo no card, corrija e envie de novo quantas vezes precisar.</p>
+              }
+              @default {
+                <strong>Cadastro em análise</strong>
+                <p>Nossa equipe está conferindo seus dados e documentos. Até lá, você ainda pode corrigir algo e reenviar.</p>
+              }
             }
           }
         </div>
 
-        @if (current.steps.length === 0) {
-          <ui-card>
-            <p class="my-validation__muted">Seu cadastro não tem etapas de validação pendentes.</p>
-          </ui-card>
+        @for (step of current.steps; track step.id) {
+          <app-my-step-card
+            [profile]="profile()"
+            [type]="step.type"
+            [heading]="step.label"
+            [step]="step"
+            [data]="current.data"
+            [ufOptions]="ufOptions()"
+            [registrationLabel]="registrationLabel(current)"
+            (resubmitted)="detail.set($event)"
+          ></app-my-step-card>
+        } @empty {
+          <p class="my-validation__muted">Seu cadastro não tem dados para validar.</p>
         }
 
-        @for (step of current.steps; track step.id) {
-          <ui-card>
-            <div class="my-validation__step">
-              <div class="my-validation__step-header">
-                <h2 class="my-validation__step-title">{{ step.label }}</h2>
-                <ui-validation-status-badge [status]="step.status"></ui-validation-status-badge>
-              </div>
-
-              @switch (step.status) {
-                @case ('pendente') {
-                  <p class="my-validation__muted">Aguardando avaliação.</p>
-                }
-                @case ('aprovada') {
-                  <p class="my-validation__muted">Aprovada em {{ step.reviewedAt | date: 'dd/MM/yyyy' }}.</p>
-                }
-                @case ('reprovada') {
-                  <div class="my-validation__reason">
-                    <span class="my-validation__reason-label">Motivo da reprovação</span>
-                    <p class="my-validation__reason-text">{{ step.justification }}</p>
-                    @if (step.attachment; as attachment) {
-                      <ui-stored-file [file]="attachment"></ui-stored-file>
-                    }
-                  </div>
-
-                  <app-resubmit-step-form
-                    [profile]="profile()"
-                    [step]="step"
-                    [data]="current.data"
-                    [ufOptions]="ufOptions()"
-                    [registrationLabel]="registrationLabel(current)"
-                    (resubmitted)="onResubmitted($event)"
-                  ></app-resubmit-step-form>
-                }
-              }
-            </div>
-          </ui-card>
+        @if (canAddCnpj()) {
+          <app-my-step-card
+            [profile]="profile()"
+            type="CNPJ"
+            heading="CNPJ"
+            [data]="current.data"
+            emptyText="Opcional. Inclua se você atende como pessoa jurídica; ele passa pela validação."
+            (resubmitted)="detail.set($event)"
+          ></app-my-step-card>
         }
       </div>
     }

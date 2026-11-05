@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { of } from 'rxjs';
 import { ServiceRequest } from '../../../core/models';
+import { CreationLock, CreationLockService } from '../../../core/services/creation-lock.service';
 import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
@@ -58,6 +59,7 @@ const REQUESTS: ServiceRequest[] = [
 describe('PatientDashboardComponent', () => {
   let fixture: ComponentFixture<PatientDashboardComponent>;
   let requestService: jasmine.SpyObj<RequestService>;
+  const lock = signal<CreationLock | null>(null);
 
   const cardIds = () =>
     Array.from(fixture.nativeElement.querySelectorAll('.request-card__id') as NodeListOf<HTMLElement>).map((element) =>
@@ -79,6 +81,7 @@ describe('PatientDashboardComponent', () => {
           provide: OccurrenceService,
           useValue: { summary: () => of({ counting: 0, limit: 3, windowDays: 90, occurrences: [] }) },
         },
+        { provide: CreationLockService, useValue: { lockFor: () => lock } },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
         {
           provide: AuthService,
@@ -87,8 +90,23 @@ describe('PatientDashboardComponent', () => {
       ],
     });
 
+    lock.set(null);
     fixture = TestBed.createComponent(PatientDashboardComponent);
     fixture.detectChanges();
+  });
+
+  function newRequestButton(): HTMLButtonElement {
+    return Array.from(fixture.nativeElement.querySelectorAll('ui-button button') as NodeListOf<HTMLButtonElement>).find(
+      (button) => button.textContent!.includes('Nova solicitação'),
+    )!;
+  }
+
+  it('em revalidação, avisa e desabilita "Nova solicitação"', () => {
+    lock.set({ reason: 'revalidation' });
+    fixture.detectChanges();
+
+    expect(newRequestButton().disabled).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Seus dados estão em revalidação');
   });
 
   it('mostra só as ativas por padrão, das mais recentes para as mais antigas', () => {

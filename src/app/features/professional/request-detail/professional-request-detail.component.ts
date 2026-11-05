@@ -29,7 +29,7 @@ import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.compo
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 import { formatPeriod } from '../../../core/formatting/period';
-import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { CreationLockService } from '../../../core/services/creation-lock.service';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
@@ -58,7 +58,7 @@ export class ProfessionalRequestDetailComponent {
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
   private readonly publicProfileService = inject(PublicProfileService);
-  protected readonly blocked = inject(OccurrenceService).blockFor('professional');
+  protected readonly blocked = inject(CreationLockService).lockFor('professional');
 
   private readonly requestId = this.route.snapshot.paramMap.get('id') ?? '';
 

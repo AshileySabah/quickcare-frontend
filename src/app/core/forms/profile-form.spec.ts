@@ -2,6 +2,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { identityDocumentValidator } from './document-validators';
 import { passwordsMatchValidator } from './password-validators';
 import {
+  PERSONAL_DOCUMENT_TYPES,
   confirmPasswordError,
   disableAccountFields,
   missingDocumentMessage,
@@ -62,5 +63,18 @@ describe('profile-form', () => {
     expect(missingDocumentMessage(documents, ['VALIDACAO_CPF', 'REGISTRO_PROFISSIONAL'])).toBe(
       'Envie um documento que valide seu registro profissional.',
     );
+  });
+
+  it('não aceita documento sem tipo escolhido', () => {
+    expect(missingDocumentMessage([{ type: 'COMPROVANTE_CPF' }, { type: '' }], PERSONAL_DOCUMENT_TYPES)).toBe(
+      'Escolha o tipo de cada documento enviado.',
+    );
+  });
+
+  it('o CPF tem documento próprio, além do documento de identidade', () => {
+    expect(missingDocumentMessage([{ type: 'VALIDACAO_CPF' }], PERSONAL_DOCUMENT_TYPES)).toBe(
+      'Envie um documento que comprove seu CPF.',
+    );
+    expect(missingDocumentMessage([{ type: 'COMPROVANTE_CPF' }, { type: 'VALIDACAO_CPF' }], PERSONAL_DOCUMENT_TYPES)).toBeNull();
   });
 });

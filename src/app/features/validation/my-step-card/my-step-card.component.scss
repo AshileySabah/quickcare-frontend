@@ -1,0 +1,63 @@
+@use 'tokens' as tokens;
+
+.my-step-card {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+.my-step-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+}
+
+.my-step-card__title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+}
+
+.my-step-card__title {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.my-step-card__label {
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 500);
+}
+
+.my-step-card__reason {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  padding: tokens.space(3);
+  border-left: 4px solid tokens.semantic('error');
+  border-radius: tokens.radius('md');
+  background-color: tokens.semantic('error-light');
+}
+
+.my-step-card__reason-text {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 900);
+  white-space: pre-line;
+}
+
+.my-step-card__document {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  padding-top: tokens.space(3);
+  border-top: 1px solid tokens.color('gray', 100);
+}
+
+.my-step-card__muted {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+}

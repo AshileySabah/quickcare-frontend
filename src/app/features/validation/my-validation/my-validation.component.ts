@@ -1,30 +1,19 @@
-import { DatePipe } from '@angular/common';
-import { Component, OnInit, inject, input, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { ProfessionalCategoryInfo, ValidationDetail, ValidationProfile } from '../../../core/models';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
 import { ValidationService } from '../../../core/services/validation.service';
-import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
-import { StoredFileComponent } from '../../../shared/ui/stored-file/stored-file.component';
-import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
-import { ResubmitStepFormComponent } from '../resubmit-step-form/resubmit-step-form.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { MyStepCardComponent } from '../my-step-card/my-step-card.component';
 
 type ViewState = 'loading' | 'error' | 'filled';
 
 @Component({
   selector: 'app-my-validation',
   standalone: true,
-  imports: [SkeletonListComponent, 
-    DatePipe,
-    CardComponent,
-    ErrorStateComponent,
-    ResubmitStepFormComponent,
-    StoredFileComponent,
-    ValidationStatusBadgeComponent,
-  ],
+  imports: [SkeletonListComponent, ErrorStateComponent, MyStepCardComponent],
   templateUrl: './my-validation.component.html',
   styleUrl: './my-validation.component.scss',
 })
@@ -39,6 +28,14 @@ export class MyValidationComponent implements OnInit {
   protected readonly detail = signal<ValidationDetail | null>(null);
   protected readonly ufOptions = signal<SelectOption[]>([]);
   private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
+
+  protected readonly canAddCnpj = computed(() => {
+    const detail = this.detail();
+    return this.profile() === 'professional' && !!detail && !detail.steps.some((step) => step.type === 'CNPJ');
+  });
+  protected readonly blockedAction = computed(() =>
+    this.profile() === 'patient' ? 'criar novas solicitações' : 'enviar novas propostas',
+  );
 
   ngOnInit(): void {
     this.ufService.list().subscribe((ufs) => this.ufOptions.set(ufs));
@@ -57,10 +54,6 @@ export class MyValidationComponent implements OnInit {
       },
       error: () => this.viewState.set('error'),
     });
-  }
-
-  protected onResubmitted(detail: ValidationDetail): void {
-    this.detail.set(detail);
   }
 
   protected registrationLabel(detail: ValidationDetail): string {

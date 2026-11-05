@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import {
   APPEAL_STATUS_LABELS,
   OCCURRENCE_REASON_LABELS,
@@ -42,8 +42,6 @@ export class OccurrencesCardComponent implements OnInit {
   private readonly toastService = inject(ToastService);
 
   role = input.required<SwitchableRole>();
-
-  readonly blockedChange = output<boolean>();
 
   protected readonly summary = signal<OccurrenceSummary | null>(null);
   protected readonly labels = OCCURRENCE_REASON_LABELS;
@@ -118,7 +116,6 @@ export class OccurrencesCardComponent implements OnInit {
 
   private show(summary: OccurrenceSummary): void {
     this.summary.set(summary);
-    this.blockedChange.emit(!!summary.block);
   }
 
   private recent(createdAt: string, summary: OccurrenceSummary): boolean {

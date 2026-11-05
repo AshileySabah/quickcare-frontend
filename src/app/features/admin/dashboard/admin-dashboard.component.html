@@ -42,7 +42,11 @@
             <ui-card [interactive]="true">
               <div class="admin-dashboard__card-header">
                 <span class="admin-dashboard__name">{{ entry.name }}</span>
-                <ui-validation-status-badge [status]="entry.status"></ui-validation-status-badge>
+                @if (entry.revalidating) {
+                  <ui-badge variant="info">Em revalidação</ui-badge>
+                } @else {
+                  <ui-validation-status-badge [status]="entry.status"></ui-validation-status-badge>
+                }
               </div>
               @if (entry.category) {
                 <span class="admin-dashboard__specialty">{{ categoryLabel(entry) }}</span>

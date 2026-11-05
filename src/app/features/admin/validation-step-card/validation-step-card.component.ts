@@ -12,13 +12,13 @@ import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent, ButtonVariant } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { FilePickerComponent } from '../../../shared/ui/forms/file-picker/file-picker.component';
-import { formatMasked } from '../../../shared/ui/forms/input/input-mask.util';
 import { StoredFileComponent } from '../../../shared/ui/stored-file/stored-file.component';
 import { TextareaComponent } from '../../../shared/ui/forms/textarea/textarea.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { ValidationStatusBadgeComponent } from '../../../shared/ui/feedback/validation-status-badge/validation-status-badge.component';
 import { PreValidationAlertComponent, PreValidationState } from '../pre-validation-alert/pre-validation-alert.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { StepDataComponent } from '../../validation/step-data/step-data.component';
 
 interface LookupLink {
   label: string;
@@ -26,7 +26,7 @@ interface LookupLink {
 }
 
 const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
-  IDENTIDADE: {
+  CPF: {
     label: 'Situação do CPF na Receita',
     url: 'https://servicos.receita.fazenda.gov.br/servicos/cpf/consultasituacao/consultapublica.asp',
   },
@@ -50,6 +50,7 @@ const LOOKUP_LINKS: Partial<Record<string, LookupLink>> = {
     CardComponent,
     FilePickerComponent,
     PreValidationAlertComponent,
+    StepDataComponent,
     StoredFileComponent,
     TextareaComponent,
     ValidationStatusBadgeComponent,
@@ -118,14 +119,6 @@ export class ValidationStepCardComponent {
         this.lastSuggestion = state.result.suggestedJustification;
       }
     });
-  }
-
-  protected formatCpf(cpf: string): string {
-    return formatMasked('cpf', cpf);
-  }
-
-  protected formatCnpj(cnpj: string | null): string {
-    return cnpj ? formatMasked('cnpj', cnpj) : 'Não informado';
   }
 
   protected justificationError(): string | null {

@@ -150,6 +150,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'documentos',
+        data: { role: 'professional' },
+        loadComponent: () =>
+          import('./features/validation/documents-page/documents-page.component').then(
+            (m) => m.DocumentsPageComponent,
+          ),
+      },
+      {
         path: 'propostas/:id/editar',
         loadComponent: () =>
           import('./features/professional/proposal-edit/proposal-edit.component').then(
@@ -217,6 +225,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/user-blocks/blocked-users/blocked-users.component').then(
             (m) => m.BlockedUsersComponent,
+          ),
+      },
+      {
+        path: 'documentos',
+        data: { role: 'patient' },
+        loadComponent: () =>
+          import('./features/validation/documents-page/documents-page.component').then(
+            (m) => m.DocumentsPageComponent,
           ),
       },
       {

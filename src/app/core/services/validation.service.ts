@@ -33,7 +33,7 @@ interface ArquivoApi {
   contentType: string;
   tamanhoBytes: number | null;
   enviadoEm: string | null;
-  url: string | null;
+  caminho: string | null;
 }
 
 interface EtapaApi {
@@ -250,7 +250,8 @@ function toFile(arquivo: ArquivoApi | null): StoredFile | null {
     contentType: arquivo.contentType,
     sizeBytes: arquivo.tamanhoBytes,
     sentAt: arquivo.enviadoEm,
-    url: arquivo.url,
+    url: null,
+    path: arquivo.caminho ?? undefined,
   };
 }
 

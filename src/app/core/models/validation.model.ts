@@ -14,6 +14,7 @@ export interface StoredFile {
   sizeBytes: number | null;
   sentAt: string | null;
   url: string | null;
+  path?: string;
 }
 
 export interface ValidationStep {

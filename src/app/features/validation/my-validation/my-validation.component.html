@@ -33,7 +33,16 @@
           }
         </div>
 
-        @for (step of current.steps; track step.id) {
+        @if (current.steps.length > 0) {
+          <ui-filter-chips
+            label="Filtrar por status"
+            [chips]="statusFilters"
+            [selected]="statusFilter()"
+            (selectedChange)="statusFilter.set($event)"
+          ></ui-filter-chips>
+        }
+
+        @for (step of visibleSteps(); track step.id) {
           <app-my-step-card
             [profile]="profile()"
             [type]="step.type"
@@ -45,7 +54,9 @@
             (resubmitted)="detail.set($event)"
           ></app-my-step-card>
         } @empty {
-          <p class="my-validation__muted">Seu cadastro não tem dados para validar.</p>
+          <p class="my-validation__muted">
+            {{ current.steps.length === 0 ? 'Seu cadastro não tem dados para validar.' : 'Nenhum documento com este status.' }}
+          </p>
         }
 
         @if (canAddCnpj()) {

@@ -13,7 +13,7 @@
           title="Nenhuma proposta encerrada"
           message="Propostas recusadas, canceladas ou de solicitações concluídas aparecem aqui."
         ></ui-empty-state>
-      } @else {
+      } @else if (!blocked()) {
         <ui-empty-state
           title="Nenhuma proposta em andamento"
           message="Veja as solicitações abertas da sua especialidade e envie uma proposta. As encerradas ficam no histórico."

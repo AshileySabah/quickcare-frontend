@@ -19,7 +19,8 @@ import {
 } from '../../../core/models';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { FilePickerComponent } from '../../../shared/ui/forms/file-picker/file-picker.component';
+import { FileReplacerComponent } from '../../../shared/ui/forms/file-replacer/file-replacer.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
@@ -53,7 +54,8 @@ const FIELDS_BY_STEP: Record<ValidationStepType, FieldName[]> = {
     InvalidFieldFocusDirective,
     ReactiveFormsModule,
     ButtonComponent,
-    FilePickerComponent,
+    ConfirmDialogComponent,
+    FileReplacerComponent,
     GridComponent,
     GridItemComponent,
     InputComponent,
@@ -83,15 +85,20 @@ export class ResubmitStepFormComponent implements OnInit {
   protected readonly isSubmitting = signal(false);
   protected readonly document = signal<File | null>(null);
   protected readonly documentError = signal<string | null>(null);
+  protected readonly confirmingUnchanged = signal(false);
+  protected readonly unchangedConsequences = [
+    'Os dados e o documento continuam os mesmos.',
+    'Mesmo assim, a etapa volta para a análise do administrador.',
+  ];
 
   protected readonly title = computed(() => {
     switch (this.step()?.status) {
       case 'reprovada':
-        return 'Corrija o que for preciso e envie de novo com o documento';
+        return 'Corrija o que for preciso e envie de novo';
       case 'pendente':
         return 'Atualize os dados ou o documento antes da análise';
       case 'aprovada':
-        return 'Altere os dados e envie o documento que os comprova (ou só troque o documento)';
+        return 'Altere os dados, o documento ou os dois';
       default:
         return 'Informe o CNPJ e envie o documento que o comprova';
     }
@@ -197,22 +204,30 @@ export class ResubmitStepFormComponent implements OnInit {
   }
 
   protected submit(): void {
-    const document = this.document() ?? undefined;
+    const document = this.document();
     const value = this.form.getRawValue();
     const changed = FIELDS_BY_STEP[this.type()].some((field) => value[field] !== this.initialValue[field]);
 
-    this.documentError.set(
-      document
-        ? null
-        : changed || this.step() === null
-          ? 'Envie o documento que comprova os dados informados.'
-          : 'Altere algum dado ou envie um novo documento.',
-    );
+    this.documentError.set(!document && !this.step()?.document ? 'Envie o documento desta etapa.' : null);
     if (this.form.invalid || this.documentError()) {
       this.form.markAllAsTouched();
       return;
     }
+    if (!changed && !document) {
+      this.confirmingUnchanged.set(true);
+      return;
+    }
+    this.send();
+  }
 
+  protected confirmUnchanged(): void {
+    this.confirmingUnchanged.set(false);
+    this.send();
+  }
+
+  private send(): void {
+    const document = this.document() ?? undefined;
+    const value = this.form.getRawValue();
     const inputs: Record<ValidationStepType, () => StepResubmission> = {
       CPF: () => ({ document, cpf: value.cpf }),
       IDENTIDADE: () => ({

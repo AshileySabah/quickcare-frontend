@@ -9,6 +9,7 @@ import { SelectOption } from '../../forms/select/select.component';
   imports: [CardComponent, DocumentUploaderComponent],
   templateUrl: './documents-card.component.html',
   styleUrl: './documents-card.component.scss',
+  host: { '[attr.data-invalid]': 'errorMessage() ? "true" : null' },
 })
 export class DocumentsCardComponent {
   typeOptions = input.required<SelectOption[]>();

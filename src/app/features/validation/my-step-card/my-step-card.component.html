@@ -46,9 +46,9 @@
       <p class="my-step-card__muted">{{ emptyText() }}</p>
     }
 
-    @if (step(); as current) {
+    @if (!editing() && step(); as current) {
       <section class="my-step-card__document">
-        <span class="my-step-card__label">Documento que comprova</span>
+        <span class="my-step-card__label">Documento</span>
         @if (current.document; as document) {
           <ui-stored-file [file]="document"></ui-stored-file>
         } @else {

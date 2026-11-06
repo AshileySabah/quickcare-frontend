@@ -6,8 +6,8 @@ describe('DocumentUploaderComponent', () => {
     TestBed.configureTestingModule({ imports: [DocumentUploaderComponent] });
     const fixture = TestBed.createComponent(DocumentUploaderComponent);
     fixture.componentRef.setInput('typeOptions', [
-      { value: 'COMPROVANTE_CPF', label: 'Comprovante do CPF' },
-      { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
+      { value: 'COMPROVANTE_CPF', label: 'CPF' },
+      { value: 'VALIDACAO_CPF', label: 'Documento de identidade' },
       { value: 'OUTRO', label: 'Outro' },
     ]);
     fixture.detectChanges();

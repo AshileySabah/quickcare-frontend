@@ -90,14 +90,14 @@
     }
 
     <ui-grid-item [xs]="12">
-      <ui-file-picker
-        label="Documento que comprova"
-        hint="PDF, JPG ou PNG, até 5MB. O administrador confere os dados com este documento."
+      <ui-file-replacer
+        label="Documento"
+        [current]="step()?.document ?? null"
         [required]="true"
         [disabled]="isSubmitting()"
         [errorMessage]="documentError()"
         (fileChange)="onDocumentChange($event)"
-      ></ui-file-picker>
+      ></ui-file-replacer>
     </ui-grid-item>
   </ui-grid>
 
@@ -108,3 +108,15 @@
     <ui-button type="submit" [loading]="isSubmitting()">Enviar para validação</ui-button>
   </div>
 </form>
+
+<ui-confirm-dialog
+  [open]="confirmingUnchanged()"
+  titleText="Nada mudou"
+  icon="alert"
+  message="Parece que nada mudou. Enviar para validação mesmo assim?"
+  [consequences]="unchangedConsequences"
+  confirmLabel="Sim, enviar para validação"
+  cancelLabel="Não, continuar editando"
+  (confirmed)="confirmUnchanged()"
+  (closed)="confirmingUnchanged.set(false)"
+></ui-confirm-dialog>

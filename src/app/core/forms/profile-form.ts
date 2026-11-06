@@ -32,8 +32,8 @@ export function lockedDeclarationControls(fb: FormBuilder) {
 export const PERSONAL_DOCUMENT_TYPES: DocumentType[] = ['COMPROVANTE_CPF', 'VALIDACAO_CPF'];
 
 export const PERSONAL_DOCUMENT_OPTIONS = [
-  { value: 'COMPROVANTE_CPF', label: 'Comprovante do CPF' },
-  { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
+  { value: 'COMPROVANTE_CPF', label: 'CPF' },
+  { value: 'VALIDACAO_CPF', label: 'Documento de identidade' },
 ];
 
 const MISSING_DOCUMENT_MESSAGES: Partial<Record<DocumentType, string>> = {

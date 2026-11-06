@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -32,7 +33,14 @@ function identity(status: ValidationStep['status']): ValidationStep {
     label: 'Identidade',
     status,
     justification: status === 'reprovada' ? 'Foto ilegível.' : null,
-    document: { fileName: 'cnh.pdf', contentType: 'application/pdf', sizeBytes: 100, sentAt: null, url: 'https://arquivos/cnh.pdf' },
+    document: {
+      fileName: 'cnh.pdf',
+      contentType: 'application/pdf',
+      sizeBytes: 100,
+      sentAt: null,
+      url: null,
+      path: '/validacao/paciente/etapas/1/documento',
+    },
     attachment: null,
     reviewedBy: null,
     reviewedAt: null,
@@ -46,6 +54,7 @@ describe('MyStepCardComponent', () => {
     TestBed.configureTestingModule({
       imports: [MyStepCardComponent],
       providers: [
+        provideHttpClient(),
         { provide: ValidationService, useValue: { resubmit: () => of() } },
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', ['updateValidationStatus']) },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['success', 'error']) },

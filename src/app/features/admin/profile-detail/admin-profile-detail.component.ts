@@ -1,5 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
+import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import {
@@ -10,8 +11,10 @@ import {
   LateBlockReason,
   OCCURRENCE_REASON_LABELS,
   Occurrence,
+  ReportConsequence,
   SwitchableRole,
 } from '../../../core/models';
+import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { AdminProfileService } from '../../../core/services/admin/admin-profile.service';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ButtonGroupComponent } from '../../../shared/ui/button-group/button-group.component';
@@ -49,6 +52,8 @@ type Dialog =
     ErrorStateComponent,
     IconComponent,
     JustificationDialogComponent,
+    ReactiveFormsModule,
+    SelectComponent,
     SkeletonListComponent,
   ],
   templateUrl: './admin-profile-detail.component.html',
@@ -74,6 +79,16 @@ export class AdminProfileDetailComponent {
   protected readonly roleLabel = this.role === 'patient' ? 'Paciente' : 'Profissional';
   private readonly blockedAction = this.role === 'patient' ? 'criar solicitações' : 'enviar propostas';
   protected readonly activeBlock = computed(() => this.detail()?.summary.block);
+
+  protected readonly denialConsequence = new FormControl<ReportConsequence>('ocorrencia', { nonNullable: true });
+  protected readonly denialOptions: SelectOption[] = [
+    { value: 'ocorrencia', label: 'Manter como ocorrência' },
+    { value: 'banimento', label: 'Banir (disponível na etapa de banimento)', disabled: true },
+  ];
+  protected readonly askDenialConsequence = computed(() => {
+    const dialog = this.dialog();
+    return dialog?.kind === 'appeal' && !dialog.annul && dialog.occurrence.reason === 'denuncia_procedente';
+  });
 
   protected readonly dialogTexts = computed(() => {
     const dialog = this.dialog();
@@ -243,7 +258,12 @@ export class AdminProfileDetailComponent {
       case 'annul':
         return this.profileService.annulOccurrence(dialog.occurrence.id, justification);
       case 'appeal':
-        return this.profileService.decideAppeal(dialog.occurrence.appeal!.id, dialog.annul, justification);
+        return this.profileService.decideAppeal(
+          dialog.occurrence.appeal!.id,
+          dialog.annul,
+          justification,
+          dialog.occurrence.reason === 'denuncia_procedente' ? this.denialConsequence.value : undefined,
+        );
       case 'blockReason':
         return this.profileService.decideBlockReason(dialog.reason.id, dialog.accept, justification);
       case 'block':

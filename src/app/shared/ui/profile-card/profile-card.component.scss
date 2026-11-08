@@ -13,6 +13,10 @@
 }
 
 .profile-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: tokens.space(2);
   margin-left: auto;
 
   &:empty {

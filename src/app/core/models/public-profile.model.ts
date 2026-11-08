@@ -13,6 +13,7 @@ export interface ProfessionalPublicProfile {
   memberSince: string;
   completedServices: number;
   ratings: RatingSummary;
+  canReport: boolean;
   emergencyContacts?: EmergencyContact[];
 }
 
@@ -31,6 +32,7 @@ export interface PatientPublicProfile {
   state: string;
   memberSince: string;
   ratings: RatingSummary;
+  canReport: boolean;
   health?: PatientHealthInfo;
   emergencyContacts?: EmergencyContact[];
 }

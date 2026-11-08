@@ -24,6 +24,7 @@ interface PerfilPublicoProfissionalApi {
   membroDesde: string;
   atendimentosConcluidos: number;
   avaliacoes?: ResumoAvaliacoesApi;
+  podeDenunciar?: boolean;
   contatosEmergencia?: ContatoEmergenciaApi[];
 }
 
@@ -41,6 +42,7 @@ interface PerfilPublicoPacienteApi {
   uf: string;
   membroDesde: string;
   avaliacoes?: ResumoAvaliacoesApi;
+  podeDenunciar?: boolean;
   saude?: {
     alergias: string | null;
     condicoesSaude: string | null;
@@ -85,6 +87,7 @@ function toProfessionalProfile(api: PerfilPublicoProfissionalApi): ProfessionalP
     memberSince: api.membroDesde,
     completedServices: api.atendimentosConcluidos,
     ratings: toRatingSummary(api.avaliacoes),
+    canReport: api.podeDenunciar ?? false,
     emergencyContacts: toContacts(api.contatosEmergencia),
   };
 }
@@ -99,6 +102,7 @@ function toPatientProfile(api: PerfilPublicoPacienteApi): PatientPublicProfile {
     state: api.uf,
     memberSince: api.membroDesde,
     ratings: toRatingSummary(api.avaliacoes),
+    canReport: api.podeDenunciar ?? false,
     health: api.saude && {
       allergies: api.saude.alergias ?? undefined,
       healthConditions: api.saude.condicoesSaude ?? undefined,

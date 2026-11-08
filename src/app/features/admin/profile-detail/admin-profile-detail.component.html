@@ -224,5 +224,14 @@
     [loading]="saving()"
     (confirmed)="confirm($event)"
     (closed)="closeDialog()"
-  ></ui-justification-dialog>
+  >
+    @if (askDenialConsequence()) {
+      <ui-select
+        label="O que acontece com a pessoa"
+        [formControl]="denialConsequence"
+        [options]="denialOptions"
+        [required]="true"
+      ></ui-select>
+    }
+  </ui-justification-dialog>
 }

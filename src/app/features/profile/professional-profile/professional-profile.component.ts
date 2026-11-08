@@ -12,13 +12,14 @@ import { ProfileCardComponent, ProfileDetail } from '../../../shared/ui/profile-
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-action/profile-block-action.component';
+import { ProfileReportActionComponent } from '../../reports/profile-report-action/profile-report-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-professional-profile',
   standalone: true,
-  imports: [BackLinkComponent, ProfileBlockActionComponent, EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
+  imports: [BackLinkComponent, ProfileBlockActionComponent, ProfileReportActionComponent,EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
   templateUrl: './professional-profile.component.html',
   styleUrl: '../public-profile.scss',
 })

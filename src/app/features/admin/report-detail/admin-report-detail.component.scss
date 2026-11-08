@@ -1,0 +1,57 @@
+@use 'tokens' as tokens;
+@use 'patterns/details' as details;
+@use 'patterns/admin-detail' as admin;
+
+.report-detail {
+  @include admin.page;
+}
+
+.report-detail__header {
+  @include admin.header;
+}
+
+.report-detail__title {
+  @include admin.title;
+}
+
+.report-detail__muted {
+  @include admin.muted;
+}
+
+.report-detail__meta {
+  @include details.details-list;
+  margin: 0;
+}
+
+.report-detail__section-title {
+  @include admin.section-title;
+}
+
+.report-detail__subsection-title {
+  @include admin.section-title;
+  margin-top: tokens.space(4);
+  font-size: tokens.font-size('sm');
+}
+
+.report-detail__text {
+  margin: tokens.space(2) 0 tokens.space(3);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+  white-space: pre-line;
+}
+
+.report-detail__decision {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-top: tokens.space(3);
+}
+
+.report-detail__actions {
+  @include admin.actions;
+  gap: tokens.space(2);
+}
+
+.report-detail__timeline {
+  @include admin.timeline;
+}

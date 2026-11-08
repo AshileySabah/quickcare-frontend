@@ -1,0 +1,8 @@
+@use 'tokens' as tokens;
+
+.report-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin-top: tokens.space(4);
+}

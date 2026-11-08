@@ -14,13 +14,14 @@ import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emer
 import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-action/profile-block-action.component';
+import { ProfileReportActionComponent } from '../../reports/profile-report-action/profile-report-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-patient-profile',
   standalone: true,
-  imports: [BackLinkComponent, ProfileBlockActionComponent,
+  imports: [BackLinkComponent, ProfileBlockActionComponent, ProfileReportActionComponent,
     CardComponent,
     EmergencyContactsCardComponent,
     EmptyStateComponent,

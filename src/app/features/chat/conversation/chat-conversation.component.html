@@ -1,128 +1,315 @@
 <section class="chat">
-  <header class="chat__header">
-    <a class="chat__back" [routerLink]="backPath()">← Mensagens</a>
-    <h1 class="chat__title">Usuário #{{ otherId }}</h1>
-    <span class="chat__status" [class.chat__status--on]="connected()">
-      {{ connected() ? 'Tempo real ativo' : 'Conectando…' }}
-    </span>
-  </header>
-
-  @switch (viewState()) {
-    @case ('loading') {
-      <div class="chat__skeletons">
-        <ui-skeleton height="40px" width="60%"></ui-skeleton>
-        <ui-skeleton height="40px" width="45%"></ui-skeleton>
-        <ui-skeleton height="40px" width="55%"></ui-skeleton>
-      </div>
-    }
-    @case ('error') {
-      <ui-error-state (retry)="load()"></ui-error-state>
-    }
-    @case ('ready') {
-      <div class="chat__messages" #list>
-        @if (messages().length === 0) {
-          <p class="chat__empty">Nenhuma mensagem ainda. Diga olá!</p>
-        }
-        @for (message of messages(); track message.id) {
-          <div class="chat__row" [class.chat__row--mine]="message.senderId === meId">
-            <div class="chat__bubble">
-              @if (message.attachment; as attachment) {
-                <div class="chat__attachment">
-                  @if (!attachment.url) {
-                    <span class="chat__attachment-missing">Anexo indisponível: {{ attachment.name }}</span>
-                  } @else {
-                    @switch (attachment.kind) {
-                      @case ('image') {
-                        <a [href]="attachment.url" target="_blank" rel="noopener">
-                          <img
-                            class="chat__media"
-                            [src]="attachment.url"
-                            [alt]="attachment.name"
-                            (load)="scrollToBottom()"
-                            (error)="onAttachmentError()"
-                          />
-                        </a>
-                      }
-                      @case ('video') {
-                        <video
-                          class="chat__media"
-                          controls
-                          preload="metadata"
-                          [src]="attachment.url"
-                          (loadedmetadata)="scrollToBottom()"
-                          (error)="onAttachmentError()"
-                        ></video>
-                      }
-                      @case ('audio') {
-                        <audio
-                          class="chat__audio"
-                          controls
-                          preload="metadata"
-                          [src]="attachment.url"
-                          (error)="onAttachmentError()"
-                        ></audio>
-                      }
-                      @default {
-                        <a class="chat__file" [href]="attachment.url" target="_blank" rel="noopener">
-                          📄 {{ attachment.name }}
-                        </a>
-                      }
-                    }
-                  }
-                </div>
-              }
-              @if (message.content) {
-                <p class="chat__text">{{ message.content }}</p>
-              }
-              <div class="chat__meta">
-                <span>{{ message.sentAt | date: 'dd/MM HH:mm' }}</span>
-                @if (message.senderId === meId) {
-                  <button type="button" class="chat__delete" (click)="remove(message)">Apagar</button>
-                }
-              </div>
-            </div>
-          </div>
-        }
-      </div>
-
-      @if (actionError()) {
-        <p class="chat__error" role="alert">{{ actionError() }}</p>
-      }
-
-      @if (selectedFile(); as file) {
-        <div class="chat__selected">
-          <span class="chat__selected-name">📎 {{ file.name }}</span>
-          <button type="button" class="chat__selected-remove" (click)="clearFile()" [disabled]="sending()">
-            Remover
-          </button>
+  <div class="chat__main">
+    @switch (viewState()) {
+      @case ("loading") {
+        <div class="chat__center chat__skeletons">
+          <ui-skeleton height="56px"></ui-skeleton>
+          <ui-skeleton height="40px" width="60%"></ui-skeleton>
+          <ui-skeleton height="40px" width="45%"></ui-skeleton>
+          <ui-skeleton height="40px" width="55%"></ui-skeleton>
         </div>
       }
+      @case ("error") {
+        <div class="chat__center">
+          <ui-error-state (retry)="load()"></ui-error-state>
+        </div>
+      }
+      @case ("forbidden") {
+        <div class="chat__center">
+          <ui-empty-state
+            title="Conversa indisponível"
+            message="Esta conversa só existe enquanto a proposta estiver aceita. Se a proposta foi cancelada ou recusada, ela não está mais disponível."
+          >
+            <ui-button [routerLink]="basePath()">Voltar às mensagens</ui-button>
+          </ui-empty-state>
+        </div>
+      }
+      @case ("ready") {
+        @if (conversation(); as current) {
+          <header class="chat__header">
+            <a
+              class="chat__back"
+              [routerLink]="basePath()"
+              aria-label="Voltar às mensagens"
+              >‹</a
+            >
+            @if (current.isGroup) {
+              <app-chat-avatar
+                [name]="current.title"
+                [groupCount]="current.participants.length"
+                [size]="44"
+              ></app-chat-avatar>
+            } @else {
+              <app-chat-avatar
+                [name]="headerPerson()?.name ?? current.title"
+                [url]="headerPerson()?.avatarUrl ?? null"
+                [userId]="headerPerson()?.userId ?? 0"
+                [size]="44"
+              ></app-chat-avatar>
+            }
+            <div class="chat__heading">
+              <h2 class="chat__title">
+                {{
+                  current.isGroup
+                    ? "Grupo · Solicitação #" + requestId()
+                    : current.title
+                }}
+              </h2>
+              <p class="chat__subtitle">{{ subtitle() }}</p>
+            </div>
+            <span class="chat__status" [class.chat__status--on]="connected()">
+              <span class="chat__dot"></span>
+              {{ connected() ? "Ao vivo" : "Conectando…" }}
+            </span>
+            <button
+              type="button"
+              class="chat__icon"
+              [class.chat__icon--on]="infoOpen()"
+              aria-label="Informações da conversa"
+              title="Informações da conversa"
+              (click)="toggleInfo()"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 11v5M12 8h.01" />
+              </svg>
+            </button>
+          </header>
 
-      <form class="chat__form" (submit)="$event.preventDefault(); send()">
-        <input #fileInput type="file" hidden [accept]="accept" (change)="onFileSelected($event)" />
-        <button
-          type="button"
-          class="chat__attach"
-          aria-label="Anexar arquivo"
-          title="Anexar arquivo"
-          [disabled]="sending()"
-          (click)="fileInput.click()"
-        >
-          📎
-        </button>
-        <textarea
-          class="chat__input"
-          rows="2"
-          name="draft"
-          placeholder="Escreva uma mensagem…"
-          [ngModel]="draft()"
-          (ngModelChange)="draft.set($event)"
-          (keydown.enter)="onEnter($event)"
-        ></textarea>
-        <button class="chat__send" type="submit" [disabled]="sending() || !canSend()">
-          {{ sending() ? 'Enviando…' : 'Enviar' }}
-        </button>
-      </form>
+          <div class="chat__messages" #list>
+            @if (messages().length === 0) {
+              <p class="chat__empty">Nenhuma mensagem ainda. Diga olá!</p>
+            }
+            @for (item of timeline(); track item.key) {
+              @if (item.kind === "day") {
+                <div class="chat__day">
+                  <span>{{ item.label }}</span>
+                </div>
+              } @else {
+                <div class="chat__row" [class.chat__row--mine]="item.mine">
+                  @if (item.showAvatarSpace) {
+                    <span class="chat__slot">
+                      @if (item.senderName) {
+                        <app-chat-avatar
+                          [name]="item.senderName"
+                          [url]="item.senderAvatarUrl"
+                          [userId]="item.senderId"
+                          [size]="32"
+                        ></app-chat-avatar>
+                      }
+                    </span>
+                  }
+                  <div class="chat__bubble">
+                    @if (item.senderName) {
+                      <span
+                        class="chat__sender"
+                        [style.color]="item.senderColor"
+                        >{{ item.senderName }}</span
+                      >
+                    }
+                    @if (item.message.attachment; as attachment) {
+                      <div class="chat__attachment">
+                        @if (!attachment.url) {
+                          <span class="chat__missing"
+                            >Anexo indisponível: {{ attachment.name }}</span
+                          >
+                        } @else {
+                          @switch (attachment.kind) {
+                            @case ("image") {
+                              <a
+                                [href]="attachment.url"
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                <img
+                                  class="chat__media"
+                                  [src]="attachment.url"
+                                  [alt]="attachment.name"
+                                  (load)="scrollToBottom()"
+                                  (error)="onAttachmentError()"
+                                />
+                              </a>
+                            }
+                            @case ("video") {
+                              <video
+                                class="chat__media"
+                                controls
+                                preload="metadata"
+                                [src]="attachment.url"
+                                (loadedmetadata)="scrollToBottom()"
+                                (error)="onAttachmentError()"
+                              ></video>
+                            }
+                            @case ("audio") {
+                              <audio
+                                class="chat__audio"
+                                controls
+                                preload="metadata"
+                                [src]="attachment.url"
+                                (error)="onAttachmentError()"
+                              ></audio>
+                            }
+                            @default {
+                              <a
+                                class="chat__file"
+                                [href]="attachment.url"
+                                target="_blank"
+                                rel="noopener"
+                              >
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  width="18"
+                                  height="18"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-width="2"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"
+                                  />
+                                  <path d="M14 3v5h5" />
+                                </svg>
+                                {{ attachment.name }}
+                              </a>
+                            }
+                          }
+                        }
+                      </div>
+                    }
+                    @if (item.message.content) {
+                      <p class="chat__text">{{ item.message.content }}</p>
+                    }
+                    <div class="chat__meta">
+                      <span>{{ item.message.sentAt | date: "HH:mm" }}</span>
+                      @if (item.mine) {
+                        <button
+                          type="button"
+                          class="chat__delete"
+                          (click)="messageToDelete.set(item.message)"
+                        >
+                          Apagar
+                        </button>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            }
+          </div>
+
+          @if (actionError()) {
+            <p class="chat__error" role="alert">{{ actionError() }}</p>
+          }
+
+          @if (selectedFile(); as file) {
+            <div class="chat__selected">
+              <span class="chat__selected-name">{{ file.name }}</span>
+              <button
+                type="button"
+                class="chat__delete"
+                (click)="clearFile()"
+                [disabled]="sending()"
+              >
+                Remover
+              </button>
+            </div>
+          }
+
+          <form class="chat__form" (submit)="$event.preventDefault(); send()">
+            <input
+              #fileInput
+              type="file"
+              hidden
+              [accept]="accept"
+              (change)="onFileSelected($event)"
+            />
+            <button
+              type="button"
+              class="chat__icon"
+              aria-label="Anexar arquivo"
+              title="Anexar arquivo"
+              [disabled]="sending()"
+              (click)="fileInput.click()"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path
+                  d="m21 11-8.6 8.6a5 5 0 0 1-7.1-7.1l8.6-8.6a3.3 3.3 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.9-7.9"
+                />
+              </svg>
+            </button>
+            <textarea
+              class="chat__input"
+              rows="1"
+              name="draft"
+              placeholder="Mensagem…"
+              aria-label="Mensagem"
+              [ngModel]="draft()"
+              (ngModelChange)="draft.set($event)"
+              (keydown.enter)="onEnter($event)"
+            ></textarea>
+            <button
+              class="chat__send"
+              type="submit"
+              [disabled]="sending() || !canSend()"
+              aria-label="Enviar mensagem"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M3.4 20.4 21 12 3.4 3.6l-.1 6.5L15 12 3.3 13.9z" />
+              </svg>
+            </button>
+          </form>
+        }
+      }
     }
+  </div>
+
+  @if (viewState() === "ready" && infoOpen() && conversation(); as current) {
+    <app-chat-info-panel
+      class="chat__info"
+      [conversation]="current"
+      [messages]="messages()"
+      [meId]="meId"
+      (closed)="infoOpen.set(false)"
+    ></app-chat-info-panel>
   }
 </section>
+
+<ui-confirm-dialog
+  [open]="messageToDelete() !== null"
+  titleText="Apagar mensagem"
+  confirmLabel="Sim, apagar"
+  cancelLabel="Não, manter"
+  confirmVariant="danger"
+  [loading]="deleting()"
+  (confirmed)="confirmDelete()"
+  (closed)="messageToDelete.set(null)"
+  icon="x-circle"
+  message="Apagar esta mensagem?"
+  [consequences]="deleteConsequences"
+></ui-confirm-dialog>

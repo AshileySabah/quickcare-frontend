@@ -1,0 +1,46 @@
+<aside class="info">
+  <header class="info__head">
+    <h2 class="info__title">Informações</h2>
+    <button type="button" class="info__close" (click)="closed.emit()" aria-label="Fechar painel">×</button>
+  </header>
+
+  <section class="info__card">
+    <h3 class="info__heading">Arquivos <small>{{ files().total }}</small></h3>
+
+    @if (photos().length > 0) {
+      <div class="info__photos">
+        @for (photo of photos(); track photo.url) {
+          <a [href]="photo.url" target="_blank" rel="noopener">
+            <img [src]="photo.url" [alt]="photo.name" />
+          </a>
+        }
+      </div>
+    }
+
+    <ul class="info__counts">
+      <li>Fotos <b>{{ files().images.length }}</b></li>
+      <li>Vídeos <b>{{ files().videos.length }}</b></li>
+      <li>Áudios <b>{{ files().audios.length }}</b></li>
+      <li>Documentos <b>{{ files().documents.length }}</b></li>
+    </ul>
+
+    @for (doc of documents(); track doc.url) {
+      <a class="info__doc" [href]="doc.url" target="_blank" rel="noopener">{{ doc.name }}</a>
+    }
+  </section>
+
+  <section class="info__card info__card--people">
+    <h3 class="info__heading">Participantes <small>{{ conversation().participants.length }}</small></h3>
+    <ul class="info__people">
+      @for (person of conversation().participants; track person.userId) {
+        <li class="info__person">
+          <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
+          <span class="info__who">
+            <strong>{{ person.userId === meId() ? 'Você' : person.name }}</strong>
+            <small>{{ roleLabel(person.role) }}</small>
+          </span>
+        </li>
+      }
+    </ul>
+  </section>
+</aside>

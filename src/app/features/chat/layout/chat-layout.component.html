@@ -1,0 +1,113 @@
+<div class="chat-shell" [class.chat-shell--open]="openId() !== null">
+  <aside class="chat-shell__list">
+    <header class="chat-shell__head">
+      <h1 class="chat-shell__title">Mensagens</h1>
+      <label class="chat-shell__search">
+        <svg
+          viewBox="0 0 24 24"
+          width="18"
+          height="18"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          type="search"
+          placeholder="Buscar conversa"
+          aria-label="Buscar conversa"
+          [ngModel]="search()"
+          (ngModelChange)="search.set($event)"
+        />
+      </label>
+    </header>
+
+    @switch (viewState()) {
+      @case ("loading") {
+        <div class="chat-shell__skeletons">
+          @for (i of [1, 2, 3, 4]; track i) {
+            <ui-skeleton height="64px"></ui-skeleton>
+          }
+        </div>
+      }
+      @case ("empty") {
+        <ui-empty-state
+          title="Nenhuma conversa ainda"
+          message="Quando uma proposta for aceita, a conversa aparece aqui."
+        ></ui-empty-state>
+      }
+      @case ("error") {
+        <ui-error-state (retry)="load()"></ui-error-state>
+      }
+      @case ("filled") {
+        <ul class="chat-shell__items">
+          @for (conversation of filtered(); track conversation.requestId) {
+            <li>
+              <a
+                class="item"
+                [routerLink]="[basePath(), conversation.requestId]"
+                routerLinkActive="item--active"
+              >
+                @if (conversation.isGroup) {
+                  <app-chat-avatar
+                    [name]="conversation.title"
+                    [groupCount]="conversation.participants.length"
+                    [size]="46"
+                  ></app-chat-avatar>
+                } @else {
+                  <app-chat-avatar
+                    [name]="
+                      firstOther(conversation)?.name ?? conversation.title
+                    "
+                    [url]="firstOther(conversation)?.avatarUrl ?? null"
+                    [userId]="firstOther(conversation)?.userId ?? 0"
+                    [size]="46"
+                  ></app-chat-avatar>
+                }
+                <span class="item__body">
+                  <span class="item__top">
+                    <strong class="item__name">{{ conversation.title }}</strong>
+                    @if (conversation.preview; as preview) {
+                      <time class="item__time">{{
+                        shortTime(preview.sentAt)
+                      }}</time>
+                    }
+                  </span>
+                  <span class="item__bottom">
+                    <span
+                      class="item__preview"
+                      [class.item__preview--unread]="
+                        unread()[conversation.requestId]
+                      "
+                    >
+                      {{
+                        conversation.preview?.text ?? fallbackLine(conversation)
+                      }}
+                    </span>
+                    @if (unread()[conversation.requestId]; as count) {
+                      <span
+                        class="item__badge"
+                        [attr.aria-label]="count + ' mensagens novas'"
+                        >{{ count }}</span
+                      >
+                    }
+                  </span>
+                </span>
+              </a>
+            </li>
+          } @empty {
+            <li class="chat-shell__none">Nenhuma conversa encontrada.</li>
+          }
+        </ul>
+      }
+    }
+  </aside>
+
+  <section class="chat-shell__main">
+    <router-outlet></router-outlet>
+  </section>
+</div>

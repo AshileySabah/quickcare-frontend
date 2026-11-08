@@ -24,6 +24,9 @@ import { PracticeAreasManagerComponent } from '../practice-areas/practice-areas-
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { RatingSummaryComponent } from '../../../shared/ui/rating-summary/rating-summary.component';
+import { RatingSummary } from '../../../core/models';
 
 type PageState = 'loading' | 'error' | 'ready';
 
@@ -44,6 +47,8 @@ type PageState = 'loading' | 'error' | 'ready';
     ErrorStateComponent,
     PracticeAreasManagerComponent,
     ProfessionalPracticeCardComponent,
+    CardComponent,
+    RatingSummaryComponent,
   ],
   templateUrl: './professional-edit-profile.component.html',
   styleUrl: './professional-edit-profile.component.scss',
@@ -57,6 +62,7 @@ export class ProfessionalEditProfileComponent implements OnInit {
   protected readonly loadError = signal('');
   protected readonly isSubmitting = signal(false);
   protected readonly avatarUrl = signal<string | null>(null);
+  protected readonly ratings = signal<RatingSummary | null>(null);
   protected readonly lockedNote = LOCKED_PROFILE_NOTE;
 
   private avatarBlob: Blob | null = null;
@@ -162,5 +168,6 @@ export class ProfessionalEditProfileComponent implements OnInit {
     });
 
     this.avatarUrl.set(profile.avatarUrl);
+    this.ratings.set(profile.ratings);
   }
 }

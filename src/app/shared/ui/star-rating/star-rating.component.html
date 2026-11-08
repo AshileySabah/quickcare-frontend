@@ -1,0 +1,39 @@
+@if (editable()) {
+  <div
+    class="ui-star-rating ui-star-rating--editable"
+    [class.ui-star-rating--invalid]="invalid()"
+    role="radiogroup"
+    [attr.aria-label]="label()"
+    [attr.aria-invalid]="invalid()"
+    (mouseleave)="hovered.set(null)"
+  >
+    @for (star of stars; track star) {
+      <button
+        type="button"
+        role="radio"
+        class="ui-star-rating__star"
+        [class.ui-star-rating__star--filled]="star <= shown()"
+        [attr.aria-checked]="value() === star"
+        [attr.aria-label]="starLabel(star)"
+        (mouseenter)="hovered.set(star)"
+        (focus)="hovered.set(star)"
+        (blur)="hovered.set(null)"
+        (click)="choose(star)"
+      >
+        <svg viewBox="0 0 24 24" [attr.width]="size()" [attr.height]="size()" aria-hidden="true" focusable="false">
+          <path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9Z" />
+        </svg>
+      </button>
+    }
+  </div>
+} @else {
+  <span class="ui-star-rating" role="img" [attr.aria-label]="readonlyLabel()">
+    @for (star of stars; track star) {
+      <span class="ui-star-rating__star" [class.ui-star-rating__star--filled]="star <= shown()">
+        <svg viewBox="0 0 24 24" [attr.width]="size()" [attr.height]="size()" aria-hidden="true" focusable="false">
+          <path d="m12 2.5 2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5-4.8-4.6 6.6-.9Z" />
+        </svg>
+      </span>
+    }
+  </span>
+}

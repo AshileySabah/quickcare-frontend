@@ -11,6 +11,7 @@ import {
   ProfessionalPublicProfile,
 } from '../models';
 import { AtuacaoApi, toPracticeArea } from './practice-area.service';
+import { ResumoAvaliacoesApi, toRatingSummary } from './rating.service';
 
 interface PerfilPublicoProfissionalApi {
   id: number;
@@ -22,6 +23,7 @@ interface PerfilPublicoProfissionalApi {
   uf: string;
   membroDesde: string;
   atendimentosConcluidos: number;
+  avaliacoes?: ResumoAvaliacoesApi;
   contatosEmergencia?: ContatoEmergenciaApi[];
 }
 
@@ -38,6 +40,7 @@ interface PerfilPublicoPacienteApi {
   cidade: string;
   uf: string;
   membroDesde: string;
+  avaliacoes?: ResumoAvaliacoesApi;
   saude?: {
     alergias: string | null;
     condicoesSaude: string | null;
@@ -81,6 +84,7 @@ function toProfessionalProfile(api: PerfilPublicoProfissionalApi): ProfessionalP
     state: api.uf,
     memberSince: api.membroDesde,
     completedServices: api.atendimentosConcluidos,
+    ratings: toRatingSummary(api.avaliacoes),
     emergencyContacts: toContacts(api.contatosEmergencia),
   };
 }
@@ -94,6 +98,7 @@ function toPatientProfile(api: PerfilPublicoPacienteApi): PatientPublicProfile {
     city: api.cidade,
     state: api.uf,
     memberSince: api.membroDesde,
+    ratings: toRatingSummary(api.avaliacoes),
     health: api.saude && {
       allergies: api.saude.alergias ?? undefined,
       healthConditions: api.saude.condicoesSaude ?? undefined,

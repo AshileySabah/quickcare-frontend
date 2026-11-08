@@ -19,11 +19,12 @@ import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { PendingRatingsCardComponent } from '../../ratings/pending-ratings-card/pending-ratings-card.component';
 
 @Component({
   selector: 'app-professional-home',
   standalone: true,
-  imports: [BlockedNoticeComponent, OccurrencesCardComponent,ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
+  imports: [BlockedNoticeComponent, OccurrencesCardComponent, PendingRatingsCardComponent,ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
   templateUrl: './professional-home.component.html',
   styleUrl: './professional-home.component.scss',
 })

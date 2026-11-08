@@ -5,7 +5,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
 import { AuthService } from '../auth/auth.service';
-import { Address, AttendanceModality, EmergencyContact, Gender } from '../models';
+import { Address, AttendanceModality, EmergencyContact, Gender, RatingSummary } from '../models';
+import { ResumoAvaliacoesApi, toRatingSummary } from './rating.service';
 
 export interface ProfileDeclarations {
   infoConfirmedTrue: boolean;
@@ -22,6 +23,7 @@ interface BaseProfile {
   emergencyContacts: EmergencyContact[];
   address: Address;
   declarations: ProfileDeclarations;
+  ratings: RatingSummary;
 }
 
 export interface PatientProfile extends BaseProfile {
@@ -78,6 +80,7 @@ interface BasePerfilApi {
   cidade: string;
   uf: string;
   declaracoes?: { confirmacaoInformacoesVerdadeiras: boolean; consentimentoLgpd: boolean };
+  avaliacoes?: ResumoAvaliacoesApi;
 }
 
 interface PerfilPacienteApi extends BasePerfilApi {
@@ -174,6 +177,7 @@ function toBaseProfile(api: BasePerfilApi): BaseProfile {
       infoConfirmedTrue: api.declaracoes?.confirmacaoInformacoesVerdadeiras ?? false,
       lgpdConsent: api.declaracoes?.consentimentoLgpd ?? false,
     },
+    ratings: toRatingSummary(api.avaliacoes),
   };
 }
 

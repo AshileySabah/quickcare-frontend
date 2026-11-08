@@ -44,8 +44,18 @@ describe('PublicProfileService', () => {
       uf: 'SP',
       membroDesde: '2026-01-10T12:00:00Z',
       atendimentosConcluidos: 4,
+      avaliacoes: {
+        media: 4.5,
+        total: 2,
+        destaques: [{ codigo: 'PONTUALIDADE', rotulo: 'Pontualidade', positivo: true, total: 2 }],
+      },
     });
 
+    expect(profile?.ratings).toEqual({
+      average: 4.5,
+      total: 2,
+      highlights: [{ code: 'PONTUALIDADE', label: 'Pontualidade', positive: true, total: 2 }],
+    });
     expect(profile?.practiceAreas[0].registrationLabel).toBe('COREN');
     expect(profile?.practiceAreas[0].specialties[0].name).toBe('Curativos');
     expect(profile?.attendanceModality).toBe('AMBOS');
@@ -68,6 +78,7 @@ describe('PublicProfileService', () => {
     });
 
     expect(profile?.age).toBe(40);
+    expect(profile?.ratings).toEqual({ average: null, total: 0, highlights: [] });
     expect(profile?.health).toBeUndefined();
     expect(profile?.emergencyContacts).toBeUndefined();
   });

@@ -23,6 +23,11 @@
   color: tokens.color('gray', 500);
 }
 
+@mixin ratings {
+  display: block;
+  margin: tokens.space(3) 0;
+}
+
 @mixin sections {
   display: flex;
   flex-direction: column;

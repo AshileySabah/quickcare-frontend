@@ -22,4 +22,10 @@
       }
     </dl>
   }
+
+  @if (ratings(); as summary) {
+    <div class="profile-card__ratings">
+      <ui-rating-summary [summary]="summary"></ui-rating-summary>
+    </div>
+  }
 </ui-card>

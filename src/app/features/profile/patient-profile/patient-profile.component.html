@@ -16,7 +16,12 @@
     }
     @case ('filled') {
       @if (profile(); as current) {
-        <ui-profile-card [name]="current.name" [avatarUrl]="current.avatarUrl" [details]="details()">
+        <ui-profile-card
+          [name]="current.name"
+          [avatarUrl]="current.avatarUrl"
+          [details]="details()"
+          [ratings]="current.ratings"
+        >
           <app-profile-block-action
             profile-actions
             kind="patient"

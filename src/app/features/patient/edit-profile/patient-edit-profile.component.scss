@@ -20,6 +20,10 @@
   @include editProfile.note;
 }
 
+.edit-profile__ratings {
+  @include editProfile.ratings;
+}
+
 .edit-profile__sections {
   @include editProfile.sections;
 }

@@ -77,6 +77,7 @@
           </ui-card>
         }
         @if ((currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') && freePracticeAreas().length > 0) {
+          <app-pending-ratings-prompt role="professional"></app-pending-ratings-prompt>
           <ui-card [uiHighlight]="previousProposal() ? 'proposta-' + previousProposal()!.id : 'nova-proposta'">
             @if (previousProposal(); as previous) {
               <h2 class="professional-request-detail__form-title">Reenviar proposta</h2>

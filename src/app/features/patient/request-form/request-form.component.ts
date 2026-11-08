@@ -23,6 +23,7 @@ import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.compon
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 import { CreationLockService } from '../../../core/services/creation-lock.service';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { PendingRatingsPromptComponent } from '../../ratings/pending-ratings-prompt/pending-ratings-prompt.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
 type Modality = 'online' | 'presencial';
@@ -30,7 +31,7 @@ type Modality = 'online' | 'presencial';
 @Component({
   selector: 'app-request-form',
   standalone: true,
-  imports: [InvalidFieldFocusDirective, BlockedNoticeComponent, NoticeComponent, BackLinkComponent, SkeletonListComponent, 
+  imports: [InvalidFieldFocusDirective, BlockedNoticeComponent, PendingRatingsPromptComponent, NoticeComponent, BackLinkComponent, SkeletonListComponent, 
     ReactiveFormsModule,
     AddressCardComponent,
     ButtonComponent,

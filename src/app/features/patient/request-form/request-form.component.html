@@ -31,6 +31,7 @@
     }
     @if (!isEditMode) {
       <app-blocked-notice role="patient"></app-blocked-notice>
+      <app-pending-ratings-prompt role="patient"></app-pending-ratings-prompt>
     }
     <h1 class="request-form__title">{{ isEditMode ? 'Editar solicitação' : 'Nova solicitação' }}</h1>
     <p class="request-form__subtitle">

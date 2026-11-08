@@ -31,13 +31,14 @@ import { AttendancePanelComponent } from '../../attendance/attendance-panel/atte
 import { formatPeriod } from '../../../core/formatting/period';
 import { CreationLockService } from '../../../core/services/creation-lock.service';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { PendingRatingsPromptComponent } from '../../ratings/pending-ratings-prompt/pending-ratings-prompt.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-professional-request-detail',
   standalone: true,
-  imports: [BlockedNoticeComponent, PersonChipComponent,HighlightDirective, AttendancePanelComponent, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [BlockedNoticeComponent, PendingRatingsPromptComponent, PersonChipComponent,HighlightDirective, AttendancePanelComponent, NoticeComponent, EditProposalActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
     CurrencyPipe,
     RouterLink,
     ButtonComponent,

@@ -1,0 +1,43 @@
+@use 'tokens' as tokens;
+
+.ui-toggle-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(2);
+}
+
+.ui-toggle-chips__chip {
+  padding: tokens.space(1) tokens.space(3);
+  border: 1px solid tokens.color('gray', 300);
+  border-radius: tokens.radius('full');
+  background-color: tokens.color('gray', 0);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 700);
+  cursor: pointer;
+
+  &:hover {
+    border-color: tokens.color('teal', 500);
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    border-color: tokens.color('teal', 600);
+    background-color: tokens.color('teal', 50);
+    color: tokens.color('teal', 700);
+    font-weight: tokens.font-weight('medium');
+  }
+
+  &--negative:hover {
+    border-color: tokens.semantic('error');
+  }
+
+  &--negative.ui-toggle-chips__chip--active {
+    border-color: tokens.semantic('error');
+    background-color: tokens.semantic('error-light');
+    color: tokens.semantic('error');
+  }
+}

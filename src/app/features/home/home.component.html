@@ -1,13 +1,11 @@
 <div class="home">
-  <header class="home__band home__band--brand">
-    <div class="home__header">
-      <span class="home__brand">QuickCare</span>
-      <div class="home__header-actions">
-        <a class="home__header-link" routerLink="/login">Entrar</a>
-        <ui-button variant="inverse" routerLink="/cadastro">Cadastre-se</ui-button>
-      </div>
-    </div>
-  </header>
+  <ui-app-header
+    variant="guest"
+    homeLink="/"
+    navLabel="Consulta pública"
+    navAlign="end"
+    [navItems]="publicNav"
+  ></ui-app-header>
 
   <div class="home__band home__band--dark">
     <section class="home__hero">
@@ -110,6 +108,27 @@
             profissional.
           </p>
         </ui-card>
+      </div>
+    </section>
+  </div>
+
+  <div class="home__band">
+    <section class="home__cta">
+      <h2 class="home__cta-title">Confira antes de se cadastrar</h2>
+      <p class="home__cta-subtitle">Veja quem atende e o que os pacientes estão procurando agora, sem precisar entrar.</p>
+      <div class="home__cta-actions">
+        <a class="home__cta-option" routerLink="/consulta/profissionais">
+          <ui-card [interactive]="true">
+            <h3 class="home__card-title">Nossos profissionais</h3>
+            <p class="home__card-text">Profissionais validados, com especialidades, região de atendimento e avaliações.</p>
+          </ui-card>
+        </a>
+        <a class="home__cta-option" routerLink="/consulta/solicitacoes">
+          <ui-card [interactive]="true">
+            <h3 class="home__card-title">Solicitações abertas</h3>
+            <p class="home__card-text">O que os pacientes estão pedindo agora, sem nome nem dados pessoais.</p>
+          </ui-card>
+        </a>
       </div>
     </section>
   </div>

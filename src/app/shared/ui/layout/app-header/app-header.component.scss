@@ -1,0 +1,98 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.ui-app-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+  padding: tokens.space(3) tokens.space(4);
+  background-color: tokens.color('teal', 800);
+  border-bottom: 1px solid tokens.color('teal', 900);
+
+  @include tokens.respond('lg') {
+    flex-wrap: nowrap;
+  }
+}
+
+.ui-app-header__brand {
+  text-decoration: none;
+  font-size: tokens.font-size('xl');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 0);
+}
+
+.ui-app-header__nav {
+  order: 3;
+  display: flex;
+  gap: tokens.space(4);
+  overflow-x: auto;
+  width: 100%;
+
+  @include tokens.respond('lg') {
+    order: 2;
+    width: auto;
+  }
+}
+
+.ui-app-header--nav-end .ui-app-header__nav {
+  @include tokens.respond('lg') {
+    margin-left: auto;
+  }
+}
+
+.ui-app-header__link {
+  padding: tokens.space(2) 0;
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 0);
+  white-space: nowrap;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+
+  &:hover {
+    color: tokens.color('teal', 200);
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 300);
+    outline-offset: 2px;
+  }
+
+  &--active {
+    color: tokens.color('teal', 300);
+    border-bottom-color: tokens.color('teal', 300);
+  }
+}
+
+.ui-app-header__count {
+  display: inline-block;
+  min-width: 16px;
+  height: 16px;
+  margin-left: tokens.space(1);
+  padding: 0 tokens.space(1);
+  font-size: tokens.font-size('xs');
+  line-height: 16px;
+  text-align: center;
+  color: tokens.color('gray', 0);
+  background-color: tokens.semantic('error');
+  border-radius: tokens.radius('full');
+}
+
+.ui-app-header__user {
+  order: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: tokens.space(3);
+
+  @include tokens.respond('lg') {
+    order: 3;
+  }
+}

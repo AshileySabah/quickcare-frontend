@@ -63,6 +63,10 @@ export class PublicProfileService {
       .pipe(map(toProfessionalProfile), catchError(notFoundAsUndefined('Não foi possível carregar o perfil.')));
   }
 
+  mapProfessional(response: unknown): ProfessionalPublicProfile {
+    return toProfessionalProfile(response as PerfilPublicoProfissionalApi);
+  }
+
   getPatient(id: string): Observable<PatientPublicProfile | undefined> {
     return this.http
       .get<PerfilPublicoPacienteApi>(`${environment.apiUrl}/pacientes/${id}/perfil`)

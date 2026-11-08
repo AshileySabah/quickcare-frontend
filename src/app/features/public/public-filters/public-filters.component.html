@@ -1,0 +1,13 @@
+<form class="public-filters" [formGroup]="form">
+  <ui-select label="Categoria" formControlName="category" [options]="categoryOptions()" placeholder="Todas"></ui-select>
+  <ui-select label="Especialidade" formControlName="specialtyId" [options]="specialtyOptions()" placeholder="Todas"></ui-select>
+  <ui-select label="Atendimento" formControlName="modality" [options]="modalityOptions" placeholder="Presencial ou online"></ui-select>
+  <ui-input label="Cidade" formControlName="city" placeholder="Ex.: São Paulo"></ui-input>
+  <ui-select label="UF" formControlName="state" [options]="ufOptions()" placeholder="Todas"></ui-select>
+  @if (showRating()) {
+    <ui-select label="Avaliação" formControlName="minRating" [options]="ratingOptions" placeholder="Qualquer nota"></ui-select>
+  }
+  <div class="public-filters__actions">
+    <ui-button variant="ghost" size="sm" (click)="clear()">Limpar filtros</ui-button>
+  </div>
+</form>

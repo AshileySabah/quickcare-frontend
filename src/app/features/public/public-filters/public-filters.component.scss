@@ -1,0 +1,18 @@
+@use 'tokens' as tokens;
+
+.public-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: tokens.space(3);
+  align-items: end;
+  margin-bottom: tokens.space(5);
+  padding: tokens.space(4);
+  border: 1px solid tokens.color('gray', 200);
+  border-radius: tokens.radius('lg');
+  background-color: tokens.color('gray', 0);
+}
+
+.public-filters__actions {
+  display: flex;
+  justify-content: flex-end;
+}

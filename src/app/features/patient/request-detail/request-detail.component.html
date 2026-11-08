@@ -1,28 +1,51 @@
 <ui-back-link fallback="/patient"></ui-back-link>
 
 @switch (pageState()) {
-  @case ('loading') {
+  @case ("loading") {
     <ui-skeleton-list variant="page"></ui-skeleton-list>
   }
-  @case ('not-found') {
-    <ui-empty-state title="Solicitação não encontrada" message="Ela pode ter sido removida ou o link está incorreto.">
+  @case ("not-found") {
+    <ui-empty-state
+      title="Solicitação não encontrada"
+      message="Ela pode ter sido removida ou o link está incorreto."
+    >
       <ui-button routerLink="/patient/historico">Voltar ao histórico</ui-button>
     </ui-empty-state>
   }
-  @case ('error') {
+  @case ("error") {
     <ui-error-state (retry)="loadRequest()"></ui-error-state>
   }
-  @case ('filled') {
+  @case ("filled") {
     @if (request(); as currentRequest) {
       <section class="request-detail">
-        <ui-request-summary [request]="currentRequest" [showVacancies]="true" [uiHighlight]="'solicitacao-' + currentRequest.id">
+        <ui-request-summary
+          [request]="currentRequest"
+          [showVacancies]="true"
+          [uiHighlight]="'solicitacao-' + currentRequest.id"
+        >
           @if (canEdit(currentRequest)) {
-            <app-edit-request-action [request]="currentRequest"></app-edit-request-action>
+            <app-edit-request-action
+              [request]="currentRequest"
+            ></app-edit-request-action>
           }
           @if (canCancel(currentRequest)) {
-            <ui-button variant="danger-outline" size="sm" [loading]="isCancelling()" (click)="askToCancel(currentRequest)">
+            <ui-button
+              variant="danger-outline"
+              size="sm"
+              [loading]="isCancelling()"
+              (click)="askToCancel(currentRequest)"
+            >
               <ui-icon name="x-circle"></ui-icon>
               Cancelar solicitação
+            </ui-button>
+          }
+          @if (hasAcceptedProposal()) {
+            <ui-button
+              variant="secondary"
+              size="sm"
+              [routerLink]="['/patient/mensagens', currentRequest.id]"
+            >
+              Conversar
             </ui-button>
           }
         </ui-request-summary>
@@ -31,19 +54,19 @@
           <h2 class="request-detail__proposals-title">Propostas recebidas</h2>
 
           @switch (proposalsState()) {
-            @case ('loading') {
+            @case ("loading") {
               <ui-skeleton-list [count]="2"></ui-skeleton-list>
             }
-            @case ('error') {
+            @case ("error") {
               <ui-error-state (retry)="loadProposals()"></ui-error-state>
             }
-            @case ('empty') {
+            @case ("empty") {
               <ui-empty-state
                 title="Nenhuma proposta ainda"
                 message="Assim que um profissional enviar uma proposta, ela aparecerá aqui."
               ></ui-empty-state>
             }
-            @case ('filled') {
+            @case ("filled") {
               <div class="request-detail__proposals-list">
                 @for (proposal of pager.items(); track proposal.id) {
                   <ui-proposal-card
@@ -53,7 +76,10 @@
                     [notice]="reacceptNotice(proposal, 'patient')"
                   >
                     @if (proposal.professional.unavailable) {
-                      <ui-person-chip proposal-person [unavailable]="true"></ui-person-chip>
+                      <ui-person-chip
+                        proposal-person
+                        [unavailable]="true"
+                      ></ui-person-chip>
                     } @else {
                       <app-person-menu
                         proposal-person
@@ -61,17 +87,31 @@
                         [personId]="proposal.professional.id"
                         [name]="proposal.professional.name"
                         [avatarUrl]="proposal.professional.avatarUrl"
-                        [profileLink]="['/patient/profissionais', proposal.professional.id]"
+                        [profileLink]="[
+                          '/patient/profissionais',
+                          proposal.professional.id,
+                        ]"
                         (blocked)="refresh()"
                       ></app-person-menu>
                     }
-                    @if (proposal.status === 'pendente' && canReceiveProposals(currentRequest)) {
+                    @if (
+                      proposal.status === "pendente" &&
+                      canReceiveProposals(currentRequest)
+                    ) {
                       <ui-button-group proposal-actions>
-                        <ui-button variant="secondary" size="sm" (click)="askToAccept(proposal)">
+                        <ui-button
+                          variant="secondary"
+                          size="sm"
+                          (click)="askToAccept(proposal)"
+                        >
                           <ui-icon name="check"></ui-icon>
                           Aceitar proposta
                         </ui-button>
-                        <ui-button variant="danger-outline" size="sm" (click)="proposalToReject.set(proposal)">
+                        <ui-button
+                          variant="danger-outline"
+                          size="sm"
+                          (click)="proposalToReject.set(proposal)"
+                        >
                           <ui-icon name="x-circle"></ui-icon>
                           Recusar
                         </ui-button>
@@ -82,14 +122,21 @@
                         proposal-attendance
                         viewer="patient"
                         [attendance]="attendance"
-                        [counterpartName]="proposal.professional.unavailable ? unavailableLabel : proposal.professional.name"
+                        [counterpartName]="
+                          proposal.professional.unavailable
+                            ? unavailableLabel
+                            : proposal.professional.name
+                        "
                         (changed)="refresh()"
                       ></app-attendance-panel>
                     }
                   </ui-proposal-card>
                 }
               </div>
-              <ui-paginator [pagination]="pager" label="Páginas de propostas"></ui-paginator>
+              <ui-paginator
+                [pagination]="pager"
+                label="Páginas de propostas"
+              ></ui-paginator>
             }
           }
         </div>
@@ -107,7 +154,9 @@
   (confirmed)="confirmAccept()"
   (closed)="closeAcceptModal()"
   icon="check"
-  [message]="'Aceitar a proposta de ' + proposalToAccept()?.professional?.name + '?'"
+  [message]="
+    'Aceitar a proposta de ' + proposalToAccept()?.professional?.name + '?'
+  "
   [consequences]="acceptConsequences"
 ></ui-confirm-dialog>
 
@@ -121,7 +170,9 @@
   (confirmed)="confirmReject()"
   (closed)="proposalToReject.set(null)"
   icon="x-circle"
-  [message]="'Recusar a proposta de ' + proposalToReject()?.professional?.name + '?'"
+  [message]="
+    'Recusar a proposta de ' + proposalToReject()?.professional?.name + '?'
+  "
   [consequences]="rejectConsequences"
 ></ui-confirm-dialog>
 

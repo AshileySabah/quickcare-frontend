@@ -1,21 +1,27 @@
 <ui-back-link fallback="/professional"></ui-back-link>
 
 @switch (pageState()) {
-  @case ('loading') {
+  @case ("loading") {
     <ui-skeleton-list variant="page"></ui-skeleton-list>
   }
-  @case ('not-found') {
-    <ui-empty-state title="Solicitação não encontrada" message="Ela pode ter sido removida ou o link está incorreto.">
+  @case ("not-found") {
+    <ui-empty-state
+      title="Solicitação não encontrada"
+      message="Ela pode ter sido removida ou o link está incorreto."
+    >
       <ui-button routerLink="/professional">Voltar</ui-button>
     </ui-empty-state>
   }
-  @case ('error') {
+  @case ("error") {
     <ui-error-state (retry)="load()"></ui-error-state>
   }
-  @case ('filled') {
+  @case ("filled") {
     @if (request(); as currentRequest) {
       <section class="professional-request-detail">
-        <ui-request-summary [request]="currentRequest" [uiHighlight]="'solicitacao-' + currentRequest.id">
+        <ui-request-summary
+          [request]="currentRequest"
+          [uiHighlight]="'solicitacao-' + currentRequest.id"
+        >
           @if (patient(); as currentPatient) {
             <app-person-menu
               summary-person
@@ -28,23 +34,39 @@
               (blocked)="refresh()"
             ></app-person-menu>
           } @else if (patientUnavailable()) {
-            <ui-person-chip summary-person [unavailable]="true" caption="Paciente"></ui-person-chip>
-          } @else if (existingProposal()?.status === 'pendente') {
-            <p summary-person class="professional-request-detail__note">O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.</p>
+            <ui-person-chip
+              summary-person
+              [unavailable]="true"
+              caption="Paciente"
+            ></ui-person-chip>
+          } @else if (existingProposal()?.status === "pendente") {
+            <p summary-person class="professional-request-detail__note">
+              O nome e a foto do paciente aparecem aqui assim que ele aceitar a
+              sua proposta.
+            </p>
           }
         </ui-request-summary>
 
         @if (existingProposal(); as proposal) {
           <ui-card [uiHighlight]="'proposta-' + proposal.id">
-            <h2 class="professional-request-detail__form-title">Sua proposta</h2>
+            <h2 class="professional-request-detail__form-title">
+              Sua proposta
+            </h2>
             <div class="professional-request-detail__proposal-status">
-              <ui-status-badge kind="proposal" [status]="proposal.status"></ui-status-badge>
+              <ui-status-badge
+                kind="proposal"
+                [status]="proposal.status"
+              ></ui-status-badge>
             </div>
-            @if (reacceptNotice(proposal, 'professional'); as notice) {
+            @if (reacceptNotice(proposal, "professional"); as notice) {
               <ui-notice>{{ notice }}</ui-notice>
             }
-            <p class="professional-request-detail__proposal-price">{{ proposal.price | currency: 'BRL' }}</p>
-            <p class="professional-request-detail__proposal-detail">{{ proposal.approach }}</p>
+            <p class="professional-request-detail__proposal-price">
+              {{ proposal.price | currency: "BRL" }}
+            </p>
+            <p class="professional-request-detail__proposal-detail">
+              {{ proposal.approach }}
+            </p>
             @if (proposal.attendance; as attendance) {
               <app-attendance-panel
                 viewer="professional"
@@ -52,12 +74,32 @@
                 (changed)="refresh()"
               ></app-attendance-panel>
             } @else {
-              <p class="professional-request-detail__proposal-detail">Quando: {{ period(proposal) }}</p>
+              <p class="professional-request-detail__proposal-detail">
+                Quando: {{ period(proposal) }}
+              </p>
             }
-            @if (canEdit(proposal) || canCancel(proposal)) {
+            @if (
+              proposal.status === "aceita" ||
+              canEdit(proposal) ||
+              canCancel(proposal)
+            ) {
               <div class="professional-request-detail__proposal-actions">
+                @if (proposal.status === "aceita") {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    [routerLink]="[
+                      '/professional/mensagens',
+                      currentRequest.id,
+                    ]"
+                  >
+                    Conversar
+                  </ui-button>
+                }
                 @if (canEdit(proposal)) {
-                  <app-edit-proposal-action [proposal]="proposal"></app-edit-proposal-action>
+                  <app-edit-proposal-action
+                    [proposal]="proposal"
+                  ></app-edit-proposal-action>
                 }
                 @if (canCancel(proposal)) {
                   <ui-button
@@ -73,17 +115,29 @@
               </div>
             }
           </ui-card>
-        } @else if (currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') {
-          <ui-card [uiHighlight]="previousProposal() ? 'proposta-' + previousProposal()!.id : 'nova-proposta'">
+        } @else if (
+          currentRequest.status === "aberta" ||
+          currentRequest.status === "recebendo_propostas"
+        ) {
+          <ui-card
+            [uiHighlight]="
+              previousProposal()
+                ? 'proposta-' + previousProposal()!.id
+                : 'nova-proposta'
+            "
+          >
             @if (previousProposal(); as previous) {
-              <h2 class="professional-request-detail__form-title">Reenviar proposta</h2>
+              <h2 class="professional-request-detail__form-title">
+                Reenviar proposta
+              </h2>
               <ui-notice>
                 {{
-                  previous.status === 'recusada'
-                    ? 'O paciente recusou a sua proposta anterior.'
-                    : 'Você cancelou a sua proposta anterior.'
+                  previous.status === "recusada"
+                    ? "O paciente recusou a sua proposta anterior."
+                    : "Você cancelou a sua proposta anterior."
                 }}
-                O valor e a abordagem dela já estão preenchidos: ajuste o que quiser, escolha o prazo e envie.
+                O valor e a abordagem dela já estão preenchidos: ajuste o que
+                quiser, escolha o prazo e envie.
               </ui-notice>
 
               <app-blocked-notice role="professional"></app-blocked-notice>
@@ -95,7 +149,9 @@
                 (submitted)="submit($event)"
               ></app-proposal-form>
             } @else {
-              <h2 class="professional-request-detail__form-title">Enviar proposta</h2>
+              <h2 class="professional-request-detail__form-title">
+                Enviar proposta
+              </h2>
 
               <app-blocked-notice role="professional"></app-blocked-notice>
               <app-proposal-form
@@ -107,7 +163,9 @@
             }
           </ui-card>
         } @else {
-          <ui-empty-state title="Esta solicitação não está mais recebendo propostas."></ui-empty-state>
+          <ui-empty-state
+            title="Esta solicitação não está mais recebendo propostas."
+          ></ui-empty-state>
         }
       </section>
     }

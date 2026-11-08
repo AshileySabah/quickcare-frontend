@@ -66,9 +66,6 @@ export interface Professional extends BaseUser {
   phone: string;
   cpf: string;
   cnpj?: string;
-  category: ProfessionalCategory;
-  specialtyIds: string[];
-  registrationNumber?: string;
   birthDate: string;
   gender: Gender;
   emergencyContacts: EmergencyContact[];

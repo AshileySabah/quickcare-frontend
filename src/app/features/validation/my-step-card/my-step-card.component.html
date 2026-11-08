@@ -36,12 +36,11 @@
         [step]="step()"
         [data]="data()"
         [ufOptions]="ufOptions()"
-        [registrationLabel]="registrationLabel()"
         (resubmitted)="onResubmitted($event)"
         (cancelled)="editing.set(false)"
       ></app-resubmit-step-form>
     } @else if (step()) {
-      <app-step-data [type]="type()" [data]="data()" [registrationLabel]="registrationLabel()"></app-step-data>
+      <app-step-data [type]="type()" [data]="data()" [practiceArea]="step()?.practiceArea ?? null"></app-step-data>
     } @else if (emptyText()) {
       <p class="my-step-card__muted">{{ emptyText() }}</p>
     }

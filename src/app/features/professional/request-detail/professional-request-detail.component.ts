@@ -64,15 +64,28 @@ export class ProfessionalRequestDetailComponent {
 
   protected readonly pageState = signal<PageState>('loading');
   protected readonly request = signal<ServiceRequest | null>(null);
-  protected readonly existingProposal = signal<Proposal | null>(null);
+  protected readonly activeProposals = signal<Proposal[]>([]);
+  protected readonly existingProposal = computed<Proposal | null>(
+    () => this.activeProposals().find((proposal) => proposal.status === 'aceita') ?? this.activeProposals()[0] ?? null,
+  );
   protected readonly previousProposal = signal<Proposal | null>(null);
+  protected readonly freePracticeAreas = computed(() => this.request()?.practiceAreasForProposal ?? []);
   protected readonly patientUnavailable = computed(
     () => !!(this.existingProposal() ?? this.previousProposal())?.request.patientUnavailable,
   );
   protected readonly resendValue = computed<ProposalInput | null>(() => {
     const previous = this.previousProposal();
-    return previous ? { price: previous.price, approach: previous.approach, start: '', end: '' } : null;
+    return previous
+      ? {
+          price: previous.price,
+          approach: previous.approach,
+          start: '',
+          end: '',
+          practiceAreaId: previous.professional.practiceAreaId,
+        }
+      : null;
   });
+  private cancellingProposal: Proposal | null = null;
   protected readonly patient = signal<PatientPublicProfile | null>(null);
   protected readonly isSubmitting = signal(false);
   protected readonly isCancelling = signal(false);
@@ -98,10 +111,7 @@ export class ProfessionalRequestDetailComponent {
 
         this.proposalService.listForRequest(this.requestId).subscribe({
           next: (proposals) => {
-            this.existingProposal.set(
-              proposals.find((proposal) => proposal.status === 'pendente' || proposal.status === 'aceita') ?? null,
-            );
-            this.previousProposal.set(resendBase(proposals));
+            this.applyProposals(proposals);
             this.loadPatient();
             this.pageState.set('filled');
           },
@@ -116,12 +126,9 @@ export class ProfessionalRequestDetailComponent {
     this.isSubmitting.set(true);
 
     this.proposalService.submit(this.requestId, input).subscribe({
-      next: (proposal) => {
+      next: () => {
         this.isSubmitting.set(false);
-        this.existingProposal.set(proposal);
-        this.previousProposal.set(null);
-        this.request.update((request) => (request ? { ...request, status: proposal.request.status } : request));
-        this.loadPatient();
+        this.refresh();
         this.toastService.success('Proposta enviada com sucesso!');
       },
       error: (error: Error) => {
@@ -162,14 +169,20 @@ export class ProfessionalRequestDetailComponent {
   protected refresh(): void {
     this.requestService.getById(this.requestId).subscribe((request) => request && this.request.set(request));
     this.proposalService.listForRequest(this.requestId).subscribe((proposals) => {
-      this.existingProposal.set(
-        proposals.find((proposal) => proposal.status === 'pendente' || proposal.status === 'aceita') ?? null,
-      );
-      this.previousProposal.set(resendBase(proposals));
+      this.applyProposals(proposals);
+      this.loadPatient();
     });
   }
 
+  private applyProposals(proposals: Proposal[]): void {
+    this.activeProposals.set(
+      proposals.filter((proposal) => proposal.status === 'pendente' || proposal.status === 'aceita'),
+    );
+    this.previousProposal.set(resendBase(proposals));
+  }
+
   protected askToCancel(proposal: Proposal): void {
+    this.cancellingProposal = proposal;
     if (proposal.status === 'aceita') {
       this.confirmingCancel.set(true);
     } else {
@@ -178,7 +191,7 @@ export class ProfessionalRequestDetailComponent {
   }
 
   protected confirmCancel(): void {
-    const proposal = this.existingProposal();
+    const proposal = this.cancellingProposal;
     if (!proposal) {
       return;
     }
@@ -186,13 +199,12 @@ export class ProfessionalRequestDetailComponent {
     this.isCancelling.set(true);
 
     this.proposalService.cancel(proposal.id).subscribe({
-      next: (cancelled) => {
+      next: () => {
         this.isCancelling.set(false);
         this.confirmingCancel.set(false);
-        this.existingProposal.set(null);
-        this.previousProposal.set(cancelled);
+        this.cancellingProposal = null;
         this.patient.set(null);
-        this.request.update((request) => (request ? { ...request, status: cancelled.request.status } : request));
+        this.refresh();
         this.toastService.info('Proposta cancelada.');
       },
       error: (error: Error) => {

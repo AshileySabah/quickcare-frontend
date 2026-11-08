@@ -36,23 +36,9 @@ describe('FileReplacerComponent', () => {
     (element.querySelector('button[aria-label="Substituir rg-antigo.pdf"]') as HTMLButtonElement).click();
     fixture.detectChanges();
 
-    expect(element.textContent).toContain('Substituindo rg-antigo.pdf');
+    expect(element.textContent).toContain('Escolha o arquivo que vai substituir rg-antigo.pdf');
     expect(element.querySelector('input[type="file"]')).not.toBeNull();
-  });
-
-  it('"Manter o atual" volta para o documento atual sem arquivo novo', () => {
-    const fixture = render(CURRENT);
-    const changes: (File | null)[] = [];
-    fixture.componentInstance.fileChange.subscribe((file) => changes.push(file));
-    const element: HTMLElement = fixture.nativeElement;
-
-    (element.querySelector('button[aria-label="Substituir rg-antigo.pdf"]') as HTMLButtonElement).click();
-    fixture.detectChanges();
-    (element.querySelector('.ui-file-replacer__undo') as HTMLButtonElement).click();
-    fixture.detectChanges();
-
-    expect(element.querySelector('input[type="file"]')).toBeNull();
-    expect(changes).toEqual([null]);
+    expect(element.textContent).not.toContain('Manter o atual');
   });
 
   it('sem documento atual, mostra direto o seletor', () => {

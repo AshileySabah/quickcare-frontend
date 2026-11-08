@@ -48,8 +48,8 @@
                   <ui-validation-status-badge [status]="entry.status"></ui-validation-status-badge>
                 }
               </div>
-              @if (entry.category) {
-                <span class="admin-dashboard__specialty">{{ categoryLabel(entry) }}</span>
+              @if (entry.practiceAreas.length > 0) {
+                <span class="admin-dashboard__specialty">{{ practiceAreasLabel(entry) }}</span>
               }
               <p class="admin-dashboard__registration">{{ entry.email }} · {{ pendingStepsLabel(entry) }}</p>
               <p class="admin-dashboard__date">Cadastrado em {{ entry.registeredAt | date: 'dd/MM/yyyy' }}</p>

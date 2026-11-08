@@ -1,0 +1,40 @@
+﻿@use 'tokens' as tokens;
+@use 'patterns/form' as form;
+
+.practice-areas-card__title {
+  @include form.section-title;
+}
+
+.practice-areas-card__subtitle {
+  margin: 0 0 tokens.space(4);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.practice-areas-card__item {
+  padding: tokens.space(4) 0;
+  border-top: 1px solid tokens.color('gray', 200);
+}
+
+.practice-areas-card__item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+  margin-bottom: tokens.space(3);
+}
+
+.practice-areas-card__item-title {
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 800);
+}
+
+.practice-areas-card__error {
+  @include form.field-error;
+}
+
+.practice-areas-card__actions {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: tokens.space(3);
+}

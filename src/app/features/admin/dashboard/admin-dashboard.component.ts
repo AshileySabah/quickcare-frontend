@@ -1,8 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ListViewState, ProfessionalCategoryInfo, ValidationProfile, ValidationStatus, ValidationSummary } from '../../../core/models';
-import { SpecialtyService } from '../../../core/services/specialty.service';
+import { ListViewState, ValidationProfile, ValidationStatus, ValidationSummary } from '../../../core/models';
 import { ValidationService } from '../../../core/services/validation.service';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -50,7 +49,6 @@ const STATUS_FILTERS: FilterChip<StatusFilter>[] = [
 export class AdminDashboardComponent {
   private readonly router = inject(Router);
   private readonly validationService = inject(ValidationService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly profile = signal<ValidationProfile>(
     inject(ActivatedRoute).snapshot.queryParamMap.get('perfil') === PROFILE_PARAM.patient ? 'patient' : 'professional',
@@ -62,10 +60,8 @@ export class AdminDashboardComponent {
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly entries = signal<ValidationSummary[]>([]);
   protected readonly pager = createPagination(this.entries);
-  private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   constructor() {
-    this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
     this.load();
   }
 
@@ -96,8 +92,8 @@ export class AdminDashboardComponent {
     });
   }
 
-  protected categoryLabel(entry: ValidationSummary): string {
-    return this.categories().find((category) => category.value === entry.category)?.label ?? entry.category ?? '';
+  protected practiceAreasLabel(entry: ValidationSummary): string {
+    return entry.practiceAreas.join(' · ');
   }
 
   protected pendingStepsLabel(entry: ValidationSummary): string {

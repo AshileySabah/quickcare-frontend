@@ -8,20 +8,15 @@ import {
   AttendanceModality,
   EmergencyContact,
   PatientPublicProfile,
-  ProfessionalCategory,
   ProfessionalPublicProfile,
 } from '../models';
+import { AtuacaoApi, toPracticeArea } from './practice-area.service';
 
 interface PerfilPublicoProfissionalApi {
   id: number;
   nome: string;
   avatarUrl: string | null;
-  categoria: ProfessionalCategory;
-  categoriaRotulo: string;
-  especialidades: string[];
-  siglaRegistro: string | null;
-  registroProfissional: string | null;
-  registroProfissionalUf: string | null;
+  atuacoes: AtuacaoApi[];
   modalidadeAtendimento: AttendanceModality;
   cidade: string;
   uf: string;
@@ -80,12 +75,7 @@ function toProfessionalProfile(api: PerfilPublicoProfissionalApi): ProfessionalP
     id: String(api.id),
     name: api.nome,
     avatarUrl: api.avatarUrl ?? undefined,
-    category: api.categoria,
-    categoryLabel: api.categoriaRotulo,
-    specialties: api.especialidades,
-    registrationLabel: api.siglaRegistro,
-    registrationNumber: api.registroProfissional ?? undefined,
-    registrationUf: api.registroProfissionalUf ?? undefined,
+    practiceAreas: (api.atuacoes ?? []).map(toPracticeArea),
     attendanceModality: api.modalidadeAtendimento,
     city: api.cidade,
     state: api.uf,

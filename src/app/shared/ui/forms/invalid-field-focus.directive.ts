@@ -29,7 +29,7 @@ export class InvalidFieldFocusDirective {
     const injector = inject(Injector);
 
     formGroup.ngSubmit.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(() => {
-      const invalid = formGroup.invalid;
+      const invalid = formGroup.invalid === true;
       if (invalid) {
         formGroup.control.markAllAsTouched();
       }

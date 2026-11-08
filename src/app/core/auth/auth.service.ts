@@ -10,8 +10,8 @@ import {
   Gender,
   IdentityDocumentType,
   Patient,
+  PracticeAreaInput,
   Professional,
-  ProfessionalCategory,
   ProfileSummary,
   RegistrationDocument,
   AttendanceModality,
@@ -28,6 +28,7 @@ import {
   RedefinirSenhaApiResponse,
 } from './auth-api.model';
 import { normalizeError } from '../http/api-error';
+import { toAtuacaoPayload } from '../services/practice-area.service';
 
 export interface IdentityDocumentInput {
   identityDocumentType: IdentityDocumentType;
@@ -59,10 +60,7 @@ export interface PatientProfileInput {
 
 export interface ProfessionalProfileInput {
   cnpj?: string;
-  category: ProfessionalCategory;
-  specialtyIds: string[];
-  registrationNumber?: string;
-  registrationUf?: string;
+  practiceAreas: PracticeAreaInput[];
   birthDate: string;
   gender: Gender;
   emergencyContacts: EmergencyContact[];
@@ -301,8 +299,6 @@ export class AuthService {
         avatarUrl: response.avatarUrl ?? undefined,
         phone: '',
         cpf: '',
-        category: 'OUTRO',
-        specialtyIds: [],
         birthDate: '',
         gender: 'PREFIRO_NAO_INFORMAR',
         emergencyContacts: [],
@@ -362,7 +358,7 @@ export class AuthService {
     return this.http
       .post<CadastroApiResponse>(
         `${environment.apiUrl}/usuarios/cadastro/profissional`,
-        toFormData(dados, input.documents, input.avatar),
+        toFormData(dados, professionalDocuments(input), input.avatar),
         { withCredentials: true },
       )
       .pipe(
@@ -383,7 +379,7 @@ export class AuthService {
   }
 
   createProfessionalProfile(input: ProfessionalProfileInput): Observable<User> {
-    return this.createProfile('profissional', toFormData(professionalProfilePayload(input), input.documents));
+    return this.createProfile('profissional', toFormData(professionalProfilePayload(input), professionalDocuments(input)));
   }
 
   private createProfile(tipo: 'paciente' | 'profissional', formData: FormData): Observable<User> {
@@ -485,14 +481,18 @@ function professionalProfilePayload(input: ProfessionalProfileInput) {
   return {
     ...profileBasePayload(input),
     cnpj: input.cnpj || undefined,
-    categoria: input.category,
-    especialidadeIds: input.specialtyIds.map(Number),
-    registroProfissional: input.registrationNumber || undefined,
-    registroProfissionalUf: input.registrationUf || undefined,
+    atuacoes: input.practiceAreas.map(toAtuacaoPayload),
     possuiSeguroResponsabilidadeCivil: input.hasLiabilityInsurance,
     modalidadeAtendimento: input.modalidadeAtendimento,
     raioAtendimentoKm: input.raioAtendimentoKm,
   };
+}
+
+function professionalDocuments(input: ProfessionalProfileInput): RegistrationDocument[] {
+  const registros = input.practiceAreas
+    .filter((area) => !!area.document)
+    .map((area) => ({ file: area.document as File, type: 'REGISTRO_PROFISSIONAL' as const }));
+  return [...input.documents.filter((document) => document.type !== 'REGISTRO_PROFISSIONAL'), ...registros];
 }
 
 function toFormData(dados: object, documents: RegistrationDocument[], avatar?: Blob): FormData {

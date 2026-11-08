@@ -1,4 +1,5 @@
-import { Address, Gender, IdentityDocumentType, ProfessionalCategory, ValidationStatus } from './user.model';
+import { PracticeArea } from './practice-area.model';
+import { Address, Gender, IdentityDocumentType, ValidationStatus } from './user.model';
 
 export type ValidationProfile = 'patient' | 'professional';
 
@@ -19,8 +20,10 @@ export interface StoredFile {
 
 export interface ValidationStep {
   id: string;
+  key: string;
   type: ValidationStepType;
   label: string;
+  practiceArea: PracticeArea | null;
   status: ValidationStepStatus;
   justification: string | null;
   document: StoredFile | null;
@@ -43,11 +46,8 @@ export interface RegistrationData {
   identityDocumentNumber: string | null;
   identityDocumentUf: string | null;
   address: Address;
-  category: ProfessionalCategory | null;
-  specialties: string[];
+  practiceAreas: PracticeArea[];
   cnpj: string | null;
-  registrationNumber: string | null;
-  registrationUf: string | null;
 }
 
 export interface ValidationDetail {
@@ -55,6 +55,7 @@ export interface ValidationDetail {
   profile: ValidationProfile;
   status: ValidationStatus;
   revalidating: boolean;
+  creationLocked: boolean;
   registeredAt: string;
   data: RegistrationData;
   steps: ValidationStep[];
@@ -65,7 +66,7 @@ export interface ValidationSummary {
   profile: ValidationProfile;
   name: string;
   email: string;
-  category: ProfessionalCategory | null;
+  practiceAreas: string[];
   status: ValidationStatus;
   revalidating: boolean;
   registeredAt: string;

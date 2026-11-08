@@ -1,0 +1,141 @@
+<ui-card>
+  <div class="practice-areas-manager">
+    <header class="practice-areas-manager__header">
+      <div>
+        <h2 class="practice-areas-manager__title">Atuação profissional</h2>
+        <p class="practice-areas-manager__subtitle">
+          Suas categorias e especialidades. O registro de cada atuação passa pela validação do administrador; para
+          alterar o número do registro, use a tela Documentos.
+        </p>
+      </div>
+      @if (viewState() === 'ready' && !including()) {
+        <ui-button variant="secondary" size="sm" (click)="startIncluding()">
+          <ui-icon name="plus"></ui-icon>
+          Incluir atuação
+        </ui-button>
+      }
+    </header>
+
+    @switch (viewState()) {
+      @case ('loading') {
+        <ui-skeleton-list variant="form"></ui-skeleton-list>
+      }
+      @case ('error') {
+        <ui-error-state (retry)="load()"></ui-error-state>
+      }
+      @case ('ready') {
+        @for (area of areas(); track area.area.id) {
+          <article class="practice-areas-manager__item" [attr.aria-label]="area.area.label">
+            <div class="practice-areas-manager__item-header">
+              <div class="practice-areas-manager__item-title-row">
+                <h3 class="practice-areas-manager__item-title">{{ area.area.label }}</h3>
+                @if (area.registrationStatus; as status) {
+                  <ui-validation-status-badge [status]="status"></ui-validation-status-badge>
+                } @else {
+                  <span class="practice-areas-manager__muted">Sem registro: liberada</span>
+                }
+              </div>
+              @if (editingId() !== area.area.id) {
+                <div class="practice-areas-manager__actions">
+                  @if (area.area.category !== 'OUTRO') {
+                    <ui-button
+                      variant="ghost"
+                      size="sm"
+                      [ariaLabel]="'Editar especialidades de ' + area.area.label"
+                      [disabled]="busyId() !== null"
+                      (click)="startEditing(area)"
+                    >
+                      <ui-icon name="pencil"></ui-icon>
+                      Editar
+                    </ui-button>
+                  }
+                  @if (canRemove()) {
+                    <ui-button
+                      variant="danger-outline"
+                      size="sm"
+                      [ariaLabel]="'Remover ' + area.area.label"
+                      [loading]="busyId() === area.area.id"
+                      [disabled]="busyId() !== null"
+                      (click)="askToRemove(area)"
+                    >
+                      <ui-icon name="trash"></ui-icon>
+                      Remover
+                    </ui-button>
+                  }
+                </div>
+              }
+            </div>
+
+            @if (editingId() === area.area.id) {
+              <div
+                class="practice-areas-manager__edit"
+                [formGroup]="specialtiesForm"
+                (keydown.enter)="onSpecialtiesEnter($event, area)"
+              >
+                <ui-multi-select
+                  label="Especialidades"
+                  formControlName="specialtyIds"
+                  [options]="specialtyOptionsFor(area)"
+                  [required]="true"
+                  [errorMessage]="specialtiesControl.touched && specialtiesControl.invalid ? 'Selecione ao menos uma especialidade.' : null"
+                ></ui-multi-select>
+                <div class="practice-areas-manager__form-actions">
+                  <ui-button variant="secondary" [disabled]="busyId() !== null || isSaving()" (click)="editingId.set(null)">
+                    Cancelar
+                  </ui-button>
+                  <ui-button [loading]="busyId() === area.area.id || isSaving()" (click)="saveSpecialties(area)">
+                    Salvar especialidades
+                  </ui-button>
+                </div>
+              </div>
+            } @else {
+              <p class="practice-areas-manager__specialties">{{ specialtyNames(area) }}</p>
+              @if (area.area.registrationNumber) {
+                <p class="practice-areas-manager__muted">
+                  {{ area.area.registrationLabel }} {{ area.area.registrationNumber }}/{{ area.area.registrationUf }}
+                </p>
+              }
+              @if (!area.released) {
+                <p class="practice-areas-manager__note">
+                  Enquanto o registro não for aprovado, você não vê nem envia propostas para vagas desta atuação.
+                </p>
+              }
+            }
+          </article>
+        }
+
+        @if (including()) {
+          <div class="practice-areas-manager__include" [formGroup]="includeForm" (keydown.enter)="onIncludeEnter($event)">
+            <h3 class="practice-areas-manager__item-title">Nova atuação</h3>
+            <app-practice-area-fields
+              [group]="includeForm"
+              [existingKeys]="existingKeys()"
+              [categoryOptions]="categoryOptions()"
+              [specialties]="specialties()"
+              [ufOptions]="ufOptions()"
+            ></app-practice-area-fields>
+            <div class="practice-areas-manager__form-actions">
+              <ui-button variant="secondary" [disabled]="isSaving()" (click)="including.set(false)">Cancelar</ui-button>
+              <ui-button [loading]="isSaving()" (click)="include()">Incluir atuação</ui-button>
+            </div>
+          </div>
+        }
+      }
+    }
+  </div>
+</ui-card>
+
+<ui-confirm-dialog
+  [open]="pending() !== null"
+  [titleText]="dialogTitle()"
+  icon="alert"
+  [message]="dialogMessage()"
+  [consequences]="dialogConsequences()"
+  [warning]="dialogWarning()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [cancelLabel]="dialogCancelLabel()"
+  confirmVariant="danger"
+  [loading]="isSaving()"
+  (confirmed)="confirmPending()"
+  (closed)="pending.set(null)"
+></ui-confirm-dialog>

@@ -1,14 +1,7 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import {
-  ProfessionalCategoryInfo,
-  ValidationDetail,
-  ValidationProfile,
-  ValidationStep,
-  ValidationStepType,
-} from '../../../core/models';
-import { SpecialtyService } from '../../../core/services/specialty.service';
+import { PracticeArea, ValidationDetail, ValidationProfile, ValidationStep } from '../../../core/models';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
@@ -44,15 +37,13 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 export class AdminValidationDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly validationService = inject(ValidationService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   protected readonly profile = this.route.snapshot.data['profile'] as ValidationProfile;
   private readonly validationId = this.route.snapshot.paramMap.get('id') ?? '';
 
   protected readonly pageState = signal<PageState>('loading');
   protected readonly detail = signal<ValidationDetail | null>(null);
-  protected readonly preValidations = signal<Partial<Record<ValidationStepType, PreValidationState>>>({});
-  private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
+  protected readonly preValidations = signal<Partial<Record<string, PreValidationState>>>({});
 
   protected readonly pendingSteps = computed(() => this.detail()?.steps.filter((step) => step.status === 'pendente') ?? []);
   protected readonly visibleSteps = computed(() => {
@@ -72,9 +63,6 @@ export class AdminValidationDetailComponent {
   );
 
   constructor() {
-    if (this.profile === 'professional') {
-      this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
-    }
     this.load();
   }
 
@@ -98,37 +86,34 @@ export class AdminValidationDetailComponent {
 
   protected preValidateAll(): void {
     for (const step of this.pendingSteps()) {
-      this.preValidate(step.type);
+      this.preValidate(step);
     }
   }
 
   protected preValidationOf(step: ValidationStep): PreValidationState | undefined {
-    return this.preValidations()[step.type];
+    return this.preValidations()[step.key];
   }
 
-  protected preValidate(stepType: ValidationStepType): void {
-    this.setPreValidation(stepType, { status: 'loading' });
+  protected preValidate(step: ValidationStep): void {
+    this.setPreValidation(step.key, { status: 'loading' });
 
-    this.validationService.preValidate(this.profile, this.validationId, stepType).subscribe({
-      next: (result) => this.setPreValidation(stepType, { status: 'done', result }),
-      error: (error: Error) => this.setPreValidation(stepType, { status: 'error', message: error.message }),
+    this.validationService.preValidate(this.profile, this.validationId, step).subscribe({
+      next: (result) => this.setPreValidation(step.key, { status: 'done', result }),
+      error: (error: Error) => this.setPreValidation(step.key, { status: 'error', message: error.message }),
     });
   }
 
-  protected onDecided(stepType: ValidationStepType, detail: ValidationDetail): void {
+  protected onDecided(step: ValidationStep, detail: ValidationDetail): void {
     this.detail.set(detail);
-    this.preValidations.update(({ [stepType]: _decided, ...others }) => others);
+    this.preValidations.update(({ [step.key]: _decided, ...others }) => others);
   }
 
-  protected categoryLabel(detail: ValidationDetail): string {
-    return this.categories().find((category) => category.value === detail.data.category)?.label ?? detail.data.category ?? '';
+  protected specialtyNames(area: PracticeArea): string {
+    return area.specialties.map((specialty) => specialty.name).join(', ');
   }
 
-  protected registrationLabel(detail: ValidationDetail): string {
-    return (
-      this.categories().find((category) => category.value === detail.data.category)?.registrationLabel ??
-      'Registro profissional'
-    );
+  protected practiceAreasLabel(detail: ValidationDetail): string {
+    return detail.data.practiceAreas.map((area) => area.label).join(', ') || 'Profissional';
   }
 
   protected formatCep(cep: string): string {
@@ -139,7 +124,7 @@ export class AdminValidationDetailComponent {
     return phone ? formatMasked('phone', phone) : 'Não informado';
   }
 
-  private setPreValidation(stepType: ValidationStepType, state: PreValidationState): void {
-    this.preValidations.update((current) => ({ ...current, [stepType]: state }));
+  private setPreValidation(key: string, state: PreValidationState): void {
+    this.preValidations.update((current) => ({ ...current, [key]: state }));
   }
 }

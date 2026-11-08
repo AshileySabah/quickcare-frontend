@@ -1,7 +1,6 @@
 import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { ProfessionalCategoryInfo, ValidationDetail, ValidationProfile, ValidationStepStatus } from '../../../core/models';
+import { ValidationDetail, ValidationProfile, ValidationStepStatus } from '../../../core/models';
 import { FilterChip, FilterChipsComponent } from '../../../shared/ui/filter-chips/filter-chips.component';
-import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
@@ -28,14 +27,12 @@ const STATUS_FILTERS: FilterChip<ValidationStepStatus | null>[] = [
 export class MyValidationComponent implements OnInit {
   private readonly validationService = inject(ValidationService);
   private readonly ufService = inject(UfService);
-  private readonly specialtyService = inject(SpecialtyService);
 
   profile = input.required<ValidationProfile>();
 
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly detail = signal<ValidationDetail | null>(null);
   protected readonly ufOptions = signal<SelectOption[]>([]);
-  private readonly categories = signal<ProfessionalCategoryInfo[]>([]);
 
   protected readonly statusFilters = STATUS_FILTERS;
   protected readonly statusFilter = signal<ValidationStepStatus | null>(null);
@@ -60,9 +57,6 @@ export class MyValidationComponent implements OnInit {
 
   ngOnInit(): void {
     this.ufService.list().subscribe((ufs) => this.ufOptions.set(ufs));
-    if (this.profile() === 'professional') {
-      this.specialtyService.listCategories().subscribe((categories) => this.categories.set(categories));
-    }
     this.load();
   }
 
@@ -75,12 +69,5 @@ export class MyValidationComponent implements OnInit {
       },
       error: () => this.viewState.set('error'),
     });
-  }
-
-  protected registrationLabel(detail: ValidationDetail): string {
-    return (
-      this.categories().find((category) => category.value === detail.data.category)?.registrationLabel ??
-      'Registro profissional'
-    );
   }
 }

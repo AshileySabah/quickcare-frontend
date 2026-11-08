@@ -54,10 +54,6 @@ export function missingDocumentMessage(documents: { type: string }[], required: 
 const PROFILE_MESSAGES: FieldMessages = {
   cpf: { pattern: 'CPF deve conter 11 dígitos, sem pontuação.' },
   cnpj: { pattern: 'CNPJ deve conter 14 dígitos, sem pontuação.' },
-  category: { required: 'Selecione uma categoria profissional.' },
-  specialtyIds: { required: 'Selecione ao menos uma especialidade.' },
-  specialtySingle: { required: 'Selecione ao menos uma especialidade.' },
-  registrationNumber: { required: 'Informe o número de registro profissional.' },
   raioAtendimentoKm: { min: 'Informe um raio de atendimento válido.' },
   infoConfirmedTrue: { required: 'Esta confirmação é obrigatória.' },
   lgpdConsent: { required: 'Esta confirmação é obrigatória.' },

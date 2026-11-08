@@ -5,18 +5,11 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
 import { AuthService } from '../auth/auth.service';
-import { Address, AttendanceModality, EmergencyContact, Gender, ProfessionalCategory } from '../models';
+import { Address, AttendanceModality, EmergencyContact, Gender } from '../models';
 
 export interface ProfileDeclarations {
   infoConfirmedTrue: boolean;
   lgpdConsent: boolean;
-}
-
-export interface ProfessionalRegistration {
-  category: ProfessionalCategory;
-  specialtyIds: string[];
-  registrationNumber: string;
-  registrationUf: string;
 }
 
 interface BaseProfile {
@@ -41,7 +34,6 @@ export interface ProfessionalProfile extends BaseProfile {
   hasLiabilityInsurance: boolean;
   modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
-  registration: ProfessionalRegistration;
 }
 
 interface BaseProfileUpdate {
@@ -88,13 +80,6 @@ interface BasePerfilApi {
   declaracoes?: { confirmacaoInformacoesVerdadeiras: boolean; consentimentoLgpd: boolean };
 }
 
-interface RegistroApi {
-  categoria: ProfessionalCategory;
-  especialidadeIds: number[];
-  registroProfissional: string | null;
-  registroProfissionalUf: string | null;
-}
-
 interface PerfilPacienteApi extends BasePerfilApi {
   alergias: string | null;
   condicoesSaude: string | null;
@@ -105,7 +90,6 @@ interface PerfilProfissionalApi extends BasePerfilApi {
   possuiSeguroResponsabilidadeCivil: boolean;
   modalidadeAtendimento: AttendanceModality;
   raioAtendimentoKm: number | null;
-  registro?: RegistroApi;
 }
 
 interface PerfilAtualizadoApi<T> {
@@ -193,15 +177,6 @@ function toBaseProfile(api: BasePerfilApi): BaseProfile {
   };
 }
 
-function toRegistration(api: RegistroApi | undefined): ProfessionalRegistration {
-  return {
-    category: api?.categoria ?? ('' as ProfessionalCategory),
-    specialtyIds: (api?.especialidadeIds ?? []).map(String),
-    registrationNumber: api?.registroProfissional ?? '',
-    registrationUf: api?.registroProfissionalUf ?? '',
-  };
-}
-
 function toPatientProfile(api: PerfilPacienteApi): PatientProfile {
   return {
     ...toBaseProfile(api),
@@ -217,7 +192,6 @@ function toProfessionalProfile(api: PerfilProfissionalApi): ProfessionalProfile 
     hasLiabilityInsurance: api.possuiSeguroResponsabilidadeCivil,
     modalidadeAtendimento: api.modalidadeAtendimento,
     raioAtendimentoKm: api.raioAtendimentoKm,
-    registration: toRegistration(api.registro),
   };
 }
 

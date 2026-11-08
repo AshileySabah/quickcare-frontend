@@ -11,6 +11,8 @@ export interface ProposalProfessional {
   id: string;
   name: string;
   avatarUrl?: string;
+  practiceAreaId: string;
+  practiceAreaLabel: string;
   category: ProfessionalCategory;
   categoryLabel: string;
   specialties: Specialty[];

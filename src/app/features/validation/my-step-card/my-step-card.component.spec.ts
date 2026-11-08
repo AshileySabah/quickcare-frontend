@@ -19,18 +19,17 @@ const DATA: RegistrationData = {
   identityDocumentNumber: '02650306461',
   identityDocumentUf: null,
   address: { cep: '01311000', street: 'Rua Augusta', number: '1000', neighborhood: 'Consolação', city: 'São Paulo', state: 'SP' },
-  category: null,
-  specialties: [],
+  practiceAreas: [],
   cnpj: null,
-  registrationNumber: null,
-  registrationUf: null,
 };
 
 function identity(status: ValidationStep['status']): ValidationStep {
   return {
     id: '1',
+    key: 'IDENTIDADE',
     type: 'IDENTIDADE',
     label: 'Identidade',
+    practiceArea: null,
     status,
     justification: status === 'reprovada' ? 'Foto ilegível.' : null,
     document: {
@@ -50,7 +49,7 @@ function identity(status: ValidationStep['status']): ValidationStep {
 }
 
 describe('MyStepCardComponent', () => {
-  function render(step: ValidationStep) {
+  function render(step: ValidationStep, type: ValidationStep['type'] = 'IDENTIDADE', heading = 'Identidade') {
     TestBed.configureTestingModule({
       imports: [MyStepCardComponent],
       providers: [
@@ -62,8 +61,8 @@ describe('MyStepCardComponent', () => {
     });
     const fixture = TestBed.createComponent(MyStepCardComponent);
     fixture.componentRef.setInput('profile', 'patient');
-    fixture.componentRef.setInput('type', 'IDENTIDADE');
-    fixture.componentRef.setInput('heading', 'Identidade');
+    fixture.componentRef.setInput('type', type);
+    fixture.componentRef.setInput('heading', heading);
     fixture.componentRef.setInput('step', step);
     fixture.componentRef.setInput('data', DATA);
     fixture.detectChanges();
@@ -84,6 +83,30 @@ describe('MyStepCardComponent', () => {
     fixture.detectChanges();
 
     expect(element.querySelector('form')).not.toBeNull();
+  });
+
+  it('o card de registro mostra o número e as especialidades da atuação', () => {
+    const registro: ValidationStep = {
+      ...identity('pendente'),
+      key: 'REGISTRO_PROFISSIONAL:201',
+      type: 'REGISTRO_PROFISSIONAL',
+      label: 'Registro profissional — Médico(a)',
+      practiceArea: {
+        id: '201',
+        category: 'MEDICO',
+        categoryLabel: 'Médico(a)',
+        label: 'Médico(a)',
+        registrationLabel: 'CRM',
+        specialties: [{ id: '9', name: 'Clínica Médica', category: 'MEDICO' }],
+        registrationNumber: '98765',
+        registrationUf: 'SP',
+      },
+    };
+    const element: HTMLElement = render(registro, 'REGISTRO_PROFISSIONAL', registro.label).nativeElement;
+
+    expect(element.textContent).toContain('CRM');
+    expect(element.textContent).toContain('98765 / SP');
+    expect(element.textContent).toContain('Clínica Médica');
   });
 
   it('reprovada: mostra o motivo e já abre para corrigir', () => {

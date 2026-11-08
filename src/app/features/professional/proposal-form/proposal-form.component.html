@@ -1,5 +1,19 @@
 <form [formGroup]="form" (ngSubmit)="submit()">
   <ui-grid>
+    @if (choosesPracticeArea()) {
+      <ui-grid-item [xs]="12">
+        <ui-select
+          label="Vaga"
+          formControlName="practiceAreaId"
+          [options]="practiceAreaOptions()"
+          [required]="true"
+          placeholder="Escolha para qual vaga é a proposta"
+          hint="Esta solicitação tem vagas para mais de uma das suas atuações. Envie uma proposta para cada vaga que quiser ocupar."
+          [errorMessage]="fieldError('practiceAreaId')"
+        ></ui-select>
+      </ui-grid-item>
+    }
+
     <ui-grid-item [xs]="12" [sm]="6">
       <ui-input
         label="Preço (R$)"

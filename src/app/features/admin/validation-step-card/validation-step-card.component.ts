@@ -67,7 +67,6 @@ export class ValidationStepCardComponent {
   validationId = input.required<string>();
   step = input.required<ValidationStep>();
   data = input.required<RegistrationData>();
-  registrationLabel = input('Registro profissional');
   preValidation = input<PreValidationState | undefined>(undefined);
 
   preValidate = output<void>();
@@ -103,7 +102,7 @@ export class ValidationStepCardComponent {
 
   protected readonly lookupLink = computed(() => {
     const type = this.step().type;
-    return LOOKUP_LINKS[`${type}:${this.data().category}`] ?? LOOKUP_LINKS[type] ?? null;
+    return LOOKUP_LINKS[`${type}:${this.step().practiceArea?.category}`] ?? LOOKUP_LINKS[type] ?? null;
   });
 
   constructor() {
@@ -149,7 +148,7 @@ export class ValidationStepCardComponent {
     this.deciding.set(decision);
 
     this.validationService
-      .decide(this.profile(), this.validationId(), this.step().type, {
+      .decide(this.profile(), this.validationId(), this.step(), {
         decision,
         justification: this.form.controls.justification.value.trim(),
         attachment: this.attachment() ?? undefined,

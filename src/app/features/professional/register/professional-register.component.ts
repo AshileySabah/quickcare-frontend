@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import {
@@ -28,14 +28,12 @@ import {
   toAttendanceModality,
 } from '../../../core/forms/attendance-modality';
 import {
-  DocumentType,
-  Gender,
-  IdentityDocumentType,
-  ProfessionalCategory,
-  ProfessionalCategoryInfo,
-  Specialty,
-  User,
-} from '../../../core/models';
+  PracticeAreaGroup,
+  buildPracticeAreaGroup,
+  toPracticeAreaInput,
+  uniquePracticeAreasValidator,
+} from '../../../core/forms/practice-area-form';
+import { DocumentType, Gender, IdentityDocumentType, ProfessionalCategoryInfo, Specialty, User } from '../../../core/models';
 import { ProfileService } from '../../../core/services/profile.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
@@ -48,13 +46,24 @@ import { DeclarationsCardComponent } from '../../../shared/ui/register/declarati
 import { UploadedDocument } from '../../../shared/ui/forms/document-uploader/document-uploader.component';
 import { DocumentsCardComponent } from '../../../shared/ui/register/documents-card/documents-card.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
-import { MultiSelectOption } from '../../../shared/ui/forms/multi-select/multi-select.component';
 import { PasswordCardComponent } from '../../../shared/ui/register/password-card/password-card.component';
 import { ProfessionalPracticeCardComponent } from './professional-practice-card/professional-practice-card.component';
+import { PracticeAreasCardComponent } from '../practice-areas/practice-areas-card/practice-areas-card.component';
 import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+
+function invalidControls(control: AbstractControl, path = 'form'): { caminho: string; status: string; erros: unknown }[] {
+  const own = control.errors || control.status === 'PENDING' ? [{ caminho: path, status: control.status, erros: control.errors }] : [];
+  if (control instanceof FormGroup || control instanceof FormArray) {
+    return [
+      ...own,
+      ...Object.entries(control.controls).flatMap(([key, child]) => invalidControls(child as AbstractControl, `${path}.${key}`)),
+    ];
+  }
+  return control.invalid ? [{ caminho: path, status: control.status, erros: control.errors }] : own;
+}
 
 @Component({
   selector: 'app-professional-register',
@@ -71,6 +80,7 @@ import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-fie
     DocumentsCardComponent,
     EmergencyContactsCardComponent,
     PasswordCardComponent,
+    PracticeAreasCardComponent,
     ProfessionalPracticeCardComponent,
   ],
   templateUrl: './professional-register.component.html',
@@ -95,26 +105,15 @@ export class ProfessionalRegisterComponent implements OnInit {
 
   protected readonly categoryOptions = signal<ProfessionalCategoryInfo[]>([]);
   protected readonly ufOptions = signal<SelectOption[]>([]);
+  protected readonly specialties = signal<Specialty[]>([]);
 
-  private readonly specialties = signal<Specialty[]>([]);
-  private readonly selectedCategory = signal<ProfessionalCategory | ''>('');
   private readonly hasCnpj = signal(false);
-
-  protected readonly specialtyOptions = computed<MultiSelectOption[]>(() =>
-    this.specialties()
-      .filter((specialty) => specialty.category === this.selectedCategory())
-      .map((specialty) => ({ value: specialty.id, label: specialty.name })),
-  );
 
   protected readonly documentTypeOptions = computed<SelectOption[]>(() => {
     const options: SelectOption[] = [...PERSONAL_DOCUMENT_OPTIONS];
 
     if (this.hasCnpj()) {
       options.push({ value: 'VALIDACAO_CNPJ', label: 'CNPJ' });
-    }
-
-    if (this.selectedCategory() !== '' && this.selectedCategory() !== 'CUIDADOR') {
-      options.push({ value: 'REGISTRO_PROFISSIONAL', label: this.registrationLabel });
     }
 
     options.push({ value: 'OUTRO', label: 'Outro' });
@@ -141,11 +140,9 @@ export class ProfessionalRegisterComponent implements OnInit {
       identityDocumentNumber: ['', [Validators.required]],
       identityDocumentUf: [''],
       cnpj: ['', [Validators.pattern(/^\d{14}$/), cnpjValidator()]],
-      category: this.fb.nonNullable.control<ProfessionalCategory | ''>('', Validators.required),
-      specialtyIds: this.fb.nonNullable.control<string[]>([], Validators.required),
-      specialtySingle: [''],
-      registrationNumber: [''],
-      registrationUf: ['', [Validators.pattern(/^[A-Za-z]{2}$/)]],
+      practiceAreas: this.fb.array<PracticeAreaGroup>([buildPracticeAreaGroup(this.fb)], {
+        validators: uniquePracticeAreasValidator(),
+      }),
       birthDate: ['', Validators.required],
       gender: ['', Validators.required],
       emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
@@ -167,30 +164,6 @@ export class ProfessionalRegisterComponent implements OnInit {
 
   constructor() {
     requireRadiusWhenPresencial(this.form.controls.attendsPresencial, this.form.controls.raioAtendimentoKm);
-
-    this.form.controls.category.valueChanges.subscribe((category) => {
-      this.selectedCategory.set(category);
-      this.form.controls.specialtyIds.setValue([]);
-      this.form.controls.specialtySingle.setValue('');
-
-      const registrationControl = this.form.controls.registrationNumber;
-      const registrationUfControl = this.form.controls.registrationUf;
-      if (category === 'CUIDADOR' || category === '') {
-        registrationControl.clearValidators();
-        registrationUfControl.setValidators([Validators.pattern(/^[A-Za-z]{2}$/)]);
-      } else {
-        registrationControl.setValidators([Validators.required, Validators.maxLength(50)]);
-        registrationUfControl.setValidators([Validators.required, Validators.pattern(/^[A-Za-z]{2}$/)]);
-      }
-      registrationControl.updateValueAndValidity();
-      registrationUfControl.updateValueAndValidity();
-    });
-
-    this.form.controls.specialtySingle.valueChanges.subscribe((specialtyId) => {
-      if (this.form.controls.category.value === 'OUTRO') {
-        this.form.controls.specialtyIds.setValue(specialtyId ? [specialtyId] : []);
-      }
-    });
 
     this.form.controls.cnpj.valueChanges.subscribe((value) => this.hasCnpj.set(!!value));
 
@@ -222,22 +195,8 @@ export class ProfessionalRegisterComponent implements OnInit {
     });
   }
 
-  protected get isOutro(): boolean {
-    return this.form.controls.category.value === 'OUTRO';
-  }
-
-  protected get requiresRegistration(): boolean {
-    const category = this.form.controls.category.value;
-    return category !== '' && category !== 'CUIDADOR';
-  }
-
   protected get requiresCnpjDocument(): boolean {
     return !!this.form.controls.cnpj.value;
-  }
-
-  protected get registrationLabel(): string {
-    const category = this.form.controls.category.value;
-    return this.categoryOptions().find((option) => option.value === category)?.registrationLabel ?? 'Registro profissional';
   }
 
   protected get modalityError(): string | null {
@@ -258,11 +217,23 @@ export class ProfessionalRegisterComponent implements OnInit {
     if (this.requiresCnpjDocument) {
       requiredDocuments.push('VALIDACAO_CNPJ');
     }
-    if (this.requiresRegistration) {
-      requiredDocuments.push('REGISTRO_PROFISSIONAL');
-    }
     const missingDocument = missingDocumentMessage(documents, requiredDocuments);
     this.documentsError.set(missingDocument);
+
+    console.log('[cadastro profissional] criar conta', {
+      valido: this.form.valid,
+      status: this.form.status,
+      invalidos: invalidControls(this.form),
+      documentoFaltando: missingDocument,
+      documentos: documents.map((document) => ({ tipo: document.type, arquivo: document.file?.name })),
+      atuacoes: this.form.controls.practiceAreas.controls.map((group) => ({
+        ...group.getRawValue(),
+        document: group.controls.document.value?.name ?? null,
+        status: group.status,
+        erros: group.errors,
+      })),
+      valores: { ...this.form.getRawValue(), password: '***', confirmPassword: '***' },
+    });
 
     if (this.form.invalid || missingDocument) {
       this.form.markAllAsTouched();
@@ -279,10 +250,6 @@ export class ProfessionalRegisterComponent implements OnInit {
       identityDocumentNumber,
       identityDocumentUf,
       cnpj,
-      category,
-      specialtyIds,
-      registrationNumber,
-      registrationUf,
       birthDate,
       gender,
       emergencyContacts,
@@ -298,10 +265,7 @@ export class ProfessionalRegisterComponent implements OnInit {
 
     const profile: ProfessionalProfileInput = {
       cnpj: cnpj || undefined,
-      category: category as ProfessionalCategory,
-      specialtyIds,
-      registrationNumber: this.requiresRegistration ? registrationNumber : undefined,
-      registrationUf: this.requiresRegistration ? registrationUf : undefined,
+      practiceAreas: this.form.controls.practiceAreas.controls.map(toPracticeAreaInput),
       birthDate,
       gender: gender as Gender,
       emergencyContacts,

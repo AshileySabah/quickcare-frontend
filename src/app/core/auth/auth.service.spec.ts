@@ -93,8 +93,7 @@ describe('AuthService', () => {
 
     service
       .createProfessionalProfile({
-        category: 'CUIDADOR',
-        specialtyIds: ['7'],
+        practiceAreas: [{ category: 'CUIDADOR', specialtyIds: ['7'] }],
         birthDate: '1985-07-02',
         gender: 'FEMININO',
         emergencyContacts: [],
@@ -122,6 +121,59 @@ describe('AuthService', () => {
 
     expect(service.currentUser()?.role).toBe('professional');
     expect(service.profiles().length).toBe(2);
+  });
+
+  it('manda as atuações e o documento de registro de cada uma na ordem', async () => {
+    login(session({ perfis: [PACIENTE], ultimoPerfil: 'PACIENTE' }));
+    const cpf = new File(['a'], 'cpf.pdf', { type: 'application/pdf' });
+    const coren = new File(['b'], 'coren.pdf', { type: 'application/pdf' });
+    const crp = new File(['c'], 'crp.pdf', { type: 'application/pdf' });
+
+    service
+      .createProfessionalProfile({
+        practiceAreas: [
+          { category: 'ENFERMEIRO', specialtyIds: ['5'], registrationNumber: '123', registrationUf: 'SP', document: coren },
+          { category: 'CUIDADOR', specialtyIds: ['15'] },
+          { category: 'OUTRO', specialtyIds: ['18'], registrationNumber: 'CRP 1', registrationUf: 'SP', document: crp },
+        ],
+        birthDate: '1985-07-02',
+        gender: 'FEMININO',
+        emergencyContacts: [],
+        infoConfirmedTrue: true,
+        lgpdConsent: true,
+        hasLiabilityInsurance: false,
+        modalidadeAtendimento: 'REMOTO',
+        address: {
+          cep: '01310100',
+          street: 'Avenida Paulista',
+          number: '1500',
+          neighborhood: 'Bela Vista',
+          city: 'São Paulo',
+          state: 'SP',
+        },
+        documents: [{ file: cpf, type: 'COMPROVANTE_CPF' }],
+      })
+      .subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/perfis/profissional`);
+    const formData = req.request.body as FormData;
+    expect(formData.getAll('tiposDocumento')).toEqual([
+      'COMPROVANTE_CPF',
+      'REGISTRO_PROFISSIONAL',
+      'REGISTRO_PROFISSIONAL',
+    ]);
+    expect((formData.getAll('documentos') as File[]).map((documento) => documento.name)).toEqual([
+      'cpf.pdf',
+      'coren.pdf',
+      'crp.pdf',
+    ]);
+    const dados = JSON.parse(await (formData.get('dados') as Blob).text());
+    expect(dados.atuacoes).toEqual([
+      { categoria: 'ENFERMEIRO', especialidadeIds: [5], registroProfissional: '123', registroProfissionalUf: 'SP' },
+      { categoria: 'CUIDADOR', especialidadeIds: [15] },
+      { categoria: 'OUTRO', especialidadeIds: [18], registroProfissional: 'CRP 1', registroProfissionalUf: 'SP' },
+    ]);
+    req.flush(session({ perfis: [PACIENTE, PROFISSIONAL], ultimoPerfil: 'PROFISSIONAL' }));
   });
 
   it('atualiza o status de validação também no resumo do perfil', () => {

@@ -97,6 +97,16 @@
     }
   }
 
+  &--warning-outline {
+    background-color: transparent;
+    border-color: tokens.semantic('warning');
+    color: tokens.semantic('warning');
+
+    &:hover:not(:disabled) {
+      background-color: rgba(tokens.semantic('warning'), 0.08);
+    }
+  }
+
   &--inverse {
     background-color: tokens.color('gray', 0);
     color: tokens.color('teal', 700);
@@ -136,7 +146,8 @@
 .ui-button--secondary .ui-button__spinner,
 .ui-button--ghost .ui-button__spinner,
 .ui-button--danger-outline .ui-button__spinner,
-.ui-button--info-outline .ui-button__spinner {
+.ui-button--info-outline .ui-button__spinner,
+.ui-button--warning-outline .ui-button__spinner {
   border: 2px solid rgba(tokens.color('gray', 900), 0.15);
   border-top-color: tokens.color('gray', 700);
 }

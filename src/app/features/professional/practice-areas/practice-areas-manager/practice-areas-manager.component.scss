@@ -1,0 +1,91 @@
+﻿@use 'tokens' as tokens;
+@use 'patterns/form' as form;
+
+.practice-areas-manager {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+}
+
+.practice-areas-manager__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: tokens.space(3);
+}
+
+.practice-areas-manager__title {
+  @include form.section-title;
+}
+
+.practice-areas-manager__subtitle {
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.practice-areas-manager__item,
+.practice-areas-manager__include {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+  padding-top: tokens.space(4);
+  border-top: 1px solid tokens.color('gray', 200);
+}
+
+.practice-areas-manager__item-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(2);
+}
+
+.practice-areas-manager__item-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+}
+
+.practice-areas-manager__item-title {
+  margin: 0;
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 800);
+}
+
+.practice-areas-manager__actions,
+.practice-areas-manager__form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: tokens.space(2);
+}
+
+.practice-areas-manager__form-actions {
+  justify-content: flex-end;
+}
+
+.practice-areas-manager__edit {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}
+
+.practice-areas-manager__specialties {
+  margin: 0;
+  color: tokens.color('gray', 700);
+}
+
+.practice-areas-manager__muted {
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+}
+
+.practice-areas-manager__note {
+  margin: 0;
+  font-size: tokens.font-size('sm');
+  color: tokens.semantic('warning');
+}

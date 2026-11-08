@@ -25,15 +25,11 @@
           [showGender]="false"
         ></ui-basic-info-card>
 
+        <app-practice-areas-manager></app-practice-areas-manager>
+
         <ui-professional-practice-card
           [group]="form"
           [fieldError]="fieldError"
-          [categoryOptions]="categoryOptions()"
-          [specialtyOptions]="specialtyOptions()"
-          [ufOptions]="ufOptions()"
-          [isOutro]="isOutro()"
-          [requiresRegistration]="requiresRegistration()"
-          [registrationLabel]="registrationLabel()"
           [modalityError]="modalityError"
         ></ui-professional-practice-card>
 

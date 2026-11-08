@@ -20,7 +20,7 @@
             <div>
               <h1 class="validation-detail__name">{{ current.data.name }}</h1>
               <p class="validation-detail__subtitle">
-                {{ profile === 'professional' ? categoryLabel(current) : 'Paciente' }} · Cadastrado em
+                {{ profile === 'professional' ? practiceAreasLabel(current) : 'Paciente' }} · Cadastrado em
                 {{ current.registeredAt | date: 'dd/MM/yyyy' }}
               </p>
             </div>
@@ -30,10 +30,15 @@
               <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
             }
           </div>
-          @if (current.revalidating) {
+          @if (current.creationLocked) {
             <p class="validation-detail__subtitle">
               Cadastro já aprovado que alterou dados ou documentos. Enquanto as etapas abaixo não forem aprovadas, a
               pessoa usa a plataforma normalmente, mas não cria novas solicitações nem envia novas propostas.
+            </p>
+          } @else if (current.revalidating) {
+            <p class="validation-detail__subtitle">
+              Cadastro já aprovado com registro de atuação novo ou alterado. Só essa atuação fica travada até a análise;
+              as outras seguem liberadas.
             </p>
           }
 
@@ -54,10 +59,10 @@
                 {{ formatCep(current.data.address.cep) }}
               </dd>
             </div>
-            @if (current.data.specialties.length > 0) {
+            @for (area of current.data.practiceAreas; track area.id) {
               <div>
-                <dt>Especialidades</dt>
-                <dd>{{ current.data.specialties.join(', ') }}</dd>
+                <dt>{{ area.label }}</dt>
+                <dd>{{ specialtyNames(area) }}</dd>
               </div>
             }
           </dl>
@@ -108,10 +113,9 @@
             [validationId]="current.id"
             [step]="step"
             [data]="current.data"
-            [registrationLabel]="registrationLabel(current)"
             [preValidation]="preValidationOf(step)"
-            (preValidate)="preValidate(step.type)"
-            (decided)="onDecided(step.type, $event)"
+            (preValidate)="preValidate(step)"
+            (decided)="onDecided(step, $event)"
           ></app-validation-step-card>
         </ng-template>
       </section>

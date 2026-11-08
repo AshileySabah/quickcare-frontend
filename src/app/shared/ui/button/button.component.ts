@@ -7,6 +7,7 @@ export type ButtonVariant =
   | 'danger'
   | 'danger-outline'
   | 'info-outline'
+  | 'warning-outline'
   | 'inverse'
   | 'inverse-outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';

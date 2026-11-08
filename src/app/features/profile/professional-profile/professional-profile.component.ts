@@ -35,19 +35,24 @@ export class ProfessionalProfileComponent {
     emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
   });
 
+  protected readonly subtitle = computed(
+    () => this.profile()?.practiceAreas.map((area) => area.label).join(' · ') ?? '',
+  );
+
   protected readonly details = computed<ProfileDetail[]>(() => {
     const profile = this.profile();
     if (!profile) {
       return [];
     }
 
-    const details: ProfileDetail[] = [{ label: 'Especialidades', value: profile.specialties.join(', ') }];
-    if (profile.registrationLabel && profile.registrationNumber) {
-      details.push({
-        label: 'Registro',
-        value: `${profile.registrationLabel} ${profile.registrationNumber}/${profile.registrationUf}`,
-      });
-    }
+    const details: ProfileDetail[] = profile.practiceAreas.flatMap((area) => {
+      const especialidades = area.specialties.map((specialty) => specialty.name).join(', ');
+      const registro =
+        area.registrationLabel && area.registrationNumber
+          ? ` · ${area.registrationLabel} ${area.registrationNumber}/${area.registrationUf}`
+          : '';
+      return [{ label: area.label, value: `${especialidades}${registro}` }];
+    });
     details.push(
       { label: 'Atendimento', value: ATTENDANCE_MODALITY_LABELS[profile.attendanceModality] },
       { label: 'Localização', value: `${profile.city}/${profile.state}` },

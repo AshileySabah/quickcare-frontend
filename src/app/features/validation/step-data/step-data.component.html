@@ -58,10 +58,16 @@
       }
     }
     @case ('REGISTRO_PROFISSIONAL') {
-      <div>
-        <dt>{{ registrationLabel() }}</dt>
-        <dd>{{ data().registrationNumber }} / {{ data().registrationUf }}</dd>
-      </div>
+      @if (practiceArea(); as area) {
+        <div>
+          <dt>{{ area.registrationLabel ?? 'Registro profissional' }}</dt>
+          <dd>{{ area.registrationNumber }} / {{ area.registrationUf }}</dd>
+        </div>
+        <div>
+          <dt>Especialidades</dt>
+          <dd>{{ specialtyNames() }}</dd>
+        </div>
+      }
       @if (showOwner()) {
         <div>
           <dt>Profissional</dt>

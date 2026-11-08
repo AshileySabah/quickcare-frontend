@@ -31,7 +31,6 @@ export class MyStepCardComponent implements OnInit {
   step = input<ValidationStep | null>(null);
   data = input.required<RegistrationData>();
   ufOptions = input<SelectOption[]>([]);
-  registrationLabel = input('Registro profissional');
   emptyText = input<string | null>(null);
 
   resubmitted = output<ValidationDetail>();

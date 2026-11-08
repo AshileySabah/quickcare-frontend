@@ -1,0 +1,41 @@
+<ui-card>
+  <h2 class="practice-areas-card__title">Atuações</h2>
+  <p class="practice-areas-card__subtitle">
+    Inclua cada categoria em que você atua. Cada registro profissional passa pela validação do administrador; você
+    envia propostas de uma atuação assim que o registro dela for aprovado.
+  </p>
+
+  @for (group of formArray().controls; track group; let i = $index) {
+    <section class="practice-areas-card__item" [attr.aria-label]="'Atuação ' + (i + 1)">
+      <header class="practice-areas-card__item-header">
+        <span class="practice-areas-card__item-title">Atuação {{ i + 1 }}</span>
+        @if (formArray().length > 1) {
+          <ui-button variant="ghost" size="sm" [ariaLabel]="'Remover atuação ' + (i + 1)" (click)="remove(i)">
+            <ui-icon name="trash"></ui-icon>
+            Remover
+          </ui-button>
+        }
+      </header>
+      <app-practice-area-fields
+        [group]="group"
+        [siblings]="formArray().controls"
+        [categoryOptions]="categoryOptions()"
+        [specialties]="specialties()"
+        [ufOptions]="ufOptions()"
+      ></app-practice-area-fields>
+    </section>
+  }
+
+  @if (duplicated) {
+    <p class="practice-areas-card__error" role="alert" data-invalid="true">
+      Há atuações repetidas. Inclua as especialidades na atuação que já existe em vez de repetir a categoria.
+    </p>
+  }
+
+  <div class="practice-areas-card__actions">
+    <ui-button variant="secondary" size="sm" (click)="add()">
+      <ui-icon name="plus"></ui-icon>
+      Incluir outra atuação
+    </ui-button>
+  </div>
+</ui-card>

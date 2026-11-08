@@ -75,7 +75,10 @@ export class ResubmitStepFormComponent implements OnInit {
   step = input<ValidationStep | null>(null);
   data = input.required<RegistrationData>();
   ufOptions = input<SelectOption[]>([]);
-  registrationLabel = input('Registro profissional');
+
+  protected readonly registrationLabel = computed(
+    () => this.step()?.practiceArea?.registrationLabel ?? 'Registro profissional',
+  );
 
   resubmitted = output<ValidationDetail>();
   cancelled = output<void>();
@@ -103,13 +106,18 @@ export class ResubmitStepFormComponent implements OnInit {
         return 'Informe o CNPJ e envie o documento que o comprova';
     }
   });
-  protected readonly note = computed(() =>
-    this.step()?.status === 'aprovada'
-      ? `Os dados voltam para análise do administrador. Enquanto isso, você continua usando a plataforma, mas não pode ${
-          this.profile() === 'patient' ? 'criar novas solicitações' : 'enviar novas propostas'
-        }.`
-      : null,
-  );
+  protected readonly note = computed(() => {
+    const step = this.step();
+    if (step?.status !== 'aprovada') {
+      return null;
+    }
+    if (step.practiceArea) {
+      return `O registro volta para análise do administrador. Enquanto isso, o que já está em andamento continua, mas você não envia novas propostas de ${step.practiceArea.label} nem edita as que já enviou.`;
+    }
+    return `Os dados voltam para análise do administrador. Enquanto isso, você continua usando a plataforma, mas não pode ${
+      this.profile() === 'patient' ? 'criar novas solicitações' : 'enviar novas propostas'
+    }.`;
+  });
 
   protected readonly form = this.fb.nonNullable.group(
     {
@@ -138,8 +146,8 @@ export class ResubmitStepFormComponent implements OnInit {
       birthDate: data.birthDate ?? '',
       gender: data.gender ?? '',
       cnpj: data.cnpj ?? '',
-      registrationNumber: data.registrationNumber ?? '',
-      registrationUf: data.registrationUf ?? '',
+      registrationNumber: this.step()?.practiceArea?.registrationNumber ?? '',
+      registrationUf: this.step()?.practiceArea?.registrationUf ?? '',
     });
     this.initialValue = this.form.getRawValue();
 
@@ -248,7 +256,7 @@ export class ResubmitStepFormComponent implements OnInit {
     const input = inputs[this.type()]();
 
     this.isSubmitting.set(true);
-    this.validationService.resubmit(this.profile(), this.type(), input).subscribe({
+    this.validationService.resubmit(this.profile(), this.type(), input, this.step()?.practiceArea?.id).subscribe({
       next: (detail) => {
         this.isSubmitting.set(false);
         this.authService.updateValidationStatus(detail.status);

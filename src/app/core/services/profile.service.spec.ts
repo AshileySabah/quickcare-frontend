@@ -75,7 +75,7 @@ describe('ProfileService', () => {
     req.flush({ mensagem: 'Dados atualizados.', perfil: PATIENT });
   });
 
-  it('traz categoria, especialidades e registro no perfil do profissional', () => {
+  it('traz a forma de atendimento do profissional; as atuações ficam no serviço próprio', () => {
     let profile!: ProfessionalProfile;
     service.getProfessionalProfile().subscribe((result) => (profile = result));
 
@@ -84,19 +84,10 @@ describe('ProfileService', () => {
       possuiSeguroResponsabilidadeCivil: true,
       modalidadeAtendimento: 'AMBOS',
       raioAtendimentoKm: 15,
-      registro: {
-        categoria: 'ENFERMEIRO',
-        especialidadeIds: [5, 6],
-        registroProfissional: '123456',
-        registroProfissionalUf: 'SP',
-      },
     });
 
-    expect(profile.registration).toEqual({
-      category: 'ENFERMEIRO',
-      specialtyIds: ['5', '6'],
-      registrationNumber: '123456',
-      registrationUf: 'SP',
-    });
+    expect(profile.modalidadeAtendimento).toBe('AMBOS');
+    expect(profile.raioAtendimentoKm).toBe(15);
+    expect('registration' in profile).toBeFalse();
   });
 });

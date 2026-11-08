@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input } from '@angular/core';
-import { RegistrationData, ValidationStepType } from '../../../core/models';
+import { PracticeArea, RegistrationData, ValidationStepType } from '../../../core/models';
 import { formatMasked } from '../../../shared/ui/forms/input/input-mask.util';
 import { GENDER_OPTIONS } from '../../../shared/ui/register/register-options';
 
@@ -14,8 +14,12 @@ import { GENDER_OPTIONS } from '../../../shared/ui/register/register-options';
 export class StepDataComponent {
   type = input.required<ValidationStepType>();
   data = input.required<RegistrationData>();
-  registrationLabel = input('Registro profissional');
+  practiceArea = input<PracticeArea | null>(null);
   showOwner = input(false);
+
+  protected readonly specialtyNames = computed(
+    () => this.practiceArea()?.specialties.map((specialty) => specialty.name).join(', ') || 'Não informadas',
+  );
 
   protected readonly cpf = computed(() => formatMasked('cpf', this.data().cpf));
   protected readonly cnpj = computed(() => {

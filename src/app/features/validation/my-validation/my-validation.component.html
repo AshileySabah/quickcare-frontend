@@ -9,11 +9,17 @@
     @if (detail(); as current) {
       <div class="my-validation">
         <div [class]="'my-validation__summary my-validation__summary--' + (current.revalidating ? 'pendente' : current.status)">
-          @if (current.revalidating) {
+          @if (current.creationLocked) {
             <strong>Dados em revalidação</strong>
             <p>
               Você continua usando a plataforma normalmente, mas não pode {{ blockedAction() }} até o administrador
               concluir. Se algo for reprovado, corrija e envie de novo.
+            </p>
+          } @else if (current.revalidating) {
+            <strong>Registro em análise</strong>
+            <p>
+              Você segue enviando propostas das atuações já aprovadas. A atuação em análise fica liberada quando o
+              administrador aprovar o registro dela.
             </p>
           } @else {
             @switch (current.status) {
@@ -50,7 +56,6 @@
             [step]="step"
             [data]="current.data"
             [ufOptions]="ufOptions()"
-            [registrationLabel]="registrationLabel(current)"
             (resubmitted)="detail.set($event)"
           ></app-my-step-card>
         } @empty {

@@ -18,6 +18,7 @@ function request(id: string, status: RequestStatus): ServiceRequest {
     status,
     proposalCount: 0,
     attendanceInProgress: false,
+    practiceAreasForProposal: [],
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
   };

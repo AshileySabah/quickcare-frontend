@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -18,21 +19,20 @@ const DATA: RegistrationData = {
   identityDocumentNumber: '02650306461',
   identityDocumentUf: null,
   address: { cep: '01311000', street: 'Rua Augusta', number: '1000', neighborhood: 'Consolação', city: 'São Paulo', state: 'SP' },
-  category: 'ENFERMEIRO',
-  specialties: [],
+  practiceAreas: [],
   cnpj: '00000000000191',
-  registrationNumber: '123456',
-  registrationUf: 'SP',
 };
 
 function step(status: ValidationStep['status']): ValidationStep {
   return {
     id: '1',
+    key: 'CNPJ',
     type: 'CNPJ',
     label: 'CNPJ',
+    practiceArea: null,
     status,
     justification: null,
-    document: null,
+    document: { fileName: 'cartao-cnpj.pdf', contentType: 'application/pdf', sizeBytes: 100, sentAt: null, url: null },
     attachment: null,
     reviewedBy: null,
     reviewedAt: null,
@@ -44,12 +44,13 @@ function step(status: ValidationStep['status']): ValidationStep {
 describe('ResubmitStepFormComponent', () => {
   let validationService: jasmine.SpyObj<ValidationService>;
 
-  function render(current: ValidationStep | null) {
+  function render(current: ValidationStep | null, type: ValidationStep['type'] = 'CNPJ') {
     validationService = jasmine.createSpyObj<ValidationService>('ValidationService', ['resubmit']);
     validationService.resubmit.and.returnValue(of({ status: 'aprovado' } as ValidationDetail));
     TestBed.configureTestingModule({
       imports: [ResubmitStepFormComponent],
       providers: [
+        provideHttpClient(),
         { provide: ValidationService, useValue: validationService },
         { provide: AuthService, useValue: jasmine.createSpyObj('AuthService', ['updateValidationStatus']) },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['success', 'error']) },
@@ -57,7 +58,7 @@ describe('ResubmitStepFormComponent', () => {
     });
     const fixture = TestBed.createComponent(ResubmitStepFormComponent);
     fixture.componentRef.setInput('profile', 'professional');
-    fixture.componentRef.setInput('type', 'CNPJ');
+    fixture.componentRef.setInput('type', type);
     fixture.componentRef.setInput('step', current);
     fixture.componentRef.setInput('data', DATA);
     fixture.detectChanges();
@@ -69,16 +70,23 @@ describe('ResubmitStepFormComponent', () => {
     fixture.detectChanges();
   }
 
-  it('sem mudar nada nem mandar documento, não envia e explica', () => {
+  it('sem mudar nada, pergunta antes e só envia se confirmar', () => {
     const fixture = render(step('aprovada'));
 
     submit(fixture);
 
     expect(validationService.resubmit).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Altere algum dado ou envie um novo documento.');
+    expect(document.body.textContent).toContain('Parece que nada mudou. Enviar para validação mesmo assim?');
+
+    (fixture.componentInstance as unknown as { confirmUnchanged(): void }).confirmUnchanged();
+
+    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', {
+      document: undefined,
+      cnpj: '00000000000191',
+    }, undefined);
   });
 
-  it('mudando o dado sem mandar o documento, não envia e pede o documento', () => {
+  it('mudando só o dado, envia sem documento novo e mantém o atual', () => {
     const fixture = render(step('aprovada'));
     expect(fixture.nativeElement.textContent).toContain('Os dados voltam para análise do administrador');
 
@@ -86,8 +94,22 @@ describe('ResubmitStepFormComponent', () => {
     component.form.patchValue({ cnpj: '11222333000181' });
     submit(fixture);
 
+    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', {
+      document: undefined,
+      cnpj: '11222333000181',
+    }, undefined);
+  });
+
+  it('incluindo CNPJ novo, sem documento anterior, o documento é obrigatório', () => {
+    const fixture = render(null);
+    (fixture.componentInstance as unknown as { form: { patchValue(value: object): void } }).form.patchValue({
+      cnpj: '11222333000181',
+    });
+
+    submit(fixture);
+
     expect(validationService.resubmit).not.toHaveBeenCalled();
-    expect(fixture.nativeElement.textContent).toContain('Envie o documento que comprova os dados informados.');
+    expect(fixture.nativeElement.textContent).toContain('Envie o documento desta etapa.');
   });
 
   it('com o dado novo e o documento, envia os dois', () => {
@@ -101,7 +123,40 @@ describe('ResubmitStepFormComponent', () => {
     component.onDocumentChange(document);
     submit(fixture);
 
-    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', { document, cnpj: '11222333000181' });
+    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', { document, cnpj: '11222333000181' }, undefined);
+  });
+
+  it('o registro de uma atuação já vem preenchido e vai com o id da atuação', () => {
+    const registro: ValidationStep = {
+      ...step('aprovada'),
+      key: 'REGISTRO_PROFISSIONAL:200',
+      type: 'REGISTRO_PROFISSIONAL',
+      label: 'Registro profissional — Enfermeiro(a)',
+      practiceArea: {
+        id: '200',
+        category: 'ENFERMEIRO',
+        categoryLabel: 'Enfermeiro(a)',
+        label: 'Enfermeiro(a)',
+        registrationLabel: 'COREN',
+        specialties: [],
+        registrationNumber: '123456',
+        registrationUf: 'SP',
+      },
+    };
+    const fixture = render(registro, 'REGISTRO_PROFISSIONAL');
+    expect(fixture.nativeElement.textContent).toContain('você não envia novas propostas de Enfermeiro(a)');
+
+    (fixture.componentInstance as unknown as { form: { patchValue(value: object): void } }).form.patchValue({
+      registrationNumber: '654321',
+    });
+    submit(fixture);
+
+    expect(validationService.resubmit).toHaveBeenCalledWith(
+      'professional',
+      'REGISTRO_PROFISSIONAL',
+      { document: undefined, registrationNumber: '654321', registrationUf: 'SP' },
+      '200',
+    );
   });
 
   it('sem mudar dado, pode só trocar o documento', () => {
@@ -111,6 +166,6 @@ describe('ResubmitStepFormComponent', () => {
 
     submit(fixture);
 
-    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', { document, cnpj: '00000000000191' });
+    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', { document, cnpj: '00000000000191' }, undefined);
   });
 });

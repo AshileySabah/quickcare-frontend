@@ -4,6 +4,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export interface SelectOption {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 let nextId = 0;

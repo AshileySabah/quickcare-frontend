@@ -4,13 +4,13 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
+import { AtuacaoApi, toPracticeArea } from './practice-area.service';
 import {
   ExternalCheck,
   Gender,
   IdentityDocumentType,
   PreValidationOpinion,
   PreValidationResult,
-  ProfessionalCategory,
   StepDecision,
   StepResubmission,
   StoredFile,
@@ -40,6 +40,7 @@ interface EtapaApi {
   id: number;
   tipo: ValidationStepType;
   descricao: string;
+  atuacao: AtuacaoApi | null;
   status: StatusEtapaApi;
   justificativa: string | null;
   documento: ArquivoApi | null;
@@ -68,11 +69,8 @@ interface DadosCadastraisApi {
   bairro: string;
   cidade: string;
   uf: string;
-  categoria: ProfessionalCategory | null;
-  especialidades: string[] | null;
+  atuacoes: AtuacaoApi[] | null;
   cnpj: string | null;
-  registroProfissional: string | null;
-  registroProfissionalUf: string | null;
 }
 
 interface ValidacaoDetalheApi {
@@ -80,6 +78,7 @@ interface ValidacaoDetalheApi {
   perfil: PerfilApi;
   statusValidacao: StatusValidacaoApi;
   emRevalidacao: boolean;
+  bloqueiaCriacao: boolean;
   cadastradoEm: string;
   dados: DadosCadastraisApi;
   etapas: EtapaApi[];
@@ -90,7 +89,7 @@ interface ValidacaoResumoApi {
   perfil: PerfilApi;
   nome: string;
   email: string;
-  categoria: ProfessionalCategory | null;
+  atuacoes: string[] | null;
   statusValidacao: StatusValidacaoApi;
   emRevalidacao: boolean;
   cadastradoEm: string;
@@ -141,7 +140,7 @@ export class ValidationService {
     );
   }
 
-  decide(profile: ValidationProfile, id: string, step: ValidationStepType, input: StepDecision): Observable<ValidationDetail> {
+  decide(profile: ValidationProfile, id: string, step: ValidationStep, input: StepDecision): Observable<ValidationDetail> {
     const formData = new FormData();
     formData.append(
       'dados',
@@ -155,16 +154,20 @@ export class ValidationService {
     }
 
     return this.http
-      .post<ValidacaoDetalheApi>(`${this.adminUrl}/${adminSegment(profile)}/${id}/etapas/${step}/decisao`, formData)
+      .post<ValidacaoDetalheApi>(`${this.adminUrl}/${adminSegment(profile)}/${id}/etapas/${step.type}/decisao`, formData, {
+        params: practiceAreaParam(step.practiceArea?.id),
+      })
       .pipe(
         map(toDetail),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível registrar a decisão.'))),
       );
   }
 
-  preValidate(profile: ValidationProfile, id: string, step: ValidationStepType): Observable<PreValidationResult> {
+  preValidate(profile: ValidationProfile, id: string, step: ValidationStep): Observable<PreValidationResult> {
     return this.http
-      .post<PreValidacaoApi>(`${this.adminUrl}/${adminSegment(profile)}/${id}/etapas/${step}/pre-validacao`, {})
+      .post<PreValidacaoApi>(`${this.adminUrl}/${adminSegment(profile)}/${id}/etapas/${step.type}/pre-validacao`, {}, {
+        params: practiceAreaParam(step.practiceArea?.id),
+      })
       .pipe(
         map(toPreValidation),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível fazer a pré-validação.'))),
@@ -188,7 +191,12 @@ export class ValidationService {
     );
   }
 
-  resubmit(profile: ValidationProfile, step: ValidationStepType, input: StepResubmission): Observable<ValidationDetail> {
+  resubmit(
+    profile: ValidationProfile,
+    step: ValidationStepType,
+    input: StepResubmission,
+    practiceAreaId?: string,
+  ): Observable<ValidationDetail> {
     const dados = {
       cpf: input.cpf,
       documentoIdentidadeTipo: input.identityDocumentType,
@@ -208,7 +216,9 @@ export class ValidationService {
     }
 
     return this.http
-      .post<ValidacaoDetalheApi>(`${this.selfUrl}/${selfSegment(profile)}/etapas/${step}/reenvio`, formData)
+      .post<ValidacaoDetalheApi>(`${this.selfUrl}/${selfSegment(profile)}/etapas/${step}/reenvio`, formData, {
+        params: practiceAreaParam(practiceAreaId),
+      })
       .pipe(
         map(toDetail),
         tap((detail) => this.rememberRevalidation(profile, detail)),
@@ -217,8 +227,16 @@ export class ValidationService {
   }
 
   private rememberRevalidation(profile: ValidationProfile, detail: ValidationDetail): void {
-    this.revalidating.update((current) => ({ ...current, [profile]: detail.revalidating }));
+    this.revalidating.update((current) => ({ ...current, [profile]: detail.creationLocked }));
   }
+}
+
+function practiceAreaParam(practiceAreaId: string | undefined): Record<string, string> {
+  return practiceAreaId ? { atuacao: practiceAreaId } : {};
+}
+
+export function stepKey(type: ValidationStepType, practiceAreaId: string | null | undefined): string {
+  return practiceAreaId ? `${type}:${practiceAreaId}` : type;
 }
 
 function adminSegment(profile: ValidationProfile): string {
@@ -256,10 +274,13 @@ function toFile(arquivo: ArquivoApi | null): StoredFile | null {
 }
 
 function toStep(etapa: EtapaApi): ValidationStep {
+  const practiceArea = etapa.atuacao ? toPracticeArea(etapa.atuacao) : null;
   return {
     id: String(etapa.id),
+    key: stepKey(etapa.tipo, practiceArea?.id),
     type: etapa.tipo,
     label: etapa.descricao,
+    practiceArea,
     status: etapa.status.toLowerCase() as ValidationStepStatus,
     justification: etapa.justificativa,
     document: toFile(etapa.documento),
@@ -278,6 +299,7 @@ function toDetail(response: ValidacaoDetalheApi): ValidationDetail {
     profile: toProfile(response.perfil),
     status: toValidationStatus(response.statusValidacao),
     revalidating: response.emRevalidacao === true,
+    creationLocked: response.bloqueiaCriacao === true,
     registeredAt: response.cadastradoEm,
     data: {
       name: dados.nome,
@@ -299,11 +321,8 @@ function toDetail(response: ValidacaoDetalheApi): ValidationDetail {
         city: dados.cidade,
         state: dados.uf,
       },
-      category: dados.categoria,
-      specialties: dados.especialidades ?? [],
+      practiceAreas: (dados.atuacoes ?? []).map(toPracticeArea),
       cnpj: dados.cnpj,
-      registrationNumber: dados.registroProfissional,
-      registrationUf: dados.registroProfissionalUf,
     },
     steps: response.etapas.map(toStep),
   };
@@ -315,7 +334,7 @@ function toSummary(response: ValidacaoResumoApi): ValidationSummary {
     profile: toProfile(response.perfil),
     name: response.nome,
     email: response.email,
-    category: response.categoria,
+    practiceAreas: response.atuacoes ?? [],
     status: toValidationStatus(response.statusValidacao),
     revalidating: response.emRevalidacao === true,
     registeredAt: response.cadastradoEm,

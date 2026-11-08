@@ -29,6 +29,7 @@ function request(overrides: Partial<ServiceRequest>): ServiceRequest {
     status: 'aberta',
     proposalCount: 0,
     attendanceInProgress: false,
+    practiceAreasForProposal: [],
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
     ...overrides,

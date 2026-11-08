@@ -18,11 +18,11 @@
       </div>
     </header>
 
-    <app-step-data [type]="step().type" [data]="data()" [registrationLabel]="registrationLabel()" [showOwner]="true">
+    <app-step-data [type]="step().type" [data]="data()" [practiceArea]="step().practiceArea" [showOwner]="true">
       @if (step().type === 'REGISTRO_PROFISSIONAL' && !lookupLink()) {
         <div>
           <dt>Onde conferir</dt>
-          <dd>No portal do conselho regional da categoria ({{ data().registrationUf }}).</dd>
+          <dd>No portal do conselho regional da categoria ({{ step().practiceArea?.registrationUf }}).</dd>
         </div>
       }
     </app-step-data>

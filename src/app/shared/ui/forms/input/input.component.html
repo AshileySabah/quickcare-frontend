@@ -5,25 +5,41 @@
       <span aria-hidden="true">*</span>
     }
   </label>
-  <input
-    class="ui-input__field"
-    [class.ui-input__field--error]="errorMessage()"
-    [id]="inputId"
-    [type]="type()"
-    [placeholder]="placeholder()"
-    [value]="displayValue()"
-    [disabled]="disabled()"
-    [readOnly]="readonly()"
-    [required]="required()"
-    [attr.maxlength]="effectiveMaxLength()"
-    [attr.inputmode]="mask() ? 'numeric' : null"
-    [attr.name]="name()"
-    [attr.autocomplete]="autocomplete()"
-    [attr.aria-invalid]="errorMessage() ? true : null"
-    [attr.aria-describedby]="errorMessage() ? errorId : (hint() ? hintId : null)"
-    (input)="onInput($event)"
-    (blur)="onBlur()"
-  />
+  <div class="ui-input__control">
+    <input
+      class="ui-input__field"
+      [class.ui-input__field--error]="errorMessage()"
+      [class.ui-input__field--revealable]="revealable()"
+      [id]="inputId"
+      [type]="effectiveType()"
+      [placeholder]="placeholder()"
+      [value]="displayValue()"
+      [disabled]="disabled()"
+      [readOnly]="readonly()"
+      [required]="required()"
+      [attr.maxlength]="effectiveMaxLength()"
+      [attr.inputmode]="mask() ? 'numeric' : null"
+      [attr.name]="name()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.aria-invalid]="errorMessage() ? true : null"
+      [attr.aria-describedby]="errorMessage() ? errorId : (hint() ? hintId : null)"
+      (input)="onInput($event)"
+      (blur)="onBlur()"
+    />
+    @if (revealable()) {
+      <button
+        type="button"
+        class="ui-input__reveal"
+        [disabled]="disabled()"
+        [attr.aria-label]="revealed() ? 'Ocultar senha' : 'Mostrar senha'"
+        [attr.aria-pressed]="revealed()"
+        [attr.aria-controls]="inputId"
+        (click)="revealed.set(!revealed())"
+      >
+        <ui-icon [name]="revealed() ? 'eye-off' : 'eye'" [size]="18"></ui-icon>
+      </button>
+    }
+  </div>
   @if (errorMessage()) {
     <p class="ui-input__error" [id]="errorId" role="alert">{{ errorMessage() }}</p>
   } @else if (hint()) {

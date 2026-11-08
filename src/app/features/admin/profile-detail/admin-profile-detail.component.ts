@@ -1,12 +1,16 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, ElementRef, Injector, afterNextRender, computed, effect, inject, signal, untracked } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable } from 'rxjs';
 import {
   ADMIN_ACTION_LABELS,
   APPEAL_STATUS_LABELS,
   AdminProfileDetail,
+  BAN_APPEAL_LABELS,
+  BAN_ENDING_LABELS,
+  Ban,
   BLOCK_REASON_STATUS_LABELS,
   LateBlockReason,
   OCCURRENCE_REASON_LABELS,
@@ -27,6 +31,9 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { JustificationDialogComponent } from '../../../shared/ui/justification-dialog/justification-dialog.component';
+import { revealFirstInvalid } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { BanFieldsComponent } from '../../bans/ban-fields/ban-fields.component';
+import { banDays, banType, buildBanForm, resetBanForm, validateBanForm } from '../../bans/ban-fields/ban-form';
 
 type PageState = 'loading' | 'not-found' | 'error' | 'filled';
 type Dialog =
@@ -35,7 +42,10 @@ type Dialog =
   | { kind: 'appeal'; occurrence: Occurrence; annul: boolean }
   | { kind: 'blockReason'; reason: LateBlockReason; accept: boolean }
   | { kind: 'unblock'; blockId: string }
-  | { kind: 'block' };
+  | { kind: 'block' }
+  | { kind: 'ban' }
+  | { kind: 'unban'; ban: Ban }
+  | { kind: 'banAppeal'; ban: Ban; accept: boolean };
 
 @Component({
   selector: 'app-admin-profile-detail',
@@ -45,6 +55,7 @@ type Dialog =
     RouterLink,
     BackLinkComponent,
     BadgeComponent,
+    BanFieldsComponent,
     ButtonComponent,
     ButtonGroupComponent,
     CardComponent,
@@ -63,6 +74,9 @@ export class AdminProfileDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly profileService = inject(AdminProfileService);
   private readonly toastService = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
 
   private readonly role = this.route.snapshot.paramMap.get('perfil') as SwitchableRole;
   private readonly userId = this.route.snapshot.paramMap.get('id') ?? '';
@@ -83,12 +97,22 @@ export class AdminProfileDetailComponent {
   protected readonly denialConsequence = new FormControl<ReportConsequence>('ocorrencia', { nonNullable: true });
   protected readonly denialOptions: SelectOption[] = [
     { value: 'ocorrencia', label: 'Manter como ocorrência' },
-    { value: 'banimento', label: 'Banir (disponível na etapa de banimento)', disabled: true },
+    { value: 'banimento', label: 'Banir' },
   ];
+  private readonly denialValue = toSignal(this.denialConsequence.valueChanges, { initialValue: 'ocorrencia' as const });
   protected readonly askDenialConsequence = computed(() => {
     const dialog = this.dialog();
     return dialog?.kind === 'appeal' && !dialog.annul && dialog.occurrence.reason === 'denuncia_procedente';
   });
+
+  protected readonly banForm = buildBanForm(this.fb);
+  protected readonly banAppealLabels = BAN_APPEAL_LABELS;
+  protected readonly banEndingLabels = BAN_ENDING_LABELS;
+  protected readonly activeBan = computed(() => this.detail()?.bans.find((ban) => ban.active) ?? null);
+  protected readonly pastBans = computed(() => this.detail()?.bans.filter((ban) => !ban.active) ?? []);
+  protected readonly showBanFields = computed(
+    () => this.dialog()?.kind === 'ban' || (this.askDenialConsequence() && this.denialValue() === 'banimento'),
+  );
 
   protected readonly dialogTexts = computed(() => {
     const dialog = this.dialog();
@@ -199,11 +223,75 @@ export class AdminProfileDetailComponent {
           cancel: 'Não, manter o bloqueio',
           variant: 'primary' as const,
         };
+      case 'ban':
+        return {
+          title: 'Banir',
+          message: `Banir o perfil de ${this.roleLabel.toLowerCase()} de ${name}?`,
+          consequences: [
+            'A pessoa continua entrando e consultando o histórico, mas não cria nem altera nada.',
+            'Solicitações em curso, propostas pendentes e atendimentos agendados ou em andamento são encerrados, e a outra parte é avisada sem penalidade.',
+            'Atendimentos que já terminaram, problemas em aberto e avaliações seguem normalmente.',
+            'A pessoa recebe a notificação com a justificativa e pode recorrer uma vez.',
+          ],
+          confirm: 'Sim, banir',
+          cancel: 'Não, voltar',
+          variant: 'danger' as const,
+        };
+      case 'unban':
+        return {
+          title: 'Remover banimento',
+          message: `Liberar o perfil de ${this.roleLabel.toLowerCase()} de ${name} agora?`,
+          consequences: [
+            'A pessoa volta a usar a plataforma normalmente.',
+            'O que foi encerrado pelo banimento não volta.',
+            'A pessoa recebe uma notificação com a justificativa.',
+          ],
+          confirm: 'Sim, remover o banimento',
+          cancel: 'Não, manter o banimento',
+          variant: 'primary' as const,
+        };
+      case 'banAppeal':
+        return dialog.accept
+          ? {
+              title: 'Aceitar recurso',
+              message: `Aceitar o recurso e desbanir ${name}?`,
+              consequences: [
+                'O banimento termina na hora e a pessoa volta a usar a plataforma.',
+                'O que foi encerrado pelo banimento não volta.',
+                'A pessoa recebe uma notificação com a justificativa.',
+              ],
+              confirm: 'Sim, aceitar o recurso',
+              cancel: 'Não, voltar',
+              variant: 'primary' as const,
+            }
+          : {
+              title: 'Negar recurso',
+              message: `Negar o recurso e manter o banimento de ${name}?`,
+              consequences: ['O banimento continua; não cabe outro recurso.', 'A pessoa recebe uma notificação com a justificativa.'],
+              confirm: 'Sim, negar o recurso',
+              cancel: 'Não, voltar',
+              variant: 'danger' as const,
+            };
     }
   });
 
+  protected openBan(): void {
+    resetBanForm(this.banForm);
+    this.dialog.set({ kind: 'ban' });
+  }
+
   constructor() {
     this.load();
+    this.denialConsequence.valueChanges.subscribe(() => resetBanForm(this.banForm));
+    effect(() => {
+      const dialog = this.dialog();
+      untracked(() => {
+        if (dialog?.kind === 'appeal') {
+          this.denialConsequence.setValue('ocorrencia');
+          resetBanForm(this.banForm);
+        }
+      });
+    });
   }
 
   protected load(): void {
@@ -226,6 +314,10 @@ export class AdminProfileDetailComponent {
     if (!dialog) {
       return;
     }
+    if (this.showBanFields() && !validateBanForm(this.banForm)) {
+      afterNextRender(() => revealFirstInvalid(this.host.nativeElement), { injector: this.injector });
+      return;
+    }
     const request$ = this.requestFor(dialog, justification);
     const success = {
       add: 'Ocorrência lançada.',
@@ -234,6 +326,9 @@ export class AdminProfileDetailComponent {
       blockReason: 'Motivo do bloqueio decidido.',
       block: 'Bloqueio aplicado.',
       unblock: 'Bloqueio removido.',
+      ban: 'Banimento aplicado.',
+      unban: 'Banimento removido.',
+      banAppeal: 'Recurso decidido.',
     }[dialog.kind];
 
     this.saving.set(true);
@@ -263,6 +358,7 @@ export class AdminProfileDetailComponent {
           dialog.annul,
           justification,
           dialog.occurrence.reason === 'denuncia_procedente' ? this.denialConsequence.value : undefined,
+          this.showBanFields() ? { type: banType(this.banForm), days: banDays(this.banForm) } : undefined,
         );
       case 'blockReason':
         return this.profileService.decideBlockReason(dialog.reason.id, dialog.accept, justification);
@@ -270,6 +366,17 @@ export class AdminProfileDetailComponent {
         return this.profileService.applyBlock(this.role, this.userId, justification);
       case 'unblock':
         return this.profileService.removeBlock(dialog.blockId, justification);
+      case 'ban':
+        return this.profileService.ban(this.role, this.userId, {
+          type: banType(this.banForm),
+          days: banDays(this.banForm),
+          bothProfiles: this.banForm.controls.bothProfiles.value,
+          justification,
+        });
+      case 'unban':
+        return this.profileService.removeBan(dialog.ban.id, justification);
+      case 'banAppeal':
+        return this.profileService.decideBanAppeal(dialog.ban.id, dialog.accept, justification);
     }
   }
 

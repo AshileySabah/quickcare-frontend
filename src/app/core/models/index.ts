@@ -13,3 +13,4 @@ export * from './user-block.model';
 export * from './practice-area.model';
 export * from './rating.model';
 export * from './report.model';
+export * from './ban.model';

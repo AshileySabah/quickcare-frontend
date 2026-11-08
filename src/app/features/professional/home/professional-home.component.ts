@@ -20,17 +20,20 @@ import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filte
 import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
 import { PendingRatingsCardComponent } from '../../ratings/pending-ratings-card/pending-ratings-card.component';
+import { BanNoticeComponent } from '../../bans/ban-notice/ban-notice.component';
+import { BanService } from '../../../core/services/ban.service';
 
 @Component({
   selector: 'app-professional-home',
   standalone: true,
-  imports: [BlockedNoticeComponent, OccurrencesCardComponent, PendingRatingsCardComponent,ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
+  imports: [BanNoticeComponent, BlockedNoticeComponent, OccurrencesCardComponent, PendingRatingsCardComponent,ListFiltersComponent, SkeletonListComponent, DatePipe, RouterLink, CardComponent, EmptyStateComponent, ErrorStateComponent, StatusBadgeComponent],
   templateUrl: './professional-home.component.html',
   styleUrl: './professional-home.component.scss',
 })
 export class ProfessionalHomeComponent {
   private readonly fb = inject(FormBuilder);
   private readonly requestService = inject(RequestService);
+  protected readonly ban = inject(BanService).banFor('professional');
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

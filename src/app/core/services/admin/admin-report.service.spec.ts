@@ -6,7 +6,7 @@ import { AdminReportService } from './admin-report.service';
 
 const RESUMO = {
   id: 500,
-  status: 'ABERTA',
+  status: 'EM_ANALISE',
   motivo: 'NEGLIGENCIA',
   motivoRotulo: 'Negligência no atendimento',
   denunciante: 'PACIENTE',
@@ -31,25 +31,57 @@ describe('AdminReportService', () => {
   afterEach(() => httpMock.verify());
 
   it('lista filtrando pelo status em maiúsculas', () => {
-    service.list(['aberta', 'em_analise']).subscribe((reports) => {
+    service.list(['procedente', 'improcedente']).subscribe((reports) => {
       expect(reports[0].reporter).toBe('paciente');
-      expect(reports[0].status).toBe('aberta');
+      expect(reports[0].status).toBe('em_analise');
     });
 
     const request = httpMock.expectOne((req) => req.url === baseUrl);
-    expect(request.request.params.getAll('status')).toEqual(['ABERTA', 'EM_ANALISE']);
+    expect(request.request.params.getAll('status')).toEqual(['PROCEDENTE', 'IMPROCEDENTE']);
     request.flush([RESUMO]);
   });
 
   it('procedente envia a consequência; improcedente envia sem consequência', () => {
     service.decide('500', { result: 'procedente', consequence: 'ocorrencia', justification: ' Confirmado. ' }).subscribe();
     const procedente = httpMock.expectOne(`${baseUrl}/500/decisao`);
-    expect(procedente.request.body).toEqual({ resultado: 'PROCEDENTE', consequencia: 'OCORRENCIA', justificativa: 'Confirmado.' });
+    expect(procedente.request.body).toEqual({
+      resultado: 'PROCEDENTE',
+      consequencia: 'OCORRENCIA',
+      justificativa: 'Confirmado.',
+      tipoBanimento: null,
+      diasSuspensao: null,
+    });
     procedente.flush({ resumo: RESUMO, descricao: 'x', atendimentos: [], outrasDenunciasContraODenunciado: 0, acoes: [] });
 
     service.decide('500', { result: 'improcedente', consequence: 'ocorrencia', justification: 'Sem provas.' }).subscribe();
     const improcedente = httpMock.expectOne(`${baseUrl}/500/decisao`);
-    expect(improcedente.request.body).toEqual({ resultado: 'IMPROCEDENTE', consequencia: null, justificativa: 'Sem provas.' });
+    expect(improcedente.request.body).toEqual({
+      resultado: 'IMPROCEDENTE',
+      consequencia: null,
+      justificativa: 'Sem provas.',
+      tipoBanimento: null,
+      diasSuspensao: null,
+    });
     improcedente.flush({ resumo: RESUMO, descricao: 'x', atendimentos: [], outrasDenunciasContraODenunciado: 0, acoes: [] });
+  });
+
+  it('procedente com banimento envia o tipo e os dias da suspensão', () => {
+    service
+      .decide('500', {
+        result: 'procedente',
+        consequence: 'banimento',
+        justification: 'Golpe.',
+        ban: { type: 'suspensao', days: 30 },
+      })
+      .subscribe();
+    const request = httpMock.expectOne(`${baseUrl}/500/decisao`);
+    expect(request.request.body).toEqual({
+      resultado: 'PROCEDENTE',
+      consequencia: 'BANIMENTO',
+      justificativa: 'Golpe.',
+      tipoBanimento: 'SUSPENSAO',
+      diasSuspensao: 30,
+    });
+    request.flush({ resumo: RESUMO, descricao: 'x', atendimentos: [], outrasDenunciasContraODenunciado: 0, acoes: [] });
   });
 });

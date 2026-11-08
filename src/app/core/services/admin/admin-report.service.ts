@@ -15,6 +15,7 @@ import {
   ReportSummary,
 } from '../../models';
 import { LadoApi, toSide } from '../attendance.service';
+import { BanimentoApi, toBan } from '../ban.service';
 import { AcaoAdminApi, ParteApi, toAdminAction, toParty } from './admin-api';
 
 interface DenunciaResumoApi {
@@ -52,6 +53,7 @@ interface DenunciaDetalheApi {
       decididoEm?: string;
     };
   };
+  banimento?: BanimentoApi;
   atendimentos: { id: number; solicitacaoId: number; servico: string; status: string; inicio: string; termino: string }[];
   outrasDenunciasContraODenunciado: number;
   acoes: AcaoAdminApi[];
@@ -87,25 +89,24 @@ export class AdminReportService {
     );
   }
 
-  startAnalysis(id: string): Observable<ReportDetail> {
-    return this.http.patch<DenunciaDetalheApi>(`${this.baseUrl}/${id}/analise`, {}).pipe(
-      map(toDetail),
-      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível iniciar a análise.'))),
-    );
-  }
-
   decide(id: string, input: ReportDecisionInput): Observable<ReportDetail> {
     return this.http
       .post<DenunciaDetalheApi>(`${this.baseUrl}/${id}/decisao`, {
         resultado: input.result.toUpperCase(),
         consequencia: input.result === 'procedente' && input.consequence ? input.consequence.toUpperCase() : null,
         justificativa: input.justification.trim(),
+        tipoBanimento: banOf(input)?.type.toUpperCase() ?? null,
+        diasSuspensao: banOf(input)?.type === 'suspensao' ? banOf(input)?.days : null,
       })
       .pipe(
         map(toDetail),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível registrar a decisão.'))),
       );
   }
+}
+
+function banOf(input: ReportDecisionInput): ReportDecisionInput['ban'] {
+  return input.result === 'procedente' && input.consequence === 'banimento' ? input.ban : undefined;
 }
 
 function toSummary(response: DenunciaResumoApi): ReportSummary {
@@ -150,6 +151,7 @@ function toDetail(response: DenunciaDetalheApi): ReportDetail {
         decidedAt: response.ocorrencia.recurso.decididoEm,
       },
     },
+    ban: response.banimento ? toBan(response.banimento) : undefined,
     attendances: response.atendimentos.map((item) => ({
       id: String(item.id),
       requestId: String(item.solicitacaoId),

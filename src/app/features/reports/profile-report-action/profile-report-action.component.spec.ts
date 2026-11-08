@@ -76,6 +76,26 @@ describe('ProfileReportActionComponent', () => {
     expect(element().textContent).toContain('Bloquear Bruno?');
   });
 
+  it('com denúncia pendente, o botão fica desabilitado como "Denúncia em andamento"', () => {
+    fixture.componentRef.setInput('inProgress', true);
+    fixture.detectChanges();
+
+    const pending = button('Denúncia em andamento') as HTMLButtonElement;
+    expect(pending).toBeTruthy();
+    expect(pending.disabled).toBeTrue();
+    expect(button('Denunciar')).toBeUndefined();
+  });
+
+  it('depois de enviar, o botão passa para "Denúncia em andamento"', () => {
+    reportService.send.and.returnValue(of(undefined));
+
+    fillAndSend();
+    button('Não, só denunciar')!.click();
+    fixture.detectChanges();
+
+    expect((button('Denúncia em andamento') as HTMLButtonElement).disabled).toBeTrue();
+  });
+
   it('se a denúncia falha, mostra o erro e não pergunta do bloqueio', () => {
     reportService.send.and.returnValue(throwError(() => new Error('Só dá para denunciar quem já teve um atendimento com você.')));
 

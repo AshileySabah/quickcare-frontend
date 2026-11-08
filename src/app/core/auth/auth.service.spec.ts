@@ -65,6 +65,23 @@ describe('AuthService', () => {
     expect(service.profiles()[0].banned).toBeTrue();
   });
 
+  it('com só o perfil banido, entra nele para consulta', () => {
+    login(session({ ultimoPerfil: 'PACIENTE', perfis: [{ ...PACIENTE, status: 'BANIDO' }] }));
+
+    expect(service.currentUser()?.role).toBe('patient');
+  });
+
+  it('trocar para o perfil banido abre nele', () => {
+    login(session({ ultimoPerfil: 'PROFISSIONAL', perfis: [{ ...PACIENTE, status: 'BANIDO' }, PROFISSIONAL] }));
+
+    service.switchProfile('patient').subscribe();
+    httpMock
+      .expectOne(ACTIVE_PROFILE_URL)
+      .flush(session({ ultimoPerfil: 'PACIENTE', perfis: [{ ...PACIENTE, status: 'BANIDO' }, PROFISSIONAL] }));
+
+    expect(service.currentUser()?.role).toBe('patient');
+  });
+
   it('troca de perfil pelo back e atualiza a sessão', () => {
     login(session({ ultimoPerfil: 'PROFISSIONAL' }));
     let role: string | undefined;

@@ -28,6 +28,7 @@
               kind="patient"
               [personId]="current.id"
               [name]="current.name"
+              [inProgress]="current.reportInProgress"
               (blocked)="load()"
             ></app-profile-report-action>
           }

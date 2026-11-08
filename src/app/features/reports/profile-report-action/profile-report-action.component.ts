@@ -13,9 +13,9 @@ import { ReportDialogComponent, ReportTarget } from '../report-dialog/report-dia
   standalone: true,
   imports: [BlockUserDialogComponent, ButtonComponent, ConfirmDialogComponent, IconComponent, ReportDialogComponent],
   template: `
-    <ui-button variant="warning-outline" size="sm" (click)="askToReport()">
+    <ui-button variant="warning-outline" size="sm" [disabled]="pending()" (click)="askToReport()">
       <ui-icon name="alert"></ui-icon>
-      Denunciar
+      {{ pending() ? 'Denúncia em andamento' : 'Denunciar' }}
     </ui-button>
 
     <app-report-dialog
@@ -52,9 +52,12 @@ export class ProfileReportActionComponent {
   kind = input.required<ReportTargetKind>();
   personId = input.required<string>();
   name = input.required<string>();
+  inProgress = input(false);
 
   readonly blocked = output<void>();
 
+  protected readonly reported = signal(false);
+  protected readonly pending = computed(() => this.inProgress() || this.reported());
   protected readonly toReport = signal<ReportTarget | null>(null);
   protected readonly isSending = signal(false);
   protected readonly askingToBlock = signal(false);
@@ -86,6 +89,7 @@ export class ProfileReportActionComponent {
       next: () => {
         this.isSending.set(false);
         this.toReport.set(null);
+        this.reported.set(true);
         this.toastService.success('Denúncia enviada. Você será avisado quando o administrador julgar.');
         this.askingToBlock.set(true);
       },

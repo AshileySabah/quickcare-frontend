@@ -37,6 +37,68 @@
 
         <ui-card>
           <div class="profile-detail__section-header">
+            <h2 class="profile-detail__section-title">Banimento</h2>
+            @if (activeBan(); as ban) {
+              <ui-button variant="secondary" size="sm" (click)="dialog.set({ kind: 'unban', ban: ban })">
+                Remover banimento
+              </ui-button>
+            } @else {
+              <ui-button variant="danger-outline" size="sm" (click)="openBan()">
+                <ui-icon name="ban"></ui-icon>
+                Banir
+              </ui-button>
+            }
+          </div>
+          @if (activeBan(); as ban) {
+            <p class="profile-detail__text">
+              {{ ban.type === 'permanente' ? 'Permanente' : 'Suspensão até ' + (ban.end | date: 'dd/MM/yyyy HH:mm') }}, desde
+              {{ ban.start | date: 'dd/MM/yyyy HH:mm' }}{{ ban.appliedBy ? ' · aplicado por ' + ban.appliedBy : '' }}.
+            </p>
+            <p class="profile-detail__text">Motivo: {{ ban.justification }}</p>
+            @if (ban.reportId) {
+              <p class="profile-detail__text">
+                <a [routerLink]="['/admin/denuncias', ban.reportId]">Ver a denúncia que originou o banimento</a>
+              </p>
+            }
+            @if (ban.appeal; as appeal) {
+              <div class="profile-detail__appeal">
+                <ui-badge [variant]="appeal.status === 'negado' ? 'error' : 'info'">{{ banAppealLabels[appeal.status] }}</ui-badge>
+                <p class="profile-detail__text">Recurso: {{ appeal.text }}</p>
+                @if (appeal.justification) {
+                  <p class="profile-detail__muted">Decisão: {{ appeal.justification }}</p>
+                }
+                @if (appeal.status === 'em_analise') {
+                  <ui-button-group>
+                    <ui-button variant="danger-outline" size="sm" (click)="dialog.set({ kind: 'banAppeal', ban: ban, accept: false })">
+                      Negar recurso
+                    </ui-button>
+                    <ui-button size="sm" (click)="dialog.set({ kind: 'banAppeal', ban: ban, accept: true })">Aceitar e desbanir</ui-button>
+                  </ui-button-group>
+                }
+              </div>
+            }
+          } @else {
+            <p class="profile-detail__muted">Sem banimento no momento.</p>
+          }
+          @if (pastBans().length) {
+            <ul class="profile-detail__timeline">
+              @for (ban of pastBans(); track ban.id) {
+                <li>
+                  <span class="profile-detail__muted">{{ ban.start | date: 'dd/MM/yyyy' }}</span>
+                  <span>
+                    {{ ban.type === 'permanente' ? 'Permanente' : 'Suspensão' }}: {{ ban.justification }}
+                    @if (ban.ending) {
+                      · {{ banEndingLabels[ban.ending] }} em {{ ban.endedAt | date: 'dd/MM/yyyy' }}
+                    }
+                  </span>
+                </li>
+              }
+            </ul>
+          }
+        </ui-card>
+
+        <ui-card>
+          <div class="profile-detail__section-header">
             <h2 class="profile-detail__section-title">Bloqueio</h2>
             @if (activeBlock(); as block) {
               <ui-button variant="secondary" size="sm" (click)="dialog.set({ kind: 'unblock', blockId: block.id })">
@@ -232,6 +294,9 @@
         [options]="denialOptions"
         [required]="true"
       ></ui-select>
+    }
+    @if (showBanFields()) {
+      <app-ban-fields [group]="banForm" [showBothProfiles]="dialog()?.kind === 'ban'"></app-ban-fields>
     }
   </ui-justification-dialog>
 }

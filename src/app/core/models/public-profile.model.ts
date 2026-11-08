@@ -14,6 +14,7 @@ export interface ProfessionalPublicProfile {
   completedServices: number;
   ratings: RatingSummary;
   canReport: boolean;
+  reportInProgress: boolean;
   emergencyContacts?: EmergencyContact[];
 }
 
@@ -33,6 +34,7 @@ export interface PatientPublicProfile {
   memberSince: string;
   ratings: RatingSummary;
   canReport: boolean;
+  reportInProgress: boolean;
   health?: PatientHealthInfo;
   emergencyContacts?: EmergencyContact[];
 }

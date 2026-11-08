@@ -3,7 +3,7 @@
     <div>
       <h1 class="admin-reports__title">Denúncias</h1>
       <p class="admin-reports__subtitle">
-        Denúncias feitas entre pacientes e profissionais que já tiveram atendimento. As abertas esperam a sua análise.
+        Denúncias feitas entre pacientes e profissionais que já tiveram atendimento. As em julgamento esperam a sua decisão.
       </p>
     </div>
   </header>
@@ -23,7 +23,7 @@
     @case ('empty') {
       <ui-empty-state
         title="Nada por aqui"
-        [message]="selected() === 'pendentes' ? 'Nenhuma denúncia esperando análise.' : 'Nenhuma denúncia nesta situação.'"
+        [message]="selected() === 'em_julgamento' ? 'Nenhuma denúncia esperando julgamento.' : 'Nenhuma denúncia nesta situação.'"
       ></ui-empty-state>
     }
     @case ('error') {

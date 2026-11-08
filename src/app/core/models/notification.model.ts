@@ -19,6 +19,7 @@ export type NotificationType =
   | 'atendimento_cancelado'
   | 'lembrete_atendimento'
   | 'atendimento_finalizado'
+  | 'avaliacao_pendente'
   | 'problema_relatado'
   | 'problema_confirmado'
   | 'problema_sem_resposta'

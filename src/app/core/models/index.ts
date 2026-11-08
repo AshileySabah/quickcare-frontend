@@ -11,3 +11,4 @@ export * from './occurrence.model';
 export * from './admin.model';
 export * from './user-block.model';
 export * from './practice-area.model';
+export * from './rating.model';

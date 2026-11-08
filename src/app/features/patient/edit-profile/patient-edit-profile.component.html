@@ -1,6 +1,11 @@
 <section class="edit-profile">
   <header class="edit-profile__header">
     <h1 class="edit-profile__title">Meu perfil</h1>
+    @if (ratings(); as summary) {
+      <ui-card class="edit-profile__ratings">
+        <ui-rating-summary [summary]="summary"></ui-rating-summary>
+      </ui-card>
+    }
     <p class="edit-profile__subtitle">Mantenha suas informações atualizadas para os profissionais que vão te atender.</p>
     <p class="edit-profile__note">{{ lockedNote }}</p>
   </header>

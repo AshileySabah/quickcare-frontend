@@ -27,6 +27,7 @@ import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occ
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { CreationLockService } from '../../../core/services/creation-lock.service';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { PendingRatingsCardComponent } from '../../ratings/pending-ratings-card/pending-ratings-card.component';
 
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
@@ -36,6 +37,7 @@ const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_a
   imports: [HighlightDirective,
     BlockedNoticeComponent,
     OccurrencesCardComponent,
+    PendingRatingsCardComponent,
     RouterLink,
     ButtonComponent,
     ConfirmDialogComponent,

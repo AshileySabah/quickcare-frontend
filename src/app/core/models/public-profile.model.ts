@@ -1,4 +1,5 @@
 import { PracticeArea } from './practice-area.model';
+import { RatingSummary } from './rating.model';
 import { AttendanceModality, EmergencyContact } from './user.model';
 
 export interface ProfessionalPublicProfile {
@@ -11,6 +12,7 @@ export interface ProfessionalPublicProfile {
   state: string;
   memberSince: string;
   completedServices: number;
+  ratings: RatingSummary;
   emergencyContacts?: EmergencyContact[];
 }
 
@@ -28,6 +30,7 @@ export interface PatientPublicProfile {
   city: string;
   state: string;
   memberSince: string;
+  ratings: RatingSummary;
   health?: PatientHealthInfo;
   emergencyContacts?: EmergencyContact[];
 }

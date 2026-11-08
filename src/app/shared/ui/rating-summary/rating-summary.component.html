@@ -1,0 +1,25 @@
+<section class="ui-rating-summary" aria-labelledby="ui-rating-summary-title">
+  <h2 class="ui-rating-summary__title" id="ui-rating-summary-title">Avaliações</h2>
+
+  @if (summary().total > 0) {
+    <div class="ui-rating-summary__score">
+      <span class="ui-rating-summary__average">{{ averageText() }}</span>
+      <ui-star-rating [value]="summary().average"></ui-star-rating>
+      <span class="ui-rating-summary__total">{{ totalText() }}</span>
+    </div>
+
+    @if (summary().highlights.length > 0) {
+      <ul class="ui-rating-summary__highlights" aria-label="Destaques mais recebidos">
+        @for (highlight of summary().highlights; track highlight.code) {
+          <li>
+            <ui-badge [variant]="highlight.positive ? 'success' : 'error'">
+              {{ highlight.label }} · {{ highlight.total }}
+            </ui-badge>
+          </li>
+        }
+      </ul>
+    }
+  } @else {
+    <p class="ui-rating-summary__empty">Ainda sem avaliações</p>
+  }
+</section>

@@ -36,3 +36,9 @@
 .profile-card__details {
   @include details.details-list;
 }
+
+.profile-card__ratings {
+  margin-top: tokens.space(5);
+  padding-top: tokens.space(4);
+  border-top: 1px solid tokens.color('gray', 200);
+}

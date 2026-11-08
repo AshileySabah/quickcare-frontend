@@ -15,6 +15,9 @@ import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { RatingSummaryComponent } from '../../../shared/ui/rating-summary/rating-summary.component';
+import { RatingSummary } from '../../../core/models';
 
 type PageState = 'loading' | 'error' | 'ready';
 
@@ -33,6 +36,8 @@ type PageState = 'loading' | 'error' | 'ready';
     EmergencyContactsCardComponent,
     ErrorStateComponent,
     HealthInfoCardComponent,
+    CardComponent,
+    RatingSummaryComponent,
   ],
   templateUrl: './patient-edit-profile.component.html',
   styleUrl: './patient-edit-profile.component.scss',
@@ -46,6 +51,7 @@ export class PatientEditProfileComponent implements OnInit {
   protected readonly loadError = signal('');
   protected readonly isSubmitting = signal(false);
   protected readonly avatarUrl = signal<string | null>(null);
+  protected readonly ratings = signal<RatingSummary | null>(null);
 
   protected readonly lockedNote = LOCKED_PROFILE_NOTE;
 
@@ -140,5 +146,6 @@ export class PatientEditProfileComponent implements OnInit {
     });
 
     this.avatarUrl.set(profile.avatarUrl);
+    this.ratings.set(profile.ratings);
   }
 }

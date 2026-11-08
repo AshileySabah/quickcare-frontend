@@ -1,0 +1,30 @@
+@use 'tokens' as tokens;
+
+.rating-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(4);
+  margin-top: tokens.space(4);
+}
+
+.rating-dialog__field {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(2);
+}
+
+.rating-dialog__label {
+  font-size: tokens.font-size('sm');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 700);
+}
+
+.rating-dialog__error {
+  font-size: tokens.font-size('xs');
+  color: tokens.semantic('error');
+}
+
+.rating-dialog__hint {
+  font-size: tokens.font-size('xs');
+  color: tokens.color('gray', 500);
+}

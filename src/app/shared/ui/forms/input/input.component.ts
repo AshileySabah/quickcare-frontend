@@ -32,6 +32,8 @@ export class InputComponent implements ControlValueAccessor {
   autocomplete = input<string>('off');
   name = input<string | null>(null);
   revealable = input(false);
+  min = input<string | null>(null);
+  max = input<string | null>(null);
 
   protected readonly revealed = signal(false);
   protected readonly effectiveType = computed(() => (this.revealable() && this.revealed() ? 'text' : this.type()));

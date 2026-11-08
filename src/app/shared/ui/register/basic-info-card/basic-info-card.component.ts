@@ -1,5 +1,6 @@
 import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { latestBirthDate } from '../../../../core/forms/birth-date';
 import { CardComponent } from '../../layout/card/card.component';
 import { GridItemComponent } from '../../layout/grid/grid-item.component';
 import { GridComponent } from '../../layout/grid/grid.component';
@@ -15,6 +16,8 @@ import { GENDER_OPTIONS, IDENTITY_DOCUMENT_OPTIONS } from '../register-options';
   styleUrl: './basic-info-card.component.scss',
 })
 export class BasicInfoCardComponent {
+  protected readonly latestBirthDate = latestBirthDate();
+
   group = input.required<FormGroup>();
   fieldError = input<(fieldName: string) => string | null>(() => null);
   showName = input(true);

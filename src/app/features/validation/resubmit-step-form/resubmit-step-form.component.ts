@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { latestBirthDate } from '../../../core/forms/birth-date';
 import { AuthService } from '../../../core/auth/auth.service';
 import {
   cnpjValidator,
@@ -66,6 +67,7 @@ const FIELDS_BY_STEP: Record<ValidationStepType, FieldName[]> = {
 })
 export class ResubmitStepFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
+  protected readonly latestBirthDate = latestBirthDate();
   private readonly validationService = inject(ValidationService);
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);

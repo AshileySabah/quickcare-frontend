@@ -18,6 +18,8 @@
       [readOnly]="readonly()"
       [required]="required()"
       [attr.maxlength]="effectiveMaxLength()"
+      [attr.min]="min()"
+      [attr.max]="max()"
       [attr.inputmode]="mask() ? 'numeric' : null"
       [attr.name]="name()"
       [attr.autocomplete]="autocomplete()"

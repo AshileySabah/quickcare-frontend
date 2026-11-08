@@ -47,6 +47,7 @@
             label="Data de nascimento"
             type="date"
             formControlName="birthDate"
+            [max]="latestBirthDate"
             [required]="true"
             [errorMessage]="fieldError('birthDate')"
           ></ui-input>

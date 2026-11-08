@@ -13,20 +13,16 @@ import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 import { REPORT_STATUS_VARIANTS } from './report-status';
 
-type ReportFilter = 'pendentes' | 'aberta' | 'em_analise' | 'julgadas' | 'todas';
+type ReportFilter = 'em_julgamento' | 'julgadas' | 'todas';
 
 const FILTERS: FilterChip<ReportFilter>[] = [
-  { value: 'pendentes', label: 'Para analisar' },
-  { value: 'aberta', label: 'Abertas' },
-  { value: 'em_analise', label: 'Em análise' },
+  { value: 'em_julgamento', label: 'Em julgamento' },
   { value: 'julgadas', label: 'Julgadas' },
   { value: 'todas', label: 'Todas' },
 ];
 
 const STATUS_BY_FILTER: Record<ReportFilter, ReportStatus[]> = {
-  pendentes: ['aberta', 'em_analise'],
-  aberta: ['aberta'],
-  em_analise: ['em_analise'],
+  em_julgamento: ['em_analise'],
   julgadas: ['procedente', 'improcedente'],
   todas: [],
 };
@@ -52,7 +48,7 @@ export class AdminReportsComponent {
   private readonly reportService = inject(AdminReportService);
 
   protected readonly filters = FILTERS;
-  protected readonly selected = signal<ReportFilter>('pendentes');
+  protected readonly selected = signal<ReportFilter>('em_julgamento');
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly reports = signal<ReportSummary[]>([]);
   protected readonly pager = createPagination(this.reports);

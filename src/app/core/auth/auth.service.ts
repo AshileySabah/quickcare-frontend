@@ -124,7 +124,7 @@ export class AuthService {
               .pipe(switchMap(() => me$))
           : throwError(() => error),
       ),
-      map((response) => this.startSession(response)),
+      map((response) => this.startSession(response, true)),
       catchError(() => of(null)),
     );
   }
@@ -158,7 +158,7 @@ export class AuthService {
     return this.http
       .patch<LoginApiResponse>(`${environment.apiUrl}/auth/perfil-ativo`, { perfil: TIPO_BY_ROLE[role] })
       .pipe(
-        map((response) => this.startSession(response)),
+        map((response) => this.startSession(response, true)),
         catchError((error: unknown) =>
           throwError(() => normalizeError(error, 'Não foi possível trocar de perfil. Tente novamente.')),
         ),
@@ -236,20 +236,24 @@ export class AuthService {
     return normalized;
   }
 
-  private startSession(response: LoginApiResponse): User {
-    const session = this.toSession(response);
+  private startSession(response: LoginApiResponse, honorLastProfile = false): User {
+    const session = this.toSession(response, honorLastProfile);
     this.currentUserSignal.set(session.user);
     this.profilesSignal.set(session.profiles);
     return session.user;
   }
 
-  private toSession(response: LoginApiResponse): Session {
+  private toSession(response: LoginApiResponse, honorLastProfile: boolean): Session {
     const ativos = response.perfis.filter((perfil) => perfil.status === 'ATIVO');
     const prioridade: PerfilStatusApi['tipo'][] = ['ADMIN', 'PROFISSIONAL', 'PACIENTE'];
+    const ultimo = response.perfis.find((perfil) => perfil.tipo === response.ultimoPerfil);
     const perfilAtivo =
       ativos.find((perfil) => perfil.tipo === 'ADMIN') ??
+      (honorLastProfile ? ultimo : undefined) ??
       ativos.find((perfil) => perfil.tipo === response.ultimoPerfil) ??
-      prioridade.map((tipo) => ativos.find((perfil) => perfil.tipo === tipo)).find((perfil) => !!perfil);
+      prioridade.map((tipo) => ativos.find((perfil) => perfil.tipo === tipo)).find((perfil) => !!perfil) ??
+      ultimo ??
+      response.perfis.find((perfil) => perfil.tipo !== 'ADMIN');
 
     if (!perfilAtivo) {
       throw new Error('Nenhum dos seus perfis está ativo no momento.');

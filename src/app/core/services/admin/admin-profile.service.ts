@@ -7,12 +7,15 @@ import { normalizeError } from '../../http/api-error';
 import {
   AdminProfileDetail,
   AdminProfileSummary,
+  BanInput,
+  BanType,
   BlockReasonStatus,
   LateBlockReason,
   ProfileSituation,
   ReportConsequence,
   SwitchableRole,
 } from '../../models';
+import { BanimentoApi, toBan } from '../ban.service';
 import { BloqueioApiResponse, OcorrenciaApiResponse, PERFIL_API, toBlock, toOccurrence } from '../occurrence.service';
 import { StatusValidacaoApi, toValidationStatus } from '../validation.service';
 import { AcaoAdminApi, toAdminAction } from './admin-api';
@@ -36,6 +39,7 @@ interface PerfilDetalheApi {
   ocorrencias: OcorrenciaApiResponse[];
   bloqueios: BloqueioApiResponse[];
   motivosDeBloqueio: MotivoBloqueioApi[];
+  banimentos?: BanimentoApi[];
   acoes: AcaoAdminApi[];
 }
 
@@ -111,12 +115,15 @@ export class AdminProfileService {
     annul: boolean,
     justification: string,
     consequenceIfDenied?: ReportConsequence,
+    ban?: { type: BanType; days?: number },
   ): Observable<AdminProfileDetail> {
     return this.send(
       this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/recursos/${appealId}/decisao`, {
         anular: annul,
         justificativa: justification.trim(),
         consequenciaSeNegado: !annul && consequenceIfDenied ? consequenceIfDenied.toUpperCase() : null,
+        tipoBanimento: ban ? ban.type.toUpperCase() : null,
+        diasSuspensao: ban?.type === 'suspensao' ? ban.days : null,
       }),
       'Não foi possível decidir o recurso.',
     );
@@ -157,6 +164,37 @@ export class AdminProfileService {
     );
   }
 
+  ban(role: SwitchableRole, userId: string, input: BanInput): Observable<AdminProfileDetail> {
+    return this.send(
+      this.http.post<PerfilDetalheApi>(`${this.baseUrl}/perfis/${PERFIL_API[role]}/${userId}/banimentos`, {
+        tipo: input.type.toUpperCase(),
+        dias: input.type === 'suspensao' ? input.days : null,
+        ambosPerfis: input.bothProfiles,
+        justificativa: input.justification.trim(),
+      }),
+      'Não foi possível aplicar o banimento.',
+    );
+  }
+
+  removeBan(banId: string, justification: string): Observable<AdminProfileDetail> {
+    return this.send(
+      this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/banimentos/${banId}/remover`, {
+        justificativa: justification.trim(),
+      }),
+      'Não foi possível remover o banimento.',
+    );
+  }
+
+  decideBanAppeal(banId: string, accept: boolean, justification: string): Observable<AdminProfileDetail> {
+    return this.send(
+      this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/banimentos/${banId}/recurso/decisao`, {
+        aceitar: accept,
+        justificativa: justification.trim(),
+      }),
+      'Não foi possível decidir o recurso.',
+    );
+  }
+
   private send(request$: Observable<PerfilDetalheApi>, fallback: string): Observable<AdminProfileDetail> {
     return request$.pipe(
       map(toDetail),
@@ -187,6 +225,7 @@ function toDetail(response: PerfilDetalheApi): AdminProfileDetail {
     occurrences: response.ocorrencias.map(toOccurrence),
     blocks: response.bloqueios.map(toBlock),
     blockReasons: (response.motivosDeBloqueio ?? []).map(toBlockReason),
+    bans: (response.banimentos ?? []).map(toBan),
     actions: response.acoes.map(toAdminAction),
   };
 }

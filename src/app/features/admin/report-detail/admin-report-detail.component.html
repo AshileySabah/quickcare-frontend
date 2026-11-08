@@ -45,12 +45,6 @@
               <dt>Outras denúncias contra {{ reportedName() }}</dt>
               <dd>{{ current.otherReportsAgainstReported }}</dd>
             </div>
-            @if (current.analysisStartedAt) {
-              <div>
-                <dt>Análise</dt>
-                <dd>Iniciada em {{ current.analysisStartedAt | date: 'dd/MM/yyyy HH:mm' }}{{ current.analyzedBy ? ' por ' + current.analyzedBy : '' }}</dd>
-              </div>
-            }
           </dl>
         </ui-card>
 
@@ -82,12 +76,6 @@
         @if (pending()) {
           <ui-card>
             <h2 class="report-detail__section-title">Decisão</h2>
-            @if (current.summary.status === 'aberta') {
-              <ui-notice>
-                Inicie a análise para indicar aos outros administradores que esta denúncia já está com alguém. Também dá para
-                julgar direto.
-              </ui-notice>
-            }
             <form class="report-detail__decision" [formGroup]="form">
               <ui-select
                 label="A denúncia é"
@@ -105,10 +93,10 @@
                   [errorMessage]="fieldError('consequence')"
                 ></ui-select>
               }
+              @if (isBan()) {
+                <app-ban-fields [group]="banForm"></app-ban-fields>
+              }
               <div class="report-detail__actions">
-                @if (current.summary.status === 'aberta') {
-                  <ui-button variant="secondary" (click)="confirmingAnalysis.set(true)">Iniciar análise</ui-button>
-                }
                 <ui-button (click)="openDecision()">Registrar decisão</ui-button>
               </div>
             </form>
@@ -125,6 +113,28 @@
             </p>
             <p class="report-detail__text">Justificativa: {{ current.decisionJustification }}</p>
 
+            @if (current.ban; as ban) {
+              <h3 class="report-detail__subsection-title">Banimento aplicado</h3>
+              <p class="report-detail__text">
+                {{ ban.type === 'permanente' ? 'Permanente' : 'Suspensão até ' + (ban.end | date: 'dd/MM/yyyy HH:mm') }} ·
+                {{ ban.active ? 'em vigor' : banEndingLabels[ban.ending!] }}
+              </p>
+              @if (ban.appeal; as appeal) {
+                <p class="report-detail__text">
+                  {{ banAppealLabels[appeal.status] }} · enviado em {{ appeal.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                </p>
+                <p class="report-detail__text">Recurso: {{ appeal.text }}</p>
+                @if (appeal.justification) {
+                  <p class="report-detail__text">Decisão do recurso: {{ appeal.justification }}</p>
+                }
+              } @else {
+                <p class="report-detail__muted">Sem recurso até agora.</p>
+              }
+              @if (ban.appeal?.status === 'em_analise') {
+                <ui-button variant="secondary" size="sm" [routerLink]="reportedProfileLink(current)">Decidir o recurso</ui-button>
+              }
+            }
+
             @if (current.occurrence; as occurrence) {
               <h3 class="report-detail__subsection-title">Ocorrência gerada</h3>
               @if (occurrence.appeal; as appeal) {
@@ -136,15 +146,7 @@
                   <p class="report-detail__text">Decisão do recurso: {{ appeal.decisionJustification }}</p>
                 }
                 @if (appeal.status === 'em_analise') {
-                  <ui-button
-                    variant="secondary"
-                    size="sm"
-                    [routerLink]="[
-                      '/admin/perfis',
-                      current.summary.reporter === 'paciente' ? 'professional' : 'patient',
-                      current.summary.reporter === 'paciente' ? current.summary.professional.userId : current.summary.patient.userId
-                    ]"
-                  >
+                  <ui-button variant="secondary" size="sm" [routerLink]="reportedProfileLink(current)">
                     Decidir o recurso
                   </ui-button>
                 }
@@ -174,19 +176,6 @@
     }
   }
 }
-
-<ui-confirm-dialog
-  [open]="confirmingAnalysis()"
-  titleText="Iniciar análise"
-  icon="check"
-  message="Iniciar a análise desta denúncia?"
-  [consequences]="['A denúncia passa para Em análise, com o seu nome.', 'Quem denunciou e quem foi denunciado não são avisados.']"
-  confirmLabel="Sim, iniciar a análise"
-  cancelLabel="Não, voltar"
-  [loading]="saving()"
-  (confirmed)="startAnalysis()"
-  (closed)="confirmingAnalysis.set(false)"
-></ui-confirm-dialog>
 
 <ui-justification-dialog
   [open]="decisionOpen()"

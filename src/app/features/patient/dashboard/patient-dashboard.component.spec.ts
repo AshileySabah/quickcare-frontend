@@ -7,6 +7,7 @@ import { ServiceRequest } from '../../../core/models';
 import { CreationLock, CreationLockService } from '../../../core/services/creation-lock.service';
 import { OccurrenceService } from '../../../core/services/occurrence.service';
 import { RatingService } from '../../../core/services/rating.service';
+import { BanService } from '../../../core/services/ban.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { PatientDashboardComponent } from './patient-dashboard.component';
@@ -84,6 +85,7 @@ describe('PatientDashboardComponent', () => {
           useValue: { summary: () => of({ counting: 0, limit: 3, windowDays: 90, occurrences: [] }) },
         },
         { provide: RatingService, useValue: { pending: () => of({ pending: [], highlights: [] }) } },
+        { provide: BanService, useValue: { current: () => of(null) } },
         { provide: CreationLockService, useValue: { lockFor: () => lock } },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
         {

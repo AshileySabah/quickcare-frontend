@@ -9,6 +9,8 @@ import {
   ADMIN_ACTION_LABELS,
   APPEAL_STATUS_LABELS,
   ATTENDANCE_STATUS_LABELS,
+  BAN_APPEAL_LABELS,
+  BAN_ENDING_LABELS,
   REPORT_CONSEQUENCE_LABELS,
   REPORT_STATUS_LABELS,
   ReportConsequence,
@@ -18,11 +20,9 @@ import {
 import { AdminReportService } from '../../../core/services/admin/admin-report.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
-import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
-import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { revealFirstInvalid } from '../../../shared/ui/forms/invalid-field-focus.directive';
@@ -31,6 +31,8 @@ import { JustificationDialogComponent } from '../../../shared/ui/justification-d
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
 import { StoredFileComponent } from '../../../shared/ui/stored-file/stored-file.component';
 import { REPORT_STATUS_VARIANTS } from '../reports/report-status';
+import { BanFieldsComponent } from '../../bans/ban-fields/ban-fields.component';
+import { banDays, banType, buildBanForm, resetBanForm, validateBanForm } from '../../bans/ban-fields/ban-form';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
@@ -43,13 +45,12 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
     RouterLink,
     BackLinkComponent,
     BadgeComponent,
+    BanFieldsComponent,
     ButtonComponent,
     CardComponent,
-    ConfirmDialogComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     JustificationDialogComponent,
-    NoticeComponent,
     SelectComponent,
     SkeletonListComponent,
     StoredFileComponent,
@@ -69,7 +70,6 @@ export class AdminReportDetailComponent {
   protected readonly pageState = signal<PageState>('loading');
   protected readonly detail = signal<ReportDetail | null>(null);
   protected readonly saving = signal(false);
-  protected readonly confirmingAnalysis = signal(false);
   protected readonly decisionOpen = signal(false);
 
   protected readonly period = formatPeriod;
@@ -79,6 +79,8 @@ export class AdminReportDetailComponent {
   protected readonly attendanceLabels = ATTENDANCE_STATUS_LABELS;
   protected readonly appealLabels = APPEAL_STATUS_LABELS;
   protected readonly actionLabels = ADMIN_ACTION_LABELS;
+  protected readonly banAppealLabels = BAN_APPEAL_LABELS;
+  protected readonly banEndingLabels = BAN_ENDING_LABELS;
 
   protected readonly resultOptions: SelectOption[] = [
     { value: 'procedente', label: 'Procedente' },
@@ -86,8 +88,9 @@ export class AdminReportDetailComponent {
   ];
   protected readonly consequenceOptions: SelectOption[] = [
     { value: 'ocorrencia', label: 'Lançar ocorrência' },
-    { value: 'banimento', label: 'Banir (disponível na etapa de banimento)', disabled: true },
+    { value: 'banimento', label: 'Banir' },
   ];
+  protected readonly banForm = buildBanForm(this.fb);
 
   protected readonly form = this.fb.nonNullable.group({
     result: this.fb.nonNullable.control<'procedente' | 'improcedente' | ''>('', Validators.required),
@@ -98,11 +101,13 @@ export class AdminReportDetailComponent {
     consequence: { required: 'Escolha a consequência para o denunciado.' },
   });
   private readonly result = toSignal(this.form.controls.result.valueChanges, { initialValue: '' as const });
+  private readonly consequence = toSignal(this.form.controls.consequence.valueChanges, { initialValue: '' as const });
   protected readonly isProcedente = computed(() => this.result() === 'procedente');
+  protected readonly isBan = computed(() => this.isProcedente() && this.consequence() === 'banimento');
 
   protected readonly pending = computed(() => {
     const status = this.detail()?.summary.status;
-    return status === 'aberta' || status === 'em_analise';
+    return status === 'em_analise';
   });
 
   protected readonly reportedName = computed(() => {
@@ -115,7 +120,10 @@ export class AdminReportDetailComponent {
 
   protected readonly decisionConsequences = computed(() => {
     const items: string[] = [];
-    if (this.isProcedente()) {
+    if (this.isBan()) {
+      items.push(`O perfil de ${this.reportedName()} é banido e o que estava em curso com ele é encerrado.`);
+      items.push('A pessoa é avisada, sem saber quem denunciou, e pode recorrer uma vez do banimento.');
+    } else if (this.isProcedente()) {
       items.push(`${this.reportedName()} recebe uma ocorrência e é avisado, sem saber quem denunciou.`);
       items.push('Quem foi denunciado pode recorrer uma vez; você decide o recurso na fila de Ocorrências.');
     } else {
@@ -130,11 +138,9 @@ export class AdminReportDetailComponent {
     this.form.controls.result.valueChanges.subscribe((value) => {
       const consequence = this.form.controls.consequence;
       consequence.setValidators(value === 'procedente' ? [Validators.required] : []);
-      if (value !== 'procedente') {
-        consequence.setValue('');
-      }
-      consequence.updateValueAndValidity();
+      consequence.reset('');
     });
+    this.form.controls.consequence.valueChanges.subscribe(() => resetBanForm(this.banForm));
   }
 
   protected load(): void {
@@ -146,6 +152,13 @@ export class AdminReportDetailComponent {
       },
       error: () => this.pageState.set('error'),
     });
+  }
+
+  protected reportedProfileLink(detail: ReportDetail): string[] {
+    const summary = detail.summary;
+    return summary.reporter === 'paciente'
+      ? ['/admin/perfis', 'professional', summary.professional.userId]
+      : ['/admin/perfis', 'patient', summary.patient.userId];
   }
 
   protected reporterLabel(detail: ReportDetail): string {
@@ -164,24 +177,9 @@ export class AdminReportDetailComponent {
       : null;
   }
 
-  protected startAnalysis(): void {
-    this.saving.set(true);
-    this.reportService.startAnalysis(this.id).subscribe({
-      next: (detail) => {
-        this.saving.set(false);
-        this.confirmingAnalysis.set(false);
-        this.detail.set(detail);
-        this.toastService.success('Análise iniciada.');
-      },
-      error: (error: Error) => {
-        this.saving.set(false);
-        this.toastService.error(error.message);
-      },
-    });
-  }
-
   protected openDecision(): void {
-    if (this.form.invalid) {
+    const banValid = !this.isBan() || validateBanForm(this.banForm);
+    if (this.form.invalid || !banValid) {
       this.form.markAllAsTouched();
       afterNextRender(() => revealFirstInvalid(this.host.nativeElement), { injector: this.injector });
       return;
@@ -196,7 +194,12 @@ export class AdminReportDetailComponent {
     }
     this.saving.set(true);
     this.reportService
-      .decide(this.id, { result, consequence: consequence || undefined, justification })
+      .decide(this.id, {
+        result,
+        consequence: consequence || undefined,
+        justification,
+        ban: this.isBan() ? { type: banType(this.banForm), days: banDays(this.banForm) } : undefined,
+      })
       .subscribe({
         next: (detail) => {
           this.saving.set(false);

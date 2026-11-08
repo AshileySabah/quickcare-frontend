@@ -36,7 +36,7 @@ export class ProfileSwitcherComponent {
   }
 
   protected select(role: SwitchableRole): void {
-    if (role === this.currentRole() || this.switching() || this.isBanned(role)) {
+    if (role === this.currentRole() || this.switching()) {
       return;
     }
 

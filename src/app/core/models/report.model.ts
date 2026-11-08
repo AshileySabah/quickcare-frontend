@@ -1,5 +1,6 @@
 import { AdminAction, AdminParty } from './admin.model';
 import { AttendanceSide, AttendanceStatus } from './attendance.model';
+import { Ban, BanType } from './ban.model';
 import { AppealStatus } from './occurrence.model';
 
 export type ReportReason =
@@ -15,17 +16,16 @@ export const REPORT_REASON_LABELS: Record<ReportReason, string> = {
   comportamento_inadequado: 'Comportamento inadequado',
   desrespeito_ou_assedio: 'Desrespeito ou assédio',
   negligencia: 'Negligência no atendimento',
-  cobranca_indevida: 'Cobrança indevida ou fora da plataforma',
+  cobranca_indevida: 'Cobrança indevida',
   fraude: 'Fraude ou golpe',
   perfil_falso: 'Perfil ou documentos falsos',
   outro: 'Outro motivo',
 };
 
-export type ReportStatus = 'aberta' | 'em_analise' | 'procedente' | 'improcedente';
+export type ReportStatus = 'em_analise' | 'procedente' | 'improcedente';
 
 export const REPORT_STATUS_LABELS: Record<ReportStatus, string> = {
-  aberta: 'Aberta',
-  em_analise: 'Em análise',
+  em_analise: 'Em julgamento',
   procedente: 'Procedente',
   improcedente: 'Improcedente',
 };
@@ -91,6 +91,7 @@ export interface ReportDetail {
   decidedAt?: string;
   decidedBy?: string;
   occurrence?: ReportOccurrence;
+  ban?: Ban;
   attendances: ReportAttendance[];
   otherReportsAgainstReported: number;
   actions: AdminAction[];
@@ -100,4 +101,5 @@ export interface ReportDecisionInput {
   result: 'procedente' | 'improcedente';
   consequence?: ReportConsequence;
   justification: string;
+  ban?: { type: BanType; days?: number };
 }

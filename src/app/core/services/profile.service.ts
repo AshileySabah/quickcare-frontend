@@ -7,6 +7,11 @@ import { normalizeError } from '../http/api-error';
 import { AuthService } from '../auth/auth.service';
 import { Address, AttendanceModality, EmergencyContact, Gender } from '../models';
 
+export interface ProfileDeclarations {
+  infoConfirmedTrue: boolean;
+  lgpdConsent: boolean;
+}
+
 interface BaseProfile {
   name: string;
   email: string;
@@ -16,6 +21,7 @@ interface BaseProfile {
   gender: Gender;
   emergencyContacts: EmergencyContact[];
   address: Address;
+  declarations: ProfileDeclarations;
 }
 
 export interface PatientProfile extends BaseProfile {
@@ -33,8 +39,6 @@ export interface ProfessionalProfile extends BaseProfile {
 interface BaseProfileUpdate {
   name: string;
   phone: string;
-  birthDate: string;
-  gender: Gender;
   emergencyContacts: EmergencyContact[];
   address: Address;
   avatar?: Blob;
@@ -73,6 +77,7 @@ interface BasePerfilApi {
   bairro: string;
   cidade: string;
   uf: string;
+  declaracoes?: { confirmacaoInformacoesVerdadeiras: boolean; consentimentoLgpd: boolean };
 }
 
 interface PerfilPacienteApi extends BasePerfilApi {
@@ -165,6 +170,10 @@ function toBaseProfile(api: BasePerfilApi): BaseProfile {
       city: api.cidade,
       state: api.uf,
     },
+    declarations: {
+      infoConfirmedTrue: api.declaracoes?.confirmacaoInformacoesVerdadeiras ?? false,
+      lgpdConsent: api.declaracoes?.consentimentoLgpd ?? false,
+    },
   };
 }
 
@@ -190,8 +199,6 @@ function toBaseDados(input: BaseProfileUpdate) {
   return {
     nome: input.name,
     telefone: input.phone,
-    dataNascimento: input.birthDate,
-    genero: input.gender,
     contatosEmergencia: input.emergencyContacts.map((contact) => ({ nome: contact.name, telefone: contact.phone })),
     cep: input.address.cep,
     logradouro: input.address.street,

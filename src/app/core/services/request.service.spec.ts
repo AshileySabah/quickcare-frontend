@@ -218,6 +218,37 @@ describe('RequestService', () => {
     expect(requests).toEqual([]);
   });
 
+  it('traz as atuações com que o profissional ainda pode propor em cada solicitação', () => {
+    let requests: ServiceRequest[] = [];
+    service.listAvailable().subscribe((result) => (requests = result));
+    httpMock.expectOne(`${BASE_URL}/disponiveis`).flush([
+      apiResponse({
+        atuacoesParaProposta: [
+          {
+            id: 201,
+            categoria: 'CUIDADOR',
+            categoriaRotulo: 'Cuidador(a)',
+            rotulo: 'Cuidador(a)',
+            siglaRegistro: null,
+            especialidades: [{ id: 15, nome: 'Cuidador de Idosos', categoria: 'CUIDADOR' }],
+            registroProfissional: null,
+            registroProfissionalUf: null,
+          },
+        ],
+      }),
+    ]);
+
+    expect(requests[0].practiceAreasForProposal.map((area) => area.id)).toEqual(['201']);
+  });
+
+  it('sem atuações para proposta a lista vem vazia', () => {
+    let requests: ServiceRequest[] = [];
+    service.list().subscribe((result) => (requests = result));
+    httpMock.expectOne(BASE_URL).flush([apiResponse()]);
+
+    expect(requests[0].practiceAreasForProposal).toEqual([]);
+  });
+
   it('permite editar enquanto a solicitação está em curso, mesmo com vagas preenchidas', () => {
     const base = { status: 'aberta', professionals: [{ quantity: 2, filled: 0 }] } as ServiceRequest;
 

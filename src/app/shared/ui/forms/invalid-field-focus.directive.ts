@@ -4,10 +4,12 @@ import { FormGroupDirective } from '@angular/forms';
 
 const FOCUSABLE = 'input:not([type="hidden"]):not([disabled]), textarea, select, button:not([disabled])';
 
-export function revealFirstInvalid(form: HTMLElement): void {
+const INVALID_TARGETS = '[formcontrolname].ng-invalid, [data-invalid="true"]';
+
+export function revealFirstInvalid(form: HTMLElement, includeAlerts = true): void {
   const field =
-    form.querySelector<HTMLElement>('[formcontrolname].ng-invalid') ??
-    form.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]');
+    form.querySelector<HTMLElement>(INVALID_TARGETS) ??
+    (includeAlerts ? form.querySelector<HTMLElement>('[aria-invalid="true"], [role="alert"]') : null);
   if (!field) {
     return;
   }
@@ -27,10 +29,11 @@ export class InvalidFieldFocusDirective {
     const injector = inject(Injector);
 
     formGroup.ngSubmit.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(() => {
-      if (formGroup.invalid) {
+      const invalid = formGroup.invalid === true;
+      if (invalid) {
         formGroup.control.markAllAsTouched();
-        afterNextRender(() => revealFirstInvalid(host.nativeElement), { injector });
       }
+      afterNextRender(() => revealFirstInvalid(host.nativeElement, invalid), { injector });
     });
   }
 }

@@ -12,8 +12,6 @@ describe('OccurrencesCardComponent', () => {
     });
     const fixture = TestBed.createComponent(OccurrencesCardComponent);
     fixture.componentRef.setInput('role', 'professional');
-    const blocked = jasmine.createSpy('blocked');
-    fixture.componentInstance.blockedChange.subscribe(blocked);
     fixture.detectChanges();
 
     const request = TestBed.inject(HttpTestingController).expectOne(
@@ -21,14 +19,13 @@ describe('OccurrencesCardComponent', () => {
     );
     request.flush(response);
     fixture.detectChanges();
-    return { element: fixture.nativeElement as HTMLElement, blocked };
+    return { element: fixture.nativeElement as HTMLElement };
   }
 
   it('sem ocorrências recentes nem bloqueio, não aparece', () => {
-    const { element, blocked } = render({ contando: 0, limite: 3, janelaDias: 90, ocorrencias: [] });
+    const { element } = render({ contando: 0, limite: 3, janelaDias: 90, ocorrencias: [] });
 
     expect(element.querySelector('ui-card')).toBeNull();
-    expect(blocked).toHaveBeenCalledWith(false);
   });
 
   it('mostra quantas contam e as recentes, com a anulada riscada', () => {
@@ -81,8 +78,8 @@ describe('OccurrencesCardComponent', () => {
     expect(items[2]).toContain('Recurso em análise');
   });
 
-  it('bloqueado: avisa até quando e conta para a tela', () => {
-    const { element, blocked } = render({
+  it('bloqueado: avisa até quando', () => {
+    const { element } = render({
       contando: 0,
       limite: 3,
       janelaDias: 90,
@@ -91,7 +88,6 @@ describe('OccurrencesCardComponent', () => {
     });
 
     expect(element.textContent).toContain('você não pode enviar propostas até');
-    expect(blocked).toHaveBeenCalledWith(true);
   });
 
   it('bloqueado pelas 3: elas seguem contando (3 de 3) até o bloqueio acabar', () => {

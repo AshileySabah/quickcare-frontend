@@ -1,0 +1,52 @@
+@if (current(); as existing) {
+  @if (!replacing()) {
+    <div class="ui-file-replacer">
+      <span class="ui-file-replacer__label">
+        {{ label() }}
+        @if (required()) {
+          <span class="ui-file-replacer__required" aria-hidden="true">*</span>
+        }
+      </span>
+      <div class="ui-file-replacer__current">
+        <ui-stored-file [file]="existing"></ui-stored-file>
+        <button
+          type="button"
+          class="ui-file-replacer__remove"
+          [disabled]="disabled()"
+          [attr.aria-label]="'Substituir ' + existing.fileName"
+          (click)="replace()"
+        >
+          <ui-icon name="x-circle" [size]="20"></ui-icon>
+        </button>
+      </div>
+      @if (errorMessage(); as error) {
+        <p class="ui-file-replacer__error" role="alert">{{ error }}</p>
+      } @else {
+        <p class="ui-file-replacer__hint">Para trocar, clique no x e escolha o novo arquivo.</p>
+      }
+    </div>
+  } @else {
+    <div class="ui-file-replacer">
+      <p class="ui-file-replacer__replacing">
+        Escolha o arquivo que vai substituir <strong>{{ existing.fileName }}</strong>.
+      </p>
+      <ui-file-picker
+        [label]="label()"
+        [hint]="hint()"
+        [required]="required()"
+        [errorMessage]="errorMessage()"
+        [disabled]="disabled()"
+        (fileChange)="onPicked($event)"
+      ></ui-file-picker>
+    </div>
+  }
+} @else {
+  <ui-file-picker
+    [label]="label()"
+    [hint]="hint()"
+    [required]="required()"
+    [errorMessage]="errorMessage()"
+    [disabled]="disabled()"
+    (fileChange)="fileChange.emit($event)"
+  ></ui-file-picker>
+}

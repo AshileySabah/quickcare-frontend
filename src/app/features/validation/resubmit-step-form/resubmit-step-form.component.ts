@@ -1,5 +1,6 @@
-import { Component, OnInit, inject, input, output, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, output, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import { latestBirthDate } from '../../../core/forms/birth-date';
 import { AuthService } from '../../../core/auth/auth.service';
 import {
   cnpjValidator,
@@ -8,45 +9,54 @@ import {
   normalizeIdentityNumber,
 } from '../../../core/forms/document-validators';
 import {
+  Gender,
   IdentityDocumentType,
   RegistrationData,
   StepResubmission,
   ValidationDetail,
   ValidationProfile,
   ValidationStep,
+  ValidationStepType,
 } from '../../../core/models';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { FilePickerComponent } from '../../../shared/ui/forms/file-picker/file-picker.component';
+import { FileReplacerComponent } from '../../../shared/ui/forms/file-replacer/file-replacer.component';
+import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { GENDER_OPTIONS, IDENTITY_DOCUMENT_OPTIONS } from '../../../shared/ui/register/register-options';
 
 type FieldName =
-  | 'name'
   | 'cpf'
   | 'identityDocumentType'
   | 'identityDocumentNumber'
   | 'identityDocumentUf'
+  | 'birthDate'
+  | 'gender'
   | 'cnpj'
   | 'registrationNumber'
   | 'registrationUf';
 
-const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
-  { value: 'RG', label: 'RG' },
-  { value: 'CNH', label: 'CNH' },
-];
+const FIELDS_BY_STEP: Record<ValidationStepType, FieldName[]> = {
+  CPF: ['cpf'],
+  IDENTIDADE: ['identityDocumentType', 'identityDocumentNumber', 'identityDocumentUf', 'birthDate', 'gender'],
+  CNPJ: ['cnpj'],
+  REGISTRO_PROFISSIONAL: ['registrationNumber', 'registrationUf'],
+};
 
 @Component({
   selector: 'app-resubmit-step-form',
   standalone: true,
-  imports: [InvalidFieldFocusDirective, 
+  imports: [
+    InvalidFieldFocusDirective,
     ReactiveFormsModule,
     ButtonComponent,
-    FilePickerComponent,
+    ConfirmDialogComponent,
+    FileReplacerComponent,
     GridComponent,
     GridItemComponent,
     InputComponent,
@@ -57,30 +67,68 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
 })
 export class ResubmitStepFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
+  protected readonly latestBirthDate = latestBirthDate();
   private readonly validationService = inject(ValidationService);
   private readonly authService = inject(AuthService);
   private readonly toastService = inject(ToastService);
 
   profile = input.required<ValidationProfile>();
-  step = input.required<ValidationStep>();
+  type = input.required<ValidationStepType>();
+  step = input<ValidationStep | null>(null);
   data = input.required<RegistrationData>();
   ufOptions = input<SelectOption[]>([]);
-  registrationLabel = input('Registro profissional');
+
+  protected readonly registrationLabel = computed(
+    () => this.step()?.practiceArea?.registrationLabel ?? 'Registro profissional',
+  );
 
   resubmitted = output<ValidationDetail>();
+  cancelled = output<void>();
 
   protected readonly identityDocumentOptions = IDENTITY_DOCUMENT_OPTIONS;
+  protected readonly genderOptions = GENDER_OPTIONS;
   protected readonly isSubmitting = signal(false);
   protected readonly document = signal<File | null>(null);
   protected readonly documentError = signal<string | null>(null);
+  protected readonly confirmingUnchanged = signal(false);
+  protected readonly unchangedConsequences = [
+    'Os dados e o documento continuam os mesmos.',
+    'Mesmo assim, a etapa volta para a análise do administrador.',
+  ];
+
+  protected readonly title = computed(() => {
+    switch (this.step()?.status) {
+      case 'reprovada':
+        return 'Corrija o que for preciso e envie de novo';
+      case 'pendente':
+        return 'Atualize os dados ou o documento antes da análise';
+      case 'aprovada':
+        return 'Altere os dados, o documento ou os dois';
+      default:
+        return 'Informe o CNPJ e envie o documento que o comprova';
+    }
+  });
+  protected readonly note = computed(() => {
+    const step = this.step();
+    if (step?.status !== 'aprovada') {
+      return null;
+    }
+    if (step.practiceArea) {
+      return `O registro volta para análise do administrador. Enquanto isso, o que já está em andamento continua, mas você não envia novas propostas de ${step.practiceArea.label} nem edita as que já enviou.`;
+    }
+    return `Os dados voltam para análise do administrador. Enquanto isso, você continua usando a plataforma, mas não pode ${
+      this.profile() === 'patient' ? 'criar novas solicitações' : 'enviar novas propostas'
+    }.`;
+  });
 
   protected readonly form = this.fb.nonNullable.group(
     {
-      name: [''],
       cpf: [''],
       identityDocumentType: [''],
       identityDocumentNumber: [''],
       identityDocumentUf: [''],
+      birthDate: [''],
+      gender: [''],
       cnpj: [''],
       registrationNumber: [''],
       registrationUf: [''],
@@ -88,32 +136,39 @@ export class ResubmitStepFormComponent implements OnInit {
     { validators: identityDocumentValidator() },
   );
 
+  private initialValue = this.form.getRawValue();
+
   ngOnInit(): void {
     const data = this.data();
     this.form.patchValue({
-      name: data.name,
       cpf: data.cpf,
       identityDocumentType: data.identityDocumentType ?? '',
       identityDocumentNumber: data.identityDocumentNumber ?? '',
       identityDocumentUf: data.identityDocumentUf ?? '',
+      birthDate: data.birthDate ?? '',
+      gender: data.gender ?? '',
       cnpj: data.cnpj ?? '',
-      registrationNumber: data.registrationNumber ?? '',
-      registrationUf: data.registrationUf ?? '',
+      registrationNumber: this.step()?.practiceArea?.registrationNumber ?? '',
+      registrationUf: this.step()?.practiceArea?.registrationUf ?? '',
     });
+    this.initialValue = this.form.getRawValue();
 
-    const required: Record<string, ValidatorFn[]> =
-      this.step().type === 'IDENTIDADE'
-        ? {
-            name: [Validators.required, Validators.maxLength(150)],
-            cpf: [Validators.required, Validators.pattern(/^\d{11}$/), cpfValidator()],
-            identityDocumentType: [Validators.required],
-            identityDocumentNumber: [Validators.required],
-          }
-        : this.step().type === 'CNPJ'
-          ? { cnpj: [Validators.required, Validators.pattern(/^\d{14}$/), cnpjValidator()] }
-          : { registrationNumber: [Validators.required, Validators.maxLength(50)], registrationUf: [Validators.required] };
+    const required: Record<ValidationStepType, Partial<Record<FieldName, ValidatorFn[]>>> = {
+      CPF: { cpf: [Validators.required, Validators.pattern(/^\d{11}$/), cpfValidator()] },
+      IDENTIDADE: {
+        identityDocumentType: [Validators.required],
+        identityDocumentNumber: [Validators.required],
+        birthDate: [Validators.required],
+        gender: [Validators.required],
+      },
+      CNPJ: { cnpj: [Validators.required, Validators.pattern(/^\d{14}$/), cnpjValidator()] },
+      REGISTRO_PROFISSIONAL: {
+        registrationNumber: [Validators.required, Validators.maxLength(50)],
+        registrationUf: [Validators.required],
+      },
+    };
 
-    for (const [name, validators] of Object.entries(required)) {
+    for (const [name, validators] of Object.entries(required[this.type()])) {
       const control = this.form.get(name);
       control?.setValidators(validators);
       control?.updateValueAndValidity();
@@ -160,38 +215,54 @@ export class ResubmitStepFormComponent implements OnInit {
 
   protected submit(): void {
     const document = this.document();
-    if (!document) {
-      this.documentError.set('Envie o documento atualizado.');
-    }
-    if (this.form.invalid || !document) {
+    const value = this.form.getRawValue();
+    const changed = FIELDS_BY_STEP[this.type()].some((field) => value[field] !== this.initialValue[field]);
+
+    this.documentError.set(!document && !this.step()?.document ? 'Envie o documento desta etapa.' : null);
+    if (this.form.invalid || this.documentError()) {
       this.form.markAllAsTouched();
       return;
     }
+    if (!changed && !document) {
+      this.confirmingUnchanged.set(true);
+      return;
+    }
+    this.send();
+  }
 
+  protected confirmUnchanged(): void {
+    this.confirmingUnchanged.set(false);
+    this.send();
+  }
+
+  private send(): void {
+    const document = this.document() ?? undefined;
     const value = this.form.getRawValue();
-    const input: StepResubmission =
-      this.step().type === 'IDENTIDADE'
-        ? {
-            document,
-            name: value.name.trim(),
-            cpf: value.cpf,
-            identityDocumentType: value.identityDocumentType as IdentityDocumentType,
-            identityDocumentNumber: normalizeIdentityNumber(value.identityDocumentNumber),
-            identityDocumentUf: this.isRg ? value.identityDocumentUf : undefined,
-          }
-        : this.step().type === 'CNPJ'
-          ? { document, cnpj: value.cnpj }
-          : { document, registrationNumber: value.registrationNumber.trim(), registrationUf: value.registrationUf };
+    const inputs: Record<ValidationStepType, () => StepResubmission> = {
+      CPF: () => ({ document, cpf: value.cpf }),
+      IDENTIDADE: () => ({
+        document,
+        identityDocumentType: value.identityDocumentType as IdentityDocumentType,
+        identityDocumentNumber: normalizeIdentityNumber(value.identityDocumentNumber),
+        identityDocumentUf: this.isRg ? value.identityDocumentUf : undefined,
+        birthDate: value.birthDate,
+        gender: value.gender as Gender,
+      }),
+      CNPJ: () => ({ document, cnpj: value.cnpj }),
+      REGISTRO_PROFISSIONAL: () => ({
+        document,
+        registrationNumber: value.registrationNumber.trim(),
+        registrationUf: value.registrationUf,
+      }),
+    };
+    const input = inputs[this.type()]();
 
     this.isSubmitting.set(true);
-    this.validationService.resubmit(this.profile(), this.step().type, input).subscribe({
+    this.validationService.resubmit(this.profile(), this.type(), input, this.step()?.practiceArea?.id).subscribe({
       next: (detail) => {
         this.isSubmitting.set(false);
         this.authService.updateValidationStatus(detail.status);
-        if (input.name) {
-          this.authService.updateCurrentUser(input.name, this.authService.currentUser()?.avatarUrl ?? null);
-        }
-        this.toastService.success('Etapa reenviada. Ela volta para análise.');
+        this.toastService.success('Enviado para validação. Você será avisado quando o administrador analisar.');
         this.resubmitted.emit(detail);
       },
       error: (error: Error) => {

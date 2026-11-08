@@ -21,7 +21,7 @@ import { RequestedProfessionalsCardComponent } from './requested-professionals-c
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
-import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { CreationLockService } from '../../../core/services/creation-lock.service';
 import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
@@ -53,7 +53,7 @@ export class RequestFormComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly toastService = inject(ToastService);
   private readonly specialtyService = inject(SpecialtyService);
-  protected readonly blocked = inject(OccurrenceService).blockFor('patient');
+  protected readonly blocked = inject(CreationLockService).lockFor('patient');
 
   private readonly editingId = this.route.snapshot.paramMap.get('id');
   private readonly baseId = this.editingId ? null : this.route.snapshot.queryParamMap.get('baseadaEm');

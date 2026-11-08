@@ -2,13 +2,13 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
 import { EmergencyContactGroup, setEmergencyContacts } from '../../../core/forms/emergency-contact-form';
-import { profileFieldErrorsFor } from '../../../core/forms/profile-form';
-import { Gender } from '../../../core/models';
+import { LOCKED_PROFILE_NOTE, lockedDeclarationControls, profileFieldErrorsFor } from '../../../core/forms/profile-form';
 import { PatientProfile, ProfileService } from '../../../core/services/profile.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { AvatarUploadComponent } from '../../../shared/ui/forms/avatar-upload/avatar-upload.component';
 import { BasicInfoCardComponent } from '../../../shared/ui/register/basic-info-card/basic-info-card.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { DeclarationsCardComponent } from '../../../shared/ui/register/declarations-card/declarations-card.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { HealthInfoCardComponent } from '../../../shared/ui/register/health-info-card/health-info-card.component';
@@ -21,12 +21,15 @@ type PageState = 'loading' | 'error' | 'ready';
 @Component({
   selector: 'app-patient-edit-profile',
   standalone: true,
-  imports: [InvalidFieldFocusDirective, SkeletonListComponent, 
+  imports: [
+    InvalidFieldFocusDirective,
+    SkeletonListComponent,
     ReactiveFormsModule,
     AddressCardComponent,
     AvatarUploadComponent,
     BasicInfoCardComponent,
     ButtonComponent,
+    DeclarationsCardComponent,
     EmergencyContactsCardComponent,
     ErrorStateComponent,
     HealthInfoCardComponent,
@@ -44,19 +47,20 @@ export class PatientEditProfileComponent implements OnInit {
   protected readonly isSubmitting = signal(false);
   protected readonly avatarUrl = signal<string | null>(null);
 
+  protected readonly lockedNote = LOCKED_PROFILE_NOTE;
+
   private avatarBlob: Blob | null = null;
   private avatarRemoved = false;
 
   protected readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     phone: ['', [Validators.required]],
-    birthDate: ['', [Validators.required]],
-    gender: ['', [Validators.required]],
     emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
     allergies: [''],
     healthConditions: [''],
     medicationsInUse: [''],
     address: buildAddressGroup(this.fb),
+    ...lockedDeclarationControls(this.fb),
   });
 
   protected readonly fieldError = profileFieldErrorsFor(this.form);
@@ -99,8 +103,6 @@ export class PatientEditProfileComponent implements OnInit {
       .updatePatientProfile({
         name: value.name,
         phone: value.phone,
-        birthDate: value.birthDate,
-        gender: value.gender as Gender,
         emergencyContacts: value.emergencyContacts,
         allergies: value.allergies,
         healthConditions: value.healthConditions,
@@ -129,13 +131,12 @@ export class PatientEditProfileComponent implements OnInit {
     this.form.reset({
       name: profile.name,
       phone: profile.phone,
-      birthDate: profile.birthDate,
-      gender: profile.gender,
       emergencyContacts: profile.emergencyContacts,
       allergies: profile.allergies,
       healthConditions: profile.healthConditions,
       medicationsInUse: profile.medicationsInUse,
       address: profile.address,
+      ...profile.declarations,
     });
 
     this.avatarUrl.set(profile.avatarUrl);

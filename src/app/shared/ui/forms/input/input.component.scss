@@ -10,9 +10,51 @@
 }
 
 .ui-input__field {
+  flex: 1;
+  min-width: 0;
   height: 40px;
   padding: 0 tokens.space(3);
   @include form.field-control;
+}
+
+.ui-input__control {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+.ui-input__field--revealable {
+  padding-right: tokens.space(10);
+}
+
+.ui-input__reveal {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: tokens.space(10);
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: tokens.color('gray', 500);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: tokens.color('gray', 800);
+  }
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: -2px;
+    border-radius: tokens.radius('md');
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 .ui-input__hint {

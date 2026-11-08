@@ -7,6 +7,8 @@ import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/
 import { AuthService, PatientProfileInput } from '../../../core/auth/auth.service';
 import { addressFieldErrorsFor, buildAddressGroup, toAddress } from '../../../core/forms/address-form';
 import {
+  PERSONAL_DOCUMENT_OPTIONS,
+  PERSONAL_DOCUMENT_TYPES,
   confirmPasswordError,
   disableAccountFields,
   missingDocumentMessage,
@@ -31,11 +33,6 @@ import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
-
-const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [
-  { value: 'VALIDACAO_CPF', label: 'Documento de identidade (RG/CNH)' },
-  { value: 'OUTRO', label: 'Outro' },
-];
 
 @Component({
   selector: 'app-patient-register',
@@ -68,7 +65,7 @@ export class PatientRegisterComponent {
   protected readonly isSubmitting = signal(false);
   protected readonly ufOptions = signal<SelectOption[]>([]);
   protected readonly avatarBlob = signal<Blob | null>(null);
-  protected readonly documentTypeOptions = DOCUMENT_TYPE_OPTIONS;
+  protected readonly documentTypeOptions = PERSONAL_DOCUMENT_OPTIONS;
 
   protected readonly documents = signal<UploadedDocument[]>([]);
   protected readonly documentsError = signal<string | null>(null);
@@ -136,7 +133,7 @@ export class PatientRegisterComponent {
 
   protected submit(): void {
     const documents = this.documents();
-    const missingDocument = missingDocumentMessage(documents, ['VALIDACAO_CPF']);
+    const missingDocument = missingDocumentMessage(documents, PERSONAL_DOCUMENT_TYPES);
     this.documentsError.set(missingDocument);
 
     if (this.form.invalid || missingDocument) {

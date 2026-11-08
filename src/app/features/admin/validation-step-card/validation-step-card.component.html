@@ -18,63 +18,14 @@
       </div>
     </header>
 
-    <dl class="step-card__data">
-      @switch (step().type) {
-        @case ('IDENTIDADE') {
-          <div>
-            <dt>Nome</dt>
-            <dd>{{ data().name }}</dd>
-          </div>
-          <div>
-            <dt>CPF</dt>
-            <dd>{{ formatCpf(data().cpf) }}</dd>
-          </div>
-          <div>
-            <dt>Data de nascimento</dt>
-            <dd>{{ data().birthDate | date: 'dd/MM/yyyy' }}</dd>
-          </div>
-          <div>
-            <dt>Documento de identidade</dt>
-            <dd>
-              @if (data().identityDocumentType) {
-                {{ data().identityDocumentType }} {{ data().identityDocumentNumber }}
-                @if (data().identityDocumentUf) {
-                  ({{ data().identityDocumentUf }})
-                }
-              } @else {
-                Número não informado
-              }
-            </dd>
-          </div>
-        }
-        @case ('CNPJ') {
-          <div>
-            <dt>CNPJ</dt>
-            <dd>{{ formatCnpj(data().cnpj) }}</dd>
-          </div>
-          <div>
-            <dt>Profissional</dt>
-            <dd>{{ data().name }}</dd>
-          </div>
-        }
-        @case ('REGISTRO_PROFISSIONAL') {
-          <div>
-            <dt>{{ registrationLabel() }}</dt>
-            <dd>{{ data().registrationNumber }} / {{ data().registrationUf }}</dd>
-          </div>
-          <div>
-            <dt>Profissional</dt>
-            <dd>{{ data().name }}</dd>
-          </div>
-          @if (!lookupLink()) {
-            <div>
-              <dt>Onde conferir</dt>
-              <dd>No portal do conselho regional da categoria ({{ data().registrationUf }}).</dd>
-            </div>
-          }
-        }
+    <app-step-data [type]="step().type" [data]="data()" [practiceArea]="step().practiceArea" [showOwner]="true">
+      @if (step().type === 'REGISTRO_PROFISSIONAL' && !lookupLink()) {
+        <div>
+          <dt>Onde conferir</dt>
+          <dd>No portal do conselho regional da categoria ({{ step().practiceArea?.registrationUf }}).</dd>
+        </div>
       }
-    </dl>
+    </app-step-data>
 
     <section class="step-card__section">
       <h3 class="step-card__section-title">Documento enviado</h3>

@@ -25,4 +25,5 @@ export class AppShellComponent {
   navItems = input.required<ShellNavItem[]>();
   profileLink = input<string | null>(null);
   blockedUsersLink = input<string | null>(null);
+  documentsLink = input<string | null>(null);
 }

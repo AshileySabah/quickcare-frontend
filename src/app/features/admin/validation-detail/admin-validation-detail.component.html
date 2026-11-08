@@ -20,12 +20,27 @@
             <div>
               <h1 class="validation-detail__name">{{ current.data.name }}</h1>
               <p class="validation-detail__subtitle">
-                {{ profile === 'professional' ? categoryLabel(current) : 'Paciente' }} · Cadastrado em
+                {{ profile === 'professional' ? practiceAreasLabel(current) : 'Paciente' }} · Cadastrado em
                 {{ current.registeredAt | date: 'dd/MM/yyyy' }}
               </p>
             </div>
-            <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+            @if (current.revalidating) {
+              <ui-badge variant="info">Em revalidação</ui-badge>
+            } @else {
+              <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+            }
           </div>
+          @if (current.creationLocked) {
+            <p class="validation-detail__subtitle">
+              Cadastro já aprovado que alterou dados ou documentos. Enquanto as etapas abaixo não forem aprovadas, a
+              pessoa usa a plataforma normalmente, mas não cria novas solicitações nem envia novas propostas.
+            </p>
+          } @else if (current.revalidating) {
+            <p class="validation-detail__subtitle">
+              Cadastro já aprovado com registro de atuação novo ou alterado. Só essa atuação fica travada até a análise;
+              as outras seguem liberadas.
+            </p>
+          }
 
           <dl class="validation-detail__meta">
             <div>
@@ -44,10 +59,10 @@
                 {{ formatCep(current.data.address.cep) }}
               </dd>
             </div>
-            @if (current.data.specialties.length > 0) {
+            @for (area of current.data.practiceAreas; track area.id) {
               <div>
-                <dt>Especialidades</dt>
-                <dd>{{ current.data.specialties.join(', ') }}</dd>
+                <dt>{{ area.label }}</dt>
+                <dd>{{ specialtyNames(area) }}</dd>
               </div>
             }
           </dl>
@@ -79,18 +94,30 @@
           </div>
         }
 
-        @for (step of current.steps; track step.id) {
+        @for (step of visibleSteps(); track step.id) {
+          <ng-container *ngTemplateOutlet="stepCard; context: { $implicit: step, current: current }"></ng-container>
+        }
+
+        @if (unchangedSteps().length > 0) {
+          <details class="validation-detail__unchanged">
+            <summary>Etapas sem alteração, já aprovadas ({{ unchangedSteps().length }})</summary>
+            @for (step of unchangedSteps(); track step.id) {
+              <ng-container *ngTemplateOutlet="stepCard; context: { $implicit: step, current: current }"></ng-container>
+            }
+          </details>
+        }
+
+        <ng-template #stepCard let-step let-current="current">
           <app-validation-step-card
             [profile]="profile"
             [validationId]="current.id"
             [step]="step"
             [data]="current.data"
-            [registrationLabel]="registrationLabel(current)"
-            [preValidation]="preValidations()[step.type]"
-            (preValidate)="preValidate(step.type)"
-            (decided)="onDecided(step.type, $event)"
+            [preValidation]="preValidationOf(step)"
+            (preValidate)="preValidate(step)"
+            (decided)="onDecided(step, $event)"
           ></app-validation-step-card>
-        }
+        </ng-template>
       </section>
     }
   }

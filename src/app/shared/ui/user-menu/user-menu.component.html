@@ -15,6 +15,9 @@
       @if (profileLink(); as link) {
         <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Meu perfil</a>
       }
+      @if (documentsLink(); as link) {
+        <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Documentos</a>
+      }
       @if (blockedUsersLink(); as link) {
         <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Usuários bloqueados</a>
       }

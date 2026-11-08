@@ -1,0 +1,75 @@
+<ui-grid [formGroup]="group()">
+  <ui-grid-item [xs]="12" [sm]="6">
+    <ui-select
+      label="Categoria profissional"
+      formControlName="category"
+      [options]="categorySelectOptions"
+      [required]="true"
+      placeholder="Selecione a categoria"
+      [errorMessage]="fieldError('category')"
+    ></ui-select>
+  </ui-grid-item>
+
+  @if (category) {
+    <ui-grid-item [xs]="12" [sm]="6">
+      @if (category === 'OUTRO') {
+        <ui-select
+          label="Especialidade"
+          formControlName="specialtySingle"
+          [options]="singleSpecialtyOptions"
+          [required]="true"
+          placeholder="Selecione a especialidade"
+          hint="Em Outros profissionais, cada especialidade é uma atuação com o próprio registro."
+          [errorMessage]="fieldError('specialtyIds')"
+        ></ui-select>
+      } @else {
+        <ui-multi-select
+          label="Especialidades"
+          formControlName="specialtyIds"
+          [options]="specialtyOptions"
+          [required]="true"
+          placeholder="Selecione uma ou mais especialidades"
+          [errorMessage]="fieldError('specialtyIds')"
+        ></ui-multi-select>
+      }
+    </ui-grid-item>
+  }
+
+  @if (requiresRegistration) {
+    <ui-grid-item [xs]="12" [sm]="8">
+      <ui-input
+        [label]="registrationLabel"
+        formControlName="registrationNumber"
+        autocomplete="off"
+        [required]="true"
+        [maxLength]="50"
+        [errorMessage]="fieldError('registrationNumber')"
+      ></ui-input>
+    </ui-grid-item>
+
+    <ui-grid-item [xs]="12" [sm]="4">
+      <ui-select
+        label="UF do registro"
+        formControlName="registrationUf"
+        [options]="ufOptions()"
+        [required]="true"
+        placeholder="UF"
+        [errorMessage]="fieldError('registrationUf')"
+      ></ui-select>
+    </ui-grid-item>
+
+    @if (showDocument()) {
+      <ui-grid-item [xs]="12">
+        <div [attr.data-invalid]="!!fieldError('document')">
+          <ui-file-picker
+            label="Documento do registro"
+            hint="Carteira do conselho ou certidão de inscrição. PDF, JPG ou PNG, até 5MB."
+            [required]="true"
+            [errorMessage]="fieldError('document')"
+            (fileChange)="onDocumentChange($event)"
+          ></ui-file-picker>
+        </div>
+      </ui-grid-item>
+    }
+  }
+</ui-grid>

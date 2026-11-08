@@ -2,6 +2,7 @@
   <header class="edit-profile__header">
     <h1 class="edit-profile__title">Meu perfil</h1>
     <p class="edit-profile__subtitle">Mantenha suas informações e sua forma de atendimento atualizadas.</p>
+    <p class="edit-profile__note">{{ lockedNote }}</p>
   </header>
 
   @switch (state()) {
@@ -20,23 +21,28 @@
           [fieldError]="fieldError"
           [showEmail]="false"
           [showCpf]="false"
+          [showBirthDate]="false"
+          [showGender]="false"
         ></ui-basic-info-card>
+
+        <app-practice-areas-manager></app-practice-areas-manager>
 
         <ui-professional-practice-card
           [group]="form"
           [fieldError]="fieldError"
-          [showCategoryFields]="false"
           [modalityError]="modalityError"
-        >
-          <ui-checkbox
-            label="Possuo seguro de responsabilidade civil profissional"
-            formControlName="hasLiabilityInsurance"
-          ></ui-checkbox>
-        </ui-professional-practice-card>
+        ></ui-professional-practice-card>
 
         <ui-emergency-contacts-card [formArray]="form.controls.emergencyContacts"></ui-emergency-contacts-card>
 
         <ui-address-card [group]="form.controls.address" [fieldError]="addressFieldError"></ui-address-card>
+
+        <ui-declarations-card [group]="form" [fieldError]="fieldError">
+          <ui-checkbox
+            label="Possuo seguro de responsabilidade civil profissional"
+            formControlName="hasLiabilityInsurance"
+          ></ui-checkbox>
+        </ui-declarations-card>
 
         <div class="edit-profile__actions">
           <ui-button type="submit" [loading]="isSubmitting()">Salvar alterações</ui-button>

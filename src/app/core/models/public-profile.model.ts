@@ -1,15 +1,11 @@
-import { AttendanceModality, EmergencyContact, ProfessionalCategory } from './user.model';
+import { PracticeArea } from './practice-area.model';
+import { AttendanceModality, EmergencyContact } from './user.model';
 
 export interface ProfessionalPublicProfile {
   id: string;
   name: string;
   avatarUrl?: string;
-  category: ProfessionalCategory;
-  categoryLabel: string;
-  specialties: string[];
-  registrationLabel: string | null;
-  registrationNumber?: string;
-  registrationUf?: string;
+  practiceAreas: PracticeArea[];
   attendanceModality: AttendanceModality;
   city: string;
   state: string;

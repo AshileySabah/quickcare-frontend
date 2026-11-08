@@ -31,8 +31,10 @@ function apiResponse(overrides: Record<string, unknown> = {}) {
     profissional: {
       id: 20,
       nome: 'Profissional Teste',
+      atuacaoId: 200,
       categoria: 'ENFERMEIRO',
       categoriaRotulo: 'Enfermeiro(a)',
+      atuacaoRotulo: 'Enfermeiro(a)',
       especialidades: [{ id: 13, nome: 'Curativos', categoria: 'ENFERMEIRO' }],
     },
     valor: 180.5,
@@ -90,6 +92,23 @@ describe('ProposalService', () => {
     expect(created.request.patientName).toBe('Paciente Teste');
     expect(created.request.status).toBe('recebendo_propostas');
     expect(created.request.professionals[0].specialties[0].name).toBe('Curativos');
+    expect(created.professional.practiceAreaId).toBe('200');
+  });
+
+  it('manda a atuação escolhida para a vaga', () => {
+    service
+      .submit('50', {
+        price: 200,
+        approach: 'Atendimento clínico com retorno em uma semana.',
+        start: '2026-11-20T11:00:00Z',
+        end: '2026-11-20T21:00:00Z',
+        practiceAreaId: '201',
+      })
+      .subscribe();
+
+    const req = httpMock.expectOne(REQUEST_PROPOSALS_URL);
+    expect(req.request.body.atuacaoId).toBe(201);
+    req.flush(apiResponse());
   });
 
   it('lista as propostas de uma solicitação', () => {

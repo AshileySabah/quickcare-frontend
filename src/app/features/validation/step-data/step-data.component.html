@@ -1,0 +1,80 @@
+<dl class="step-data">
+  @switch (type()) {
+    @case ('CPF') {
+      <div>
+        <dt>CPF</dt>
+        <dd>{{ cpf() }}</dd>
+      </div>
+      @if (showOwner()) {
+        <div>
+          <dt>Nome</dt>
+          <dd>{{ data().name }}</dd>
+        </div>
+        <div>
+          <dt>Data de nascimento</dt>
+          <dd>{{ data().birthDate | date: 'dd/MM/yyyy' }}</dd>
+        </div>
+      }
+    }
+    @case ('IDENTIDADE') {
+      @if (showOwner()) {
+        <div>
+          <dt>Nome</dt>
+          <dd>{{ data().name }}</dd>
+        </div>
+      }
+      <div>
+        <dt>Documento de identidade</dt>
+        <dd>
+          @if (data().identityDocumentType) {
+            {{ data().identityDocumentType }} {{ data().identityDocumentNumber }}
+            @if (data().identityDocumentUf) {
+              ({{ data().identityDocumentUf }})
+            }
+          } @else {
+            Não informado
+          }
+        </dd>
+      </div>
+      <div>
+        <dt>Data de nascimento</dt>
+        <dd>{{ data().birthDate | date: 'dd/MM/yyyy' }}</dd>
+      </div>
+      <div>
+        <dt>Gênero</dt>
+        <dd>{{ gender() }}</dd>
+      </div>
+    }
+    @case ('CNPJ') {
+      <div>
+        <dt>CNPJ</dt>
+        <dd>{{ cnpj() }}</dd>
+      </div>
+      @if (showOwner()) {
+        <div>
+          <dt>Profissional</dt>
+          <dd>{{ data().name }}</dd>
+        </div>
+      }
+    }
+    @case ('REGISTRO_PROFISSIONAL') {
+      @if (practiceArea(); as area) {
+        <div>
+          <dt>{{ area.registrationLabel ?? 'Registro profissional' }}</dt>
+          <dd>{{ area.registrationNumber }} / {{ area.registrationUf }}</dd>
+        </div>
+        <div>
+          <dt>Especialidades</dt>
+          <dd>{{ specialtyNames() }}</dd>
+        </div>
+      }
+      @if (showOwner()) {
+        <div>
+          <dt>Profissional</dt>
+          <dd>{{ data().name }}</dd>
+        </div>
+      }
+    }
+  }
+  <ng-content></ng-content>
+</dl>

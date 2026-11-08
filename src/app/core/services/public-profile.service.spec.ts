@@ -27,12 +27,18 @@ describe('PublicProfileService', () => {
       id: 20,
       nome: 'Joana',
       avatarUrl: null,
-      categoria: 'ENFERMEIRO',
-      categoriaRotulo: 'Enfermeiro(a)',
-      especialidades: ['Curativos'],
-      siglaRegistro: 'COREN',
-      registroProfissional: '123456',
-      registroProfissionalUf: 'SP',
+      atuacoes: [
+        {
+          id: 200,
+          categoria: 'ENFERMEIRO',
+          categoriaRotulo: 'Enfermeiro(a)',
+          rotulo: 'Enfermeiro(a)',
+          siglaRegistro: 'COREN',
+          especialidades: [{ id: 5, nome: 'Curativos', categoria: 'ENFERMEIRO' }],
+          registroProfissional: '123456',
+          registroProfissionalUf: 'SP',
+        },
+      ],
       modalidadeAtendimento: 'AMBOS',
       cidade: 'São Paulo',
       uf: 'SP',
@@ -40,7 +46,8 @@ describe('PublicProfileService', () => {
       atendimentosConcluidos: 4,
     });
 
-    expect(profile?.registrationLabel).toBe('COREN');
+    expect(profile?.practiceAreas[0].registrationLabel).toBe('COREN');
+    expect(profile?.practiceAreas[0].specialties[0].name).toBe('Curativos');
     expect(profile?.attendanceModality).toBe('AMBOS');
     expect(profile?.avatarUrl).toBeUndefined();
     expect(profile?.completedServices).toBe(4);

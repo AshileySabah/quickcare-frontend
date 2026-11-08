@@ -19,13 +19,34 @@ export function disableAccountFields(form: FormGroup): void {
   ACCOUNT_FIELDS.forEach((field) => form.get(field)?.disable());
 }
 
+export const LOCKED_PROFILE_NOTE =
+  'Os campos desabilitados fazem parte da validação do cadastro e não podem ser alterados aqui.';
+
+export function lockedDeclarationControls(fb: FormBuilder) {
+  return {
+    infoConfirmedTrue: fb.nonNullable.control({ value: false, disabled: true }),
+    lgpdConsent: fb.nonNullable.control({ value: false, disabled: true }),
+  };
+}
+
+export const PERSONAL_DOCUMENT_TYPES: DocumentType[] = ['COMPROVANTE_CPF', 'VALIDACAO_CPF'];
+
+export const PERSONAL_DOCUMENT_OPTIONS = [
+  { value: 'COMPROVANTE_CPF', label: 'CPF' },
+  { value: 'VALIDACAO_CPF', label: 'Documento de identidade' },
+];
+
 const MISSING_DOCUMENT_MESSAGES: Partial<Record<DocumentType, string>> = {
-  VALIDACAO_CPF: 'Envie um documento que valide seu CPF.',
+  COMPROVANTE_CPF: 'Envie um documento que comprove seu CPF.',
+  VALIDACAO_CPF: 'Envie seu documento de identidade (RG ou CNH).',
   VALIDACAO_CNPJ: 'Envie um documento que valide o CNPJ informado.',
   REGISTRO_PROFISSIONAL: 'Envie um documento que valide seu registro profissional.',
 };
 
 export function missingDocumentMessage(documents: { type: string }[], required: DocumentType[]): string | null {
+  if (documents.some((document) => !document.type)) {
+    return 'Escolha o tipo de cada documento enviado.';
+  }
   const missing = required.find((type) => !documents.some((document) => document.type === type));
   return missing ? (MISSING_DOCUMENT_MESSAGES[missing] ?? null) : null;
 }
@@ -33,10 +54,6 @@ export function missingDocumentMessage(documents: { type: string }[], required: 
 const PROFILE_MESSAGES: FieldMessages = {
   cpf: { pattern: 'CPF deve conter 11 dígitos, sem pontuação.' },
   cnpj: { pattern: 'CNPJ deve conter 14 dígitos, sem pontuação.' },
-  category: { required: 'Selecione uma categoria profissional.' },
-  specialtyIds: { required: 'Selecione ao menos uma especialidade.' },
-  specialtySingle: { required: 'Selecione ao menos uma especialidade.' },
-  registrationNumber: { required: 'Informe o número de registro profissional.' },
   raioAtendimentoKm: { min: 'Informe um raio de atendimento válido.' },
   infoConfirmedTrue: { required: 'Esta confirmação é obrigatória.' },
   lgpdConsent: { required: 'Esta confirmação é obrigatória.' },

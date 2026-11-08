@@ -34,8 +34,6 @@ import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
 
-const DOCUMENT_TYPE_OPTIONS: SelectOption[] = [...PERSONAL_DOCUMENT_OPTIONS, { value: 'OUTRO', label: 'Outro' }];
-
 @Component({
   selector: 'app-patient-register',
   standalone: true,
@@ -67,7 +65,7 @@ export class PatientRegisterComponent {
   protected readonly isSubmitting = signal(false);
   protected readonly ufOptions = signal<SelectOption[]>([]);
   protected readonly avatarBlob = signal<Blob | null>(null);
-  protected readonly documentTypeOptions = DOCUMENT_TYPE_OPTIONS;
+  protected readonly documentTypeOptions = PERSONAL_DOCUMENT_OPTIONS;
 
   protected readonly documents = signal<UploadedDocument[]>([]);
   protected readonly documentsError = signal<string | null>(null);

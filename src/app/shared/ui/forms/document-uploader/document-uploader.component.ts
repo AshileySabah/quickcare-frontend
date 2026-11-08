@@ -36,10 +36,8 @@ export class DocumentUploaderComponent {
   protected readonly entries = signal<DocumentEntry[]>([]);
   protected readonly localError = signal<string | null>(null);
 
-  protected readonly requiredOptions = computed(() => this.typeOptions().filter((option) => option.value !== 'OUTRO'));
-
   protected readonly requiredStatus = computed(() =>
-    this.requiredOptions().map((option) => ({
+    this.typeOptions().map((option) => ({
       ...option,
       met: this.entries().some((entry) => entry.type === option.value),
     })),

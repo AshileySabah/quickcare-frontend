@@ -11,7 +11,7 @@ export interface EmergencyContact {
   phone: string;
 }
 
-export type DocumentType = 'COMPROVANTE_CPF' | 'VALIDACAO_CPF' | 'VALIDACAO_CNPJ' | 'REGISTRO_PROFISSIONAL' | 'OUTRO';
+export type DocumentType = 'COMPROVANTE_CPF' | 'VALIDACAO_CPF' | 'VALIDACAO_CNPJ' | 'REGISTRO_PROFISSIONAL';
 export interface RegistrationDocument {
   file: File;
   type: DocumentType;

@@ -8,7 +8,6 @@ describe('DocumentUploaderComponent', () => {
     fixture.componentRef.setInput('typeOptions', [
       { value: 'COMPROVANTE_CPF', label: 'CPF' },
       { value: 'VALIDACAO_CPF', label: 'Documento de identidade' },
-      { value: 'OUTRO', label: 'Outro' },
     ]);
     fixture.detectChanges();
     return fixture;

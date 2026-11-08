@@ -116,7 +116,6 @@ export class ProfessionalRegisterComponent implements OnInit {
       options.push({ value: 'VALIDACAO_CNPJ', label: 'CNPJ' });
     }
 
-    options.push({ value: 'OUTRO', label: 'Outro' });
     return options;
   });
 

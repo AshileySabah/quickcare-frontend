@@ -22,6 +22,15 @@
           [details]="details()"
           [ratings]="current.ratings"
         >
+          @if (current.canReport) {
+            <app-profile-report-action
+              profile-actions
+              kind="patient"
+              [personId]="current.id"
+              [name]="current.name"
+              (blocked)="load()"
+            ></app-profile-report-action>
+          }
           <app-profile-block-action
             profile-actions
             kind="patient"

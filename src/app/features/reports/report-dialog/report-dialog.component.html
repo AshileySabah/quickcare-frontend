@@ -1,0 +1,39 @@
+<ui-confirm-dialog
+  [open]="target() !== null"
+  titleText="Denunciar"
+  icon="alert"
+  confirmVariant="danger"
+  [message]="message()"
+  [consequences]="consequences"
+  confirmLabel="Sim, enviar a denúncia"
+  cancelLabel="Não, voltar"
+  [loading]="loading()"
+  (confirmed)="confirm()"
+  (closed)="closed.emit()"
+>
+  @if (target()) {
+    <form class="report-dialog" [formGroup]="form" (ngSubmit)="confirm()">
+      <ui-select
+        label="Motivo"
+        formControlName="reason"
+        [options]="reasonOptions"
+        [required]="true"
+        [errorMessage]="fieldError('reason')"
+      ></ui-select>
+      <ui-textarea
+        label="O que aconteceu"
+        formControlName="description"
+        placeholder="Conte com detalhes: quando foi, o que aconteceu e como isso afetou você."
+        [required]="true"
+        [maxLength]="maxDescription"
+        [errorMessage]="fieldError('description')"
+      ></ui-textarea>
+      <ui-file-picker
+        label="Prova (opcional)"
+        hint="Um arquivo PDF, JPG ou PNG, até 5MB. Ex.: print de uma conversa."
+        [disabled]="loading()"
+        (fileChange)="setAttachment($event)"
+      ></ui-file-picker>
+    </form>
+  }
+</ui-confirm-dialog>

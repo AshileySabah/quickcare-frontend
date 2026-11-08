@@ -294,6 +294,18 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'denuncias',
+        loadComponent: () =>
+          import('./features/admin/reports/admin-reports.component').then((m) => m.AdminReportsComponent),
+      },
+      {
+        path: 'denuncias/:id',
+        loadComponent: () =>
+          import('./features/admin/report-detail/admin-report-detail.component').then(
+            (m) => m.AdminReportDetailComponent,
+          ),
+      },
+      {
         path: 'ocorrencias',
         data: { mode: 'demand' },
         loadComponent: () =>

@@ -10,6 +10,7 @@ import {
   BlockReasonStatus,
   LateBlockReason,
   ProfileSituation,
+  ReportConsequence,
   SwitchableRole,
 } from '../../models';
 import { BloqueioApiResponse, OcorrenciaApiResponse, PERFIL_API, toBlock, toOccurrence } from '../occurrence.service';
@@ -105,11 +106,17 @@ export class AdminProfileService {
     );
   }
 
-  decideAppeal(appealId: string, annul: boolean, justification: string): Observable<AdminProfileDetail> {
+  decideAppeal(
+    appealId: string,
+    annul: boolean,
+    justification: string,
+    consequenceIfDenied?: ReportConsequence,
+  ): Observable<AdminProfileDetail> {
     return this.send(
       this.http.patch<PerfilDetalheApi>(`${this.baseUrl}/recursos/${appealId}/decisao`, {
         anular: annul,
         justificativa: justification.trim(),
+        consequenciaSeNegado: !annul && consequenceIfDenied ? consequenceIfDenied.toUpperCase() : null,
       }),
       'Não foi possível decidir o recurso.',
     );

@@ -27,7 +27,10 @@ export type AdminActionType =
   | 'disputa_decidida'
   | 'solicitacao_reaberta'
   | 'solicitacao_concluida'
-  | 'solicitacao_cancelada';
+  | 'solicitacao_cancelada'
+  | 'denuncia_em_analise'
+  | 'denuncia_procedente'
+  | 'denuncia_improcedente';
 
 export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   ocorrencia_lancada: 'Ocorrência lançada',
@@ -47,6 +50,9 @@ export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   solicitacao_reaberta: 'Solicitação reaberta',
   solicitacao_concluida: 'Solicitação concluída',
   solicitacao_cancelada: 'Solicitação cancelada',
+  denuncia_em_analise: 'Análise da denúncia iniciada',
+  denuncia_procedente: 'Denúncia julgada procedente',
+  denuncia_improcedente: 'Denúncia julgada improcedente',
 };
 
 export interface AdminAction {

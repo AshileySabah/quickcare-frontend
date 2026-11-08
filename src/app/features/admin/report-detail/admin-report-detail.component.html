@@ -1,0 +1,202 @@
+@switch (pageState()) {
+  @case ('loading') {
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Denúncia não encontrada" message="O link pode estar incorreto.">
+      <ui-button [routerLink]="backLink">Voltar</ui-button>
+    </ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (detail(); as current) {
+      <section class="report-detail">
+        <ui-back-link [fallback]="backLink"></ui-back-link>
+
+        <ui-card>
+          <div class="report-detail__header">
+            <div>
+              <h1 class="report-detail__title">{{ current.summary.reasonLabel }}</h1>
+              <p class="report-detail__muted">
+                Enviada em {{ current.summary.createdAt | date: 'dd/MM/yyyy HH:mm' }} por {{ reporterLabel(current).toLowerCase() }}
+              </p>
+            </div>
+            <ui-badge [variant]="statusVariants[current.summary.status]">{{ statusLabels[current.summary.status] }}</ui-badge>
+          </div>
+
+          <dl class="report-detail__meta">
+            <div>
+              <dt>Paciente{{ current.summary.reporter === 'paciente' ? ' (denunciou)' : ' (denunciado)' }}</dt>
+              <dd>
+                <a [routerLink]="['/admin/perfis', 'patient', current.summary.patient.userId]">{{ current.summary.patient.name }}</a>
+                · {{ current.summary.patient.email }}
+              </dd>
+            </div>
+            <div>
+              <dt>Profissional{{ current.summary.reporter === 'profissional' ? ' (denunciou)' : ' (denunciado)' }}</dt>
+              <dd>
+                <a [routerLink]="['/admin/perfis', 'professional', current.summary.professional.userId]">{{ current.summary.professional.name }}</a>
+                · {{ current.summary.professional.email }}
+              </dd>
+            </div>
+            <div>
+              <dt>Outras denúncias contra {{ reportedName() }}</dt>
+              <dd>{{ current.otherReportsAgainstReported }}</dd>
+            </div>
+            @if (current.analysisStartedAt) {
+              <div>
+                <dt>Análise</dt>
+                <dd>Iniciada em {{ current.analysisStartedAt | date: 'dd/MM/yyyy HH:mm' }}{{ current.analyzedBy ? ' por ' + current.analyzedBy : '' }}</dd>
+              </div>
+            }
+          </dl>
+        </ui-card>
+
+        <ui-card>
+          <h2 class="report-detail__section-title">O que aconteceu</h2>
+          <p class="report-detail__text">{{ current.description }}</p>
+          @if (attachmentFile(current); as file) {
+            <ui-stored-file [file]="file"></ui-stored-file>
+          } @else {
+            <p class="report-detail__muted">Sem anexo.</p>
+          }
+        </ui-card>
+
+        <ui-card>
+          <h2 class="report-detail__section-title">Atendimentos entre os dois</h2>
+          <ul class="report-detail__timeline">
+            @for (attendance of current.attendances; track attendance.id) {
+              <li>
+                <span class="report-detail__muted">{{ period(attendance.start, attendance.end) }}</span>
+                <span>
+                  {{ attendance.service }} · {{ attendanceLabels[attendance.status] }} ·
+                  <a [routerLink]="['/admin/solicitacoes', attendance.requestId]">Solicitação #{{ attendance.requestId }}</a>
+                </span>
+              </li>
+            }
+          </ul>
+        </ui-card>
+
+        @if (pending()) {
+          <ui-card>
+            <h2 class="report-detail__section-title">Decisão</h2>
+            @if (current.summary.status === 'aberta') {
+              <ui-notice>
+                Inicie a análise para indicar aos outros administradores que esta denúncia já está com alguém. Também dá para
+                julgar direto.
+              </ui-notice>
+            }
+            <form class="report-detail__decision" [formGroup]="form">
+              <ui-select
+                label="A denúncia é"
+                formControlName="result"
+                [options]="resultOptions"
+                [required]="true"
+                [errorMessage]="fieldError('result')"
+              ></ui-select>
+              @if (isProcedente()) {
+                <ui-select
+                  label="Consequência para quem foi denunciado"
+                  formControlName="consequence"
+                  [options]="consequenceOptions"
+                  [required]="true"
+                  [errorMessage]="fieldError('consequence')"
+                ></ui-select>
+              }
+              <div class="report-detail__actions">
+                @if (current.summary.status === 'aberta') {
+                  <ui-button variant="secondary" (click)="confirmingAnalysis.set(true)">Iniciar análise</ui-button>
+                }
+                <ui-button (click)="openDecision()">Registrar decisão</ui-button>
+              </div>
+            </form>
+          </ui-card>
+        } @else {
+          <ui-card>
+            <h2 class="report-detail__section-title">Decisão</h2>
+            <p class="report-detail__text">
+              Julgada {{ statusLabels[current.summary.status].toLowerCase() }}
+              em {{ current.decidedAt | date: 'dd/MM/yyyy HH:mm' }}{{ current.decidedBy ? ' por ' + current.decidedBy : '' }}.
+              @if (current.consequence) {
+                Consequência: {{ consequenceLabels[current.consequence].toLowerCase() }}.
+              }
+            </p>
+            <p class="report-detail__text">Justificativa: {{ current.decisionJustification }}</p>
+
+            @if (current.occurrence; as occurrence) {
+              <h3 class="report-detail__subsection-title">Ocorrência gerada</h3>
+              @if (occurrence.appeal; as appeal) {
+                <p class="report-detail__text">
+                  {{ appealLabels[appeal.status] }} · enviado em {{ appeal.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+                </p>
+                <p class="report-detail__text">Recurso: {{ appeal.text }}</p>
+                @if (appeal.decisionJustification) {
+                  <p class="report-detail__text">Decisão do recurso: {{ appeal.decisionJustification }}</p>
+                }
+                @if (appeal.status === 'em_analise') {
+                  <ui-button
+                    variant="secondary"
+                    size="sm"
+                    [routerLink]="[
+                      '/admin/perfis',
+                      current.summary.reporter === 'paciente' ? 'professional' : 'patient',
+                      current.summary.reporter === 'paciente' ? current.summary.professional.userId : current.summary.patient.userId
+                    ]"
+                  >
+                    Decidir o recurso
+                  </ui-button>
+                }
+              } @else {
+                <p class="report-detail__muted">
+                  {{ occurrence.annulled ? 'A ocorrência foi anulada.' : 'Sem recurso até agora.' }}
+                </p>
+              }
+            }
+          </ui-card>
+        }
+
+        @if (current.actions.length) {
+          <ui-card>
+            <h2 class="report-detail__section-title">Ações de administradores</h2>
+            <ul class="report-detail__timeline">
+              @for (action of current.actions; track $index) {
+                <li>
+                  <span class="report-detail__muted">{{ action.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                  <span>{{ actionLabels[action.type] }} por {{ action.admin }}: {{ action.justification }}</span>
+                </li>
+              }
+            </ul>
+          </ui-card>
+        }
+      </section>
+    }
+  }
+}
+
+<ui-confirm-dialog
+  [open]="confirmingAnalysis()"
+  titleText="Iniciar análise"
+  icon="check"
+  message="Iniciar a análise desta denúncia?"
+  [consequences]="['A denúncia passa para Em análise, com o seu nome.', 'Quem denunciou e quem foi denunciado não são avisados.']"
+  confirmLabel="Sim, iniciar a análise"
+  cancelLabel="Não, voltar"
+  [loading]="saving()"
+  (confirmed)="startAnalysis()"
+  (closed)="confirmingAnalysis.set(false)"
+></ui-confirm-dialog>
+
+<ui-justification-dialog
+  [open]="decisionOpen()"
+  titleText="Registrar decisão"
+  icon="check"
+  [message]="isProcedente() ? 'Julgar a denúncia como procedente?' : 'Julgar a denúncia como improcedente?'"
+  [consequences]="decisionConsequences()"
+  confirmLabel="Sim, registrar a decisão"
+  cancelLabel="Não, voltar"
+  [loading]="saving()"
+  (confirmed)="decide($event)"
+  (closed)="closeDecision()"
+></ui-justification-dialog>

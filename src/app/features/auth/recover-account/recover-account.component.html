@@ -1,0 +1,19 @@
+<ui-auth-layout
+  sideTitle="Bem-vindo de volta"
+  sideText="Dentro do prazo de recuperação, sua conta volta com os perfis e o histórico. O que foi cancelado no encerramento não volta."
+>
+  @switch (state()) {
+    @case ('recovering') {
+      <h1 class="auth-layout__title">Recuperar conta</h1>
+      <p class="auth-layout__subtitle" aria-live="polite">Recuperando sua conta…</p>
+    }
+
+    @case ('invalid-link') {
+      <h1 class="auth-layout__title">Não foi possível recuperar pelo link</h1>
+      <p class="auth-layout__subtitle">
+        {{ stateMessage() }} Se ainda estiver no prazo, entre com seu e-mail e senha para recuperar a conta.
+      </p>
+      <ui-button [fullWidth]="true" routerLink="/login">Ir para o login</ui-button>
+    }
+  }
+</ui-auth-layout>

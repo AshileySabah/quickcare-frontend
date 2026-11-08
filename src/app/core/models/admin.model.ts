@@ -125,6 +125,7 @@ export interface AdminProfileSummary {
   counting: number;
   openAppeals: number;
   block?: Block;
+  frozenAt?: string;
 }
 
 export type BlockReasonStatus = 'em_analise' | 'aceito' | 'negado';

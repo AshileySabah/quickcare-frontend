@@ -13,7 +13,7 @@ import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-s
       [navItems]="navItems"
       profileLink="/professional/perfil"
       documentsLink="/professional/documentos"
-      blockedUsersLink="/professional/bloqueados"
+      securityLink="/professional/seguranca"
     >
       <router-outlet></router-outlet>
     </ui-app-shell>

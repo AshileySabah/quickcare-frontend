@@ -61,6 +61,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'desfazer-troca-de-email',
+    loadComponent: () =>
+      import('./features/auth/undo-email-change/undo-email-change.component').then(
+        (m) => m.UndoEmailChangeComponent,
+      ),
+  },
+  {
+    path: 'recuperar-conta',
+    loadComponent: () =>
+      import('./features/auth/recover-account/recover-account.component').then(
+        (m) => m.RecoverAccountComponent,
+      ),
+  },
+  {
     path: 'cadastro',
     loadComponent: () =>
       import('./features/auth/register-select/register-select.component').then(
@@ -168,12 +182,13 @@ export const routes: Routes = [
             (m) => m.ProfessionalEditProfileComponent,
           ),
       },
+      { path: 'bloqueados', pathMatch: 'full', redirectTo: 'seguranca' },
       {
-        path: 'bloqueados',
+        path: 'seguranca',
         data: { role: 'professional' },
         loadComponent: () =>
-          import('./features/user-blocks/blocked-users/blocked-users.component').then(
-            (m) => m.BlockedUsersComponent,
+          import('./features/security/security-page/security-page.component').then(
+            (m) => m.SecurityPageComponent,
           ),
       },
       {
@@ -254,12 +269,13 @@ export const routes: Routes = [
             (m) => m.PatientHistoryComponent,
           ),
       },
+      { path: 'bloqueados', pathMatch: 'full', redirectTo: 'seguranca' },
       {
-        path: 'bloqueados',
+        path: 'seguranca',
         data: { role: 'patient' },
         loadComponent: () =>
-          import('./features/user-blocks/blocked-users/blocked-users.component').then(
-            (m) => m.BlockedUsersComponent,
+          import('./features/security/security-page/security-page.component').then(
+            (m) => m.SecurityPageComponent,
           ),
       },
       {

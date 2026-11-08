@@ -1,0 +1,80 @@
+<section class="security-page">
+  <header class="security-page__header">
+    <h1 class="security-page__title">Segurança</h1>
+    <p class="security-page__subtitle">Gerencie o acesso à sua conta, quem você bloqueou e o encerramento da conta.</p>
+  </header>
+
+  @switch (state()) {
+    @case ('loading') {
+      <ui-skeleton-list variant="form"></ui-skeleton-list>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('ready') {
+      <div class="security-page__sections">
+        @if (overview(); as data) {
+          <app-email-change-card [currentEmail]="data.email" (changed)="onEmailChanged($event)"></app-email-change-card>
+        }
+
+        <app-password-change-card></app-password-change-card>
+
+        <ui-card>
+          <h2 class="security-card__title">Usuários bloqueados</h2>
+          <p class="security-card__text">
+            Vocês não trocam solicitações nem propostas enquanto o bloqueio valer. Desbloquear não traz de volta o que foi
+            encerrado.
+          </p>
+          <app-blocked-users [role]="role"></app-blocked-users>
+        </ui-card>
+
+        @if (closedProfiles().length > 0) {
+          <ui-card>
+            <h2 class="security-card__title">Perfis encerrados</h2>
+            <ul class="security-page__closed">
+              @for (profile of closedProfiles(); track profile.role) {
+                <li class="security-page__closed-item">
+                  <span class="security-card__text security-page__closed-text">
+                    Perfil de {{ roleLabels[profile.role] }}, encerrado em {{ profile.closedAt | date: 'dd/MM/yyyy' }}.
+                    Pode ser recuperado até {{ profile.deletesAt | date: 'dd/MM/yyyy' }}.
+                  </span>
+                  <ui-button variant="secondary" size="sm" (click)="toRecover.set(profile)">Recuperar perfil</ui-button>
+                </li>
+              }
+            </ul>
+          </ui-card>
+        }
+
+        <ui-card>
+          <h2 class="security-card__title">Encerrar conta</h2>
+          <p class="security-card__text">
+            Você pode encerrar um dos seus perfis ou a conta inteira. Durante 30 dias dá para voltar atrás.
+          </p>
+          <div class="security-card__actions">
+            <ui-button variant="danger-outline" (click)="closing.set(true)">Encerrar</ui-button>
+          </div>
+        </ui-card>
+      </div>
+    }
+  }
+</section>
+
+<app-close-account-dialog
+  [open]="closing()"
+  [activeRoles]="activeRoles()"
+  (closedDialog)="closing.set(false)"
+  (done)="onClosed($event)"
+></app-close-account-dialog>
+
+<ui-confirm-dialog
+  [open]="toRecover() !== null"
+  titleText="Recuperar perfil"
+  icon="refresh"
+  [message]="recoverMessage()"
+  [consequences]="recoverConsequences"
+  confirmLabel="Sim, recuperar o perfil"
+  cancelLabel="Não, deixar encerrado"
+  [loading]="recovering()"
+  (confirmed)="recover()"
+  (closed)="toRecover.set(null)"
+></ui-confirm-dialog>

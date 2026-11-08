@@ -6,6 +6,16 @@
   <h1 class="auth-layout__title">Entrar no QuickCare</h1>
   <p class="auth-layout__subtitle">Acesse sua conta para continuar.</p>
 
+  @if (closedAccountMessage(); as message) {
+    <ui-notice class="login__closed">
+      <strong>Conta encerrada.</strong> {{ message }} Ao recuperar, seus perfis voltam, mas o que foi cancelado no
+      encerramento não volta.
+      <ui-button class="login__recover" size="sm" [loading]="isRecovering()" (click)="recover()"
+        >Recuperar minha conta</ui-button
+      >
+    </ui-notice>
+  }
+
   <form [formGroup]="form" (ngSubmit)="submit()">
     <ui-grid>
       <ui-grid-item [xs]="12">

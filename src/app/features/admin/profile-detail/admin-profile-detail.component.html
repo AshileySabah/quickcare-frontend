@@ -21,10 +21,18 @@
               <h1 class="profile-detail__title">{{ current.summary.name }}</h1>
               <p class="profile-detail__muted">{{ roleLabel }} · {{ current.summary.email }}</p>
             </div>
-            @if (current.summary.block) {
+            @if (current.summary.frozenAt) {
+              <ui-badge variant="neutral">Congelado</ui-badge>
+            } @else if (current.summary.block) {
               <ui-badge variant="error">Bloqueado</ui-badge>
             }
           </div>
+          @if (current.summary.frozenAt) {
+            <ui-notice>
+              A pessoa encerrou este perfil em {{ current.summary.frozenAt | date: 'dd/MM/yyyy' }}. Até 30 dias depois, as
+              pendências ficam congeladas e nenhuma decisão pode ser tomada; elas voltam se o perfil for recuperado.
+            </ui-notice>
+          }
           <p class="profile-detail__muted">
             {{ current.summary.counting }} de {{ current.limit }} ocorrências contando nos últimos {{ current.windowDays }} dias.
             @if (current.summary.block) {

@@ -1,0 +1,49 @@
+<ui-confirm-dialog
+  [open]="open()"
+  [titleText]="title()"
+  icon="alert"
+  confirmVariant="danger"
+  [message]="message()"
+  [consequences]="step() === 'password' ? consequences() : []"
+  [confirmLabel]="confirmLabel()"
+  [cancelLabel]="cancelLabel()"
+  [loading]="loading()"
+  (confirmed)="confirm()"
+  (closed)="closedDialog.emit()"
+>
+  @if (open()) {
+    @if (step() === 'password') {
+      <form class="close-account-dialog" [formGroup]="passwordForm" (ngSubmit)="confirm()" autocomplete="off">
+        <ui-select
+          label="O que você quer encerrar"
+          formControlName="target"
+          [options]="targetOptions()"
+          [required]="true"
+          [hint]="canChooseProfile() ? null : 'Você tem um só perfil ativo, então o encerramento vale para a conta inteira.'"
+          [errorMessage]="passwordError('target')"
+        ></ui-select>
+        <ui-input
+          label="Senha atual"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+          [revealable]="true"
+          [required]="true"
+          [maxLength]="72"
+          [errorMessage]="passwordError('password')"
+        ></ui-input>
+      </form>
+    } @else {
+      <form class="close-account-dialog" [formGroup]="codeForm" (ngSubmit)="confirm()" autocomplete="off">
+        <ui-input
+          label="Código"
+          formControlName="code"
+          autocomplete="one-time-code"
+          [required]="true"
+          [maxLength]="6"
+          [errorMessage]="codeError('code')"
+        ></ui-input>
+      </form>
+    }
+  }
+</ui-confirm-dialog>

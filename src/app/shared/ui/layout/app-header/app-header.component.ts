@@ -31,7 +31,7 @@ export class AppHeaderComponent {
   navItems = input.required<ShellNavItem[]>();
   navAlign = input<'center' | 'end'>('center');
   profileLink = input<string | null>(null);
-  blockedUsersLink = input<string | null>(null);
+  securityLink = input<string | null>(null);
   documentsLink = input<string | null>(null);
 
   protected readonly accountLink = computed(() => {

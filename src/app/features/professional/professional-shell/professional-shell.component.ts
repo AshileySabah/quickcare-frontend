@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
+import {
+  AppShellComponent,
+  ShellNavItem,
+} from '../../../shared/ui/layout/app-shell/app-shell.component';
 
 @Component({
   selector: 'app-professional-shell',
@@ -23,5 +26,6 @@ export class ProfessionalShellComponent {
     { label: 'Solicitações abertas', link: '/professional', exact: true },
     { label: 'Minhas propostas', link: '/professional/propostas' },
     { label: 'Histórico', link: '/professional/historico' },
+    { label: 'Mensagens', link: '/professional/mensagens' },
   ];
 }

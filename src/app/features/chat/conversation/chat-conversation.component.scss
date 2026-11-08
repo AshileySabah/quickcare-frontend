@@ -1,0 +1,56 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 720px;
+  margin: 0 auto;
+
+  &__header { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  &__back { color: inherit; text-decoration: none; opacity: 0.7; }
+  &__title { margin: 0; font-size: 1.25rem; flex: 1; }
+  &__status { font-size: 0.8rem; opacity: 0.6; &--on { color: #2e9e5b; opacity: 1; } }
+  &__skeletons { display: flex; flex-direction: column; gap: 0.75rem; }
+
+  &__messages {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    height: 55vh;
+    overflow-y: auto;
+    padding: 0.75rem;
+    border: 1px solid rgba(128, 128, 128, 0.3);
+    border-radius: 0.75rem;
+  }
+
+  &__empty { margin: auto; opacity: 0.6; }
+  &__row { display: flex; &--mine { justify-content: flex-end; } }
+
+  &__bubble {
+    max-width: 75%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    background: rgba(128, 128, 128, 0.15);
+  }
+
+  &__row--mine &__bubble { background: rgba(46, 125, 200, 0.2); }
+
+  &__text { margin: 0; white-space: pre-wrap; word-break: break-word; }
+  &__meta { display: flex; justify-content: space-between; gap: 0.75rem; margin-top: 0.25rem; font-size: 0.7rem; opacity: 0.65; }
+  &__delete { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; font-size: inherit; }
+  &__error { margin: 0; color: #c0392b; }
+
+  &__attachment { margin-bottom: 0.4rem; }
+  &__attachment-missing { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+  &__media { display: block; max-width: 100%; max-height: 260px; border-radius: 0.5rem; }
+  &__audio { display: block; width: 100%; max-width: 280px; }
+  &__file { color: inherit; word-break: break-all; }
+
+  &__selected { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0.75rem; border-radius: 0.5rem; background: rgba(128, 128, 128, 0.15); font-size: 0.85rem; }
+  &__selected-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &__selected-remove { background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }
+  &__attach { padding: 0.6rem 0.8rem; border-radius: 0.5rem; border: 1px solid rgba(128, 128, 128, 0.4); background: none; cursor: pointer; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }
+
+  &__form { display: flex; gap: 0.5rem; align-items: flex-end; }
+  &__input { flex: 1; resize: none; padding: 0.5rem 0.75rem; border-radius: 0.5rem; border: 1px solid rgba(128, 128, 128, 0.4); font: inherit; }
+  &__send { padding: 0.6rem 1.1rem; border-radius: 0.5rem; border: 0; cursor: pointer; font: inherit; &:disabled { opacity: 0.5; cursor: not-allowed; } }
+}

@@ -16,5 +16,6 @@ export class PatientShellComponent {
   protected readonly navItems: ShellNavItem[] = [
     { label: 'Minhas solicitações', link: '/patient', exact: true },
     { label: 'Histórico', link: '/patient/historico' },
+    { label: 'Encontrar profissionais', link: '/patient/profissionais', exact: true },
   ];
 }

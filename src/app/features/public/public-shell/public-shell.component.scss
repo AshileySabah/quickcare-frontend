@@ -1,0 +1,24 @@
+@use 'tokens' as tokens;
+
+.public-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: tokens.color('gray', 50);
+}
+
+.public-shell__content {
+  flex: 1;
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: tokens.space(6) tokens.space(4);
+}
+
+.public-shell__footer {
+  padding: tokens.space(4);
+  background-color: tokens.color('teal', 800);
+  color: tokens.color('gray', 0);
+  text-align: center;
+  font-size: tokens.font-size('sm');
+}

@@ -13,6 +13,33 @@ export const routes: Routes = [
       import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
+    path: 'consulta',
+    loadComponent: () =>
+      import('./features/public/public-shell/public-shell.component').then((m) => m.PublicShellComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'profissionais' },
+      {
+        path: 'profissionais',
+        loadComponent: () =>
+          import('./features/public/public-professionals/public-professionals.component').then(
+            (m) => m.PublicProfessionalsComponent,
+          ),
+      },
+      {
+        path: 'profissionais/:id',
+        loadComponent: () =>
+          import('./features/public/public-professional-profile/public-professional-profile.component').then(
+            (m) => m.PublicProfessionalProfileComponent,
+          ),
+      },
+      {
+        path: 'solicitacoes',
+        loadComponent: () =>
+          import('./features/public/public-requests/public-requests.component').then((m) => m.PublicRequestsComponent),
+      },
+    ],
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login/login.component').then(
@@ -203,6 +230,14 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/patient/request-form/request-form.component').then(
             (m) => m.RequestFormComponent,
+          ),
+      },
+      {
+        path: 'profissionais',
+        data: { profileBase: '/patient/profissionais' },
+        loadComponent: () =>
+          import('./features/public/public-professionals/public-professionals.component').then(
+            (m) => m.PublicProfessionalsComponent,
           ),
       },
       {

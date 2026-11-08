@@ -1,0 +1,55 @@
+<section class="public-list">
+  <header class="public-list__header">
+    <h1 class="public-list__title">Profissionais de saúde</h1>
+    <p class="public-list__subtitle">
+      Todos os profissionais aqui tiveram os documentos e o registro validados pela nossa equipe.
+    </p>
+  </header>
+
+  <app-public-filters [showRating]="true" (changed)="search($event)"></app-public-filters>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Nenhum profissional encontrado" message="Tente mudar ou limpar os filtros."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="public-list__items">
+        @for (professional of pager.items(); track professional.id) {
+          <a class="public-list__link" [routerLink]="[profileBase, professional.id]">
+            <ui-card [interactive]="true">
+              <div class="public-list__person">
+                <ui-avatar [name]="professional.name" [imageUrl]="professional.avatarUrl"></ui-avatar>
+                <div class="public-list__person-info">
+                  <span class="public-list__name">{{ professional.name }}</span>
+                  <span class="public-list__highlight">{{ areas(professional) }}</span>
+                </div>
+              </div>
+              <p class="public-list__meta">
+                {{ modalityLabels[professional.attendanceModality] }} · {{ professional.city }}/{{ professional.state }}
+                · {{ professional.completedServices }} {{ professional.completedServices === 1 ? 'atendimento' : 'atendimentos' }}
+              </p>
+              <div class="public-list__rating">
+                @if (professional.ratings.total > 0) {
+                  <span class="public-list__average">{{ average(professional) }}</span>
+                  <ui-star-rating [value]="professional.ratings.average" [size]="16"></ui-star-rating>
+                  <span class="public-list__meta">
+                    ({{ professional.ratings.total }} {{ professional.ratings.total === 1 ? 'avaliação' : 'avaliações' }})
+                  </span>
+                } @else {
+                  <span class="public-list__meta">Ainda sem avaliações</span>
+                }
+              </div>
+            </ui-card>
+          </a>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de profissionais"></ui-paginator>
+    }
+  }
+</section>

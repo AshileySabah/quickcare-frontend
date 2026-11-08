@@ -1,0 +1,17 @@
+<div class="public-shell">
+  <ui-app-header
+    variant="guest"
+    homeLink="/"
+    navLabel="Consulta pública"
+    navAlign="end"
+    [navItems]="publicNav"
+  ></ui-app-header>
+
+  <main class="public-shell__content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="public-shell__footer">
+    <span>© 2026 QuickCare</span>
+  </footer>
+</div>

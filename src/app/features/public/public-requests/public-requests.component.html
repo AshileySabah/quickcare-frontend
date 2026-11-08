@@ -1,0 +1,53 @@
+<section class="public-list">
+  <header class="public-list__header">
+    <h1 class="public-list__title">Solicitações abertas</h1>
+    <p class="public-list__subtitle">
+      O que os pacientes estão procurando agora. Para proteger quem pediu, não mostramos nome, descrição nem endereço.
+    </p>
+  </header>
+
+  <app-public-filters (changed)="search($event)"></app-public-filters>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state title="Nenhuma solicitação aberta" message="Tente mudar ou limpar os filtros."></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="public-list__items">
+        @for (request of pager.items(); track request.id) {
+          <ui-card>
+            <div class="public-list__card-header">
+              <span class="public-list__highlight">{{ place(request) }}</span>
+              <span class="public-list__meta">Publicada em {{ request.createdAt | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            <ul class="public-list__slots">
+              @for (slot of request.slots; track $index) {
+                <li>
+                  {{ slot.categoryLabel }}: {{ slot.specialties.join(', ') }} ·
+                  {{ slot.openSlots }} de {{ slot.quantity }} {{ slot.quantity === 1 ? 'vaga aberta' : 'vagas abertas' }}
+                </li>
+              }
+            </ul>
+            <p class="public-list__meta">Prazo desejado: {{ request.desiredDeadline | date: 'dd/MM/yyyy' }}</p>
+            @if (isProfessional()) {
+              <div class="public-list__cta">
+                <ui-button size="sm" [routerLink]="['/professional/solicitacoes', request.id]">Ver e enviar proposta</ui-button>
+              </div>
+            } @else if (isLoggedOut()) {
+              <div class="public-list__cta">
+                <ui-button variant="secondary" size="sm" routerLink="/cadastro/profissional">Quero atender</ui-button>
+              </div>
+            }
+          </ui-card>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de solicitações"></ui-paginator>
+    }
+  }
+</section>

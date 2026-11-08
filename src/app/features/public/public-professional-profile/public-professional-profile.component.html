@@ -1,0 +1,28 @@
+<ui-back-link fallback="/consulta/profissionais"></ui-back-link>
+
+@switch (pageState()) {
+  @case ('loading') {
+    <ui-skeleton-list variant="page"></ui-skeleton-list>
+  }
+  @case ('not-found') {
+    <ui-empty-state title="Perfil não encontrado" message="Este profissional não está mais disponível."></ui-empty-state>
+  }
+  @case ('error') {
+    <ui-error-state (retry)="load()"></ui-error-state>
+  }
+  @case ('filled') {
+    @if (profile(); as current) {
+      <ui-profile-card
+        [name]="current.name"
+        [avatarUrl]="current.avatarUrl"
+        [subtitle]="subtitle()"
+        [details]="details()"
+        [ratings]="current.ratings"
+      >
+        @if (callToAction(); as action) {
+          <ui-button profile-actions size="sm" [routerLink]="action.link">{{ action.label }}</ui-button>
+        }
+      </ui-profile-card>
+    }
+  }
+}

@@ -15,8 +15,11 @@
       @if (profileLink(); as link) {
         <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Meu perfil</a>
       }
-      @if (blockedUsersLink(); as link) {
-        <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Usuários bloqueados</a>
+      @if (documentsLink(); as link) {
+        <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Documentos</a>
+      }
+      @if (securityLink(); as link) {
+        <a class="user-menu__item" role="menuitem" [routerLink]="link" (click)="close()">Segurança</a>
       }
       <button type="button" class="user-menu__item user-menu__item--danger" role="menuitem" (click)="logout()">
         Sair

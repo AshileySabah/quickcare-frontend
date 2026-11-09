@@ -1,0 +1,44 @@
+@use 'tokens' as tokens;
+@use 'patterns/edit-profile' as editProfile;
+
+.security-page {
+  @include editProfile.page;
+}
+
+.security-page__header {
+  @include editProfile.header;
+}
+
+.security-page__title {
+  @include editProfile.title;
+}
+
+.security-page__subtitle {
+  @include editProfile.subtitle;
+}
+
+.security-page__sections {
+  @include editProfile.sections;
+}
+
+.security-page__closed {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.security-page__closed-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.space(3);
+}
+
+.security-page__closed-text {
+  flex: 1;
+  margin: 0;
+}

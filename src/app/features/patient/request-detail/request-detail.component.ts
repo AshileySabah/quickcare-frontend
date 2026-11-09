@@ -144,12 +144,9 @@ export class RequestDetailComponent {
   }
 
   protected professionalDescription(proposal: Proposal): string {
-    const specialties = proposal.professional.specialties
-      .map((specialty) => specialty.name)
-      .join(', ');
-    return specialties
-      ? `${proposal.professional.categoryLabel} — ${specialties}`
-      : proposal.professional.categoryLabel;
+    const specialties = proposal.professional.specialties.map((specialty) => specialty.name).join(', ');
+    const label = proposal.professional.practiceAreaLabel;
+    return specialties && label !== specialties ? `${label} — ${specialties}` : label;
   }
 
   protected canEdit(request: ServiceRequest): boolean {

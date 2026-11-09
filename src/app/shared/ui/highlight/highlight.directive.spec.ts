@@ -23,7 +23,7 @@ describe('HighlightDirective', () => {
       imports: [HostComponent],
       providers: [provideRouter([{ path: 'tela', component: HostComponent }])],
     });
-    Element.prototype.scrollIntoView = jasmine.createSpy('scrollIntoView');
+    spyOn(Element.prototype, 'scrollIntoView');
   });
 
   it('destaca o item pedido, mesmo que ele apareça depois do pedido', fakeAsync(() => {

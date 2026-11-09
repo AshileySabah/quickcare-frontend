@@ -6,7 +6,7 @@
         class="profile-switcher__option"
         [class.profile-switcher__option--active]="option.role === currentRole()"
         [attr.aria-pressed]="option.role === currentRole()"
-        [disabled]="switching() || isBanned(option.role)"
+        [disabled]="switching()"
         (click)="select(option.role)"
       >
         {{ option.label }}

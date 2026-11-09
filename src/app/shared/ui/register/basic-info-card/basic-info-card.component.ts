@@ -1,22 +1,12 @@
 import { Component, input } from '@angular/core';
 import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { latestBirthDate } from '../../../../core/forms/birth-date';
 import { CardComponent } from '../../layout/card/card.component';
 import { GridItemComponent } from '../../layout/grid/grid-item.component';
 import { GridComponent } from '../../layout/grid/grid.component';
 import { InputComponent } from '../../forms/input/input.component';
 import { SelectComponent, SelectOption } from '../../forms/select/select.component';
-
-const GENDER_OPTIONS: SelectOption[] = [
-  { value: 'FEMININO', label: 'Feminino' },
-  { value: 'MASCULINO', label: 'Masculino' },
-  { value: 'OUTRO', label: 'Outro' },
-  { value: 'PREFIRO_NAO_INFORMAR', label: 'Prefiro não informar' },
-];
-
-const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
-  { value: 'RG', label: 'RG' },
-  { value: 'CNH', label: 'CNH' },
-];
+import { GENDER_OPTIONS, IDENTITY_DOCUMENT_OPTIONS } from '../register-options';
 
 @Component({
   selector: 'ui-basic-info-card',
@@ -26,6 +16,8 @@ const IDENTITY_DOCUMENT_OPTIONS: SelectOption[] = [
   styleUrl: './basic-info-card.component.scss',
 })
 export class BasicInfoCardComponent {
+  protected readonly latestBirthDate = latestBirthDate();
+
   group = input.required<FormGroup>();
   fieldError = input<(fieldName: string) => string | null>(() => null);
   showName = input(true);
@@ -34,6 +26,8 @@ export class BasicInfoCardComponent {
   showCpf = input(true);
   showCnpj = input(false);
   showIdentityDocument = input(false);
+  showBirthDate = input(true);
+  showGender = input(true);
   ufOptions = input<SelectOption[]>([]);
 
   protected readonly genderOptions = GENDER_OPTIONS;

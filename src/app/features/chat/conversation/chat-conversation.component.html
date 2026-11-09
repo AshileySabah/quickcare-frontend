@@ -18,7 +18,7 @@
         <div class="chat__center">
           <ui-empty-state
             title="Conversa indisponível"
-            message="Esta conversa só existe enquanto a proposta estiver aceita. Se a proposta foi cancelada ou recusada, ela não está mais disponível."
+            message="Você não participa desta conversa ou ela não existe mais."
           >
             <ui-button [routerLink]="basePath()">Voltar às mensagens</ui-button>
           </ui-empty-state>
@@ -61,6 +61,9 @@
               <span class="chat__dot"></span>
               {{ connected() ? "Ao vivo" : "Conectando…" }}
             </span>
+            @if (current.readOnly) {
+              <span class="chat__tag">Somente leitura</span>
+            }
             <button
               type="button"
               class="chat__icon"
@@ -87,7 +90,9 @@
 
           <div class="chat__messages" #list>
             @if (messages().length === 0) {
-              <p class="chat__empty">Nenhuma mensagem ainda. Diga olá!</p>
+              <p class="chat__empty">
+                {{ current.readOnly ? "Não há mensagens para mostrar." : "Nenhuma mensagem ainda. Diga olá!" }}
+              </p>
             }
             @for (item of timeline(); track item.key) {
               @if (item.kind === "day") {
@@ -191,7 +196,7 @@
                     }
                     <div class="chat__meta">
                       <span>{{ item.message.sentAt | date: "HH:mm" }}</span>
-                      @if (item.mine) {
+                      @if (item.mine && !current.readOnly) {
                         <button
                           type="button"
                           class="chat__delete"
@@ -225,6 +230,9 @@
             </div>
           }
 
+          @if (current.readOnly) {
+            <p class="chat__readonly" role="status">{{ readOnlyMessage() }}</p>
+          } @else {
           <form class="chat__form" (submit)="$event.preventDefault(); send()">
             <input
               #fileInput
@@ -284,6 +292,7 @@
               </svg>
             </button>
           </form>
+          }
         }
       }
     }

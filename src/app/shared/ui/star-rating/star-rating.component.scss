@@ -1,0 +1,43 @@
+@use 'tokens' as tokens;
+
+:host {
+  display: inline-flex;
+}
+
+.ui-star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: tokens.space(1);
+
+  &--invalid {
+    padding: tokens.space(1);
+    border: 1px solid tokens.semantic('error');
+    border-radius: tokens.radius('md');
+  }
+}
+
+.ui-star-rating__star {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  color: tokens.color('gray', 300);
+
+  svg {
+    fill: currentColor;
+  }
+
+  &--filled {
+    color: tokens.semantic('warning');
+  }
+}
+
+.ui-star-rating--editable .ui-star-rating__star {
+  cursor: pointer;
+  border-radius: tokens.radius('sm');
+
+  &:focus-visible {
+    outline: 2px solid tokens.color('teal', 500);
+    outline-offset: 2px;
+  }
+}

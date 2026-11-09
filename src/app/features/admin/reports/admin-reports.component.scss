@@ -1,0 +1,46 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.admin-reports__header {
+  @include list.header;
+}
+
+.admin-reports__title {
+  @include list.title;
+}
+
+.admin-reports__subtitle {
+  @include list.subtitle;
+}
+
+.admin-reports__filters {
+  display: block;
+  margin-bottom: tokens.space(4);
+}
+
+.admin-reports__list {
+  @include list.list;
+}
+
+.admin-reports__card-link {
+  @include list.card-link;
+}
+
+.admin-reports__card-header {
+  @include list.card-header;
+}
+
+.admin-reports__reason {
+  @include list.specialty;
+}
+
+.admin-reports__parties {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+  margin-bottom: tokens.space(1);
+}
+
+.admin-reports__date {
+  @include list.date;
+}

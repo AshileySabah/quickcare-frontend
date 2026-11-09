@@ -1,5 +1,6 @@
 import { Component, computed, forwardRef, input, signal } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { IconComponent } from '../../icon/icon.component';
 import { InputMask, formatMasked, formattedMaxLength, toRawDigits } from './input-mask.util';
 
 let nextId = 0;
@@ -7,6 +8,7 @@ let nextId = 0;
 @Component({
   selector: 'ui-input',
   standalone: true,
+  imports: [IconComponent],
   templateUrl: './input.component.html',
   styleUrl: './input.component.scss',
   providers: [
@@ -29,6 +31,12 @@ export class InputComponent implements ControlValueAccessor {
   maxLength = input<number | null>(null);
   autocomplete = input<string>('off');
   name = input<string | null>(null);
+  revealable = input(false);
+  min = input<string | null>(null);
+  max = input<string | null>(null);
+
+  protected readonly revealed = signal(false);
+  protected readonly effectiveType = computed(() => (this.revealable() && this.revealed() ? 'text' : this.type()));
 
   protected readonly inputId = `ui-input-${nextId++}`;
   protected readonly hintId = `${this.inputId}-hint`;

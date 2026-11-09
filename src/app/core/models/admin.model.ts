@@ -1,4 +1,5 @@
 import { Attendance, AttendanceProblem, AttendanceSide, AttendanceStatus, ProblemDecision, ProblemReason, ProblemStatus } from './attendance.model';
+import { Ban } from './ban.model';
 import { Block, Occurrence } from './occurrence.model';
 import { ProposalStatus } from './proposal.model';
 import { RequestStatus, ServiceModality, ServiceRequest } from './service-request.model';
@@ -27,7 +28,14 @@ export type AdminActionType =
   | 'disputa_decidida'
   | 'solicitacao_reaberta'
   | 'solicitacao_concluida'
-  | 'solicitacao_cancelada';
+  | 'solicitacao_cancelada'
+  | 'denuncia_em_analise'
+  | 'denuncia_procedente'
+  | 'denuncia_improcedente'
+  | 'banimento_aplicado'
+  | 'banimento_removido'
+  | 'recurso_banimento_aceito'
+  | 'recurso_banimento_negado';
 
 export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   ocorrencia_lancada: 'Ocorrência lançada',
@@ -47,6 +55,13 @@ export const ADMIN_ACTION_LABELS: Record<AdminActionType, string> = {
   solicitacao_reaberta: 'Solicitação reaberta',
   solicitacao_concluida: 'Solicitação concluída',
   solicitacao_cancelada: 'Solicitação cancelada',
+  denuncia_em_analise: 'Análise da denúncia iniciada',
+  denuncia_procedente: 'Denúncia julgada procedente',
+  denuncia_improcedente: 'Denúncia julgada improcedente',
+  banimento_aplicado: 'Banimento aplicado',
+  banimento_removido: 'Banimento removido',
+  recurso_banimento_aceito: 'Recurso de banimento aceito (desbanido)',
+  recurso_banimento_negado: 'Recurso de banimento negado',
 };
 
 export interface AdminAction {
@@ -110,6 +125,7 @@ export interface AdminProfileSummary {
   counting: number;
   openAppeals: number;
   block?: Block;
+  frozenAt?: string;
 }
 
 export type BlockReasonStatus = 'em_analise' | 'aceito' | 'negado';
@@ -142,6 +158,7 @@ export interface AdminProfileDetail {
   occurrences: Occurrence[];
   blocks: Block[];
   blockReasons: LateBlockReason[];
+  bans: Ban[];
   actions: AdminAction[];
 }
 

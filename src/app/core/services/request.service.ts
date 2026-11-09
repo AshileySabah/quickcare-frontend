@@ -4,6 +4,7 @@ import { Observable, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { normalizeError } from '../http/api-error';
+import { AtuacaoApi, toPracticeArea } from './practice-area.service';
 import {
   Address,
   ProfessionalCategory,
@@ -58,6 +59,7 @@ export interface SolicitacaoApiResponse {
   totalPropostas: number;
   atendimentoEmAndamento: boolean;
   proximoAtendimentoInicio?: string;
+  atuacoesParaProposta?: AtuacaoApi[];
 }
 
 const EDITABLE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
@@ -175,6 +177,7 @@ export function toServiceRequest(response: SolicitacaoApiResponse): ServiceReque
     proposalCount: response.totalPropostas,
     attendanceInProgress: response.atendimentoEmAndamento,
     nextAttendanceStart: response.proximoAtendimentoInicio,
+    practiceAreasForProposal: (response.atuacoesParaProposta ?? []).map(toPracticeArea),
     createdAt: response.criadoEm,
     updatedAt: response.atualizadoEm,
   };

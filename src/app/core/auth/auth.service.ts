@@ -10,8 +10,8 @@ import {
   Gender,
   IdentityDocumentType,
   Patient,
+  PracticeAreaInput,
   Professional,
-  ProfessionalCategory,
   ProfileSummary,
   RegistrationDocument,
   AttendanceModality,
@@ -28,6 +28,7 @@ import {
   RedefinirSenhaApiResponse,
 } from './auth-api.model';
 import { normalizeError } from '../http/api-error';
+import { toAtuacaoPayload } from '../services/practice-area.service';
 
 export interface IdentityDocumentInput {
   identityDocumentType: IdentityDocumentType;
@@ -59,10 +60,7 @@ export interface PatientProfileInput {
 
 export interface ProfessionalProfileInput {
   cnpj?: string;
-  category: ProfessionalCategory;
-  specialtyIds: string[];
-  registrationNumber?: string;
-  registrationUf?: string;
+  practiceAreas: PracticeAreaInput[];
   birthDate: string;
   gender: Gender;
   emergencyContacts: EmergencyContact[];
@@ -80,6 +78,8 @@ export interface PatientRegistration extends AccountInput, PatientProfileInput {
 export interface ProfessionalRegistration extends AccountInput, ProfessionalProfileInput {}
 
 export class InvalidPasswordResetLinkError extends Error {}
+
+export class ClosedAccountError extends Error {}
 
 interface Session {
   user: User;
@@ -126,7 +126,7 @@ export class AuthService {
               .pipe(switchMap(() => me$))
           : throwError(() => error),
       ),
-      map((response) => this.startSession(response)),
+      map((response) => this.startSession(response, true)),
       catchError(() => of(null)),
     );
   }
@@ -140,15 +140,57 @@ export class AuthService {
       )
       .pipe(
         map((response) => this.startSession(response)),
-        catchError((error: unknown) =>
-          throwError(() =>
-            normalizeError(
-              error,
-              'Não foi possível entrar. Tente novamente.',
-            ),
-          ),
-        ),
+        catchError((error: unknown) => {
+          const normalized = normalizeError(error, 'Não foi possível entrar. Tente novamente.');
+          return throwError(() =>
+            error instanceof HttpErrorResponse && error.status === 423
+              ? new ClosedAccountError(normalized.message)
+              : normalized,
+          );
+        }),
       );
+  }
+
+  recoverAccount(email: string, password: string): Observable<User> {
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar`, { email, senha: password }, { withCredentials: true })
+      .pipe(
+        map((response) => this.startSession(response, true)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
+      );
+  }
+
+  recoverAccountByLink(token: string): Observable<User> {
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar-por-link`, { token }, { withCredentials: true })
+      .pipe(
+        map((response) => this.startSession(response, true)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
+      );
+  }
+
+  validateEmailUndo(token: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/email/desfazer/validar`, { token }).pipe(
+      map(() => undefined),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível verificar o link.'))),
+    );
+  }
+
+  undoEmailChange(token: string, password: string): Observable<string> {
+    return this.http
+      .post<{ tokenRedefinicao: string }>(`${environment.apiUrl}/auth/email/desfazer`, { token, senha: password })
+      .pipe(
+        map((response) => response.tokenRedefinicao),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível desfazer a troca.'))),
+      );
+  }
+
+  applySession(response: LoginApiResponse): User {
+    return this.startSession(response, true);
+  }
+
+  clearLocalSession(): void {
+    this.clearSession();
   }
 
   switchProfile(role: SwitchableRole): Observable<User> {
@@ -160,7 +202,7 @@ export class AuthService {
     return this.http
       .patch<LoginApiResponse>(`${environment.apiUrl}/auth/perfil-ativo`, { perfil: TIPO_BY_ROLE[role] })
       .pipe(
-        map((response) => this.startSession(response)),
+        map((response) => this.startSession(response, true)),
         catchError((error: unknown) =>
           throwError(() => normalizeError(error, 'Não foi possível trocar de perfil. Tente novamente.')),
         ),
@@ -238,20 +280,24 @@ export class AuthService {
     return normalized;
   }
 
-  private startSession(response: LoginApiResponse): User {
-    const session = this.toSession(response);
+  private startSession(response: LoginApiResponse, honorLastProfile = false): User {
+    const session = this.toSession(response, honorLastProfile);
     this.currentUserSignal.set(session.user);
     this.profilesSignal.set(session.profiles);
     return session.user;
   }
 
-  private toSession(response: LoginApiResponse): Session {
+  private toSession(response: LoginApiResponse, honorLastProfile: boolean): Session {
     const ativos = response.perfis.filter((perfil) => perfil.status === 'ATIVO');
     const prioridade: PerfilStatusApi['tipo'][] = ['ADMIN', 'PROFISSIONAL', 'PACIENTE'];
+    const ultimo = response.perfis.find((perfil) => perfil.tipo === response.ultimoPerfil);
     const perfilAtivo =
       ativos.find((perfil) => perfil.tipo === 'ADMIN') ??
+      (honorLastProfile ? ultimo : undefined) ??
       ativos.find((perfil) => perfil.tipo === response.ultimoPerfil) ??
-      prioridade.map((tipo) => ativos.find((perfil) => perfil.tipo === tipo)).find((perfil) => !!perfil);
+      prioridade.map((tipo) => ativos.find((perfil) => perfil.tipo === tipo)).find((perfil) => !!perfil) ??
+      ultimo ??
+      response.perfis.find((perfil) => perfil.tipo !== 'ADMIN');
 
     if (!perfilAtivo) {
       throw new Error('Nenhum dos seus perfis está ativo no momento.');
@@ -301,8 +347,6 @@ export class AuthService {
         avatarUrl: response.avatarUrl ?? undefined,
         phone: '',
         cpf: '',
-        category: 'OUTRO',
-        specialtyIds: [],
         birthDate: '',
         gender: 'PREFIRO_NAO_INFORMAR',
         emergencyContacts: [],
@@ -362,7 +406,7 @@ export class AuthService {
     return this.http
       .post<CadastroApiResponse>(
         `${environment.apiUrl}/usuarios/cadastro/profissional`,
-        toFormData(dados, input.documents, input.avatar),
+        toFormData(dados, professionalDocuments(input), input.avatar),
         { withCredentials: true },
       )
       .pipe(
@@ -383,7 +427,7 @@ export class AuthService {
   }
 
   createProfessionalProfile(input: ProfessionalProfileInput): Observable<User> {
-    return this.createProfile('profissional', toFormData(professionalProfilePayload(input), input.documents));
+    return this.createProfile('profissional', toFormData(professionalProfilePayload(input), professionalDocuments(input)));
   }
 
   private createProfile(tipo: 'paciente' | 'profissional', formData: FormData): Observable<User> {
@@ -485,14 +529,18 @@ function professionalProfilePayload(input: ProfessionalProfileInput) {
   return {
     ...profileBasePayload(input),
     cnpj: input.cnpj || undefined,
-    categoria: input.category,
-    especialidadeIds: input.specialtyIds.map(Number),
-    registroProfissional: input.registrationNumber || undefined,
-    registroProfissionalUf: input.registrationUf || undefined,
+    atuacoes: input.practiceAreas.map(toAtuacaoPayload),
     possuiSeguroResponsabilidadeCivil: input.hasLiabilityInsurance,
     modalidadeAtendimento: input.modalidadeAtendimento,
     raioAtendimentoKm: input.raioAtendimentoKm,
   };
+}
+
+function professionalDocuments(input: ProfessionalProfileInput): RegistrationDocument[] {
+  const registros = input.practiceAreas
+    .filter((area) => !!area.document)
+    .map((area) => ({ file: area.document as File, type: 'REGISTRO_PROFISSIONAL' as const }));
+  return [...input.documents.filter((document) => document.type !== 'REGISTRO_PROFISSIONAL'), ...registros];
 }
 
 function toFormData(dados: object, documents: RegistrationDocument[], avatar?: Blob): FormData {

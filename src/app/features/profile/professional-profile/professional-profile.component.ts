@@ -12,13 +12,14 @@ import { ProfileCardComponent, ProfileDetail } from '../../../shared/ui/profile-
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
 import { ProfileBlockActionComponent } from '../../user-blocks/profile-block-action/profile-block-action.component';
+import { ProfileReportActionComponent } from '../../reports/profile-report-action/profile-report-action.component';
 
 type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 
 @Component({
   selector: 'app-professional-profile',
   standalone: true,
-  imports: [BackLinkComponent, ProfileBlockActionComponent, EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
+  imports: [BackLinkComponent, ProfileBlockActionComponent, ProfileReportActionComponent,EmergencyContactsCardComponent, EmptyStateComponent, ErrorStateComponent, ProfileCardComponent, SkeletonListComponent],
   templateUrl: './professional-profile.component.html',
   styleUrl: '../public-profile.scss',
 })
@@ -35,19 +36,24 @@ export class ProfessionalProfileComponent {
     emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
   });
 
+  protected readonly subtitle = computed(
+    () => this.profile()?.practiceAreas.map((area) => area.label).join(' · ') ?? '',
+  );
+
   protected readonly details = computed<ProfileDetail[]>(() => {
     const profile = this.profile();
     if (!profile) {
       return [];
     }
 
-    const details: ProfileDetail[] = [{ label: 'Especialidades', value: profile.specialties.join(', ') }];
-    if (profile.registrationLabel && profile.registrationNumber) {
-      details.push({
-        label: 'Registro',
-        value: `${profile.registrationLabel} ${profile.registrationNumber}/${profile.registrationUf}`,
-      });
-    }
+    const details: ProfileDetail[] = profile.practiceAreas.flatMap((area) => {
+      const especialidades = area.specialties.map((specialty) => specialty.name).join(', ');
+      const registro =
+        area.registrationLabel && area.registrationNumber
+          ? ` · ${area.registrationLabel} ${area.registrationNumber}/${area.registrationUf}`
+          : '';
+      return [{ label: area.label, value: `${especialidades}${registro}` }];
+    });
     details.push(
       { label: 'Atendimento', value: ATTENDANCE_MODALITY_LABELS[profile.attendanceModality] },
       { label: 'Localização', value: `${profile.city}/${profile.state}` },

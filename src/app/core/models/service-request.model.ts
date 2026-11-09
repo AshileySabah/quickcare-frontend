@@ -1,3 +1,4 @@
+import { PracticeArea } from './practice-area.model';
 import { Specialty } from './specialty.model';
 import { Address, ProfessionalCategory } from './user.model';
 
@@ -30,6 +31,7 @@ export interface ServiceRequest {
   proposalCount: number;
   attendanceInProgress: boolean;
   nextAttendanceStart?: string;
+  practiceAreasForProposal: PracticeArea[];
   createdAt: string;
   updatedAt: string;
 }

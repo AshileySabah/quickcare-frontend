@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { addressFieldErrorsFor, buildAddressGroup } from '../../../core/forms/address-form';
 import { EmergencyContactGroup, setEmergencyContacts } from '../../../core/forms/emergency-contact-form';
-import { profileFieldErrorsFor } from '../../../core/forms/profile-form';
+import { LOCKED_PROFILE_NOTE, lockedDeclarationControls, profileFieldErrorsFor } from '../../../core/forms/profile-form';
 import {
   atLeastOneModalityValidator,
   fromAttendanceModality,
@@ -10,35 +10,45 @@ import {
   requireRadiusWhenPresencial,
   toAttendanceModality,
 } from '../../../core/forms/attendance-modality';
-import { Gender } from '../../../core/models';
 import { ProfessionalProfile, ProfileService } from '../../../core/services/profile.service';
 import { AddressCardComponent } from '../../../shared/ui/register/address-card/address-card.component';
 import { AvatarUploadComponent } from '../../../shared/ui/forms/avatar-upload/avatar-upload.component';
 import { BasicInfoCardComponent } from '../../../shared/ui/register/basic-info-card/basic-info-card.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CheckboxComponent } from '../../../shared/ui/forms/checkbox/checkbox.component';
+import { DeclarationsCardComponent } from '../../../shared/ui/register/declarations-card/declarations-card.component';
 import { EmergencyContactsCardComponent } from '../../../shared/ui/register/emergency-contacts-card/emergency-contacts-card.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
 import { ProfessionalPracticeCardComponent } from '../register/professional-practice-card/professional-practice-card.component';
+import { PracticeAreasManagerComponent } from '../practice-areas/practice-areas-manager/practice-areas-manager.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { RatingSummaryComponent } from '../../../shared/ui/rating-summary/rating-summary.component';
+import { RatingSummary } from '../../../core/models';
 
 type PageState = 'loading' | 'error' | 'ready';
 
 @Component({
   selector: 'app-professional-edit-profile',
   standalone: true,
-  imports: [InvalidFieldFocusDirective, SkeletonListComponent, 
+  imports: [
+    InvalidFieldFocusDirective,
+    SkeletonListComponent,
     ReactiveFormsModule,
     AddressCardComponent,
     AvatarUploadComponent,
     BasicInfoCardComponent,
     ButtonComponent,
     CheckboxComponent,
+    DeclarationsCardComponent,
     EmergencyContactsCardComponent,
     ErrorStateComponent,
+    PracticeAreasManagerComponent,
     ProfessionalPracticeCardComponent,
+    CardComponent,
+    RatingSummaryComponent,
   ],
   templateUrl: './professional-edit-profile.component.html',
   styleUrl: './professional-edit-profile.component.scss',
@@ -52,6 +62,8 @@ export class ProfessionalEditProfileComponent implements OnInit {
   protected readonly loadError = signal('');
   protected readonly isSubmitting = signal(false);
   protected readonly avatarUrl = signal<string | null>(null);
+  protected readonly ratings = signal<RatingSummary | null>(null);
+  protected readonly lockedNote = LOCKED_PROFILE_NOTE;
 
   private avatarBlob: Blob | null = null;
   private avatarRemoved = false;
@@ -60,14 +72,13 @@ export class ProfessionalEditProfileComponent implements OnInit {
     {
       name: ['', Validators.required],
       phone: ['', Validators.required],
-      birthDate: ['', Validators.required],
-      gender: ['', Validators.required],
       emergencyContacts: this.fb.array<EmergencyContactGroup>([]),
       hasLiabilityInsurance: [false],
       attendsPresencial: [false],
       attendsRemoto: [false],
       raioAtendimentoKm: [10, [Validators.min(1)]],
       address: buildAddressGroup(this.fb),
+      ...lockedDeclarationControls(this.fb),
     },
     { validators: atLeastOneModalityValidator() },
   );
@@ -120,8 +131,6 @@ export class ProfessionalEditProfileComponent implements OnInit {
       .updateProfessionalProfile({
         name: value.name,
         phone: value.phone,
-        birthDate: value.birthDate,
-        gender: value.gender as Gender,
         emergencyContacts: value.emergencyContacts,
         hasLiabilityInsurance: value.hasLiabilityInsurance,
         modalidadeAtendimento: toAttendanceModality(value.attendsPresencial, value.attendsRemoto),
@@ -150,15 +159,15 @@ export class ProfessionalEditProfileComponent implements OnInit {
     this.form.reset({
       name: profile.name,
       phone: profile.phone,
-      birthDate: profile.birthDate,
-      gender: profile.gender,
       emergencyContacts: profile.emergencyContacts,
       hasLiabilityInsurance: profile.hasLiabilityInsurance,
       ...fromAttendanceModality(profile.modalidadeAtendimento),
       raioAtendimentoKm: profile.raioAtendimentoKm ?? 10,
       address: profile.address,
+      ...profile.declarations,
     });
 
     this.avatarUrl.set(profile.avatarUrl);
+    this.ratings.set(profile.ratings);
   }
 }

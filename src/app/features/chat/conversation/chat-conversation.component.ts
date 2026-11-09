@@ -7,7 +7,15 @@ import { Subscription, forkJoin } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChatMessage, Conversation } from '../../../core/chat/chat.model';
 import { ChatError, ChatService } from '../../../core/chat/chat.service';
-import { CHAT_ATTACHMENT_ACCEPT, buildTimeline, mergeMessage, validateAttachment } from '../../../core/chat/chat.utils';
+import {
+  CHAT_ATTACHMENT_ACCEPT,
+  buildTimeline,
+  channelKey,
+  conversationKey,
+  mergeMessage,
+  messageKey,
+  validateAttachment,
+} from '../../../core/chat/chat.utils';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -52,6 +60,8 @@ export class ChatConversationComponent {
   protected readonly meId = Number(this.authService.currentUser()?.id);
 
   protected readonly requestId = signal(0);
+  /** Profissional do canal individual; nulo e o grupo (rota ".../grupo"). */
+  protected readonly professionalUserId = signal<number | null>(null);
   protected readonly viewState = signal<ViewState>('loading');
   protected readonly conversation = signal<Conversation | null>(null);
   protected readonly messages = signal<ChatMessage[]>([]);
@@ -68,9 +78,8 @@ export class ChatConversationComponent {
 
   protected readonly canSend = computed(() => !!this.draft().trim() || !!this.selectedFile());
   protected readonly timeline = computed(() => buildTimeline(this.messages(), this.conversation(), this.meId));
-  protected readonly basePath = computed(() =>
-    this.authService.role() === 'professional' ? '/professional/mensagens' : '/patient/mensagens',
-  );
+  protected readonly isProfessional = computed(() => this.authService.role() === 'professional');
+  protected readonly basePath = computed(() => (this.isProfessional() ? '/professional/mensagens' : '/patient/mensagens'));
   protected readonly headerPerson = computed(() => this.conversation()?.others[0] ?? null);
   protected readonly subtitle = computed(() => {
     const conversation = this.conversation();
@@ -78,11 +87,18 @@ export class ChatConversationComponent {
     if (!conversation.isGroup) return `Solicitação #${this.requestId()}`;
     return conversation.participants.map((p) => (p.userId === this.meId ? 'Você' : p.name)).join(', ');
   });
+  protected readonly readOnlyMessage = computed(() =>
+    this.isProfessional()
+      ? 'Você saiu desta conversa. Só é possível ver o histórico até o momento da sua saída.'
+      : 'Esta conversa foi encerrada. Você pode ver o histórico, mas não enviar novas mensagens.',
+  );
 
   constructor() {
-    // A rota reaproveita este componente ao trocar de conversa, entao reagimos ao parametro.
+    // A rota reaproveita este componente ao trocar de conversa, entao reagimos aos parametros.
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const channel = params.get('canal');
       this.requestId.set(Number(params.get('solicitacaoId')));
+      this.professionalUserId.set(channel && channel !== 'grupo' ? Number(channel) : null);
       this.conversation.set(null);
       this.messages.set([]);
       this.draft.set('');
@@ -99,7 +115,7 @@ export class ChatConversationComponent {
 
     this.chatService.events$.pipe(takeUntilDestroyed()).subscribe((event) => {
       if (event.type === 'message') {
-        if (event.message.requestId === this.requestId()) {
+        if (messageKey(event.message) === channelKey(this.requestId(), this.professionalUserId())) {
           this.messages.update((list) => mergeMessage(list, event.message));
         }
       } else {
@@ -117,13 +133,15 @@ export class ChatConversationComponent {
     this.loadSubscription?.unsubscribe();
     this.viewState.set('loading');
     const id = this.requestId();
+    const professionalUserId = this.professionalUserId();
+    const key = channelKey(id, professionalUserId);
 
     this.loadSubscription = forkJoin({
       conversations: this.chatService.conversations(this.meId),
-      messages: this.chatService.messages(id),
+      messages: this.chatService.messages(id, professionalUserId),
     }).subscribe({
       next: ({ conversations, messages }) => {
-        const conversation = conversations.find((item) => item.requestId === id) ?? null;
+        const conversation = conversations.find((item) => conversationKey(item) === key) ?? null;
         if (!conversation) {
           this.viewState.set('forbidden');
           return;
@@ -174,14 +192,14 @@ export class ChatConversationComponent {
   protected send(): void {
     const content = this.draft().trim();
     const file = this.selectedFile();
-    if ((!content && !file) || this.sending()) {
+    if ((!content && !file) || this.sending() || this.conversation()?.readOnly) {
       return;
     }
 
     this.sending.set(true);
     this.actionError.set(null);
 
-    this.chatService.send(this.requestId(), content, file).subscribe({
+    this.chatService.send(this.requestId(), content, file, this.professionalUserId()).subscribe({
       next: (message) => {
         this.messages.update((list) => mergeMessage(list, message));
         this.draft.set('');
@@ -191,7 +209,8 @@ export class ChatConversationComponent {
       error: (error: ChatError) => {
         this.sending.set(false);
         if (error.status === 403) {
-          this.viewState.set('forbidden');
+          // O acesso mudou (o profissional saiu da conversa): recarrega para mostrar o historico somente leitura.
+          this.load();
           return;
         }
         this.actionError.set(error.message);
@@ -242,7 +261,7 @@ export class ChatConversationComponent {
     }
     this.lastAttachmentRefresh = now;
 
-    this.chatService.messages(this.requestId()).subscribe({
+    this.chatService.messages(this.requestId(), this.professionalUserId()).subscribe({
       next: (items) => this.messages.set(items),
     });
   }

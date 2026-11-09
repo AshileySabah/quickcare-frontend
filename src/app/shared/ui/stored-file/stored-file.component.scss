@@ -42,16 +42,29 @@
   font-weight: tokens.font-weight('medium');
   color: tokens.color('gray', 900);
   word-break: break-all;
+
+  &--link {
+    padding: 0;
+    border: none;
+    background: none;
+    text-align: left;
+    color: tokens.color('teal', 700);
+    text-decoration: underline;
+    cursor: pointer;
+
+    &:hover {
+      color: tokens.color('teal', 800);
+    }
+
+    &:focus-visible {
+      outline: 2px solid tokens.color('teal', 500);
+      outline-offset: 2px;
+      border-radius: tokens.radius('sm');
+    }
+  }
 }
 
-.ui-stored-file__meta,
-.ui-stored-file__unavailable {
+.ui-stored-file__meta {
   font-size: tokens.font-size('xs');
   color: tokens.color('gray', 500);
-}
-
-.ui-stored-file__open {
-  font-size: tokens.font-size('sm');
-  font-weight: tokens.font-weight('medium');
-  color: tokens.color('teal', 700);
 }

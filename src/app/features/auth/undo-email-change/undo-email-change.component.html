@@ -1,0 +1,50 @@
+<ui-auth-layout
+  sideTitle="Não foi você?"
+  sideText="Ao desfazer, o e-mail da conta volta a ser este, todos os dispositivos são desconectados e você cria uma senha nova."
+>
+  @switch (state()) {
+    @case ('validating') {
+      <h1 class="auth-layout__title">Desfazer troca de e-mail</h1>
+      <p class="auth-layout__subtitle" aria-live="polite">Verificando o link…</p>
+    }
+
+    @case ('invalid-link') {
+      <h1 class="auth-layout__title">Link inválido ou expirado</h1>
+      <p class="auth-layout__subtitle">{{ stateMessage() }}</p>
+      <ui-button [fullWidth]="true" routerLink="/login">Ir para o login</ui-button>
+    }
+
+    @case ('form') {
+      <h1 class="auth-layout__title">Desfazer troca de e-mail</h1>
+      <p class="auth-layout__subtitle">
+        Para confirmar que é você, digite a senha que a conta tinha antes da troca de e-mail.
+      </p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" autocomplete="off">
+        <ui-grid>
+          <ui-grid-item [xs]="12">
+            <ui-input
+              label="Senha anterior"
+              type="password"
+              formControlName="password"
+              autocomplete="current-password"
+              [revealable]="true"
+              [required]="true"
+              [maxLength]="72"
+              [errorMessage]="fieldError('password')"
+            ></ui-input>
+          </ui-grid-item>
+          <ui-grid-item [xs]="12">
+            <ui-button type="submit" variant="danger" [fullWidth]="true" [loading]="isSubmitting()"
+              >Desfazer a troca</ui-button
+            >
+          </ui-grid-item>
+        </ui-grid>
+      </form>
+
+      <p class="auth-layout__footer">
+        <a routerLink="/login">Voltar ao login</a>
+      </p>
+    }
+  }
+</ui-auth-layout>

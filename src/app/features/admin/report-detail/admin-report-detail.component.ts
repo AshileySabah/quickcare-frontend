@@ -1,0 +1,222 @@
+import { DatePipe } from '@angular/common';
+import { Component, ElementRef, Injector, afterNextRender, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { formatPeriod } from '../../../core/formatting/period';
+import { fieldErrorsFor } from '../../../core/forms/field-errors';
+import {
+  ADMIN_ACTION_LABELS,
+  APPEAL_STATUS_LABELS,
+  ATTENDANCE_STATUS_LABELS,
+  BAN_APPEAL_LABELS,
+  BAN_ENDING_LABELS,
+  REPORT_CONSEQUENCE_LABELS,
+  REPORT_STATUS_LABELS,
+  ReportConsequence,
+  ReportDetail,
+  StoredFile,
+} from '../../../core/models';
+import { AdminReportService } from '../../../core/services/admin/admin-report.service';
+import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { BackLinkComponent } from '../../../shared/ui/back-link/back-link.component';
+import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
+import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
+import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
+import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
+import { revealFirstInvalid } from '../../../shared/ui/forms/invalid-field-focus.directive';
+import { SelectComponent, SelectOption } from '../../../shared/ui/forms/select/select.component';
+import { JustificationDialogComponent } from '../../../shared/ui/justification-dialog/justification-dialog.component';
+import { CardComponent } from '../../../shared/ui/layout/card/card.component';
+import { StoredFileComponent } from '../../../shared/ui/stored-file/stored-file.component';
+import { REPORT_STATUS_VARIANTS } from '../reports/report-status';
+import { BanFieldsComponent } from '../../bans/ban-fields/ban-fields.component';
+import { banDays, banType, buildBanForm, resetBanForm, validateBanForm } from '../../bans/ban-fields/ban-form';
+
+type PageState = 'loading' | 'error' | 'not-found' | 'filled';
+
+@Component({
+  selector: 'app-admin-report-detail',
+  standalone: true,
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    RouterLink,
+    BackLinkComponent,
+    BadgeComponent,
+    BanFieldsComponent,
+    ButtonComponent,
+    CardComponent,
+    EmptyStateComponent,
+    ErrorStateComponent,
+    JustificationDialogComponent,
+    SelectComponent,
+    SkeletonListComponent,
+    StoredFileComponent,
+  ],
+  templateUrl: './admin-report-detail.component.html',
+  styleUrl: './admin-report-detail.component.scss',
+})
+export class AdminReportDetailComponent {
+  private readonly reportService = inject(AdminReportService);
+  private readonly toastService = inject(ToastService);
+  private readonly fb = inject(FormBuilder);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
+  private readonly id = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
+
+  protected readonly backLink = '/admin/denuncias';
+  protected readonly pageState = signal<PageState>('loading');
+  protected readonly detail = signal<ReportDetail | null>(null);
+  protected readonly saving = signal(false);
+  protected readonly decisionOpen = signal(false);
+
+  protected readonly period = formatPeriod;
+  protected readonly statusLabels = REPORT_STATUS_LABELS;
+  protected readonly statusVariants = REPORT_STATUS_VARIANTS;
+  protected readonly consequenceLabels = REPORT_CONSEQUENCE_LABELS;
+  protected readonly attendanceLabels = ATTENDANCE_STATUS_LABELS;
+  protected readonly appealLabels = APPEAL_STATUS_LABELS;
+  protected readonly actionLabels = ADMIN_ACTION_LABELS;
+  protected readonly banAppealLabels = BAN_APPEAL_LABELS;
+  protected readonly banEndingLabels = BAN_ENDING_LABELS;
+
+  protected readonly resultOptions: SelectOption[] = [
+    { value: 'procedente', label: 'Procedente' },
+    { value: 'improcedente', label: 'Improcedente' },
+  ];
+  protected readonly consequenceOptions: SelectOption[] = [
+    { value: 'ocorrencia', label: 'Lançar ocorrência' },
+    { value: 'banimento', label: 'Banir' },
+  ];
+  protected readonly banForm = buildBanForm(this.fb);
+
+  protected readonly form = this.fb.nonNullable.group({
+    result: this.fb.nonNullable.control<'procedente' | 'improcedente' | ''>('', Validators.required),
+    consequence: this.fb.nonNullable.control<ReportConsequence | ''>(''),
+  });
+  protected readonly fieldError = fieldErrorsFor(this.form, {
+    result: { required: 'Escolha se a denúncia é procedente ou improcedente.' },
+    consequence: { required: 'Escolha a consequência para o denunciado.' },
+  });
+  private readonly result = toSignal(this.form.controls.result.valueChanges, { initialValue: '' as const });
+  private readonly consequence = toSignal(this.form.controls.consequence.valueChanges, { initialValue: '' as const });
+  protected readonly isProcedente = computed(() => this.result() === 'procedente');
+  protected readonly isBan = computed(() => this.isProcedente() && this.consequence() === 'banimento');
+
+  protected readonly pending = computed(() => {
+    const status = this.detail()?.summary.status;
+    return status === 'em_analise';
+  });
+
+  protected readonly reportedName = computed(() => {
+    const summary = this.detail()?.summary;
+    if (!summary) {
+      return '';
+    }
+    return summary.reporter === 'paciente' ? summary.professional.name : summary.patient.name;
+  });
+
+  protected readonly decisionConsequences = computed(() => {
+    const items: string[] = [];
+    if (this.isBan()) {
+      items.push(`O perfil de ${this.reportedName()} é banido e o que estava em curso com ele é encerrado.`);
+      items.push('A pessoa é avisada, sem saber quem denunciou, e pode recorrer uma vez do banimento.');
+    } else if (this.isProcedente()) {
+      items.push(`${this.reportedName()} recebe uma ocorrência e é avisado, sem saber quem denunciou.`);
+      items.push('Quem foi denunciado pode recorrer uma vez; você decide o recurso na fila de Ocorrências.');
+    } else {
+      items.push(`${this.reportedName()} não é avisado da denúncia.`);
+    }
+    items.push('Quem denunciou recebe o resultado com a sua justificativa.');
+    return items;
+  });
+
+  constructor() {
+    this.load();
+    this.form.controls.result.valueChanges.subscribe((value) => {
+      const consequence = this.form.controls.consequence;
+      consequence.setValidators(value === 'procedente' ? [Validators.required] : []);
+      consequence.reset('');
+    });
+    this.form.controls.consequence.valueChanges.subscribe(() => resetBanForm(this.banForm));
+  }
+
+  protected load(): void {
+    this.pageState.set('loading');
+    this.reportService.getById(this.id).subscribe({
+      next: (detail) => {
+        this.detail.set(detail ?? null);
+        this.pageState.set(detail ? 'filled' : 'not-found');
+      },
+      error: () => this.pageState.set('error'),
+    });
+  }
+
+  protected reportedProfileLink(detail: ReportDetail): string[] {
+    const summary = detail.summary;
+    return summary.reporter === 'paciente'
+      ? ['/admin/perfis', 'professional', summary.professional.userId]
+      : ['/admin/perfis', 'patient', summary.patient.userId];
+  }
+
+  protected reporterLabel(detail: ReportDetail): string {
+    return detail.summary.reporter === 'paciente' ? 'Paciente' : 'Profissional';
+  }
+
+  protected attachmentFile(detail: ReportDetail): StoredFile | null {
+    return detail.attachment
+      ? {
+          fileName: detail.attachment.fileName,
+          contentType: detail.attachment.contentType,
+          sizeBytes: null,
+          sentAt: detail.summary.createdAt,
+          url: detail.attachment.url,
+        }
+      : null;
+  }
+
+  protected openDecision(): void {
+    const banValid = !this.isBan() || validateBanForm(this.banForm);
+    if (this.form.invalid || !banValid) {
+      this.form.markAllAsTouched();
+      afterNextRender(() => revealFirstInvalid(this.host.nativeElement), { injector: this.injector });
+      return;
+    }
+    this.decisionOpen.set(true);
+  }
+
+  protected decide(justification: string): void {
+    const { result, consequence } = this.form.getRawValue();
+    if (!result) {
+      return;
+    }
+    this.saving.set(true);
+    this.reportService
+      .decide(this.id, {
+        result,
+        consequence: consequence || undefined,
+        justification,
+        ban: this.isBan() ? { type: banType(this.banForm), days: banDays(this.banForm) } : undefined,
+      })
+      .subscribe({
+        next: (detail) => {
+          this.saving.set(false);
+          this.decisionOpen.set(false);
+          this.detail.set(detail);
+          this.toastService.success('Decisão registrada.');
+        },
+        error: (error: Error) => {
+          this.saving.set(false);
+          this.toastService.error(error.message);
+        },
+      });
+  }
+
+  protected closeDecision(): void {
+    if (!this.saving()) {
+      this.decisionOpen.set(false);
+    }
+  }
+}

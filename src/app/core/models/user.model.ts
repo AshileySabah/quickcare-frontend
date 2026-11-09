@@ -11,8 +11,7 @@ export interface EmergencyContact {
   phone: string;
 }
 
-export type DocumentType = 'VALIDACAO_CPF' | 'VALIDACAO_CNPJ' | 'REGISTRO_PROFISSIONAL' | 'OUTRO';
-
+export type DocumentType = 'COMPROVANTE_CPF' | 'VALIDACAO_CPF' | 'VALIDACAO_CNPJ' | 'REGISTRO_PROFISSIONAL';
 export interface RegistrationDocument {
   file: File;
   type: DocumentType;
@@ -67,9 +66,6 @@ export interface Professional extends BaseUser {
   phone: string;
   cpf: string;
   cnpj?: string;
-  category: ProfessionalCategory;
-  specialtyIds: string[];
-  registrationNumber?: string;
   birthDate: string;
   gender: Gender;
   emergencyContacts: EmergencyContact[];

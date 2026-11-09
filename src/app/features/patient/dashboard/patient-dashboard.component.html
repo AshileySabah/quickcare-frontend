@@ -6,14 +6,20 @@
         Acompanhe prazos, status e propostas das suas solicitações ativas.
       </p>
     </div>
-    @if (validationStatus() === "aprovado" && !blocked()) {
+    @if (validationStatus() === "aprovado" && !lock()) {
       <ui-button routerLink="/patient/novo">Nova solicitação</ui-button>
     } @else {
       <ui-button [disabled]="true">Nova solicitação</ui-button>
     }
   </header>
 
-  <app-occurrences-card role="patient" (blockedChange)="blocked.set($event)"></app-occurrences-card>
+  <app-ban-notice role="patient"></app-ban-notice>
+
+  <app-blocked-notice role="patient" [revalidationOnly]="true"></app-blocked-notice>
+
+  <app-occurrences-card role="patient"></app-occurrences-card>
+
+  <app-pending-ratings-card role="patient"></app-pending-ratings-card>
 
   @if (validationStatus() !== "aprovado") {
     <div
@@ -68,11 +74,13 @@
       <ui-skeleton-list></ui-skeleton-list>
     }
     @case ("empty") {
-      <ui-empty-state
-        title="Nenhuma solicitação ativa"
-        message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
-      >
-      </ui-empty-state>
+      @if (validationStatus() === "aprovado" && !lock()) {
+        <ui-empty-state
+          title="Nenhuma solicitação ativa"
+          message="Crie uma solicitação para receber propostas. As encerradas ficam no histórico."
+        >
+        </ui-empty-state>
+      }
     }
     @case ("error") {
       <ui-error-state (retry)="load()"></ui-error-state>

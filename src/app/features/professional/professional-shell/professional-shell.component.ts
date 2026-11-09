@@ -15,7 +15,8 @@ import {
       navLabel="Navegação do profissional"
       [navItems]="navItems"
       profileLink="/professional/perfil"
-      blockedUsersLink="/professional/bloqueados"
+      documentsLink="/professional/documentos"
+      securityLink="/professional/seguranca"
     >
       <router-outlet></router-outlet>
     </ui-app-shell>

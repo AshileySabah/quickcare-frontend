@@ -4,6 +4,7 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { combineLatest, filter, startWith, switchMap } from 'rxjs';
 import { AdminDisputeService } from '../../../core/services/admin/admin-dispute.service';
 import { AdminProfileService } from '../../../core/services/admin/admin-profile.service';
+import { AdminReportService } from '../../../core/services/admin/admin-report.service';
 import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-shell/app-shell.component';
 
 @Component({
@@ -18,27 +19,33 @@ import { AppShellComponent, ShellNavItem } from '../../../shared/ui/layout/app-s
 })
 export class AdminShellComponent {
   private readonly openDisputes = signal(0);
+  private readonly openReports = signal(0);
   private readonly openAppeals = signal(0);
 
   protected readonly navItems = computed<ShellNavItem[]>(() => [
     { label: 'Validação', link: '/admin/validacao' },
     { label: 'Disputas', link: '/admin/disputas', count: this.openDisputes() },
+    { label: 'Denúncias', link: '/admin/denuncias', count: this.openReports() },
     { label: 'Ocorrências', link: '/admin/ocorrencias', count: this.openAppeals() },
     { label: 'Gerais', link: '/admin/gerais' },
   ]);
 
   constructor() {
     const disputeService = inject(AdminDisputeService);
+    const reportService = inject(AdminReportService);
     const profileService = inject(AdminProfileService);
     inject(Router)
       .events.pipe(
         filter((event) => event instanceof NavigationEnd),
         startWith(null),
-        switchMap(() => combineLatest([disputeService.countOpen(), profileService.countOpenAppeals()])),
+        switchMap(() =>
+          combineLatest([disputeService.countOpen(), reportService.countOpen(), profileService.countOpenAppeals()]),
+        ),
         takeUntilDestroyed(),
       )
-      .subscribe(([disputes, appeals]) => {
+      .subscribe(([disputes, reports, appeals]) => {
         this.openDisputes.set(disputes);
+        this.openReports.set(reports);
         this.openAppeals.set(appeals);
       });
   }

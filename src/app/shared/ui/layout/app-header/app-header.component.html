@@ -1,0 +1,35 @@
+<header class="ui-app-header" [class.ui-app-header--nav-end]="navAlign() === 'end'">
+  <a class="ui-app-header__brand" [routerLink]="homeLink()">{{ brandLabel() }}</a>
+
+  <nav class="ui-app-header__nav" [attr.aria-label]="navLabel()">
+    @for (item of navItems(); track item.link) {
+      <a
+        class="ui-app-header__link"
+        [routerLink]="item.link"
+        routerLinkActive="ui-app-header__link--active"
+        [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+        >{{ item.label }}
+        @if (item.count) {
+          <span class="ui-app-header__count" [attr.aria-label]="item.count + ' aguardando'">{{ item.count }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <div class="ui-app-header__user">
+    @if (variant() === 'user') {
+      <ui-profile-switcher></ui-profile-switcher>
+      <ui-notification-bell></ui-notification-bell>
+      <ui-user-menu
+        [profileLink]="profileLink()"
+        [documentsLink]="documentsLink()"
+        [securityLink]="securityLink()"
+      ></ui-user-menu>
+    } @else if (accountLink()) {
+      <ui-button variant="inverse" size="sm" [routerLink]="accountLink()">Ir para minha conta</ui-button>
+    } @else {
+      <ui-button variant="inverse-outline" size="sm" routerLink="/login">Entrar</ui-button>
+      <ui-button variant="inverse" size="sm" routerLink="/cadastro">Cadastre-se</ui-button>
+    }
+  </div>
+</header>

@@ -8,25 +8,24 @@ import {
   AttendanceModality,
   EmergencyContact,
   PatientPublicProfile,
-  ProfessionalCategory,
   ProfessionalPublicProfile,
 } from '../models';
+import { AtuacaoApi, toPracticeArea } from './practice-area.service';
+import { ResumoAvaliacoesApi, toRatingSummary } from './rating.service';
 
 interface PerfilPublicoProfissionalApi {
   id: number;
   nome: string;
   avatarUrl: string | null;
-  categoria: ProfessionalCategory;
-  categoriaRotulo: string;
-  especialidades: string[];
-  siglaRegistro: string | null;
-  registroProfissional: string | null;
-  registroProfissionalUf: string | null;
+  atuacoes: AtuacaoApi[];
   modalidadeAtendimento: AttendanceModality;
   cidade: string;
   uf: string;
   membroDesde: string;
   atendimentosConcluidos: number;
+  avaliacoes?: ResumoAvaliacoesApi;
+  podeDenunciar?: boolean;
+  denunciaEmAndamento?: boolean;
   contatosEmergencia?: ContatoEmergenciaApi[];
 }
 
@@ -43,6 +42,9 @@ interface PerfilPublicoPacienteApi {
   cidade: string;
   uf: string;
   membroDesde: string;
+  avaliacoes?: ResumoAvaliacoesApi;
+  podeDenunciar?: boolean;
+  denunciaEmAndamento?: boolean;
   saude?: {
     alergias: string | null;
     condicoesSaude: string | null;
@@ -59,6 +61,10 @@ export class PublicProfileService {
     return this.http
       .get<PerfilPublicoProfissionalApi>(`${environment.apiUrl}/profissionais/${id}/perfil`)
       .pipe(map(toProfessionalProfile), catchError(notFoundAsUndefined('Não foi possível carregar o perfil.')));
+  }
+
+  mapProfessional(response: unknown): ProfessionalPublicProfile {
+    return toProfessionalProfile(response as PerfilPublicoProfissionalApi);
   }
 
   getPatient(id: string): Observable<PatientPublicProfile | undefined> {
@@ -80,17 +86,15 @@ function toProfessionalProfile(api: PerfilPublicoProfissionalApi): ProfessionalP
     id: String(api.id),
     name: api.nome,
     avatarUrl: api.avatarUrl ?? undefined,
-    category: api.categoria,
-    categoryLabel: api.categoriaRotulo,
-    specialties: api.especialidades,
-    registrationLabel: api.siglaRegistro,
-    registrationNumber: api.registroProfissional ?? undefined,
-    registrationUf: api.registroProfissionalUf ?? undefined,
+    practiceAreas: (api.atuacoes ?? []).map(toPracticeArea),
     attendanceModality: api.modalidadeAtendimento,
     city: api.cidade,
     state: api.uf,
     memberSince: api.membroDesde,
     completedServices: api.atendimentosConcluidos,
+    ratings: toRatingSummary(api.avaliacoes),
+    canReport: api.podeDenunciar ?? false,
+    reportInProgress: api.denunciaEmAndamento ?? false,
     emergencyContacts: toContacts(api.contatosEmergencia),
   };
 }
@@ -104,6 +108,9 @@ function toPatientProfile(api: PerfilPublicoPacienteApi): PatientPublicProfile {
     city: api.cidade,
     state: api.uf,
     memberSince: api.membroDesde,
+    ratings: toRatingSummary(api.avaliacoes),
+    canReport: api.podeDenunciar ?? false,
+    reportInProgress: api.denunciaEmAndamento ?? false,
     health: api.saude && {
       allergies: api.saude.alergias ?? undefined,
       healthConditions: api.saude.condicoesSaude ?? undefined,

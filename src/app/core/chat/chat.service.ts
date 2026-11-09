@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { Client } from '@stomp/stompjs';
 import { Observable, Subject, catchError, map, tap, throwError } from 'rxjs';
@@ -38,7 +38,7 @@ export class ChatService implements OnDestroy {
   readonly events$ = this.eventsSubject.asObservable();
   readonly connected = signal(false);
 
-  /** Conversas do usuario logado: uma por solicitacao com proposta aceita. */
+  /** Canais do usuario logado: conversas individuais e grupos das solicitacoes com proposta aceita. */
   conversations(currentUserId: number): Observable<Conversation[]> {
     return this.http.get<ConversationApi[]>(this.conversationsUrl, { withCredentials: true }).pipe(
       map((items) => items.map((item) => toConversation(item, currentUserId))),
@@ -46,9 +46,14 @@ export class ChatService implements OnDestroy {
     );
   }
 
-  messages(requestId: number): Observable<ChatMessage[]> {
+  /** Historico do canal: o grupo quando professionalUserId e nulo, ou a conversa individual com esse profissional. */
+  messages(requestId: number, professionalUserId: number | null = null): Observable<ChatMessage[]> {
+    let params = new HttpParams();
+    if (professionalUserId !== null) {
+      params = params.set('profissionalUsuarioId', professionalUserId);
+    }
     return this.http
-      .get<ChatMessageApi[]>(`${this.conversationsUrl}/${requestId}/mensagens`, { withCredentials: true })
+      .get<ChatMessageApi[]>(`${this.conversationsUrl}/${requestId}/mensagens`, { params, withCredentials: true })
       .pipe(
         map((items) => items.map(toChatMessage)),
         catchError((error) => throwError(() => this.normalizeError(error))),
@@ -56,11 +61,16 @@ export class ChatService implements OnDestroy {
   }
 
   /** O back espera multipart: parte "dados" (JSON) e, opcionalmente, a parte "arquivo". */
-  send(requestId: number, content: string, file: File | null = null): Observable<ChatMessage> {
+  send(
+    requestId: number,
+    content: string,
+    file: File | null = null,
+    professionalUserId: number | null = null,
+  ): Observable<ChatMessage> {
     const body = new FormData();
     body.append(
       'dados',
-      new Blob([JSON.stringify({ solicitacaoId: requestId, conteudo: content })], {
+      new Blob([JSON.stringify({ solicitacaoId: requestId, profissionalUsuarioId: professionalUserId, conteudo: content })], {
         type: 'application/json',
       }),
     );
@@ -130,10 +140,10 @@ export class ChatService implements OnDestroy {
       if (error.status === 413) {
         return new ChatError('O arquivo é maior que o limite permitido.', 413);
       }
-      if (error.status === 403) {
-        return new ChatError('Você não participa mais desta conversa.', 403);
-      }
       const message = (error.error as { message?: string } | null)?.message;
+      if (error.status === 403) {
+        return new ChatError(message ?? 'Você não pode enviar mensagens nesta conversa.', 403);
+      }
       return new ChatError(message ?? 'Não foi possível concluir a operação no chat.', error.status);
     }
     return new ChatError('Erro inesperado no chat.');

@@ -13,6 +13,7 @@ export interface ProposalInput {
   approach: string;
   start: string;
   end: string;
+  practiceAreaId?: string;
 }
 
 type StatusPropostaApi = 'PENDENTE' | 'ACEITA' | 'RECUSADA' | 'CANCELADA';
@@ -34,8 +35,10 @@ interface PropostaApiResponse {
     id: number;
     nome: string | null;
     avatarUrl: string | null;
+    atuacaoId: number;
     categoria: ProfessionalCategory;
     categoriaRotulo: string;
+    atuacaoRotulo: string;
     especialidades: { id: number; nome: string; categoria: ProfessionalCategory }[];
     perfilIndisponivel?: boolean;
   };
@@ -163,6 +166,8 @@ function toProposal(response: PropostaApiResponse): Proposal {
       name: response.profissional.nome ?? '',
       avatarUrl: response.profissional.avatarUrl ?? undefined,
       unavailable: response.profissional.perfilIndisponivel === true,
+      practiceAreaId: String(response.profissional.atuacaoId),
+      practiceAreaLabel: response.profissional.atuacaoRotulo,
       category: response.profissional.categoria,
       categoryLabel: response.profissional.categoriaRotulo,
       specialties: response.profissional.especialidades.map((especialidade) => ({
@@ -200,6 +205,7 @@ function toApiPayload(input: ProposalInput) {
     abordagem: input.approach,
     inicio: input.start,
     termino: input.end,
+    ...(input.practiceAreaId ? { atuacaoId: Number(input.practiceAreaId) } : {}),
   };
 }
 

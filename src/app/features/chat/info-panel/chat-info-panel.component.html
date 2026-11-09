@@ -37,7 +37,7 @@
           <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
           <span class="info__who">
             <strong>{{ person.userId === meId() ? 'Você' : person.name }}</strong>
-            <small>{{ roleLabel(person.role) }}</small>
+            <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }}</small>
           </span>
         </li>
       }

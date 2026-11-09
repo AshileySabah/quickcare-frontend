@@ -1,6 +1,20 @@
 import { Component, input } from '@angular/core';
 
-export type IconName = 'eye' | 'pencil' | 'x-circle' | 'check' | 'refresh' | 'bell' | 'calendar' | 'alert' | 'paperclip' | 'chevron-down' | 'ban';
+export type IconName =
+  | 'eye'
+  | 'eye-off'
+  | 'pencil'
+  | 'x-circle'
+  | 'check'
+  | 'refresh'
+  | 'bell'
+  | 'calendar'
+  | 'alert'
+  | 'paperclip'
+  | 'chevron-down'
+  | 'ban'
+  | 'trash'
+  | 'plus';
 
 @Component({
   selector: 'ui-icon',
@@ -23,6 +37,12 @@ export type IconName = 'eye' | 'pencil' | 'x-circle' | 'check' | 'refresh' | 'be
         @case ('eye') {
           <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" />
           <circle cx="12" cy="12" r="3" />
+        }
+        @case ('eye-off') {
+          <path d="M9.9 4.2A9.6 9.6 0 0 1 12 4c6.5 0 10 8 10 8a17.6 17.6 0 0 1-2.2 3.2" />
+          <path d="M6.6 6.6A17.4 17.4 0 0 0 2 12s3.5 8 10 8a9.4 9.4 0 0 0 5.4-1.6" />
+          <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+          <path d="m2 2 20 20" />
         }
         @case ('pencil') {
           <path d="M12 20h9" />
@@ -59,6 +79,15 @@ export type IconName = 'eye' | 'pencil' | 'x-circle' | 'check' | 'refresh' | 'be
         @case ('ban') {
           <circle cx="12" cy="12" r="10" />
           <path d="m4.9 4.9 14.2 14.2" />
+        }
+        @case ('trash') {
+          <path d="M3 6h18" />
+          <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+        }
+        @case ('plus') {
+          <path d="M12 5v14" />
+          <path d="M5 12h14" />
         }
         @case ('x-circle') {
           <circle cx="12" cy="12" r="10" />

@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../core/auth/auth.service';
+import { AuthService, ClosedAccountError } from '../../../core/auth/auth.service';
 import { homeRouteFor } from '../../../core/auth/home-route';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
 import { GridComponent } from '../../../shared/ui/layout/grid/grid.component';
 import { InputComponent } from '../../../shared/ui/forms/input/input.component';
+import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
@@ -14,8 +15,9 @@ import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-fie
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, ReactiveFormsModule, RouterLink, ButtonComponent, GridComponent, GridItemComponent, InputComponent],
+  imports: [InvalidFieldFocusDirective, AuthLayoutComponent, ReactiveFormsModule, RouterLink, ButtonComponent, GridComponent, GridItemComponent, InputComponent, NoticeComponent],
   templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
 })
 export class LoginComponent {
   private readonly fb = inject(FormBuilder);
@@ -24,6 +26,8 @@ export class LoginComponent {
   private readonly toastService = inject(ToastService);
 
   protected readonly isSubmitting = signal(false);
+  protected readonly isRecovering = signal(false);
+  protected readonly closedAccountMessage = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -59,6 +63,7 @@ export class LoginComponent {
     }
 
     this.isSubmitting.set(true);
+    this.closedAccountMessage.set(null);
     const { email, password } = this.form.getRawValue();
 
     this.authService.login(email, password).subscribe({
@@ -68,6 +73,26 @@ export class LoginComponent {
       },
       error: (error: Error) => {
         this.isSubmitting.set(false);
+        if (error instanceof ClosedAccountError) {
+          this.closedAccountMessage.set(error.message);
+          return;
+        }
+        this.toastService.error(error.message);
+      },
+    });
+  }
+
+  protected recover(): void {
+    const { email, password } = this.form.getRawValue();
+    this.isRecovering.set(true);
+    this.authService.recoverAccount(email, password).subscribe({
+      next: (user) => {
+        this.isRecovering.set(false);
+        this.toastService.success('Conta recuperada. Que bom ter você de volta!');
+        this.router.navigateByUrl(homeRouteFor(user));
+      },
+      error: (error: Error) => {
+        this.isRecovering.set(false);
         this.toastService.error(error.message);
       },
     });

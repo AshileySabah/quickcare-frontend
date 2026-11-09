@@ -1,17 +1,9 @@
 @use 'tokens' as tokens;
-@use 'patterns/request-list' as list;
 
-.blocked-users__header {
-  @include list.header;
+.blocked-users {
+  display: flex;
   flex-direction: column;
-}
-
-.blocked-users__title {
-  @include list.title;
-}
-
-.blocked-users__subtitle {
-  @include list.subtitle;
+  gap: tokens.space(3);
 }
 
 .blocked-users__list {

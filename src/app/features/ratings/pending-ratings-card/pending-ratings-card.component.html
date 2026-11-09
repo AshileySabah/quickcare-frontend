@@ -1,0 +1,42 @@
+@if (flow.pending().length > 0) {
+  <div class="pending-ratings-card" uiHighlight="avaliacoes" role="status">
+    <header class="pending-ratings-card__header">
+      <span class="pending-ratings-card__title">
+        <ui-icon name="check"></ui-icon>
+        Avalie seus atendimentos
+      </span>
+    </header>
+
+    <p class="pending-ratings-card__text">
+      Conte como foi com {{ otherSide() }}. A avaliação é anônima e ajuda outras pessoas a escolher.
+    </p>
+
+    <ul class="pending-ratings-card__list">
+      @for (item of pager.items(); track item.attendanceId) {
+        <li class="pending-ratings-card__item">
+          <div class="pending-ratings-card__info">
+            <span class="pending-ratings-card__service">
+              {{ item.service }}@if (item.ratedName) {<span> com {{ item.ratedName }}</span>}
+            </span>
+            <span class="pending-ratings-card__date">
+              Terminou em {{ item.end | date: 'dd/MM/yyyy' }} · avalie até {{ item.deadline | date: 'dd/MM/yyyy' }}
+            </span>
+          </div>
+          <ui-button variant="warning-outline" size="sm" (click)="flow.open(item)">Avaliar</ui-button>
+        </li>
+      }
+    </ul>
+
+    @if (pager.total() > 5) {
+      <ui-paginator [pagination]="pager" label="Páginas de atendimentos para avaliar"></ui-paginator>
+    }
+  </div>
+}
+
+<app-rating-dialog
+  [item]="flow.current()"
+  [highlights]="flow.highlights()"
+  [loading]="flow.sending()"
+  (submitted)="flow.submit($event)"
+  (closed)="flow.close()"
+></app-rating-dialog>

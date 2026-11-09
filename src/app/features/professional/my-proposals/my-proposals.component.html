@@ -1,6 +1,8 @@
 <section class="my-proposals">
   <h1 class="my-proposals__title">{{ isHistory ? 'Histórico' : 'Minhas propostas' }}</h1>
 
+  <app-blocked-notice role="professional"></app-blocked-notice>
+
   @switch (viewState()) {
     @case ('loading') {
       <ui-skeleton-list [count]="2"></ui-skeleton-list>
@@ -11,7 +13,7 @@
           title="Nenhuma proposta encerrada"
           message="Propostas recusadas, canceladas ou de solicitações concluídas aparecem aqui."
         ></ui-empty-state>
-      } @else {
+      } @else if (!blocked()) {
         <ui-empty-state
           title="Nenhuma proposta em andamento"
           message="Veja as solicitações abertas da sua especialidade e envie uma proposta. As encerradas ficam no histórico."

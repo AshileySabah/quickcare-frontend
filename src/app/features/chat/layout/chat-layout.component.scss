@@ -118,6 +118,14 @@
     color: #111827;
   }
 
+  &__meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: #6b7280;
+  }
+
   &__time {
     flex: none;
     font-size: 0.75rem;

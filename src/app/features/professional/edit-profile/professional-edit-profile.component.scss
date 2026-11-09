@@ -16,6 +16,14 @@
   @include editProfile.subtitle;
 }
 
+.edit-profile__note {
+  @include editProfile.note;
+}
+
+.edit-profile__ratings {
+  @include editProfile.ratings;
+}
+
 .edit-profile__sections {
   @include editProfile.sections;
 }

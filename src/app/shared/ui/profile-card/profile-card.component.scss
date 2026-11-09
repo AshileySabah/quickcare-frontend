@@ -13,6 +13,10 @@
 }
 
 .profile-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: tokens.space(2);
   margin-left: auto;
 
   &:empty {
@@ -35,4 +39,10 @@
 
 .profile-card__details {
   @include details.details-list;
+}
+
+.profile-card__ratings {
+  margin-top: tokens.space(5);
+  padding-top: tokens.space(4);
+  border-top: 1px solid tokens.color('gray', 200);
 }

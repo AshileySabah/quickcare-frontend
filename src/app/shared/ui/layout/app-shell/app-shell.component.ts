@@ -1,20 +1,12 @@
 import { Component, input } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
-import { NotificationBellComponent } from '../../notification-bell/notification-bell.component';
-import { ProfileSwitcherComponent } from '../../profile-switcher/profile-switcher.component';
-import { UserMenuComponent } from '../../user-menu/user-menu.component';
+import { AppHeaderComponent, ShellNavItem } from '../app-header/app-header.component';
 
-export interface ShellNavItem {
-  label: string;
-  link: string;
-  exact?: boolean;
-  count?: number;
-}
+export type { ShellNavItem } from '../app-header/app-header.component';
 
 @Component({
   selector: 'ui-app-shell',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, NotificationBellComponent, ProfileSwitcherComponent, UserMenuComponent],
+  imports: [AppHeaderComponent],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
 })
@@ -24,5 +16,6 @@ export class AppShellComponent {
   navLabel = input.required<string>();
   navItems = input.required<ShellNavItem[]>();
   profileLink = input<string | null>(null);
-  blockedUsersLink = input<string | null>(null);
+  securityLink = input<string | null>(null);
+  documentsLink = input<string | null>(null);
 }

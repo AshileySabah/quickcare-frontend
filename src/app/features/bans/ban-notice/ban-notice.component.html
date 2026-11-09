@@ -1,0 +1,43 @@
+@if (ban(); as current) {
+  <div class="ban-notice" role="alert">
+    <div class="ban-notice__header">
+      <span class="ban-notice__title">
+        <ui-icon name="ban"></ui-icon>
+        Perfil banido
+      </span>
+      @if (current.appeal) {
+        <ui-badge [variant]="appealVariant()">{{ appealLabels[current.appeal.status] }}</ui-badge>
+      }
+    </div>
+
+    <p class="ban-notice__text">{{ message() }}</p>
+    <p class="ban-notice__text">Motivo: {{ current.justification }}</p>
+    @if (current.appeal?.status === 'negado' && current.appeal?.justification) {
+      <p class="ban-notice__text">Decisão do recurso: {{ current.appeal?.justification }}</p>
+    }
+    @if (current.appeal?.status === 'em_analise') {
+      <p class="ban-notice__muted">Recurso enviado em {{ current.appeal?.createdAt | date: 'dd/MM/yyyy HH:mm' }}.</p>
+    }
+
+    @if (current.canAppeal) {
+      <div class="ban-notice__actions">
+        <ui-button variant="danger-outline" size="sm" (click)="appealing.set(true)">Recorrer</ui-button>
+      </div>
+    }
+  </div>
+}
+
+<ui-justification-dialog
+  [open]="appealing()"
+  titleText="Recorrer do banimento"
+  icon="ban"
+  message="Recorrer do banimento deste perfil?"
+  [consequences]="appealConsequences"
+  fieldLabel="Por que o banimento deveria ser removido?"
+  hint="Conte o que aconteceu. O administrador lê antes de decidir."
+  confirmLabel="Sim, enviar o recurso"
+  cancelLabel="Não, manter como está"
+  [loading]="sending()"
+  (confirmed)="sendAppeal($event)"
+  (closed)="closeAppeal()"
+></ui-justification-dialog>

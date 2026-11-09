@@ -1,0 +1,85 @@
+@use 'tokens' as tokens;
+@use 'patterns/request-list' as list;
+
+.public-list__header {
+  margin-bottom: tokens.space(5);
+}
+
+.public-list__title {
+  @include list.title;
+}
+
+.public-list__subtitle {
+  @include list.subtitle;
+}
+
+.public-list__items {
+  @include list.list;
+}
+
+.public-list__link {
+  @include list.card-link;
+}
+
+.public-list__person {
+  display: flex;
+  align-items: center;
+  gap: tokens.space(3);
+  margin-bottom: tokens.space(2);
+}
+
+.public-list__person-info {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  min-width: 0;
+}
+
+.public-list__name {
+  font-size: tokens.font-size('base');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.public-list__highlight {
+  @include list.specialty;
+}
+
+.public-list__card-header {
+  @include list.card-header;
+}
+
+.public-list__meta {
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.public-list__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: tokens.space(2);
+  margin-top: tokens.space(2);
+}
+
+.public-list__average {
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 900);
+}
+
+.public-list__slots {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(1);
+  margin: tokens.space(2) 0;
+  padding: 0;
+  list-style: none;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 800);
+}
+
+.public-list__cta {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: tokens.space(3);
+}

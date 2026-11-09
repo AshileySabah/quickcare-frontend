@@ -45,11 +45,11 @@
       }
       @case ("filled") {
         <ul class="chat-shell__items">
-          @for (conversation of filtered(); track conversation.requestId) {
+          @for (conversation of filtered(); track keyOf(conversation)) {
             <li>
               <a
                 class="item"
-                [routerLink]="[basePath(), conversation.requestId]"
+                [routerLink]="linkOf(conversation)"
                 routerLinkActive="item--active"
               >
                 @if (conversation.isGroup) {
@@ -77,18 +77,25 @@
                       }}</time>
                     }
                   </span>
+                  <span class="item__meta">
+                    {{ conversation.isGroup ? "Grupo" : "Individual" }} ·
+                    Solicitação #{{ conversation.requestId }}
+                    @if (conversation.readOnly) {
+                      · somente leitura
+                    }
+                  </span>
                   <span class="item__bottom">
                     <span
                       class="item__preview"
                       [class.item__preview--unread]="
-                        unread()[conversation.requestId]
+                        unread()[keyOf(conversation)]
                       "
                     >
                       {{
                         conversation.preview?.text ?? fallbackLine(conversation)
                       }}
                     </span>
-                    @if (unread()[conversation.requestId]; as count) {
+                    @if (unread()[keyOf(conversation)]; as count) {
                       <span
                         class="item__badge"
                         [attr.aria-label]="count + ' mensagens novas'"

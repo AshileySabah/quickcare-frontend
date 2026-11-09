@@ -1,0 +1,50 @@
+<section class="admin-reports">
+  <header class="admin-reports__header">
+    <div>
+      <h1 class="admin-reports__title">Denúncias</h1>
+      <p class="admin-reports__subtitle">
+        Denúncias feitas entre pacientes e profissionais que já tiveram atendimento. As em julgamento esperam a sua decisão.
+      </p>
+    </div>
+  </header>
+
+  <ui-filter-chips
+    class="admin-reports__filters"
+    label="Filtrar por situação"
+    [chips]="filters"
+    [selected]="selected()"
+    (selectedChange)="select($event)"
+  ></ui-filter-chips>
+
+  @switch (viewState()) {
+    @case ('loading') {
+      <ui-skeleton-list></ui-skeleton-list>
+    }
+    @case ('empty') {
+      <ui-empty-state
+        title="Nada por aqui"
+        [message]="selected() === 'em_julgamento' ? 'Nenhuma denúncia esperando julgamento.' : 'Nenhuma denúncia nesta situação.'"
+      ></ui-empty-state>
+    }
+    @case ('error') {
+      <ui-error-state (retry)="load()"></ui-error-state>
+    }
+    @case ('filled') {
+      <div class="admin-reports__list">
+        @for (report of pager.items(); track report.id) {
+          <a class="admin-reports__card-link" [routerLink]="['/admin/denuncias', report.id]">
+            <ui-card [interactive]="true">
+              <div class="admin-reports__card-header">
+                <span class="admin-reports__reason">{{ report.reasonLabel }}</span>
+                <ui-badge [variant]="statusVariants[report.status]">{{ statusLabels[report.status] }}</ui-badge>
+              </div>
+              <p class="admin-reports__parties">{{ reporter(report) }}</p>
+              <p class="admin-reports__date">Enviada em {{ report.createdAt | date: 'dd/MM/yyyy HH:mm' }}</p>
+            </ui-card>
+          </a>
+        }
+      </div>
+      <ui-paginator [pagination]="pager" label="Páginas de denúncias"></ui-paginator>
+    }
+  }
+</section>

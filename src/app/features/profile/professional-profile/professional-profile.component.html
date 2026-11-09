@@ -16,9 +16,20 @@
         <ui-profile-card
           [name]="current.name"
           [avatarUrl]="current.avatarUrl"
-          [subtitle]="current.categoryLabel"
+          [subtitle]="subtitle()"
           [details]="details()"
+          [ratings]="current.ratings"
         >
+          @if (current.canReport) {
+            <app-profile-report-action
+              profile-actions
+              kind="professional"
+              [personId]="current.id"
+              [name]="current.name"
+              [inProgress]="current.reportInProgress"
+              (blocked)="load()"
+            ></app-profile-report-action>
+          }
           <app-profile-block-action
             profile-actions
             kind="professional"

@@ -1,0 +1,59 @@
+<ui-card>
+  <article class="my-step-card" [attr.aria-label]="heading()">
+    <header class="my-step-card__header">
+      <div class="my-step-card__title-row">
+        <h2 class="my-step-card__title">{{ heading() }}</h2>
+        @if (step(); as current) {
+          <ui-validation-status-badge [status]="current.status"></ui-validation-status-badge>
+        }
+      </div>
+      @if (!editing()) {
+        @if (step()) {
+          <ui-button variant="ghost" size="sm" [ariaLabel]="'Editar ' + heading()" (click)="editing.set(true)">
+            <ui-icon name="pencil"></ui-icon>
+            Editar
+          </ui-button>
+        } @else {
+          <ui-button variant="secondary" size="sm" (click)="editing.set(true)">Incluir {{ heading() }}</ui-button>
+        }
+      }
+    </header>
+
+    @if (step()?.status === 'reprovada') {
+      <div class="my-step-card__reason">
+        <span class="my-step-card__label">Motivo da reprovação</span>
+        <p class="my-step-card__reason-text">{{ step()?.justification }}</p>
+        @if (step()?.attachment; as attachment) {
+          <ui-stored-file [file]="attachment"></ui-stored-file>
+        }
+      </div>
+    }
+
+    @if (editing()) {
+      <app-resubmit-step-form
+        [profile]="profile()"
+        [type]="type()"
+        [step]="step()"
+        [data]="data()"
+        [ufOptions]="ufOptions()"
+        (resubmitted)="onResubmitted($event)"
+        (cancelled)="editing.set(false)"
+      ></app-resubmit-step-form>
+    } @else if (step()) {
+      <app-step-data [type]="type()" [data]="data()" [practiceArea]="step()?.practiceArea ?? null"></app-step-data>
+    } @else if (emptyText()) {
+      <p class="my-step-card__muted">{{ emptyText() }}</p>
+    }
+
+    @if (!editing() && step(); as current) {
+      <section class="my-step-card__document">
+        <span class="my-step-card__label">Documento</span>
+        @if (current.document; as document) {
+          <ui-stored-file [file]="document"></ui-stored-file>
+        } @else {
+          <p class="my-step-card__muted">Nenhum documento enviado.</p>
+        }
+      </section>
+    }
+  </article>
+</ui-card>

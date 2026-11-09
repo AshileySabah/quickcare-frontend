@@ -13,6 +13,33 @@ export const routes: Routes = [
       import('./features/home/home.component').then((m) => m.HomeComponent),
   },
   {
+    path: 'consulta',
+    loadComponent: () =>
+      import('./features/public/public-shell/public-shell.component').then((m) => m.PublicShellComponent),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'profissionais' },
+      {
+        path: 'profissionais',
+        loadComponent: () =>
+          import('./features/public/public-professionals/public-professionals.component').then(
+            (m) => m.PublicProfessionalsComponent,
+          ),
+      },
+      {
+        path: 'profissionais/:id',
+        loadComponent: () =>
+          import('./features/public/public-professional-profile/public-professional-profile.component').then(
+            (m) => m.PublicProfessionalProfileComponent,
+          ),
+      },
+      {
+        path: 'solicitacoes',
+        loadComponent: () =>
+          import('./features/public/public-requests/public-requests.component').then((m) => m.PublicRequestsComponent),
+      },
+    ],
+  },
+  {
     path: 'login',
     loadComponent: () =>
       import('./features/auth/login/login.component').then(
@@ -31,6 +58,20 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/reset-password/reset-password.component').then(
         (m) => m.ResetPasswordComponent,
+      ),
+  },
+  {
+    path: 'desfazer-troca-de-email',
+    loadComponent: () =>
+      import('./features/auth/undo-email-change/undo-email-change.component').then(
+        (m) => m.UndoEmailChangeComponent,
+      ),
+  },
+  {
+    path: 'recuperar-conta',
+    loadComponent: () =>
+      import('./features/auth/recover-account/recover-account.component').then(
+        (m) => m.RecoverAccountComponent,
       ),
   },
   {
@@ -141,12 +182,21 @@ export const routes: Routes = [
             (m) => m.ProfessionalEditProfileComponent,
           ),
       },
+      { path: 'bloqueados', pathMatch: 'full', redirectTo: 'seguranca' },
       {
-        path: 'bloqueados',
+        path: 'seguranca',
         data: { role: 'professional' },
         loadComponent: () =>
-          import('./features/user-blocks/blocked-users/blocked-users.component').then(
-            (m) => m.BlockedUsersComponent,
+          import('./features/security/security-page/security-page.component').then(
+            (m) => m.SecurityPageComponent,
+          ),
+      },
+      {
+        path: 'documentos',
+        data: { role: 'professional' },
+        loadComponent: () =>
+          import('./features/validation/documents-page/documents-page.component').then(
+            (m) => m.DocumentsPageComponent,
           ),
       },
       {
@@ -165,10 +215,17 @@ export const routes: Routes = [
               ),
           },
           {
-            path: ':solicitacaoId',
+            path: ':solicitacaoId/:canal',
             loadComponent: () =>
               import('./features/chat/conversation/chat-conversation.component').then(
                 (m) => m.ChatConversationComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId',
+            loadComponent: () =>
+              import('./features/chat/open/chat-open.component').then(
+                (m) => m.ChatOpenComponent,
               ),
           },
         ],
@@ -222,6 +279,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'profissionais',
+        data: { profileBase: '/patient/profissionais' },
+        loadComponent: () =>
+          import('./features/public/public-professionals/public-professionals.component').then(
+            (m) => m.PublicProfessionalsComponent,
+          ),
+      },
+      {
         path: 'profissionais/:id',
         loadComponent: () =>
           import('./features/profile/professional-profile/professional-profile.component').then(
@@ -235,12 +300,21 @@ export const routes: Routes = [
             (m) => m.PatientHistoryComponent,
           ),
       },
+      { path: 'bloqueados', pathMatch: 'full', redirectTo: 'seguranca' },
       {
-        path: 'bloqueados',
+        path: 'seguranca',
         data: { role: 'patient' },
         loadComponent: () =>
-          import('./features/user-blocks/blocked-users/blocked-users.component').then(
-            (m) => m.BlockedUsersComponent,
+          import('./features/security/security-page/security-page.component').then(
+            (m) => m.SecurityPageComponent,
+          ),
+      },
+      {
+        path: 'documentos',
+        data: { role: 'patient' },
+        loadComponent: () =>
+          import('./features/validation/documents-page/documents-page.component').then(
+            (m) => m.DocumentsPageComponent,
           ),
       },
       {
@@ -259,10 +333,17 @@ export const routes: Routes = [
               ),
           },
           {
-            path: ':solicitacaoId',
+            path: ':solicitacaoId/:canal',
             loadComponent: () =>
               import('./features/chat/conversation/chat-conversation.component').then(
                 (m) => m.ChatConversationComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId',
+            loadComponent: () =>
+              import('./features/chat/open/chat-open.component').then(
+                (m) => m.ChatOpenComponent,
               ),
           },
         ],
@@ -329,6 +410,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/admin/dispute-detail/admin-dispute-detail.component').then(
             (m) => m.AdminDisputeDetailComponent,
+          ),
+      },
+      {
+        path: 'denuncias',
+        loadComponent: () =>
+          import('./features/admin/reports/admin-reports.component').then((m) => m.AdminReportsComponent),
+      },
+      {
+        path: 'denuncias/:id',
+        loadComponent: () =>
+          import('./features/admin/report-detail/admin-report-detail.component').then(
+            (m) => m.AdminReportDetailComponent,
           ),
       },
       {

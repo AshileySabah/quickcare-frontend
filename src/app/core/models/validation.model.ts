@@ -1,8 +1,9 @@
-import { Address, Gender, IdentityDocumentType, ProfessionalCategory, ValidationStatus } from './user.model';
+import { PracticeArea } from './practice-area.model';
+import { Address, Gender, IdentityDocumentType, ValidationStatus } from './user.model';
 
 export type ValidationProfile = 'patient' | 'professional';
 
-export type ValidationStepType = 'IDENTIDADE' | 'CNPJ' | 'REGISTRO_PROFISSIONAL';
+export type ValidationStepType = 'CPF' | 'IDENTIDADE' | 'CNPJ' | 'REGISTRO_PROFISSIONAL';
 
 export type ValidationStepStatus = 'pendente' | 'aprovada' | 'reprovada';
 
@@ -14,12 +15,15 @@ export interface StoredFile {
   sizeBytes: number | null;
   sentAt: string | null;
   url: string | null;
+  path?: string;
 }
 
 export interface ValidationStep {
   id: string;
+  key: string;
   type: ValidationStepType;
   label: string;
+  practiceArea: PracticeArea | null;
   status: ValidationStepStatus;
   justification: string | null;
   document: StoredFile | null;
@@ -42,17 +46,16 @@ export interface RegistrationData {
   identityDocumentNumber: string | null;
   identityDocumentUf: string | null;
   address: Address;
-  category: ProfessionalCategory | null;
-  specialties: string[];
+  practiceAreas: PracticeArea[];
   cnpj: string | null;
-  registrationNumber: string | null;
-  registrationUf: string | null;
 }
 
 export interface ValidationDetail {
   id: string;
   profile: ValidationProfile;
   status: ValidationStatus;
+  revalidating: boolean;
+  creationLocked: boolean;
   registeredAt: string;
   data: RegistrationData;
   steps: ValidationStep[];
@@ -63,8 +66,9 @@ export interface ValidationSummary {
   profile: ValidationProfile;
   name: string;
   email: string;
-  category: ProfessionalCategory | null;
+  practiceAreas: string[];
   status: ValidationStatus;
+  revalidating: boolean;
   registeredAt: string;
   pendingSteps: number;
 }
@@ -92,13 +96,14 @@ export interface StepDecision {
 }
 
 export interface StepResubmission {
-  name?: string;
   cpf?: string;
   identityDocumentType?: IdentityDocumentType;
   identityDocumentNumber?: string;
   identityDocumentUf?: string;
+  birthDate?: string;
+  gender?: Gender;
   cnpj?: string;
   registrationNumber?: string;
   registrationUf?: string;
-  document: File;
+  document?: File;
 }

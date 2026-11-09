@@ -53,6 +53,24 @@ export function toWebSocketUrl(apiUrl: string): string {
   return `${apiUrl.replace(/\/+$/, '').replace(/^http/i, 'ws')}/ws`;
 }
 
+/** Trecho da rota/chave de um canal: "grupo" ou o id do usuario do profissional (conversa individual). */
+export function channelSegment(professionalUserId: number | null | undefined): string {
+  return professionalUserId == null ? 'grupo' : String(professionalUserId);
+}
+
+/** Identifica um canal (solicitacao + grupo ou profissional), para casar mensagens com conversas. */
+export function channelKey(requestId: number, professionalUserId: number | null | undefined): string {
+  return `${requestId}/${channelSegment(professionalUserId)}`;
+}
+
+export function conversationKey(conversation: Pick<Conversation, 'requestId' | 'professionalUserId'>): string {
+  return channelKey(conversation.requestId, conversation.professionalUserId);
+}
+
+export function messageKey(message: Pick<ChatMessage, 'requestId' | 'professionalUserId'>): string {
+  return channelKey(message.requestId, message.professionalUserId);
+}
+
 export function toChatMessage(api: ChatMessageApi): ChatMessage {
   const hasAttachment = !!(api.anexoUrl || api.anexoNomeOriginal || api.anexoTipo);
   const type = api.anexoTipo ?? '';
@@ -63,6 +81,7 @@ export function toChatMessage(api: ChatMessageApi): ChatMessage {
     requestId: api.solicitacaoId,
     content: api.conteudo,
     sentAt: new Date(api.dataEnvio),
+    ...(api.profissionalUsuarioId != null ? { professionalUserId: api.profissionalUsuarioId } : {}),
     attachment: hasAttachment
       ? {
           url: api.anexoUrl ?? null,
@@ -120,9 +139,10 @@ export function toConversation(api: ConversationApi, currentUserId: number): Con
     name: p.nome,
     role: p.papel === 'PACIENTE' ? 'patient' : 'professional',
     avatarUrl: p.avatarUrl ?? null,
+    ...(p.ativo === false ? { active: false } : {}),
   }));
   const others = participants.filter((p) => p.userId !== currentUserId);
-  const isGroup = participants.length > 2;
+  const isGroup = api.tipo ? api.tipo === 'GRUPO' : participants.length > 2;
   const last = api.ultimaMensagem;
 
   return {
@@ -131,6 +151,8 @@ export function toConversation(api: ConversationApi, currentUserId: number): Con
     others,
     isGroup,
     title: others.map((p) => p.name).join(', ') || 'Conversa',
+    ...(!isGroup && api.profissionalUsuarioId != null ? { professionalUserId: api.profissionalUsuarioId } : {}),
+    ...(api.somenteLeitura ? { readOnly: true } : {}),
     preview: last
       ? buildPreview(
           last.remetenteId,
@@ -168,7 +190,7 @@ export function sortConversations(list: Conversation[]): Conversation[] {
   return [...list].sort((a, b) => {
     const at = a.preview?.sentAt.getTime() ?? -Infinity;
     const bt = b.preview?.sentAt.getTime() ?? -Infinity;
-    return bt === at ? b.requestId - a.requestId : bt - at;
+    return bt === at ? b.requestId - a.requestId || conversationKey(a).localeCompare(conversationKey(b)) : bt - at;
   });
 }
 

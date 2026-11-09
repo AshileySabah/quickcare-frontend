@@ -15,6 +15,9 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { ChatParticipant, Conversation } from '../../../core/chat/chat.model';
 import { ChatService } from '../../../core/chat/chat.service';
 import {
+  channelSegment,
+  conversationKey,
+  messageKey,
   normalizeText,
   shortTime,
   sortConversations,
@@ -57,8 +60,10 @@ export class ChatLayoutComponent {
   protected readonly conversations = signal<Conversation[]>([]);
   protected readonly search = signal('');
   protected readonly openId = signal<number | null>(null);
-  /** Mensagens novas em conversas que nao estao abertas. So vale nesta sessao da tela. */
-  protected readonly unread = signal<Record<number, number>>({});
+  /** Canal aberto (solicitacao + grupo ou profissional); nulo quando nenhum esta aberto. */
+  protected readonly openKey = signal<string | null>(null);
+  /** Mensagens novas em conversas que nao estao abertas, por canal. So vale nesta sessao da tela. */
+  protected readonly unread = signal<Record<string, number>>({});
 
   protected readonly basePath = computed(() =>
     this.authService.role() === 'professional'
@@ -88,11 +93,8 @@ export class ChatLayoutComponent {
       }
 
       const message = event.message;
-      if (
-        !this.conversations().some(
-          (item) => item.requestId === message.requestId,
-        )
-      ) {
+      const key = messageKey(message);
+      if (!this.conversations().some((item) => conversationKey(item) === key)) {
         this.refresh();
         return;
       }
@@ -100,20 +102,17 @@ export class ChatLayoutComponent {
       this.conversations.update((list) =>
         sortConversations(
           list.map((item) =>
-            item.requestId === message.requestId
+            conversationKey(item) === key
               ? withLastMessage(item, message, this.meId)
               : item,
           ),
         ),
       );
 
-      if (
-        message.senderId !== this.meId &&
-        message.requestId !== this.openId()
-      ) {
+      if (message.senderId !== this.meId && key !== this.openKey()) {
         this.unread.update((counts) => ({
           ...counts,
-          [message.requestId]: (counts[message.requestId] ?? 0) + 1,
+          [key]: (counts[key] ?? 0) + 1,
         }));
       }
     });
@@ -152,17 +151,29 @@ export class ChatLayoutComponent {
   }
 
   private syncOpenId(): void {
-    const raw = this.route.firstChild?.snapshot?.paramMap.get('solicitacaoId');
+    const params = this.route.firstChild?.snapshot?.paramMap;
+    const raw = params?.get('solicitacaoId');
     const id = raw ? Number(raw) : null;
+    const channel = params?.get('canal');
+    const key = id !== null && channel ? `${id}/${channel}` : null;
     this.openId.set(id);
+    this.openKey.set(key);
 
-    if (id !== null && this.unread()[id]) {
+    if (key !== null && this.unread()[key]) {
       this.unread.update((counts) => {
         const next = { ...counts };
-        delete next[id];
+        delete next[key];
         return next;
       });
     }
+  }
+
+  protected keyOf(conversation: Conversation): string {
+    return conversationKey(conversation);
+  }
+
+  protected linkOf(conversation: Conversation): (string | number)[] {
+    return [this.basePath(), conversation.requestId, channelSegment(conversation.professionalUserId)];
   }
 
   protected firstOther(

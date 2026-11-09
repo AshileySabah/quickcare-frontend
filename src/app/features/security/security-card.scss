@@ -1,0 +1,25 @@
+@use 'tokens' as tokens;
+@use 'patterns/form' as form;
+
+.security-card__title {
+  @include form.section-title;
+}
+
+.security-card__text {
+  margin: 0 0 tokens.space(3);
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 600);
+}
+
+.security-card__form {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.space(3);
+}
+
+.security-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: tokens.space(2);
+}

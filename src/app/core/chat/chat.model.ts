@@ -8,6 +8,8 @@ export interface ChatMessageApi {
   anexoUrl?: string | null;
   anexoNomeOriginal?: string | null;
   anexoTipo?: string | null;
+  /** Canal da mensagem: nulo/ausente e o grupo; preenchido e a conversa individual com esse profissional. */
+  profissionalUsuarioId?: number | null;
 }
 
 /** Evento de exclusao enviado pelo WebSocket (MensagemExcluidaEvento). */
@@ -22,6 +24,8 @@ export interface ChatParticipantApi {
   nome: string;
   papel: 'PACIENTE' | 'PROFISSIONAL';
   avatarUrl?: string | null;
+  /** Falso para o profissional que saiu da conversa. */
+  ativo?: boolean;
 }
 
 /** Resumo da ultima mensagem devolvido por GET /conversas (UltimaMensagemResponse). */
@@ -36,6 +40,10 @@ export interface LastMessageApi {
 /** Conversa devolvida por GET /conversas (ConversaResponse). */
 export interface ConversationApi {
   solicitacaoId: number;
+  tipo?: 'GRUPO' | 'INDIVIDUAL';
+  profissionalUsuarioId?: number | null;
+  /** Verdadeiro quando o usuario logado so pode ver o historico. */
+  somenteLeitura?: boolean;
   participantes: ChatParticipantApi[];
   ultimaMensagem?: LastMessageApi | null;
 }
@@ -57,6 +65,8 @@ export interface ChatMessage {
   content: string;
   sentAt: Date;
   attachment: ChatAttachment | null;
+  /** Profissional do canal individual; ausente nas mensagens do grupo. */
+  professionalUserId?: number | null;
 }
 
 export type ChatEvent =
@@ -70,6 +80,8 @@ export interface ChatParticipant {
   name: string;
   role: ChatRole;
   avatarUrl: string | null;
+  /** Falso quando o profissional saiu da conversa; ausente significa ativo. */
+  active?: boolean;
 }
 
 /** Previa da ultima mensagem, ja com o prefixo "Voce:" ou o nome de quem enviou (grupos). */
@@ -78,7 +90,7 @@ export interface ConversationPreview {
   sentAt: Date;
 }
 
-/** Uma conversa por solicitacao; com mais de um profissional ela vira um grupo. */
+/** Um canal de uma solicitacao: a conversa individual com um profissional ou o grupo com todos. */
 export interface Conversation {
   requestId: number;
   participants: ChatParticipant[];
@@ -87,6 +99,10 @@ export interface Conversation {
   isGroup: boolean;
   title: string;
   preview: ConversationPreview | null;
+  /** Profissional do canal individual; ausente no grupo. */
+  professionalUserId?: number | null;
+  /** O usuario logado so ve o historico (saiu da conversa ou ela ficou sem ninguem para responder). */
+  readOnly?: boolean;
 }
 
 export interface ChatFiles {

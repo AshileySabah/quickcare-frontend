@@ -47,10 +47,10 @@
           }
         </ui-request-summary>
 
-        @if (existingProposal(); as proposal) {
+        @for (proposal of activeProposals(); track proposal.id) {
           <ui-card [uiHighlight]="'proposta-' + proposal.id">
             <h2 class="professional-request-detail__form-title">
-              Sua proposta
+              {{ activeProposals().length > 1 ? 'Sua proposta — ' + proposal.professional.practiceAreaLabel : 'Sua proposta' }}
             </h2>
             <div class="professional-request-detail__proposal-status">
               <ui-status-badge
@@ -115,17 +115,10 @@
               </div>
             }
           </ui-card>
-        } @else if (
-          currentRequest.status === "aberta" ||
-          currentRequest.status === "recebendo_propostas"
-        ) {
-          <ui-card
-            [uiHighlight]="
-              previousProposal()
-                ? 'proposta-' + previousProposal()!.id
-                : 'nova-proposta'
-            "
-          >
+        }
+        @if ((currentRequest.status === 'aberta' || currentRequest.status === 'recebendo_propostas') && freePracticeAreas().length > 0) {
+          <app-pending-ratings-prompt role="professional"></app-pending-ratings-prompt>
+          <ui-card [uiHighlight]="previousProposal() ? 'proposta-' + previousProposal()!.id : 'nova-proposta'">
             @if (previousProposal(); as previous) {
               <h2 class="professional-request-detail__form-title">
                 Reenviar proposta
@@ -144,28 +137,28 @@
               <app-proposal-form
                 submitLabel="Reenviar proposta"
                 [initialValue]="resendValue()"
+                [practiceAreas]="freePracticeAreas()"
                 [disabled]="!!blocked()"
                 [submitting]="isSubmitting()"
                 (submitted)="submit($event)"
               ></app-proposal-form>
             } @else {
               <h2 class="professional-request-detail__form-title">
-                Enviar proposta
+                {{ activeProposals().length > 0 ? 'Enviar proposta para outra vaga' : 'Enviar proposta' }}
               </h2>
 
               <app-blocked-notice role="professional"></app-blocked-notice>
               <app-proposal-form
                 submitLabel="Enviar proposta"
+                [practiceAreas]="freePracticeAreas()"
                 [disabled]="!!blocked()"
                 [submitting]="isSubmitting()"
                 (submitted)="submit($event)"
               ></app-proposal-form>
             }
           </ui-card>
-        } @else {
-          <ui-empty-state
-            title="Esta solicitação não está mais recebendo propostas."
-          ></ui-empty-state>
+        } @else if (activeProposals().length === 0) {
+          <ui-empty-state title="Esta solicitação não está mais recebendo propostas."></ui-empty-state>
         }
       </section>
     }

@@ -1,0 +1,57 @@
+<ui-confirm-dialog
+  [open]="item() !== null"
+  titleText="Avaliar atendimento"
+  icon="check"
+  [message]="message()"
+  [consequences]="consequences"
+  confirmLabel="Sim, enviar a avaliação"
+  cancelLabel="Não, avaliar depois"
+  [loading]="loading()"
+  (confirmed)="confirm()"
+  (closed)="closed.emit()"
+>
+  <div class="rating-dialog">
+    <div class="rating-dialog__field">
+      <span class="rating-dialog__label">Nota <span aria-hidden="true">*</span></span>
+      <div class="rating-dialog__stars">
+        <ui-star-rating
+          [editable]="true"
+          [size]="32"
+          label="Nota do atendimento"
+          [value]="score()"
+          [invalid]="showScoreError()"
+          (valueChange)="chooseScore($event)"
+        ></ui-star-rating>
+      </div>
+      @if (showScoreError()) {
+        <p class="rating-dialog__error" role="alert">Escolha de 1 a 5 estrelas.</p>
+      }
+    </div>
+
+    @if (positives().length > 0) {
+      <div class="rating-dialog__field">
+        <span class="rating-dialog__label">O que foi bom</span>
+        <ui-toggle-chips
+          label="O que foi bom"
+          [chips]="positives()"
+          [selected]="selectedPositives()"
+          (selectedChange)="setPositives($event)"
+        ></ui-toggle-chips>
+      </div>
+    }
+
+    @if (negatives().length > 0) {
+      <div class="rating-dialog__field">
+        <span class="rating-dialog__label">O que pode melhorar</span>
+        <ui-toggle-chips
+          label="O que pode melhorar"
+          tone="negative"
+          [chips]="negatives()"
+          [selected]="selectedNegatives()"
+          (selectedChange)="setNegatives($event)"
+        ></ui-toggle-chips>
+      </div>
+    }
+    <p class="rating-dialog__hint">Os destaques são opcionais. Escolha quantos quiser.</p>
+  </div>
+</ui-confirm-dialog>

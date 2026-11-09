@@ -18,7 +18,8 @@ import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confir
 import { EditProposalActionComponent } from '../../../features/professional/edit-proposal-action/edit-proposal-action.component';
 import { ListFiltersComponent } from '../../../shared/ui/list-filters/list-filters.component';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
-import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { CreationLockService } from '../../../core/services/creation-lock.service';
+import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
 import { PersonChipComponent } from '../../../shared/ui/person-chip/person-chip.component';
 
@@ -34,7 +35,7 @@ function isClosed(proposal: Proposal): boolean {
 @Component({
   selector: 'app-my-proposals',
   standalone: true,
-  imports: [PersonMenuComponent, PersonChipComponent,AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
+  imports: [BlockedNoticeComponent, PersonMenuComponent, PersonChipComponent, AttendancePanelComponent, ListFiltersComponent, EditProposalActionComponent, ConfirmDialogComponent, IconComponent, SkeletonListComponent, RouterLink, ButtonComponent, ButtonGroupComponent, EmptyStateComponent, ErrorStateComponent, ProposalCardComponent],
   templateUrl: './my-proposals.component.html',
   styleUrl: './my-proposals.component.scss',
 })
@@ -42,7 +43,7 @@ export class MyProposalsComponent {
   private readonly fb = inject(FormBuilder);
   private readonly proposalService = inject(ProposalService);
   private readonly toastService = inject(ToastService);
-  protected readonly blocked = inject(OccurrenceService).blockFor('professional');
+  protected readonly blocked = inject(CreationLockService).lockFor('professional');
 
   protected readonly patientHiddenNote = 'O nome e a foto do paciente aparecem aqui assim que ele aceitar a sua proposta.';
 

@@ -1,6 +1,8 @@
 import { Component, input } from '@angular/core';
+import { RatingSummary } from '../../../core/models';
 import { AvatarComponent } from '../feedback/avatar/avatar.component';
 import { CardComponent } from '../layout/card/card.component';
+import { RatingSummaryComponent } from '../rating-summary/rating-summary.component';
 
 export interface ProfileDetail {
   label: string;
@@ -10,7 +12,7 @@ export interface ProfileDetail {
 @Component({
   selector: 'ui-profile-card',
   standalone: true,
-  imports: [AvatarComponent, CardComponent],
+  imports: [AvatarComponent, CardComponent, RatingSummaryComponent],
   templateUrl: './profile-card.component.html',
   styleUrl: './profile-card.component.scss',
 })
@@ -19,4 +21,5 @@ export class ProfileCardComponent {
   avatarUrl = input<string | undefined>(undefined);
   subtitle = input('');
   details = input<ProfileDetail[]>([]);
+  ratings = input<RatingSummary | null>(null);
 }

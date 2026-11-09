@@ -4,7 +4,10 @@ import { provideRouter } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 import { of } from 'rxjs';
 import { ServiceRequest } from '../../../core/models';
+import { CreationLock, CreationLockService } from '../../../core/services/creation-lock.service';
 import { OccurrenceService } from '../../../core/services/occurrence.service';
+import { RatingService } from '../../../core/services/rating.service';
+import { BanService } from '../../../core/services/ban.service';
 import { RequestService } from '../../../core/services/request.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { PatientDashboardComponent } from './patient-dashboard.component';
@@ -28,6 +31,7 @@ function request(overrides: Partial<ServiceRequest>): ServiceRequest {
     status: 'aberta',
     proposalCount: 0,
     attendanceInProgress: false,
+    practiceAreasForProposal: [],
     createdAt: '2026-09-01T10:00:00Z',
     updatedAt: '2026-09-01T10:00:00Z',
     ...overrides,
@@ -58,6 +62,7 @@ const REQUESTS: ServiceRequest[] = [
 describe('PatientDashboardComponent', () => {
   let fixture: ComponentFixture<PatientDashboardComponent>;
   let requestService: jasmine.SpyObj<RequestService>;
+  const lock = signal<CreationLock | null>(null);
 
   const cardIds = () =>
     Array.from(fixture.nativeElement.querySelectorAll('.request-card__id') as NodeListOf<HTMLElement>).map((element) =>
@@ -79,6 +84,9 @@ describe('PatientDashboardComponent', () => {
           provide: OccurrenceService,
           useValue: { summary: () => of({ counting: 0, limit: 3, windowDays: 90, occurrences: [] }) },
         },
+        { provide: RatingService, useValue: { pending: () => of({ pending: [], highlights: [] }) } },
+        { provide: BanService, useValue: { current: () => of(null) } },
+        { provide: CreationLockService, useValue: { lockFor: () => lock } },
         { provide: ToastService, useValue: jasmine.createSpyObj('ToastService', ['info', 'error', 'success']) },
         {
           provide: AuthService,
@@ -87,8 +95,23 @@ describe('PatientDashboardComponent', () => {
       ],
     });
 
+    lock.set(null);
     fixture = TestBed.createComponent(PatientDashboardComponent);
     fixture.detectChanges();
+  });
+
+  function newRequestButton(): HTMLButtonElement {
+    return Array.from(fixture.nativeElement.querySelectorAll('ui-button button') as NodeListOf<HTMLButtonElement>).find(
+      (button) => button.textContent!.includes('Nova solicitação'),
+    )!;
+  }
+
+  it('em revalidação, avisa e desabilita "Nova solicitação"', () => {
+    lock.set({ reason: 'revalidation' });
+    fixture.detectChanges();
+
+    expect(newRequestButton().disabled).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Seus dados estão em revalidação');
   });
 
   it('mostra só as ativas por padrão, das mais recentes para as mais antigas', () => {

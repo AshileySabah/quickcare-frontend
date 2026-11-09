@@ -8,17 +8,25 @@
     </div>
   </header>
 
+  <app-ban-notice role="professional"></app-ban-notice>
+
+  <app-blocked-notice role="professional" [revalidationOnly]="true"></app-blocked-notice>
+
   <app-occurrences-card role="professional"></app-occurrences-card>
+
+  <app-pending-ratings-card role="professional"></app-pending-ratings-card>
 
   @switch (viewState()) {
     @case ('loading') {
       <ui-skeleton-list></ui-skeleton-list>
     }
     @case ('empty') {
-      <ui-empty-state
-        title="Nenhuma solicitação aberta"
-        message="Assim que um paciente criar uma solicitação da sua especialidade, ela aparecerá aqui."
-      ></ui-empty-state>
+      @if (!ban()) {
+        <ui-empty-state
+          title="Nenhuma solicitação aberta"
+          message="Assim que um paciente criar uma solicitação da sua especialidade, ela aparecerá aqui."
+        ></ui-empty-state>
+      }
     }
     @case ('error') {
       <ui-error-state (retry)="load()"></ui-error-state>

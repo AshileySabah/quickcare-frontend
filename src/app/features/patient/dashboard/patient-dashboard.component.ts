@@ -25,6 +25,10 @@ import { MyValidationComponent } from '../../validation/my-validation/my-validat
 import { RequestCardComponent } from '../request-card/request-card.component';
 import { OccurrencesCardComponent } from '../../occurrences/occurrences-card/occurrences-card.component';
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
+import { CreationLockService } from '../../../core/services/creation-lock.service';
+import { BlockedNoticeComponent } from '../../occurrences/blocked-notice/blocked-notice.component';
+import { PendingRatingsCardComponent } from '../../ratings/pending-ratings-card/pending-ratings-card.component';
+import { BanNoticeComponent } from '../../bans/ban-notice/ban-notice.component';
 
 const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_andamento'];
 
@@ -32,7 +36,10 @@ const ACTIVE_STATUSES: RequestStatus[] = ['aberta', 'recebendo_propostas', 'em_a
   selector: 'app-patient-dashboard',
   standalone: true,
   imports: [HighlightDirective,
+    BlockedNoticeComponent,
     OccurrencesCardComponent,
+    PendingRatingsCardComponent,
+    BanNoticeComponent,
     RouterLink,
     ButtonComponent,
     ConfirmDialogComponent,
@@ -60,7 +67,7 @@ export class PatientDashboardComponent {
   });
 
   protected readonly showValidation = signal(false);
-  protected readonly blocked = signal(false);
+  protected readonly lock = inject(CreationLockService).lockFor('patient');
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly requests = signal<ServiceRequest[]>([]);

@@ -200,6 +200,37 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'mensagens',
+        loadComponent: () =>
+          import('./features/chat/layout/chat-layout.component').then(
+            (m) => m.ChatLayoutComponent,
+          ),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            loadComponent: () =>
+              import('./features/chat/placeholder/chat-placeholder.component').then(
+                (m) => m.ChatPlaceholderComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId/:canal',
+            loadComponent: () =>
+              import('./features/chat/conversation/chat-conversation.component').then(
+                (m) => m.ChatConversationComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId',
+            loadComponent: () =>
+              import('./features/chat/open/chat-open.component').then(
+                (m) => m.ChatOpenComponent,
+              ),
+          },
+        ],
+      },
+      {
         path: 'propostas/:id/editar',
         loadComponent: () =>
           import('./features/professional/proposal-edit/proposal-edit.component').then(
@@ -287,6 +318,37 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'mensagens',
+        loadComponent: () =>
+          import('./features/chat/layout/chat-layout.component').then(
+            (m) => m.ChatLayoutComponent,
+          ),
+        children: [
+          {
+            path: '',
+            pathMatch: 'full',
+            loadComponent: () =>
+              import('./features/chat/placeholder/chat-placeholder.component').then(
+                (m) => m.ChatPlaceholderComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId/:canal',
+            loadComponent: () =>
+              import('./features/chat/conversation/chat-conversation.component').then(
+                (m) => m.ChatConversationComponent,
+              ),
+          },
+          {
+            path: ':solicitacaoId',
+            loadComponent: () =>
+              import('./features/chat/open/chat-open.component').then(
+                (m) => m.ChatOpenComponent,
+              ),
+          },
+        ],
+      },
+      {
         path: 'perfil',
         loadComponent: () =>
           import('./features/patient/edit-profile/patient-edit-profile.component').then(
@@ -315,7 +377,11 @@ export const routes: Routes = [
       { path: 'profissionais', pathMatch: 'full', redirectTo: 'validacao' },
       { path: 'pacientes', pathMatch: 'full', redirectTo: 'validacao' },
       { path: 'perfis', pathMatch: 'full', redirectTo: 'ocorrencias' },
-      { path: 'solicitacoes', pathMatch: 'full', redirectTo: 'gerais/solicitacoes' },
+      {
+        path: 'solicitacoes',
+        pathMatch: 'full',
+        redirectTo: 'gerais/solicitacoes',
+      },
       {
         path: 'profissionais/:id',
         data: { profile: 'professional' },
@@ -335,7 +401,9 @@ export const routes: Routes = [
       {
         path: 'disputas',
         loadComponent: () =>
-          import('./features/admin/disputes/admin-disputes.component').then((m) => m.AdminDisputesComponent),
+          import('./features/admin/disputes/admin-disputes.component').then(
+            (m) => m.AdminDisputesComponent,
+          ),
       },
       {
         path: 'disputas/:id',
@@ -360,7 +428,9 @@ export const routes: Routes = [
         path: 'ocorrencias',
         data: { mode: 'demand' },
         loadComponent: () =>
-          import('./features/admin/profiles/admin-profiles.component').then((m) => m.AdminProfilesComponent),
+          import('./features/admin/profiles/admin-profiles.component').then(
+            (m) => m.AdminProfilesComponent,
+          ),
       },
       {
         path: 'perfis/:perfil/:id',
@@ -372,24 +442,32 @@ export const routes: Routes = [
       {
         path: 'gerais',
         loadComponent: () =>
-          import('./features/admin/general/admin-general.component').then((m) => m.AdminGeneralComponent),
+          import('./features/admin/general/admin-general.component').then(
+            (m) => m.AdminGeneralComponent,
+          ),
         children: [
           { path: '', pathMatch: 'full', redirectTo: 'usuarios' },
           {
             path: 'usuarios',
             data: { mode: 'all' },
             loadComponent: () =>
-              import('./features/admin/profiles/admin-profiles.component').then((m) => m.AdminProfilesComponent),
+              import('./features/admin/profiles/admin-profiles.component').then(
+                (m) => m.AdminProfilesComponent,
+              ),
           },
           {
             path: 'solicitacoes',
             loadComponent: () =>
-              import('./features/admin/requests/admin-requests.component').then((m) => m.AdminRequestsComponent),
+              import('./features/admin/requests/admin-requests.component').then(
+                (m) => m.AdminRequestsComponent,
+              ),
           },
           {
             path: 'propostas',
             loadComponent: () =>
-              import('./features/admin/proposals/admin-proposals.component').then((m) => m.AdminProposalsComponent),
+              import('./features/admin/proposals/admin-proposals.component').then(
+                (m) => m.AdminProposalsComponent,
+              ),
           },
           {
             path: 'bloqueios-entre-usuarios',

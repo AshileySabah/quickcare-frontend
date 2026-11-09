@@ -1,0 +1,125 @@
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 280px;
+  height: 100%;
+  padding: 16px;
+  overflow-y: auto;
+  background: rgba(11, 90, 70, 0.05);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  &__close {
+    border: 0;
+    background: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: #6b7280;
+    cursor: pointer;
+
+    &:hover {
+      color: #0b5a46;
+    }
+  }
+
+  &__card {
+    padding: 14px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  &__heading {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+
+    small {
+      font-weight: 400;
+      color: #6b7280;
+    }
+  }
+
+  &__photos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+
+    img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+  }
+
+  &__counts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: #374151;
+
+    li {
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  &__doc {
+    display: block;
+    margin-top: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    color: #0b5a46;
+    text-decoration: underline;
+  }
+
+  &__people {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__person {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+
+    strong {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.875rem;
+    }
+
+    small {
+      color: #6b7280;
+    }
+  }
+}

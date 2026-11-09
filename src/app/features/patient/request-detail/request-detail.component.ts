@@ -1,7 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProposalService } from '../../../core/services/proposal.service';
-import { CANCEL_REQUEST_CONSEQUENCES, RequestService, hasAcceptedProposals } from '../../../core/services/request.service';
+import {
+  CANCEL_REQUEST_CONSEQUENCES,
+  RequestService,
+  hasAcceptedProposals,
+} from '../../../core/services/request.service';
 import { Proposal, ServiceRequest, reacceptNotice } from '../../../core/models';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ButtonGroupComponent } from '../../../shared/ui/button-group/button-group.component';
@@ -18,7 +22,10 @@ import { EditRequestActionComponent } from '../../../features/patient/edit-reque
 import { HighlightDirective } from '../../../shared/ui/highlight/highlight.directive';
 import { AttendancePanelComponent } from '../../attendance/attendance-panel/attendance-panel.component';
 import { PersonMenuComponent } from '../../user-blocks/person-menu/person-menu.component';
-import { PersonChipComponent, UNAVAILABLE_PROFILE_LABEL } from '../../../shared/ui/person-chip/person-chip.component';
+import {
+  PersonChipComponent,
+  UNAVAILABLE_PROFILE_LABEL,
+} from '../../../shared/ui/person-chip/person-chip.component';
 import { createPagination } from '../../../core/lists/pagination';
 import { PaginatorComponent } from '../../../shared/ui/paginator/paginator.component';
 
@@ -28,9 +35,20 @@ type ProposalsState = 'loading' | 'error' | 'empty' | 'filled';
 @Component({
   selector: 'app-request-detail',
   standalone: true,
-  imports: [PaginatorComponent, PersonMenuComponent, PersonChipComponent,AttendancePanelComponent, HighlightDirective, EditRequestActionComponent, ConfirmDialogComponent, BackLinkComponent, IconComponent, SkeletonListComponent, 
+  imports: [
+    PaginatorComponent,
+    PersonMenuComponent,
+    PersonChipComponent,
+    AttendancePanelComponent,
+    HighlightDirective,
+    EditRequestActionComponent,
+    ConfirmDialogComponent,
+    BackLinkComponent,
+    IconComponent,
+    SkeletonListComponent,
     RouterLink,
-    ButtonComponent, ButtonGroupComponent,
+    ButtonComponent,
+    ButtonGroupComponent,
     EmptyStateComponent,
     ErrorStateComponent,
     ProposalCardComponent,
@@ -54,6 +72,9 @@ export class RequestDetailComponent {
   protected readonly proposalsState = signal<ProposalsState>('loading');
   protected readonly proposals = signal<Proposal[]>([]);
   protected readonly pager = createPagination(this.proposals);
+  protected readonly hasAcceptedProposal = computed(() =>
+    this.proposals().some((proposal) => proposal.status === 'aceita'),
+  );
 
   protected readonly proposalToAccept = signal<Proposal | null>(null);
   protected readonly isAccepting = signal(false);

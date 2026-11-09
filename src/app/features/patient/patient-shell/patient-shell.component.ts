@@ -17,5 +17,6 @@ export class PatientShellComponent {
     { label: 'Minhas solicitações', link: '/patient', exact: true },
     { label: 'Histórico', link: '/patient/historico' },
     { label: 'Encontrar profissionais', link: '/patient/profissionais', exact: true },
+    { label: 'Mensagens', link: '/patient/mensagens' },
   ];
 }

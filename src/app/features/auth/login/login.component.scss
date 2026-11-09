@@ -1,0 +1,11 @@
+@use 'tokens' as tokens;
+
+.login__closed {
+  display: block;
+  margin-bottom: tokens.space(4);
+}
+
+.login__recover {
+  display: block;
+  margin-top: tokens.space(3);
+}

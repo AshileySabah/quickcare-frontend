@@ -17,7 +17,7 @@ export class UserMenuComponent {
   private readonly router = inject(Router);
 
   profileLink = input<string | null>(null);
-  blockedUsersLink = input<string | null>(null);
+  securityLink = input<string | null>(null);
   documentsLink = input<string | null>(null);
 
   protected readonly open = signal(false);

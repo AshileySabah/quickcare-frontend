@@ -54,7 +54,9 @@
             <ui-card [interactive]="true">
               <div class="admin-profiles__card-header">
                 <span class="admin-profiles__name">{{ profile.name }}</span>
-                @if (profile.openAppeals > 0) {
+                @if (profile.frozenAt) {
+                  <ui-badge variant="neutral">Congelado</ui-badge>
+                } @else if (profile.openAppeals > 0) {
                   <ui-badge variant="info">Para analisar</ui-badge>
                 } @else if (profile.block) {
                   <ui-badge variant="error">Bloqueado até {{ profile.block.end | date: 'dd/MM' }}</ui-badge>

@@ -79,6 +79,8 @@ export interface ProfessionalRegistration extends AccountInput, ProfessionalProf
 
 export class InvalidPasswordResetLinkError extends Error {}
 
+export class ClosedAccountError extends Error {}
+
 interface Session {
   user: User;
   profiles: ProfileSummary[];
@@ -138,15 +140,57 @@ export class AuthService {
       )
       .pipe(
         map((response) => this.startSession(response)),
-        catchError((error: unknown) =>
-          throwError(() =>
-            normalizeError(
-              error,
-              'Não foi possível entrar. Tente novamente.',
-            ),
-          ),
-        ),
+        catchError((error: unknown) => {
+          const normalized = normalizeError(error, 'Não foi possível entrar. Tente novamente.');
+          return throwError(() =>
+            error instanceof HttpErrorResponse && error.status === 423
+              ? new ClosedAccountError(normalized.message)
+              : normalized,
+          );
+        }),
       );
+  }
+
+  recoverAccount(email: string, password: string): Observable<User> {
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar`, { email, senha: password }, { withCredentials: true })
+      .pipe(
+        map((response) => this.startSession(response, true)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
+      );
+  }
+
+  recoverAccountByLink(token: string): Observable<User> {
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar-por-link`, { token }, { withCredentials: true })
+      .pipe(
+        map((response) => this.startSession(response, true)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
+      );
+  }
+
+  validateEmailUndo(token: string): Observable<void> {
+    return this.http.post<void>(`${environment.apiUrl}/auth/email/desfazer/validar`, { token }).pipe(
+      map(() => undefined),
+      catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível verificar o link.'))),
+    );
+  }
+
+  undoEmailChange(token: string, password: string): Observable<string> {
+    return this.http
+      .post<{ tokenRedefinicao: string }>(`${environment.apiUrl}/auth/email/desfazer`, { token, senha: password })
+      .pipe(
+        map((response) => response.tokenRedefinicao),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível desfazer a troca.'))),
+      );
+  }
+
+  applySession(response: LoginApiResponse): User {
+    return this.startSession(response, true);
+  }
+
+  clearLocalSession(): void {
+    this.clearSession();
   }
 
   switchProfile(role: SwitchableRole): Observable<User> {

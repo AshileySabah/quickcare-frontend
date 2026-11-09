@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, computed, inject, input, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BlockedUser, ListViewState, SwitchableRole } from '../../../core/models';
 import { UserBlockService } from '../../../core/services/user-block.service';
@@ -30,27 +30,31 @@ import { UnblockTarget, UnblockUserDialogComponent } from '../unblock-user-dialo
   templateUrl: './blocked-users.component.html',
   styleUrl: './blocked-users.component.scss',
 })
-export class BlockedUsersComponent {
+export class BlockedUsersComponent implements OnInit {
   private readonly userBlockService = inject(UserBlockService);
+  private readonly routeRole: SwitchableRole | undefined = inject(ActivatedRoute).snapshot.data['role'];
 
-  protected readonly role: SwitchableRole = inject(ActivatedRoute).snapshot.data['role'];
-  protected readonly emptyMessage =
-    this.role === 'patient'
+  role = input<SwitchableRole | undefined>(undefined);
+
+  protected readonly activeRole = computed<SwitchableRole>(() => this.role() ?? this.routeRole ?? 'patient');
+  protected readonly emptyMessage = computed(() =>
+    this.activeRole() === 'patient'
       ? 'Para bloquear um profissional, clique no nome dele numa proposta ou abra o perfil dele.'
-      : 'Para bloquear um paciente, clique no nome dele numa proposta aceita ou abra o perfil dele.';
+      : 'Para bloquear um paciente, clique no nome dele numa proposta aceita ou abra o perfil dele.',
+  );
 
   protected readonly viewState = signal<ListViewState>('loading');
   protected readonly blocked = signal<BlockedUser[]>([]);
   protected readonly pager = createPagination(this.blocked);
   protected readonly toUnblock = signal<UnblockTarget | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
     this.load();
   }
 
   protected load(): void {
     this.viewState.set('loading');
-    this.userBlockService.list(this.role).subscribe({
+    this.userBlockService.list(this.activeRole()).subscribe({
       next: (blocked) => {
         this.blocked.set(blocked);
         this.viewState.set(blocked.length === 0 ? 'empty' : 'filled');

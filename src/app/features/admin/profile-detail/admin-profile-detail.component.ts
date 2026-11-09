@@ -26,6 +26,7 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { BadgeComponent } from '../../../shared/ui/feedback/badge/badge.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
 import { ErrorStateComponent } from '../../../shared/ui/feedback/error-state/error-state.component';
+import { NoticeComponent } from '../../../shared/ui/feedback/notice/notice.component';
 import { SkeletonListComponent } from '../../../shared/ui/feedback/skeleton-list/skeleton-list.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { IconComponent } from '../../../shared/ui/icon/icon.component';
@@ -63,6 +64,7 @@ type Dialog =
     ErrorStateComponent,
     IconComponent,
     JustificationDialogComponent,
+    NoticeComponent,
     ReactiveFormsModule,
     SelectComponent,
     SkeletonListComponent,

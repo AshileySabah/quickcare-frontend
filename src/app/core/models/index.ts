@@ -15,3 +15,4 @@ export * from './rating.model';
 export * from './report.model';
 export * from './ban.model';
 export * from './public-search.model';
+export * from './security.model';

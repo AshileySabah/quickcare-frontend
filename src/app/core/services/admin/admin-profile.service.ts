@@ -30,6 +30,7 @@ interface PerfilResumoApi {
   ocorrenciasContando: number;
   recursosEmAnalise: number;
   bloqueio?: BloqueioApiResponse;
+  congeladoEm?: string;
 }
 
 interface PerfilDetalheApi {
@@ -214,6 +215,7 @@ function toSummary(response: PerfilResumoApi): AdminProfileSummary {
     counting: response.ocorrenciasContando,
     openAppeals: response.recursosEmAnalise,
     block: response.bloqueio ? toBlock(response.bloqueio) : undefined,
+    frozenAt: response.congeladoEm,
   };
 }
 

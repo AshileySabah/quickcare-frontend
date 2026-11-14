@@ -1,3 +1,6 @@
+@use 'tokens' as tokens;
+@use 'patterns/dropdown' as dropdown;
+
 :host {
   display: flex;
   flex: 1;
@@ -26,29 +29,50 @@
 
   &__center {
     margin: auto;
-    padding: 24px;
+    padding: tokens.space(6);
     width: 100%;
   }
 
   &__skeletons {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: tokens.space(3);
   }
 
   &__header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    gap: tokens.space(3);
+    padding: tokens.space(3) tokens.space(4);
+    border-bottom: 1px solid tokens.color('gray', 200);
   }
 
   &__back {
     display: none;
     font-size: 1.75rem;
     line-height: 1;
-    color: #6b7280;
+    color: tokens.color('gray', 500);
+  }
+
+  &__person {
+    display: inline-flex;
+    flex: none;
+    border-radius: tokens.radius('full');
+
+    &:hover,
+    &:focus-visible {
+      box-shadow: 0 0 0 2px tokens.color('teal', 300);
+    }
+  }
+
+  &__person-name {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
   }
 
   &__heading {
@@ -60,70 +84,50 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 1.0625rem;
-    font-weight: 600;
-    color: #111827;
+    font-size: tokens.font-size('lg');
+    font-weight: tokens.font-weight('medium');
+    color: tokens.color('gray', 900);
   }
 
   &__subtitle {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.8125rem;
-    color: #6b7280;
-  }
-
-  &__status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 0.8125rem;
-    color: #6b7280;
-
-    &--on {
-      color: #0b5a46;
-    }
-  }
-
-  &__dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: currentColor;
+    font-size: tokens.font-size('sm');
+    color: tokens.color('gray', 500);
   }
 
   &__messages {
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 4px;
-    padding: 16px;
+    gap: tokens.space(1);
+    padding: tokens.space(4) tokens.space(6);
     overflow-y: auto;
-    background: rgba(11, 90, 70, 0.045);
+    background: tokens.color('gray', 50);
   }
 
   &__empty {
     margin: auto;
-    color: #6b7280;
+    color: tokens.color('gray', 500);
   }
 
   &__day {
     align-self: center;
-    margin: 12px 0 8px;
+    margin: tokens.space(3) 0 tokens.space(2);
 
     span {
-      padding: 3px 12px;
-      border-radius: 999px;
-      background: rgba(0, 0, 0, 0.06);
-      font-size: 0.75rem;
-      color: #374151;
+      padding: 3px tokens.space(3);
+      background: tokens.color('gray', 200);
+      font-size: tokens.font-size('xs');
+      color: tokens.color('gray', 700);
     }
   }
 
   &__row {
     display: flex;
     align-items: flex-end;
-    gap: 8px;
+    gap: tokens.space(2);
 
     &--mine {
       justify-content: flex-end;
@@ -137,24 +141,25 @@
   }
 
   &__bubble {
-    max-width: 75%;
-    padding: 8px 12px;
-    background: #fff;
-    border-radius: 16px 16px 16px 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+    max-width: 70%;
+    padding: tokens.space(2) tokens.space(3);
+    background: tokens.color('gray', 0);
+    border: 1px solid tokens.color('gray', 200);
+    border-radius: tokens.radius('sm');
   }
 
   &__row--mine &__bubble {
-    background: #0b5a46;
-    color: #fff;
-    border-radius: 16px 16px 4px 16px;
+    background: tokens.color('teal', 700);
+    border-color: tokens.color('teal', 700);
+    color: tokens.color('gray', 0);
   }
 
   &__sender {
     display: block;
     margin-bottom: 2px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: tokens.font-size('xs');
+    font-weight: tokens.font-weight('medium');
+    color: tokens.color('teal', 700);
   }
 
   &__text {
@@ -165,10 +170,10 @@
   &__meta {
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
+    gap: tokens.space(3);
     margin-top: 2px;
     font-size: 0.6875rem;
-    opacity: 0.7;
+    opacity: 0.75;
   }
 
   &__delete {
@@ -186,7 +191,7 @@
   }
 
   &__missing {
-    font-size: 0.85rem;
+    font-size: tokens.font-size('sm');
     font-style: italic;
     opacity: 0.8;
   }
@@ -194,14 +199,132 @@
   &__media {
     display: block;
     max-width: 100%;
-    max-height: 280px;
-    border-radius: 12px;
+    max-height: 320px;
   }
 
   &__audio {
     display: block;
-    width: 100%;
-    max-width: 260px;
+    width: 320px;
+    max-width: 100%;
+    height: 44px;
+  }
+
+  &__deleted {
+    display: flex;
+    align-items: center;
+    gap: tokens.space(2);
+    padding: tokens.space(1) tokens.space(2);
+    border: 1px dashed tokens.color('gray', 300);
+    font-size: tokens.font-size('sm');
+    font-style: italic;
+    color: tokens.color('gray', 500);
+    background: tokens.color('gray', 50);
+  }
+
+  &__row--mine &__bubble:has(.chat__deleted) {
+    background: tokens.color('gray', 0);
+    border-color: tokens.color('gray', 200);
+    color: tokens.color('gray', 700);
+  }
+
+  &__actions {
+    position: relative;
+    align-self: center;
+    flex: none;
+  }
+
+  &__row--mine &__actions {
+    order: -1;
+  }
+
+  &__more {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: tokens.color('gray', 500);
+    cursor: pointer;
+    opacity: 0;
+
+    &:hover,
+    &:focus-visible,
+    &--on {
+      color: tokens.color('teal', 700);
+      background: tokens.color('gray', 100);
+      opacity: 1;
+    }
+  }
+
+  &__row:hover &__more,
+  &__row:focus-within &__more {
+    opacity: 1;
+  }
+
+  &__menu {
+    @include dropdown.panel(180px);
+    top: auto;
+    bottom: 100%;
+    border-radius: 0;
+    padding: tokens.space(1) 0;
+  }
+
+  &__menu-item {
+    @include dropdown.item;
+
+    &--danger,
+    &--danger:hover,
+    &--danger:focus-visible {
+      color: tokens.semantic('error');
+    }
+  }
+
+  &__search {
+    display: flex;
+    align-items: center;
+    gap: tokens.space(3);
+    padding: tokens.space(2) tokens.space(4);
+    background: tokens.color('gray', 0);
+    border-bottom: 1px solid tokens.color('gray', 200);
+  }
+
+  &__search-input {
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    padding: 0 tokens.space(3);
+    border: 1px solid tokens.color('gray', 300);
+    background: tokens.color('gray', 0);
+    font: inherit;
+
+    &:focus {
+      outline: none;
+      border-color: tokens.color('teal', 600);
+    }
+  }
+
+  &__search-count {
+    flex: none;
+    font-size: tokens.font-size('sm');
+    color: tokens.color('gray', 500);
+  }
+
+  &__search-close {
+    flex: none;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: tokens.font-size('sm');
+    color: tokens.color('teal', 700);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
   }
 
   &__file {
@@ -213,18 +336,19 @@
   }
 
   &__error {
-    padding: 6px 16px;
-    font-size: 0.875rem;
-    color: #c0392b;
+    padding: 6px tokens.space(4);
+    font-size: tokens.font-size('sm');
+    color: tokens.semantic('error');
   }
 
   &__selected {
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-    padding: 6px 16px;
-    font-size: 0.875rem;
-    background: rgba(11, 90, 70, 0.08);
+    gap: tokens.space(3);
+    padding: 6px tokens.space(4);
+    font-size: tokens.font-size('sm');
+    background: tokens.color('teal', 50);
+    border-top: 1px solid tokens.color('gray', 200);
   }
 
   &__selected-name {
@@ -236,16 +360,10 @@
   &__form {
     display: flex;
     align-items: flex-end;
-    gap: 8px;
-    margin: 12px 16px;
-    padding: 6px;
-    background: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    border-radius: 24px;
-
-    &:focus-within {
-      border-color: #0b5a46;
-    }
+    gap: tokens.space(2);
+    padding: tokens.space(2) tokens.space(4);
+    background: tokens.color('gray', 0);
+    border-top: 1px solid tokens.color('gray', 200);
   }
 
   &__icon,
@@ -256,14 +374,13 @@
     width: 40px;
     height: 40px;
     border: 0;
-    border-radius: 50%;
     background: none;
-    color: #6b7280;
+    color: tokens.color('gray', 500);
     cursor: pointer;
 
     &:hover:not(:disabled),
     &--on {
-      color: #0b5a46;
+      color: tokens.color('teal', 700);
     }
 
     &:disabled {
@@ -273,12 +390,12 @@
   }
 
   &__send {
-    background: #0b5a46;
-    color: #fff;
+    background: tokens.color('teal', 700);
+    color: tokens.color('gray', 0);
 
     &:hover:not(:disabled) {
-      color: #fff;
-      background: #0d7a5e;
+      color: tokens.color('gray', 0);
+      background: tokens.color('teal', 600);
     }
   }
 
@@ -288,14 +405,15 @@
     width: 100%;
     min-height: 40px;
     max-height: 120px;
-    padding: 9px 4px;
-    border: 0;
-    background: transparent;
+    padding: 9px tokens.space(3);
+    border: 1px solid tokens.color('gray', 300);
+    background: tokens.color('gray', 0);
     resize: none;
     font: inherit;
 
     &:focus {
       outline: none;
+      border-color: tokens.color('teal', 600);
     }
   }
 }
@@ -305,8 +423,8 @@
     display: block;
   }
 
-  .chat__status {
-    display: none;
+  .chat__messages {
+    padding: tokens.space(4);
   }
 
   .chat__bubble {
@@ -318,22 +436,26 @@
   }
 }
 
+@media (hover: none) {
+  .chat__more {
+    opacity: 1;
+  }
+}
+
 .chat__tag {
   flex: none;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: #6b7280;
-  background: rgba(0, 0, 0, 0.06);
+  padding: 2px tokens.space(3);
+  font-size: tokens.font-size('xs');
+  font-weight: tokens.font-weight('medium');
+  color: tokens.color('gray', 500);
+  background: tokens.color('gray', 100);
 }
 
 .chat__readonly {
-  margin: 12px 16px;
-  padding: 12px 16px;
+  padding: tokens.space(3) tokens.space(4);
   text-align: center;
-  font-size: 0.875rem;
-  color: #6b7280;
-  background: rgba(11, 90, 70, 0.06);
-  border-radius: 16px;
+  font-size: tokens.font-size('sm');
+  color: tokens.color('gray', 500);
+  background: tokens.color('gray', 50);
+  border-top: 1px solid tokens.color('gray', 200);
 }

@@ -68,6 +68,16 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'confirmar-email',
+    loadComponent: () =>
+      import('./features/auth/confirm-email/confirm-email.component').then((m) => m.ConfirmEmailComponent),
+  },
+  {
+    path: 'cadastro/confirme-seu-email',
+    loadComponent: () =>
+      import('./features/auth/check-email/check-email.component').then((m) => m.CheckEmailComponent),
+  },
+  {
     path: 'recuperar-conta',
     loadComponent: () =>
       import('./features/auth/recover-account/recover-account.component').then(
@@ -201,6 +211,7 @@ export const routes: Routes = [
       },
       {
         path: 'mensagens',
+        data: { fullScreen: true },
         loadComponent: () =>
           import('./features/chat/layout/chat-layout.component').then(
             (m) => m.ChatLayoutComponent,
@@ -319,6 +330,7 @@ export const routes: Routes = [
       },
       {
         path: 'mensagens',
+        data: { fullScreen: true },
         loadComponent: () =>
           import('./features/chat/layout/chat-layout.component').then(
             (m) => m.ChatLayoutComponent,

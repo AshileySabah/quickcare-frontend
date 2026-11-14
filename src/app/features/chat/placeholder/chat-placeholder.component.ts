@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 
-/** Mostrado ao lado da lista quando nenhuma conversa esta aberta. */
 @Component({
   selector: 'app-chat-placeholder',
   standalone: true,
@@ -12,30 +11,6 @@ import { Component } from '@angular/core';
     <h2>Selecione uma conversa</h2>
     <p>Escolha uma conversa na lista para ver as mensagens e conversar.</p>
   `,
-  styles: `
-    :host {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 24px;
-      text-align: center;
-      color: #6b7280;
-      background: rgba(11, 90, 70, 0.04);
-    }
-
-    svg {
-      color: #0b5a46;
-      opacity: 0.55;
-    }
-
-    h2 {
-      font-size: 1.125rem;
-      font-weight: 500;
-      color: #111827;
-    }
-  `,
+  styleUrl: './chat-placeholder.component.scss',
 })
 export class ChatPlaceholderComponent {}

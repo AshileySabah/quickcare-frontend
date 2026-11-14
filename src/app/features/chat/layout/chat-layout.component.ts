@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -10,15 +10,15 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter } from 'rxjs';
+import { Subject, catchError, debounceTime, filter, map, merge, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChatParticipant, Conversation } from '../../../core/chat/chat.model';
 import { ChatService } from '../../../core/chat/chat.service';
+import { ChatUnreadService } from '../../../core/chat/chat-unread.service';
 import {
   channelSegment,
   conversationKey,
   messageKey,
-  normalizeText,
   shortTime,
   sortConversations,
   withLastMessage,
@@ -60,28 +60,40 @@ export class ChatLayoutComponent {
   protected readonly conversations = signal<Conversation[]>([]);
   protected readonly search = signal('');
   protected readonly openId = signal<number | null>(null);
-  /** Canal aberto (solicitacao + grupo ou profissional); nulo quando nenhum esta aberto. */
   protected readonly openKey = signal<string | null>(null);
-  /** Mensagens novas em conversas que nao estao abertas, por canal. So vale nesta sessao da tela. */
-  protected readonly unread = signal<Record<string, number>>({});
+  protected readonly unread = inject(ChatUnreadService).counts;
 
   protected readonly basePath = computed(() =>
     this.authService.role() === 'professional'
       ? '/professional/mensagens'
       : '/patient/mensagens',
   );
-  protected readonly filtered = computed(() => {
-    const query = normalizeText(this.search());
-    const list = this.conversations();
-    return query
-      ? list.filter((item) => normalizeText(item.title).includes(query))
-      : list;
-  });
+  protected readonly searchResults = signal<Conversation[] | null>(null);
+  protected readonly searching = signal(false);
+  protected readonly filtered = computed(() => this.searchResults() ?? this.conversations());
 
   protected readonly shortTime = shortTime;
 
+  private readonly searchRefresh = new Subject<void>();
+
   constructor() {
     this.load();
+
+    merge(toObservable(this.search).pipe(debounceTime(300)), this.searchRefresh)
+      .pipe(
+        map(() => this.search().trim()),
+        tap((term) => this.searching.set(!!term)),
+        switchMap((term) =>
+          term
+            ? this.chatService.conversations(this.meId, term).pipe(catchError(() => of([] as Conversation[])))
+            : of(null),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((results) => {
+        this.searchResults.set(results);
+        this.searching.set(false);
+      });
 
     this.chatService.connect();
     this.destroyRef.onDestroy(() => this.chatService.disconnect());
@@ -108,12 +120,8 @@ export class ChatLayoutComponent {
           ),
         ),
       );
-
-      if (message.senderId !== this.meId && key !== this.openKey()) {
-        this.unread.update((counts) => ({
-          ...counts,
-          [key]: (counts[key] ?? 0) + 1,
-        }));
+      if (this.search().trim()) {
+        this.searchRefresh.next();
       }
     });
 
@@ -134,6 +142,9 @@ export class ChatLayoutComponent {
   /** Recarrega sem mostrar o esqueleto (a lista continua na tela). */
   private refresh(): void {
     this.fetch();
+    if (this.search().trim()) {
+      this.searchRefresh.next();
+    }
   }
 
   private fetch(): void {
@@ -158,14 +169,6 @@ export class ChatLayoutComponent {
     const key = id !== null && channel ? `${id}/${channel}` : null;
     this.openId.set(id);
     this.openKey.set(key);
-
-    if (key !== null && this.unread()[key]) {
-      this.unread.update((counts) => {
-        const next = { ...counts };
-        delete next[key];
-        return next;
-      });
-    }
   }
 
   protected keyOf(conversation: Conversation): string {

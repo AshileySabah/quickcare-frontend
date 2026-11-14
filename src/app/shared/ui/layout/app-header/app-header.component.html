@@ -10,7 +10,7 @@
         [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
         >{{ item.label }}
         @if (item.count) {
-          <span class="ui-app-header__count" [attr.aria-label]="item.count + ' aguardando'">{{ item.count }}</span>
+          <span class="ui-app-header__count" [attr.aria-label]="item.count + ' ' + (item.countLabel ?? 'aguardando')">{{ item.count }}</span>
         }
       </a>
     }

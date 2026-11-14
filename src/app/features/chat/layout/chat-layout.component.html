@@ -18,8 +18,8 @@
         </svg>
         <input
           type="search"
-          placeholder="Buscar conversa"
-          aria-label="Buscar conversa"
+          placeholder="Buscar por nome ou mensagem"
+          aria-label="Buscar por nome ou mensagem"
           [ngModel]="search()"
           (ngModelChange)="search.set($event)"
         />
@@ -71,7 +71,7 @@
                 <span class="item__body">
                   <span class="item__top">
                     <strong class="item__name">{{ conversation.title }}</strong>
-                    @if (conversation.preview; as preview) {
+                    @if (conversation.match ?? conversation.preview; as preview) {
                       <time class="item__time">{{
                         shortTime(preview.sentAt)
                       }}</time>
@@ -90,9 +90,11 @@
                       [class.item__preview--unread]="
                         unread()[keyOf(conversation)]
                       "
+                      [class.item__preview--match]="!!conversation.match"
                     >
                       {{
-                        conversation.preview?.text ?? fallbackLine(conversation)
+                        (conversation.match ?? conversation.preview)?.text ??
+                          fallbackLine(conversation)
                       }}
                     </span>
                     @if (unread()[keyOf(conversation)]; as count) {
@@ -107,7 +109,9 @@
               </a>
             </li>
           } @empty {
-            <li class="chat-shell__none">Nenhuma conversa encontrada.</li>
+            <li class="chat-shell__none">
+              {{ searching() ? "Buscando…" : "Nenhuma conversa ou mensagem encontrada." }}
+            </li>
           }
         </ul>
       }

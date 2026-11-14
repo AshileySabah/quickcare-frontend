@@ -16,6 +16,15 @@
     </ui-notice>
   }
 
+  @if (emailNotConfirmedMessage(); as message) {
+    <ui-notice class="login__closed">
+      <strong>Confirme seu e-mail.</strong> {{ message }} O link vale por 12 horas a partir do cadastro.
+      <ui-button class="login__recover" size="sm" [loading]="isResending()" (click)="resendConfirmation()"
+        >Reenviar link</ui-button
+      >
+    </ui-notice>
+  }
+
   <form [formGroup]="form" (ngSubmit)="submit()">
     <ui-grid>
       <ui-grid-item [xs]="12">

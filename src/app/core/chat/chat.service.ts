@@ -3,6 +3,7 @@ import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { Client } from '@stomp/stompjs';
 import { Observable, Subject, catchError, map, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthTokenStore } from '../auth/auth-token.store';
 import {
   ChatEvent,
   ChatMessage,
@@ -28,6 +29,7 @@ export class ChatError extends Error {
 @Injectable({ providedIn: 'root' })
 export class ChatService implements OnDestroy {
   private readonly http = inject(HttpClient);
+  private readonly tokens = inject(AuthTokenStore);
   private readonly conversationsUrl = `${environment.apiUrl}/conversas`;
   private readonly messagesUrl = `${environment.apiUrl}/mensagens`;
 
@@ -39,8 +41,10 @@ export class ChatService implements OnDestroy {
   readonly connected = signal(false);
 
   /** Canais do usuario logado: conversas individuais e grupos das solicitacoes com proposta aceita. */
-  conversations(currentUserId: number): Observable<Conversation[]> {
-    return this.http.get<ConversationApi[]>(this.conversationsUrl, { withCredentials: true }).pipe(
+  conversations(currentUserId: number, search = ''): Observable<Conversation[]> {
+    const term = search.trim();
+    const params = term ? new HttpParams().set('busca', term) : undefined;
+    return this.http.get<ConversationApi[]>(this.conversationsUrl, { params }).pipe(
       map((items) => items.map((item) => toConversation(item, currentUserId))),
       catchError((error) => throwError(() => this.normalizeError(error))),
     );
@@ -53,7 +57,7 @@ export class ChatService implements OnDestroy {
       params = params.set('profissionalUsuarioId', professionalUserId);
     }
     return this.http
-      .get<ChatMessageApi[]>(`${this.conversationsUrl}/${requestId}/mensagens`, { params, withCredentials: true })
+      .get<ChatMessageApi[]>(`${this.conversationsUrl}/${requestId}/mensagens`, { params })
       .pipe(
         map((items) => items.map(toChatMessage)),
         catchError((error) => throwError(() => this.normalizeError(error))),
@@ -78,7 +82,7 @@ export class ChatService implements OnDestroy {
       body.append('arquivo', file);
     }
 
-    return this.http.post<ChatMessageApi>(this.messagesUrl, body, { withCredentials: true }).pipe(
+    return this.http.post<ChatMessageApi>(this.messagesUrl, body).pipe(
       map(toChatMessage),
       // Avisa as outras telas (ex.: a lista de conversas) sobre a mensagem enviada por este usuario.
       tap((message) => this.eventsSubject.next({ type: 'message', message })),
@@ -87,7 +91,7 @@ export class ChatService implements OnDestroy {
   }
 
   remove(messageId: number): Observable<void> {
-    return this.http.delete<void>(`${this.messagesUrl}/${messageId}`, { withCredentials: true }).pipe(
+    return this.http.delete<void>(`${this.messagesUrl}/${messageId}`).pipe(
       tap(() => this.eventsSubject.next({ type: 'deleted', id: messageId })),
       catchError((error) => throwError(() => this.normalizeError(error))),
     );
@@ -104,6 +108,10 @@ export class ChatService implements OnDestroy {
       brokerURL: toWebSocketUrl(environment.apiUrl),
       reconnectDelay: 5000,
     });
+
+    client.beforeConnect = () => {
+      client.connectHeaders = { Authorization: this.tokens.authorization() ?? '' };
+    };
 
     client.onConnect = () => {
       this.connected.set(true);

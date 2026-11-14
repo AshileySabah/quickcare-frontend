@@ -12,10 +12,14 @@ import {
   buildTimeline,
   channelKey,
   conversationKey,
+  filterMessages,
+  markDeleted,
   mergeMessage,
   messageKey,
+  profileLink,
   validateAttachment,
 } from '../../../core/chat/chat.utils';
+import { ChatUnreadService } from '../../../core/chat/chat-unread.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -46,14 +50,20 @@ const ATTACHMENT_REFRESH_INTERVAL_MS = 60_000;
   ],
   templateUrl: './chat-conversation.component.html',
   styleUrl: './chat-conversation.component.scss',
+  host: {
+    '(document:click)': 'closeMenu()',
+    '(document:keydown.escape)': 'closeMenu()',
+  },
 })
 export class ChatConversationComponent {
   private readonly chatService = inject(ChatService);
+  private readonly chatUnread = inject(ChatUnreadService);
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly listRef = viewChild<ElementRef<HTMLElement>>('list');
+  private readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
   private lastAttachmentRefresh = 0;
   private loadSubscription: Subscription | null = null;
 
@@ -71,16 +81,25 @@ export class ChatConversationComponent {
   protected readonly actionError = signal<string | null>(null);
   protected readonly messageToDelete = signal<ChatMessage | null>(null);
   protected readonly deleting = signal(false);
-  protected readonly infoOpen = signal(typeof window !== 'undefined' && window.innerWidth >= 1200);
-  protected readonly connected = this.chatService.connected;
+  protected readonly infoOpen = signal(false);
   protected readonly accept = CHAT_ATTACHMENT_ACCEPT;
   protected readonly deleteConsequences = ['A mensagem some para todos os participantes da conversa.'];
 
+  protected readonly menuOpenId = signal<number | null>(null);
+  protected readonly searchOpen = signal(false);
+  protected readonly messageSearch = signal('');
+
   protected readonly canSend = computed(() => !!this.draft().trim() || !!this.selectedFile());
-  protected readonly timeline = computed(() => buildTimeline(this.messages(), this.conversation(), this.meId));
+  protected readonly searchTerm = computed(() => (this.searchOpen() ? this.messageSearch().trim() : ''));
+  protected readonly visibleMessages = computed(() => filterMessages(this.messages(), this.searchTerm()));
+  protected readonly timeline = computed(() => buildTimeline(this.visibleMessages(), this.conversation(), this.meId));
   protected readonly isProfessional = computed(() => this.authService.role() === 'professional');
+  protected readonly viewerRole = this.authService.role;
   protected readonly basePath = computed(() => (this.isProfessional() ? '/professional/mensagens' : '/patient/mensagens'));
   protected readonly headerPerson = computed(() => this.conversation()?.others[0] ?? null);
+  protected readonly headerLink = computed(() =>
+    this.conversation()?.isGroup ? null : this.profileLinkOf(this.headerPerson()?.userId),
+  );
   protected readonly subtitle = computed(() => {
     const conversation = this.conversation();
     if (!conversation) return '';
@@ -97,6 +116,7 @@ export class ChatConversationComponent {
     // A rota reaproveita este componente ao trocar de conversa, entao reagimos aos parametros.
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const channel = params.get('canal');
+      this.chatUnread.close(this.requestId(), this.professionalUserId());
       this.requestId.set(Number(params.get('solicitacaoId')));
       this.professionalUserId.set(channel && channel !== 'grupo' ? Number(channel) : null);
       this.conversation.set(null);
@@ -104,12 +124,16 @@ export class ChatConversationComponent {
       this.draft.set('');
       this.selectedFile.set(null);
       this.actionError.set(null);
+      this.menuOpenId.set(null);
+      this.searchOpen.set(false);
+      this.messageSearch.set('');
       this.load();
     });
 
     this.chatService.connect();
     this.destroyRef.onDestroy(() => {
       this.loadSubscription?.unsubscribe();
+      this.chatUnread.close(this.requestId(), this.professionalUserId());
       this.chatService.disconnect();
     });
 
@@ -119,7 +143,7 @@ export class ChatConversationComponent {
           this.messages.update((list) => mergeMessage(list, event.message));
         }
       } else {
-        this.messages.update((list) => list.filter((item) => item.id !== event.id));
+        this.messages.update((list) => markDeleted(list, event.id));
       }
     });
 
@@ -149,9 +173,15 @@ export class ChatConversationComponent {
         this.conversation.set(conversation);
         this.messages.set(messages);
         this.viewState.set('ready');
+        this.chatUnread.open(id, professionalUserId);
       },
       error: (error: ChatError) => this.viewState.set(error.status === 403 ? 'forbidden' : 'error'),
     });
+  }
+
+  protected profileLinkOf(userId: number | null | undefined): (string | number)[] | null {
+    const person = this.conversation()?.participants.find((item) => item.userId === userId);
+    return profileLink(person, this.authService.role(), this.meId);
   }
 
   protected scrollToBottom(): void {
@@ -163,6 +193,29 @@ export class ChatConversationComponent {
 
   protected toggleInfo(): void {
     this.infoOpen.update((open) => !open);
+  }
+
+  protected toggleSearch(): void {
+    this.searchOpen.update((open) => !open);
+    if (!this.searchOpen()) {
+      this.messageSearch.set('');
+      return;
+    }
+    setTimeout(() => this.searchInput()?.nativeElement.focus());
+  }
+
+  protected toggleMenu(messageId: number, event: Event): void {
+    event.stopPropagation();
+    this.menuOpenId.update((open) => (open === messageId ? null : messageId));
+  }
+
+  protected askDelete(message: ChatMessage): void {
+    this.menuOpenId.set(null);
+    this.messageToDelete.set(message);
+  }
+
+  protected closeMenu(): void {
+    this.menuOpenId.set(null);
   }
 
   protected onFileSelected(event: Event): void {
@@ -238,7 +291,7 @@ export class ChatConversationComponent {
 
     this.chatService.remove(message.id).subscribe({
       next: () => {
-        this.messages.update((list) => list.filter((item) => item.id !== message.id));
+        this.messages.update((list) => markDeleted(list, message.id));
         this.deleting.set(false);
         this.messageToDelete.set(null);
       },

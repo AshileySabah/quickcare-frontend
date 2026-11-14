@@ -19,3 +19,18 @@
     padding-bottom: tokens.space(6);
   }
 }
+
+.app-shell--full {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+
+  .app-shell__content {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+}

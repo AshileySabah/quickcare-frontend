@@ -3,8 +3,9 @@ export interface ChatMessageApi {
   id: number;
   remetenteId: number;
   solicitacaoId: number;
-  conteudo: string;
+  conteudo: string | null;
   dataEnvio: string;
+  apagada?: boolean;
   anexoUrl?: string | null;
   anexoNomeOriginal?: string | null;
   anexoTipo?: string | null;
@@ -21,6 +22,7 @@ export interface ChatMessageDeletedApi {
 /** Participante devolvido por GET /conversas (ParticipanteResponse). */
 export interface ChatParticipantApi {
   usuarioId: number;
+  perfilId?: number | null;
   nome: string;
   papel: 'PACIENTE' | 'PROFISSIONAL';
   avatarUrl?: string | null;
@@ -46,6 +48,7 @@ export interface ConversationApi {
   somenteLeitura?: boolean;
   participantes: ChatParticipantApi[];
   ultimaMensagem?: LastMessageApi | null;
+  mensagemEncontrada?: LastMessageApi | null;
 }
 
 export type AttachmentKind = 'image' | 'video' | 'audio' | 'pdf' | 'file';
@@ -65,8 +68,14 @@ export interface ChatMessage {
   content: string;
   sentAt: Date;
   attachment: ChatAttachment | null;
+  deleted?: boolean;
   /** Profissional do canal individual; ausente nas mensagens do grupo. */
   professionalUserId?: number | null;
+}
+
+export interface ChatUnreadApi {
+  total: number;
+  canais: { solicitacaoId: number; profissionalUsuarioId: number | null; quantidade: number }[];
 }
 
 export type ChatEvent =
@@ -77,6 +86,7 @@ export type ChatRole = 'patient' | 'professional';
 
 export interface ChatParticipant {
   userId: number;
+  profileId?: number | null;
   name: string;
   role: ChatRole;
   avatarUrl: string | null;
@@ -99,11 +109,14 @@ export interface Conversation {
   isGroup: boolean;
   title: string;
   preview: ConversationPreview | null;
+  match?: ConversationPreview;
   /** Profissional do canal individual; ausente no grupo. */
   professionalUserId?: number | null;
   /** O usuario logado so ve o historico (saiu da conversa ou ela ficou sem ninguem para responder). */
   readOnly?: boolean;
 }
+
+export type ChatFileFilter = 'images' | 'videos' | 'audios' | 'documents';
 
 export interface ChatFiles {
   images: ChatAttachment[];
@@ -124,7 +137,6 @@ export type TimelineItem =
       showAvatarSpace: boolean;
       /** Preenchidos so na primeira mensagem de uma sequencia do mesmo autor, em grupos. */
       senderName: string | null;
-      senderColor: string | null;
       senderId: number;
       senderAvatarUrl: string | null;
     };

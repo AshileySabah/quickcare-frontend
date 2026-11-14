@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { environment } from '../../../environments/environment';
 import { LoginApiResponse, PerfilStatusApi } from './auth-api.model';
-import { AuthService, ClosedAccountError } from './auth.service';
+import { AuthService, ClosedAccountError, EmailNotConfirmedError, RegistrationResult } from './auth.service';
 
 const LOGIN_URL = `${environment.apiUrl}/auth/login`;
 const ACTIVE_PROFILE_URL = `${environment.apiUrl}/auth/perfil-ativo`;
@@ -69,6 +69,123 @@ describe('AuthService', () => {
     expect(erro).toBeInstanceOf(ClosedAccountError);
     expect(erro?.message).toContain('08/12/2026');
     expect(service.currentUser()).toBeNull();
+  });
+
+  it('pede a confirmação do e-mail quando o back responde 412 no login', () => {
+    let erro: Error | undefined;
+    service.login('nova@quickcare.dev', 'Senha@123').subscribe({ error: (error: Error) => (erro = error) });
+
+    httpMock
+      .expectOne(LOGIN_URL)
+      .flush({ message: 'Confirme seu e-mail para entrar.' }, { status: 412, statusText: 'Precondition Failed' });
+
+    expect(erro).toBeInstanceOf(EmailNotConfirmedError);
+    expect(service.currentUser()).toBeNull();
+  });
+
+  it('o cadastro não entra na conta e avisa que falta confirmar o e-mail', () => {
+    let resultado: RegistrationResult | undefined;
+    service
+      .registerPatient({
+        name: 'Nova',
+        email: 'nova@quickcare.dev',
+        phone: '11999998888',
+        cpf: '52998224725',
+        identityDocumentType: 'RG',
+        identityDocumentNumber: '246781312',
+        identityDocumentUf: 'SP',
+        password: 'Senha@Forte1',
+        birthDate: '1990-01-01',
+        gender: 'FEMININO',
+        emergencyContacts: [],
+        infoConfirmedTrue: true,
+        lgpdConsent: true,
+        address: {
+          cep: '01310100',
+          street: 'Avenida Paulista',
+          number: '1000',
+          neighborhood: 'Bela Vista',
+          city: 'São Paulo',
+          state: 'SP',
+        },
+        documents: [],
+      })
+      .subscribe((result) => (resultado = result));
+
+    httpMock.expectOne(`${environment.apiUrl}/usuarios/cadastro/paciente`).flush({
+      usuarioId: 9,
+      perfilId: 3,
+      nome: 'Nova',
+      email: 'nova@quickcare.dev',
+      tipoPerfil: 'PACIENTE',
+      confirmacaoEmailPendente: true,
+    });
+
+    expect(resultado).toEqual({ email: 'nova@quickcare.dev', confirmationPending: true });
+    expect(service.currentUser()).toBeNull();
+  });
+
+  it('ao sair, apaga o token guardado no navegador sem chamar o back', () => {
+    login(session({ ultimoPerfil: 'PACIENTE' }));
+    localStorage.setItem('quickcare.token', 'tok');
+
+    service.logout().subscribe();
+
+    expect(localStorage.getItem('quickcare.token')).toBeNull();
+    expect(service.currentUser()).toBeNull();
+  });
+
+  it('sem token guardado, nem chama o back para restaurar a sessão', () => {
+    localStorage.removeItem('quickcare.token');
+    let usuario: unknown = 'pendente';
+
+    service.ensureSession().subscribe((user) => (usuario = user));
+
+    httpMock.expectNone(`${environment.apiUrl}/auth/me`);
+    expect(usuario).toBeNull();
+  });
+
+  it('com o token vencido, o /auth/me responde 401 e o token é apagado', () => {
+    localStorage.setItem('quickcare.token', 'vencido');
+    let usuario: unknown = 'pendente';
+
+    service.ensureSession().subscribe((user) => (usuario = user));
+    httpMock.expectOne(`${environment.apiUrl}/auth/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(usuario).toBeNull();
+    expect(localStorage.getItem('quickcare.token')).toBeNull();
+  });
+
+  it('entra de novo com a senha mantendo o perfil em uso', () => {
+    login(session({ ultimoPerfil: 'PACIENTE' }));
+
+    service.reauthenticate('Senha@123').subscribe();
+    const request = httpMock.expectOne(LOGIN_URL);
+    expect(request.request.body).toEqual({ email: 'ambos@quickcare.dev', senha: 'Senha@123' });
+    request.flush(session({ ultimoPerfil: 'PACIENTE' }));
+
+    expect(service.currentUser()?.role).toBe('patient');
+  });
+
+  it('confirma o e-mail pelo link e já entra na conta', () => {
+    service.confirmEmail('tok').subscribe();
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/auth/confirmacao-email/confirmar`);
+    expect(request.request.body).toEqual({ token: 'tok' });
+    request.flush(session({ perfis: [PACIENTE], ultimoPerfil: 'PACIENTE' }));
+
+    expect(service.currentUser()?.role).toBe('patient');
+  });
+
+  it('reenvia o link de confirmação com e-mail e senha', () => {
+    let mensagem = '';
+    service.resendEmailConfirmation('nova@quickcare.dev', 'Senha@123').subscribe((texto) => (mensagem = texto));
+
+    const request = httpMock.expectOne(`${environment.apiUrl}/auth/confirmacao-email/reenviar`);
+    expect(request.request.body).toEqual({ email: 'nova@quickcare.dev', senha: 'Senha@123' });
+    request.flush({ mensagem: 'Enviamos um novo link.' });
+
+    expect(mensagem).toBe('Enviamos um novo link.');
   });
 
   it('recupera a conta com e-mail e senha e já entra nela', () => {

@@ -5,6 +5,7 @@ import { Observable, firstValueFrom, of, throwError } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { AuthTokenStore } from '../auth/auth-token.store';
 import { normalizeError } from '../http/api-error';
 import { AppNotification, NotificationType, SwitchableRole, UnreadCounts } from '../models';
 
@@ -43,6 +44,7 @@ export class NotificationService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly createClient = inject(STOMP_CLIENT_FACTORY);
+  private readonly tokens = inject(AuthTokenStore);
   private readonly baseUrl = `${environment.apiUrl}/notificacoes`;
 
   private readonly notificationsSignal = signal<AppNotification[]>([]);
@@ -174,6 +176,9 @@ export class NotificationService {
       heartbeatOutgoing: HEARTBEAT_MS,
       beforeConnect: async () => {
         await firstValueFrom(this.loadUnread()).catch(() => undefined);
+        if (this.client) {
+          this.client.connectHeaders = { Authorization: this.tokens.authorization() ?? '' };
+        }
       },
       onConnect: () => {
         this.client?.subscribe(QUEUE, (message) => this.receive(message));

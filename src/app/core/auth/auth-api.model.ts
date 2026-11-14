@@ -19,6 +19,7 @@ export interface CadastroApiResponse {
   nome: string;
   email: string;
   tipoPerfil: 'PACIENTE' | 'PROFISSIONAL';
+  confirmacaoEmailPendente: boolean;
 }
 
 export interface MensagemApiResponse {

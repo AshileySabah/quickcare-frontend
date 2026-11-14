@@ -1,7 +1,6 @@
 import { Component, computed, input, signal } from '@angular/core';
-import { colorFor, initials } from '../../../core/chat/chat.utils';
+import { initials } from '../../../core/chat/chat.utils';
 
-/** Foto do usuario ou, sem foto, as iniciais numa cor estavel; com groupCount mostra o total do grupo. */
 @Component({
   selector: 'app-chat-avatar',
   standalone: true,
@@ -15,13 +14,17 @@ import { colorFor, initials } from '../../../core/chat/chat.utils';
     }
   `,
   styles: `
+    @use 'tokens' as tokens;
+
     :host {
       display: inline-grid;
       place-items: center;
       flex: none;
       overflow: hidden;
       border-radius: 50%;
-      font-weight: 500;
+      font-weight: tokens.font-weight('medium');
+      background-color: tokens.color('teal', 100);
+      color: tokens.color('teal', 700);
     }
 
     img {
@@ -34,8 +37,6 @@ import { colorFor, initials } from '../../../core/chat/chat.utils';
     '[style.width.px]': 'size()',
     '[style.height.px]': 'size()',
     '[style.font-size.px]': 'size() * 0.38',
-    '[style.background]': 'background()',
-    '[style.color]': 'foreground()',
   },
 })
 export class ChatAvatarComponent {
@@ -48,6 +49,4 @@ export class ChatAvatarComponent {
   protected readonly failedUrl = signal<string | null>(null);
   protected readonly showImage = computed(() => !!this.url() && this.failedUrl() !== this.url());
   protected readonly initialsText = computed(() => initials(this.name()));
-  protected readonly background = computed(() => (this.groupCount() !== null ? '#0b5a46' : colorFor(this.userId()).bg));
-  protected readonly foreground = computed(() => (this.groupCount() !== null ? '#fff' : colorFor(this.userId()).fg));
 }

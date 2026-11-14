@@ -12,6 +12,7 @@ export interface ShellNavItem {
   link: string;
   exact?: boolean;
   count?: number;
+  countLabel?: string;
 }
 
 @Component({

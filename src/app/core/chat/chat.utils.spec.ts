@@ -3,9 +3,10 @@ import {
   attachmentKind,
   buildTimeline,
   collectFiles,
-  colorFor,
   dayLabel,
+  filterMessages,
   initials,
+  markDeleted,
   mergeMessage,
   normalizeText,
   profileLink,
@@ -86,6 +87,43 @@ describe('chat.utils', () => {
     expect(result.attachment?.kind).toBe('image');
   });
 
+  it('mensagem apagada vem sem texto nem anexo', () => {
+    const result = toChatMessage({
+      id: 1,
+      remetenteId: 2,
+      solicitacaoId: 10,
+      conteudo: null,
+      dataEnvio: '2026-10-10T12:00:00Z',
+      apagada: true,
+      anexoNomeOriginal: 'foto.png',
+      anexoTipo: 'image/png',
+    });
+    expect(result.deleted).toBeTrue();
+    expect(result.content).toBe('');
+    expect(result.attachment).toBeNull();
+  });
+
+  it('marca como apagada só a mensagem indicada', () => {
+    const withFile: ChatMessage = {
+      ...msg(1, 1),
+      attachment: { url: 'u', name: 'a.png', type: 'image/png', kind: 'image' },
+    };
+    const result = markDeleted([withFile, msg(2, 2)], 1);
+    expect(result[0]).toEqual(jasmine.objectContaining({ id: 1, deleted: true, content: '', attachment: null }));
+    expect(result[1]).toEqual(msg(2, 2));
+  });
+
+  it('filtra as mensagens da conversa pelo texto ou pelo nome do anexo, sem as apagadas', () => {
+    const messages: ChatMessage[] = [
+      { ...msg(1, 1), content: 'Troquei o Curativo hoje' },
+      { ...msg(2, 2), content: '', attachment: { url: 'u', name: 'curativo.jpg', type: 'image/jpeg', kind: 'image' } },
+      { ...msg(3, 2), content: 'bom dia' },
+      { ...msg(4, 1), content: '', deleted: true },
+    ];
+    expect(filterMessages(messages, 'curatívo').map((m) => m.id)).toEqual([1, 2]);
+    expect(filterMessages(messages, '   ')).toBe(messages);
+  });
+
   it('classifica o tipo do anexo', () => {
     expect(attachmentKind('image/png')).toBe('image');
     expect(attachmentKind('video/mp4')).toBe('video');
@@ -157,6 +195,20 @@ describe('chat.utils', () => {
       expect(conversation.preview?.text).toBe('Foto');
     });
 
+    it('traz a mensagem encontrada pela busca', () => {
+      const conversation = toConversation(
+        {
+          ...groupApi,
+          ultimaMensagem: { remetenteId: 2, conteudo: 'até amanhã', dataEnvio: '2026-10-11T12:00:00Z' },
+          mensagemEncontrada: { remetenteId: 3, conteudo: 'curativo feito', dataEnvio: '2026-10-10T12:00:00Z' },
+        },
+        1,
+      );
+      expect(conversation.preview?.text).toBe('Bruno: até amanhã');
+      expect(conversation.match?.text).toBe('Carla: curativo feito');
+      expect(toConversation(groupApi, 1).match).toBeUndefined();
+    });
+
     it('atualiza a previa com uma mensagem nova', () => {
       const conversation = toConversation(groupApi, 1);
       const updated = withLastMessage(conversation, msg(5, 3), 1);
@@ -178,11 +230,6 @@ describe('chat.utils', () => {
     expect(initials('  maria  da  silva ')).toBe('MS');
     expect(initials('Bruno')).toBe('B');
     expect(initials('')).toBe('?');
-  });
-
-  it('a cor do usuario e estavel', () => {
-    expect(colorFor(2)).toEqual(colorFor(2));
-    expect(colorFor(2)).not.toEqual(colorFor(3));
   });
 
   it('normaliza texto para busca', () => {
@@ -259,8 +306,6 @@ describe('chat.utils', () => {
       const items = buildTimeline([msg(1, 2), msg(2, 2), msg(3, 3), msg(4, 1)], conversation, 1, now);
       const messages = items.filter((i) => i.kind === 'message') as MessageItem[];
       expect(messages.map((m) => m.senderName)).toEqual(['Bruno Medico', null, 'Carla Fisio', null]);
-      expect(messages[0].senderColor).toBe(colorFor(2).fg);
-      expect(messages[1].senderColor).toBeNull();
       expect(messages[3].mine).toBeTrue();
       expect(messages[3].showAvatarSpace).toBeFalse();
     });

@@ -155,6 +155,10 @@
       font-weight: tokens.font-weight('medium');
       color: tokens.color('gray', 900);
     }
+
+    &--match {
+      color: tokens.color('teal', 700);
+    }
   }
 
   &__badge {

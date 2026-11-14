@@ -72,19 +72,119 @@
   &__counts {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+  }
+
+  &__filter {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 6px tokens.space(2);
+    border: 0;
+    border-left: 3px solid transparent;
+    background: none;
+    font: inherit;
     font-size: tokens.font-size('sm');
     color: tokens.color('gray', 700);
+    text-align: left;
+    cursor: pointer;
 
-    li {
-      display: flex;
-      justify-content: space-between;
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background: tokens.color('gray', 50);
+      color: tokens.color('teal', 700);
+      outline: none;
     }
+
+    &--on,
+    &--on:hover:not(:disabled) {
+      border-left-color: tokens.color('teal', 600);
+      background: tokens.color('teal', 50);
+      color: tokens.color('teal', 700);
+      font-weight: tokens.font-weight('medium');
+    }
+
+    &:disabled {
+      color: tokens.color('gray', 400);
+      cursor: default;
+    }
+  }
+
+  &__filtered {
+    margin-top: tokens.space(3);
+    padding-top: tokens.space(3);
+    border-top: 1px solid tokens.color('gray', 200);
+
+    ::ng-deep .ui-paginator {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+
+    ::ng-deep .ui-paginator__summary {
+      justify-self: center;
+    }
+  }
+
+  &__filtered-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: tokens.space(2);
+    margin-bottom: tokens.space(2);
+    font-size: tokens.font-size('sm');
+    font-weight: tokens.font-weight('medium');
+    color: tokens.color('gray', 900);
+  }
+
+  &__clear {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: tokens.font-size('xs');
+    font-weight: tokens.font-weight('regular');
+    color: tokens.color('teal', 700);
+    cursor: pointer;
+
+    &:hover,
+    &:focus-visible {
+      text-decoration: underline;
+    }
+  }
+
+  &__media-list {
+    display: flex;
+    flex-direction: column;
+    gap: tokens.space(3);
+  }
+
+  &__file-name {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: tokens.font-size('xs');
+    color: tokens.color('gray', 700);
+  }
+
+  &__audio,
+  &__video {
+    display: block;
+    width: 100%;
+  }
+
+  &__audio {
+    height: 40px;
+    margin-top: tokens.space(1);
+  }
+
+  &__video {
+    max-height: 160px;
+    margin-bottom: tokens.space(1);
+    background: tokens.color('gray', 900);
   }
 
   &__doc {
     display: block;
-    margin-top: tokens.space(2);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

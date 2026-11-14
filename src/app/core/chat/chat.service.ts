@@ -41,8 +41,10 @@ export class ChatService implements OnDestroy {
   readonly connected = signal(false);
 
   /** Canais do usuario logado: conversas individuais e grupos das solicitacoes com proposta aceita. */
-  conversations(currentUserId: number): Observable<Conversation[]> {
-    return this.http.get<ConversationApi[]>(this.conversationsUrl).pipe(
+  conversations(currentUserId: number, search = ''): Observable<Conversation[]> {
+    const term = search.trim();
+    const params = term ? new HttpParams().set('busca', term) : undefined;
+    return this.http.get<ConversationApi[]>(this.conversationsUrl, { params }).pipe(
       map((items) => items.map((item) => toConversation(item, currentUserId))),
       catchError((error) => throwError(() => this.normalizeError(error))),
     );

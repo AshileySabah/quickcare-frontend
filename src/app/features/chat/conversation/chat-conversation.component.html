@@ -74,6 +74,28 @@
             <button
               type="button"
               class="chat__icon"
+              [class.chat__icon--on]="searchOpen()"
+              aria-label="Buscar nesta conversa"
+              title="Buscar nesta conversa"
+              (click)="toggleSearch()"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                width="20"
+                height="20"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                aria-hidden="true"
+              >
+                <circle cx="11" cy="11" r="7" />
+                <path d="m20 20-3.5-3.5" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="chat__icon"
               [class.chat__icon--on]="infoOpen()"
               aria-label="Informações da conversa"
               title="Informações da conversa"
@@ -95,8 +117,32 @@
             </button>
           </header>
 
+          @if (searchOpen()) {
+            <div class="chat__search">
+              <input
+                #searchInput
+                type="search"
+                class="chat__search-input"
+                placeholder="Buscar mensagem nesta conversa"
+                aria-label="Buscar mensagem nesta conversa"
+                [ngModel]="messageSearch()"
+                (ngModelChange)="messageSearch.set($event)"
+                (keydown.escape)="toggleSearch()"
+              />
+              @if (searchTerm()) {
+                <span class="chat__search-count" role="status">
+                  {{ visibleMessages().length }}
+                  {{ visibleMessages().length === 1 ? "mensagem" : "mensagens" }}
+                </span>
+              }
+              <button type="button" class="chat__search-close" (click)="toggleSearch()">Fechar</button>
+            </div>
+          }
+
           <div class="chat__messages" #list>
-            @if (messages().length === 0) {
+            @if (searchTerm() && visibleMessages().length === 0) {
+              <p class="chat__empty">Nenhuma mensagem encontrada nesta conversa.</p>
+            } @else if (messages().length === 0) {
               <p class="chat__empty">
                 {{ current.readOnly ? "Não há mensagens para mostrar." : "Nenhuma mensagem ainda. Diga olá!" }}
               </p>
@@ -134,19 +180,28 @@
                   <div class="chat__bubble">
                     @if (item.senderName) {
                       @if (profileLinkOf(item.senderId); as link) {
-                        <a
-                          class="chat__sender chat__person-name"
-                          [routerLink]="link"
-                          [style.color]="item.senderColor"
-                          >{{ item.senderName }}</a
-                        >
+                        <a class="chat__sender chat__person-name" [routerLink]="link">{{ item.senderName }}</a>
                       } @else {
-                        <span
-                          class="chat__sender"
-                          [style.color]="item.senderColor"
-                          >{{ item.senderName }}</span
-                        >
+                        <span class="chat__sender">{{ item.senderName }}</span>
                       }
+                    }
+                    @if (item.message.deleted) {
+                      <p class="chat__deleted">
+                        <svg
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          aria-hidden="true"
+                        >
+                          <circle cx="12" cy="12" r="9" />
+                          <path d="m5.6 5.6 12.8 12.8" />
+                        </svg>
+                        {{ item.mine ? "Você apagou esta mensagem" : "Mensagem apagada" }}
+                      </p>
                     }
                     @if (item.message.attachment; as attachment) {
                       <div class="chat__attachment">
@@ -223,17 +278,40 @@
                     }
                     <div class="chat__meta">
                       <span>{{ item.message.sentAt | date: "HH:mm" }}</span>
-                      @if (item.mine && !current.readOnly) {
-                        <button
-                          type="button"
-                          class="chat__delete"
-                          (click)="messageToDelete.set(item.message)"
-                        >
-                          Apagar
-                        </button>
-                      }
                     </div>
                   </div>
+                  @if (item.mine && !current.readOnly && !item.message.deleted) {
+                    <div class="chat__actions">
+                      <button
+                        type="button"
+                        class="chat__more"
+                        [class.chat__more--on]="menuOpenId() === item.message.id"
+                        aria-label="Opções da mensagem"
+                        title="Opções da mensagem"
+                        aria-haspopup="menu"
+                        [attr.aria-expanded]="menuOpenId() === item.message.id"
+                        (click)="toggleMenu(item.message.id, $event)"
+                      >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
+                          <circle cx="12" cy="5" r="1.8" />
+                          <circle cx="12" cy="12" r="1.8" />
+                          <circle cx="12" cy="19" r="1.8" />
+                        </svg>
+                      </button>
+                      @if (menuOpenId() === item.message.id) {
+                        <div class="chat__menu" role="menu" (click)="$event.stopPropagation()">
+                          <button
+                            type="button"
+                            class="chat__menu-item chat__menu-item--danger"
+                            role="menuitem"
+                            (click)="askDelete(item.message)"
+                          >
+                            Apagar mensagem
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  }
                 </div>
               }
             }

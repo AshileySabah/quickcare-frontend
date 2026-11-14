@@ -7,7 +7,7 @@
   <section class="info__card">
     <h3 class="info__heading">Arquivos <small>{{ files().total }}</small></h3>
 
-    @if (photos().length > 0) {
+    @if (!activeFilter() && photos().length > 0) {
       <div class="info__photos">
         @for (photo of photos(); track photo.url) {
           <a [href]="photo.url" target="_blank" rel="noopener">
@@ -18,14 +18,72 @@
     }
 
     <ul class="info__counts">
-      <li>Fotos <b>{{ files().images.length }}</b></li>
-      <li>Vídeos <b>{{ files().videos.length }}</b></li>
-      <li>Áudios <b>{{ files().audios.length }}</b></li>
-      <li>Documentos <b>{{ files().documents.length }}</b></li>
+      @for (option of filterOptions; track option.key) {
+        <li>
+          <button
+            type="button"
+            class="info__filter"
+            [class.info__filter--on]="activeFilter() === option.key"
+            [attr.aria-pressed]="activeFilter() === option.key"
+            [disabled]="files()[option.key].length === 0"
+            (click)="toggleFilter(option.key)"
+          >
+            <span>{{ option.label }}</span>
+            <b>{{ files()[option.key].length }}</b>
+          </button>
+        </li>
+      }
     </ul>
 
-    @for (doc of documents(); track doc.url) {
-      <a class="info__doc" [href]="doc.url" target="_blank" rel="noopener">{{ doc.name }}</a>
+    @if (activeFilter(); as filter) {
+      <div class="info__filtered">
+        <div class="info__filtered-head">
+          <span>{{ activeLabel() }}</span>
+          <button type="button" class="info__clear" (click)="activeFilter.set(null)">Ver todos os tipos</button>
+        </div>
+
+        @switch (filter) {
+          @case ("images") {
+            <div class="info__photos">
+              @for (photo of pager.items(); track photo.url) {
+                <a [href]="photo.url" target="_blank" rel="noopener" [title]="photo.name">
+                  <img [src]="photo.url" [alt]="photo.name" />
+                </a>
+              }
+            </div>
+          }
+          @case ("videos") {
+            <ul class="info__media-list">
+              @for (video of pager.items(); track video.url) {
+                <li>
+                  <video class="info__video" controls preload="metadata" [src]="video.url"></video>
+                  <span class="info__file-name">{{ video.name }}</span>
+                </li>
+              }
+            </ul>
+          }
+          @case ("audios") {
+            <ul class="info__media-list">
+              @for (audio of pager.items(); track audio.url) {
+                <li>
+                  <span class="info__file-name">{{ audio.name }}</span>
+                  <audio class="info__audio" controls preload="metadata" [src]="audio.url"></audio>
+                </li>
+              }
+            </ul>
+          }
+          @default {
+            <ul class="info__media-list">
+              @for (doc of pager.items(); track doc.url) {
+                <li>
+                  <a class="info__doc" [href]="doc.url" target="_blank" rel="noopener">{{ doc.name }}</a>
+                </li>
+              }
+            </ul>
+          }
+        }
+        <ui-paginator [pagination]="pager" [label]="'Paginação de ' + activeLabel()"></ui-paginator>
+      </div>
     }
   </section>
 
@@ -35,11 +93,11 @@
       @for (person of conversation().participants; track person.userId) {
         <li>
           @if (linkOf(person); as link) {
-            <a class="info__person info__person--link" [routerLink]="link" title="Ver perfil">
+            <a class="info__person info__person--link" [routerLink]="link" [title]="'Ver perfil de ' + person.name">
               <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
               <span class="info__who">
                 <strong>{{ person.name }}</strong>
-                <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }} · ver perfil</small>
+                <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }}</small>
               </span>
             </a>
           } @else {

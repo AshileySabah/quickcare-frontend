@@ -1,5 +1,5 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { DestroyRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
@@ -10,7 +10,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter } from 'rxjs';
+import { Subject, catchError, debounceTime, filter, map, merge, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChatParticipant, Conversation } from '../../../core/chat/chat.model';
 import { ChatService } from '../../../core/chat/chat.service';
@@ -19,7 +19,6 @@ import {
   channelSegment,
   conversationKey,
   messageKey,
-  normalizeText,
   shortTime,
   sortConversations,
   withLastMessage,
@@ -69,18 +68,32 @@ export class ChatLayoutComponent {
       ? '/professional/mensagens'
       : '/patient/mensagens',
   );
-  protected readonly filtered = computed(() => {
-    const query = normalizeText(this.search());
-    const list = this.conversations();
-    return query
-      ? list.filter((item) => normalizeText(item.title).includes(query))
-      : list;
-  });
+  protected readonly searchResults = signal<Conversation[] | null>(null);
+  protected readonly searching = signal(false);
+  protected readonly filtered = computed(() => this.searchResults() ?? this.conversations());
 
   protected readonly shortTime = shortTime;
 
+  private readonly searchRefresh = new Subject<void>();
+
   constructor() {
     this.load();
+
+    merge(toObservable(this.search).pipe(debounceTime(300)), this.searchRefresh)
+      .pipe(
+        map(() => this.search().trim()),
+        tap((term) => this.searching.set(!!term)),
+        switchMap((term) =>
+          term
+            ? this.chatService.conversations(this.meId, term).pipe(catchError(() => of([] as Conversation[])))
+            : of(null),
+        ),
+        takeUntilDestroyed(),
+      )
+      .subscribe((results) => {
+        this.searchResults.set(results);
+        this.searching.set(false);
+      });
 
     this.chatService.connect();
     this.destroyRef.onDestroy(() => this.chatService.disconnect());
@@ -107,6 +120,9 @@ export class ChatLayoutComponent {
           ),
         ),
       );
+      if (this.search().trim()) {
+        this.searchRefresh.next();
+      }
     });
 
     this.router.events
@@ -126,6 +142,9 @@ export class ChatLayoutComponent {
   /** Recarrega sem mostrar o esqueleto (a lista continua na tela). */
   private refresh(): void {
     this.fetch();
+    if (this.search().trim()) {
+      this.searchRefresh.next();
+    }
   }
 
   private fetch(): void {

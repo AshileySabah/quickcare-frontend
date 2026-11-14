@@ -72,15 +72,17 @@ export function messageKey(message: Pick<ChatMessage, 'requestId' | 'professiona
 }
 
 export function toChatMessage(api: ChatMessageApi): ChatMessage {
-  const hasAttachment = !!(api.anexoUrl || api.anexoNomeOriginal || api.anexoTipo);
+  const deleted = !!api.apagada;
+  const hasAttachment = !deleted && !!(api.anexoUrl || api.anexoNomeOriginal || api.anexoTipo);
   const type = api.anexoTipo ?? '';
 
   return {
     id: api.id,
     senderId: api.remetenteId,
     requestId: api.solicitacaoId,
-    content: api.conteudo,
+    content: deleted ? '' : (api.conteudo ?? ''),
     sentAt: new Date(api.dataEnvio),
+    ...(deleted ? { deleted: true } : {}),
     ...(api.profissionalUsuarioId != null ? { professionalUserId: api.profissionalUsuarioId } : {}),
     attachment: hasAttachment
       ? {
@@ -145,6 +147,7 @@ export function toConversation(api: ConversationApi, currentUserId: number): Con
   const others = participants.filter((p) => p.userId !== currentUserId);
   const isGroup = api.tipo ? api.tipo === 'GRUPO' : participants.length > 2;
   const last = api.ultimaMensagem;
+  const found = api.mensagemEncontrada;
 
   return {
     requestId: api.solicitacaoId,
@@ -166,6 +169,20 @@ export function toConversation(api: ConversationApi, currentUserId: number): Con
           isGroup,
         )
       : null,
+    ...(found
+      ? {
+          match: buildPreview(
+            found.remetenteId,
+            found.conteudo,
+            found.anexoTipo,
+            !!(found.anexoNomeOriginal || found.anexoTipo),
+            new Date(found.dataEnvio),
+            participants,
+            currentUserId,
+            isGroup,
+          ),
+        }
+      : {}),
   };
 }
 
@@ -225,25 +242,6 @@ export function initials(name: string): string {
   const first = parts[0][0];
   const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
   return (first + last).toUpperCase();
-}
-
-export interface AvatarColor {
-  bg: string;
-  fg: string;
-}
-
-const AVATAR_COLORS: AvatarColor[] = [
-  { bg: '#d4eee7', fg: '#0b5a46' },
-  { bg: '#e0e4fb', fg: '#3b46a8' },
-  { bg: '#fde9c8', fg: '#8a5a00' },
-  { bg: '#fbdde5', fg: '#a3294f' },
-  { bg: '#d9ecfa', fg: '#1f5f8f' },
-  { bg: '#eadcf7', fg: '#6b3a9b' },
-];
-
-/** Cor estavel por usuario, para distinguir quem fala nos grupos. */
-export function colorFor(userId: number): AvatarColor {
-  return AVATAR_COLORS[Math.abs(userId) % AVATAR_COLORS.length];
 }
 
 function dayKey(date: Date): string {
@@ -309,7 +307,6 @@ export function buildTimeline(
       mine,
       showAvatarSpace: isGroup && !mine,
       senderName: showSender ? (sender?.name ?? 'Participante') : null,
-      senderColor: showSender ? colorFor(message.senderId).fg : null,
       senderId: message.senderId,
       senderAvatarUrl: sender?.avatarUrl ?? null,
     });
@@ -343,6 +340,25 @@ export function collectFiles(messages: ChatMessage[]): ChatFiles {
   }
 
   return files;
+}
+
+export function markDeleted(list: ChatMessage[], id: number): ChatMessage[] {
+  return list.map((item) =>
+    item.id === id ? { ...item, content: '', attachment: null, deleted: true } : item,
+  );
+}
+
+export function filterMessages(messages: ChatMessage[], query: string): ChatMessage[] {
+  const term = normalizeText(query);
+  if (!term) {
+    return messages;
+  }
+  return messages.filter(
+    (message) =>
+      !message.deleted &&
+      (normalizeText(message.content).includes(term) ||
+        (!!message.attachment && normalizeText(message.attachment.name).includes(term))),
+  );
 }
 
 /** Insere ignorando duplicatas (o mesmo id pode chegar por HTTP e por WebSocket). */

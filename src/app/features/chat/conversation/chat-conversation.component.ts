@@ -84,6 +84,9 @@ export class ChatConversationComponent {
   protected readonly viewerRole = this.authService.role;
   protected readonly basePath = computed(() => (this.isProfessional() ? '/professional/mensagens' : '/patient/mensagens'));
   protected readonly headerPerson = computed(() => this.conversation()?.others[0] ?? null);
+  protected readonly headerLink = computed(() =>
+    this.conversation()?.isGroup ? null : this.profileLinkOf(this.headerPerson()?.userId),
+  );
   protected readonly subtitle = computed(() => {
     const conversation = this.conversation();
     if (!conversation) return '';

@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
+import { BlockPreview } from '../../../core/models/user-block.model';
 import { ReportService } from '../../../core/services/report.service';
 import { UserBlockService } from '../../../core/services/user-block.service';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
@@ -14,7 +15,8 @@ describe('ProfileReportActionComponent', () => {
   beforeEach(() => {
     reportService = jasmine.createSpyObj<ReportService>('ReportService', ['send']);
     userBlockService = jasmine.createSpyObj<UserBlockService>('UserBlockService', ['preview', 'block']);
-    userBlockService.preview.and.returnValue(of({ late: false, pendingProposals: 0, acceptedProposals: 0 } as never));
+    const preview: BlockPreview = { name: 'Bruno', late: false, pendingProposals: 0, acceptedProposals: 0 };
+    userBlockService.preview.and.returnValue(of(preview));
     toast = jasmine.createSpyObj<ToastService>('ToastService', ['success', 'error', 'info']);
 
     TestBed.configureTestingModule({

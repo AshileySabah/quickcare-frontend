@@ -39,8 +39,8 @@
                 [groupCount]="current.participants.length"
                 [size]="44"
               ></app-chat-avatar>
-            } @else if (profileLinkOf(headerPerson()?.userId); as link) {
-              <a class="chat__person" [routerLink]="link" title="Ver perfil" aria-label="Ver perfil">
+            } @else if (headerLink()) {
+              <a class="chat__person" [routerLink]="headerLink()" title="Ver perfil" aria-label="Ver perfil">
                 <app-chat-avatar
                   [name]="headerPerson()?.name ?? current.title"
                   [url]="headerPerson()?.avatarUrl ?? null"
@@ -60,8 +60,8 @@
               <h2 class="chat__title">
                 @if (current.isGroup) {
                   Grupo · Solicitação #{{ requestId() }}
-                } @else if (profileLinkOf(headerPerson()?.userId); as link) {
-                  <a class="chat__person-name" [routerLink]="link" title="Ver perfil">{{ current.title }}</a>
+                } @else if (headerLink()) {
+                  <a class="chat__person-name" [routerLink]="headerLink()" title="Ver perfil">{{ current.title }}</a>
                 } @else {
                   {{ current.title }}
                 }

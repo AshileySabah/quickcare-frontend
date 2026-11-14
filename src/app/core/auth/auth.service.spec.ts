@@ -125,6 +125,48 @@ describe('AuthService', () => {
     expect(service.currentUser()).toBeNull();
   });
 
+  it('ao sair, apaga o token guardado no navegador sem chamar o back', () => {
+    login(session({ ultimoPerfil: 'PACIENTE' }));
+    localStorage.setItem('quickcare.token', 'tok');
+
+    service.logout().subscribe();
+
+    expect(localStorage.getItem('quickcare.token')).toBeNull();
+    expect(service.currentUser()).toBeNull();
+  });
+
+  it('sem token guardado, nem chama o back para restaurar a sessão', () => {
+    localStorage.removeItem('quickcare.token');
+    let usuario: unknown = 'pendente';
+
+    service.ensureSession().subscribe((user) => (usuario = user));
+
+    httpMock.expectNone(`${environment.apiUrl}/auth/me`);
+    expect(usuario).toBeNull();
+  });
+
+  it('com o token vencido, o /auth/me responde 401 e o token é apagado', () => {
+    localStorage.setItem('quickcare.token', 'vencido');
+    let usuario: unknown = 'pendente';
+
+    service.ensureSession().subscribe((user) => (usuario = user));
+    httpMock.expectOne(`${environment.apiUrl}/auth/me`).flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(usuario).toBeNull();
+    expect(localStorage.getItem('quickcare.token')).toBeNull();
+  });
+
+  it('entra de novo com a senha mantendo o perfil em uso', () => {
+    login(session({ ultimoPerfil: 'PACIENTE' }));
+
+    service.reauthenticate('Senha@123').subscribe();
+    const request = httpMock.expectOne(LOGIN_URL);
+    expect(request.request.body).toEqual({ email: 'ambos@quickcare.dev', senha: 'Senha@123' });
+    request.flush(session({ ultimoPerfil: 'PACIENTE' }));
+
+    expect(service.currentUser()?.role).toBe('patient');
+  });
+
   it('confirma o e-mail pelo link e já entra na conta', () => {
     service.confirmEmail('tok').subscribe();
 

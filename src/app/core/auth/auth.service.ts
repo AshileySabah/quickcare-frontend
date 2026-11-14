@@ -1,8 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
-import { catchError, map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, shareReplay } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
+import { AuthTokenStore } from './auth-token.store';
 import {
   Address,
   Admin,
@@ -103,6 +104,7 @@ const TIPO_BY_ROLE = { patient: 'PACIENTE', professional: 'PROFISSIONAL' } as co
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly tokens = inject(AuthTokenStore);
 
   private readonly currentUserSignal = signal<User | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
@@ -127,18 +129,31 @@ export class AuthService {
   }
 
   private fetchCurrentSession(): Observable<User | null> {
-    const me$ = this.http.get<LoginApiResponse>(`${environment.apiUrl}/auth/me`);
+    if (!this.tokens.token()) {
+      return of(null);
+    }
 
-    return me$.pipe(
-      catchError((error: unknown) =>
-        error instanceof HttpErrorResponse && error.status === 401
-          ? this.http
-              .post<void>(`${environment.apiUrl}/auth/refresh`, {})
-              .pipe(switchMap(() => me$))
-          : throwError(() => error),
-      ),
+    return this.http.get<LoginApiResponse>(`${environment.apiUrl}/auth/me`).pipe(
       map((response) => this.startSession(response, true)),
-      catchError(() => of(null)),
+      catchError((error: unknown) => {
+        if (error instanceof HttpErrorResponse && error.status === 401) {
+          this.tokens.clear();
+        }
+        return of(null);
+      }),
+    );
+  }
+
+  reauthenticate(password: string): Observable<User> {
+    const email = this.currentUserSignal()?.email;
+    if (!email) {
+      return throwError(() => new Error('Entre novamente pela tela de login.'));
+    }
+    return this.http.post<LoginApiResponse>(`${environment.apiUrl}/auth/login`, { email, senha: password }).pipe(
+      map((response) => this.startSession(response, true)),
+      catchError((error: unknown) =>
+        throwError(() => normalizeError(error, 'Não foi possível entrar. Tente novamente.')),
+      ),
     );
   }
 
@@ -147,7 +162,6 @@ export class AuthService {
       .post<LoginApiResponse>(
         `${environment.apiUrl}/auth/login`,
         { email, senha: password },
-        { withCredentials: true },
       )
       .pipe(
         map((response) => this.startSession(response)),
@@ -166,7 +180,7 @@ export class AuthService {
 
   confirmEmail(token: string): Observable<User> {
     return this.http
-      .post<LoginApiResponse>(`${environment.apiUrl}/auth/confirmacao-email/confirmar`, { token }, { withCredentials: true })
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/confirmacao-email/confirmar`, { token })
       .pipe(
         map((response) => this.startSession(response, true)),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível confirmar o e-mail.'))),
@@ -184,7 +198,7 @@ export class AuthService {
 
   recoverAccount(email: string, password: string): Observable<User> {
     return this.http
-      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar`, { email, senha: password }, { withCredentials: true })
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar`, { email, senha: password })
       .pipe(
         map((response) => this.startSession(response, true)),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
@@ -193,7 +207,7 @@ export class AuthService {
 
   recoverAccountByLink(token: string): Observable<User> {
     return this.http
-      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar-por-link`, { token }, { withCredentials: true })
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/conta/recuperar-por-link`, { token })
       .pipe(
         map((response) => this.startSession(response, true)),
         catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível recuperar a conta.'))),
@@ -416,7 +430,6 @@ export class AuthService {
       .post<CadastroApiResponse>(
         `${environment.apiUrl}/usuarios/cadastro/paciente`,
         toFormData(dados, input.documents, input.avatar),
-        { withCredentials: true },
       )
       .pipe(
         map(toRegistrationResult),
@@ -438,7 +451,6 @@ export class AuthService {
       .post<CadastroApiResponse>(
         `${environment.apiUrl}/usuarios/cadastro/profissional`,
         toFormData(dados, professionalDocuments(input), input.avatar),
-        { withCredentials: true },
       )
       .pipe(
         map(toRegistrationResult),
@@ -471,19 +483,8 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    return this.http
-      .post<void>(
-        `${environment.apiUrl}/auth/logout`,
-        {},
-        { withCredentials: true },
-      )
-      .pipe(
-        tap(() => this.clearSession()),
-        catchError(() => {
-          this.clearSession();
-          return of(undefined);
-        }),
-      );
+    this.clearSession();
+    return of(undefined);
   }
 
   updateValidationStatus(validationStatus: ValidationStatus): void {
@@ -505,6 +506,7 @@ export class AuthService {
   }
 
   private clearSession(): void {
+    this.tokens.clear();
     this.currentUserSignal.set(null);
     this.profilesSignal.set([]);
   }

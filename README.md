@@ -1,135 +1,123 @@
-# QuickCare
+# QuickCare — Front-end
 
-Front-end do QuickCare, um marketplace de profissionais de saúde. O funcionamento é orientado a demanda: em vez de o paciente navegar por uma lista de profissionais e escolher às cegas, ele descreve o que precisa uma única vez, e são os profissionais qualificados que competem por aquele atendimento enviando propostas. Isso inverte o esforço de busca — o paciente recebe as opções já filtradas pela especialidade certa, e o profissional só vê demandas reais, dentro da área em que está habilitado a atuar.
+Front-end do QuickCare, um marketplace de profissionais de saúde orientado a demanda. Em vez de o paciente navegar por uma lista de profissionais e escolher às cegas, ele descreve o que precisa uma única vez, e os profissionais aprovados para aquela área enviam propostas. O paciente recebe opções já filtradas, e o profissional só vê demandas reais dentro da área em que está habilitado.
 
-Projeto de TCC do curso de Análise e Desenvolvimento de Sistemas (FATEC).
+Projeto de TCC do curso de Análise e Desenvolvimento de Sistemas (FATEC). A API fica no repositório `quickcare-backend`, e o README de lá detalha as regras de negócio.
 
-## Contexto de negócio
+## Como funciona
 
-### Como funciona, passo a passo
+1. O paciente se cadastra, confirma o e-mail pelo link recebido e aguarda o admin validar os documentos.
+2. Já aprovado, ele cria uma **solicitação**: o que precisa, quantos profissionais de cada categoria ou especialidade, modalidade (presencial ou online) e prazo.
+3. Profissionais com uma **atuação** aprovada compatível veem a solicitação e enviam **propostas** com valor, abordagem e período.
+4. O paciente aceita uma proposta por vaga. Cada aceite vira um **atendimento**, que passa sozinho de agendado para em andamento, depois finalizado e por fim concluído. Os dois podem remarcar, cancelar ou relatar um problema.
+5. Ao terminar, os dois se avaliam de forma anônima.
 
-1. O paciente descreve uma necessidade de atendimento (ex.: "nutricionista para dieta com restrição a lactose"), informando especialidade, modalidade (presencial ou online) e prazo desejado. Isso cria uma solicitação.
-2. Profissionais daquela especialidade — desde que já aprovados pelo admin — enxergam a solicitação e podem enviar uma proposta: preço, abordagem de atendimento e prazo estimado. Mais de um profissional pode propor para a mesma solicitação.
-3. O paciente compara as propostas recebidas e aceita uma. Nesse momento as demais propostas daquela solicitação são recusadas automaticamente, e o atendimento passa a ser considerado em andamento.
-4. Ao final do atendimento, o paciente marca a solicitação como concluída. Ele também pode cancelá-la a qualquer momento antes da conclusão, caso desista.
+Durante tudo isso, o paciente e os profissionais aceitos conversam pelo **chat**.
 
-O papel do admin existe para dar confiança ao paciente: qualquer pessoa pode se cadastrar como profissional, mas só passa a aparecer para os pacientes depois que o admin confere o documento de registro profissional enviado (CRN, CRP, CREFITO etc.) e aprova o cadastro.
+### Perfis
 
-### Perfis de usuário
+- **Paciente**: solicitações, propostas recebidas, atendimentos, histórico, avaliações, denúncias e bloqueios.
+- **Profissional**: atuações (categorias, especialidades e registro), solicitações disponíveis, minhas propostas, atendimentos.
+- **Admin**: validação de cadastros, disputas, ocorrências e recursos, denúncias, banimentos, e ações gerais sobre usuários, solicitações, propostas e bloqueios.
 
-- **Paciente** — cria solicitações de atendimento, recebe propostas de profissionais, escolhe e aceita uma proposta, acompanha o histórico dos atendimentos.
-- **Profissional** — cadastra-se informando especialidade e documento de registro profissional (CRN, CRP, CREFITO etc.), aguarda validação do admin, e só depois disso pode visualizar solicitações da sua especialidade e enviar propostas.
-- **Admin** — audita os cadastros de profissionais pendentes, analisa o documento enviado e aprova ou reprova (com justificativa) o acesso do profissional à plataforma.
+A mesma conta pode ter os perfis de paciente e de profissional e alternar entre eles pelo seletor do header.
 
-### Máquina de estados da solicitação
+## Funcionalidades
 
-```
-Aberta → Recebendo propostas → Em andamento → Concluída
-   ↘___________↘___________↘
-              Cancelada (pelo paciente, a qualquer momento antes de Concluída)
-```
-
-- A solicitação nasce **Aberta**.
-- Ao receber a primeira proposta, passa automaticamente para **Recebendo propostas**.
-- Quando o paciente aceita uma proposta, a solicitação vai para **Em andamento**, todas as demais propostas pendentes são recusadas automaticamente, e a solicitação trava para edição.
-- O paciente marca a solicitação como **Concluída** ao final do atendimento.
-- O paciente pode **cancelar** a solicitação a qualquer momento antes da conclusão.
-
-### Máquina de estados da proposta
-
-```
-Pendente → Aceita
-        → Recusada (automático, quando outra proposta da mesma solicitação é aceita)
-        → Cancelada (pelo próprio profissional)
-```
-
-### Regras de negócio centrais
-
-- O paciente só edita a solicitação enquanto ela não tiver uma proposta aceita (status `Aberta` ou `Recebendo propostas`).
-- O profissional só edita ou cancela a própria proposta enquanto ela estiver `Pendente`.
-- O profissional só visualiza e envia propostas para solicitações da especialidade em que está **validado e aprovado** pelo admin.
-- Um profissional recém-cadastrado fica com status `Pendente` e é redirecionado para uma tela de "aguardando validação" até que o admin decida.
-
-Essas regras estão implementadas como métodos de serviço (`RequestService`, `ProposalService`), não espalhadas pelos componentes — ver seção [Arquitetura](#arquitetura).
+- **Cadastro** de paciente e de profissional com documentos e avatar (com recorte da imagem). Depois do cadastro aparece a tela "verifique seu e-mail", e o link de confirmação já faz o login.
+- **Validação**: tela "Documentos" com um card por etapa (CPF, identidade, CNPJ e registro de cada atuação), reenvio e revalidação. O admin tem pré-validação por API.
+- **Solicitações e propostas**: criação, edição com reaceite, recusa, cancelamento, "Reabrir solicitação" e "Reenviar proposta".
+- **Atendimentos**: painel com período, remarcação, cancelamento e relato de problema. Mostra ocorrências e bloqueio de criação quando houver.
+- **Perfis públicos**, **avaliações** (estrelas e destaques), **denúncia** e **bloqueio entre usuários**.
+- **Consulta pública** sem login a profissionais e a solicitações anonimizadas.
+- **Notificações** pelo sino, em tempo real e separadas por perfil.
+- **Segurança**: troca de e-mail e de senha, encerramento de perfil ou conta com 30 dias para recuperar, e lista de usuários bloqueados.
+- **Chat**:
+  - conversa individual entre o paciente e cada profissional aceito, mais um grupo por solicitação;
+  - contador de não lidas no menu "Mensagens";
+  - anexos (imagem, PDF, áudio, vídeo) e mensagens apagadas, que continuam no histórico como "mensagem apagada", com a opção de apagar num menu de três pontinhos;
+  - busca de conversas pelo nome e pelo texto das mensagens, e busca dentro de cada conversa;
+  - painel de informações com os arquivos filtrados por tipo e com os participantes, que levam ao perfil;
+  - o profissional que sai da solicitação, ou que tem bloqueio com o paciente, fica só com o histórico, sem poder escrever.
 
 ## Stack técnica
 
-- **Angular 19** — standalone components (sem `NgModule`), Signals para estado local e reativo (sem NgRx)
-- **SASS** com design system tokenizado (cores, espaçamento, tipografia, raio, breakpoints via funções/mixins SCSS — nenhum valor solto no código)
-- **Reactive Forms** com validação condicional (ex.: endereço só é obrigatório quando a modalidade é presencial)
-- **RxJS** para orquestrar as chamadas assíncronas dos services mockados
+- **Angular 19** com standalone components e **Signals** para o estado, sem NgRx
+- **RxJS** e `HttpClient` para a API
+- **@stomp/stompjs** para o WebSocket (notificações e chat)
+- **SASS** com design system em tokens: cores, espaçamento, tipografia, raio e breakpoints vêm de funções e mixins SCSS, sem valores soltos
+- **Reactive Forms** com validação condicional
+- **cropperjs** para recortar o avatar
+- Testes com Jasmine e Karma
 
-## Estado atual: front-end mockado
+## Autenticação
 
-Esta etapa do projeto entrega o front-end **completo e navegável fim a fim para os três perfis**, mas ainda **sem backend real**. Todos os dados vêm de arquivos `*.mock.ts` isolados em `src/app/mocks/`, e a lógica de autenticação/autorização roda inteiramente no navegador.
+O back devolve um JWT de 7 dias no cabeçalho `X-Auth-Token`. O front guarda esse token no `localStorage` (`AuthTokenStore`), e o `authInterceptor` o envia como `Authorization: Bearer` em toda chamada à API. A conexão STOMP também se autentica com ele. Quando a sessão expira (401), abre um modal pedindo para entrar de novo e, depois do login, a requisição que falhou é repetida.
 
-A interface entre o front e os dados já foi desenhada para que a troca por chamadas HTTP reais não exija reescrever componentes ou templates:
-
-- `AuthService`, `RequestService` e `ProposalService` já expõem métodos que retornam `Observable`, exatamente como fariam com `HttpClient` — só a implementação interna muda.
-- O interceptor de CSRF (`csrf.interceptor.ts`) já está implementado "de verdade" (lê o cookie `csrf_token` e injeta o header `X-CSRF-Token` em métodos mutantes, com `withCredentials: true` em toda requisição), esperando apenas o backend real passar a emitir esse cookie.
-- O modelo de autenticação alvo é **JWT em cookies HttpOnly + Secure + SameSite=Strict** (access token curto, refresh token restrito a `/auth/refresh`) — o Angular nunca lê nem guarda token algum.
+Cookies não são usados: eles eram bloqueados em aba anônima, porque o front e a API ficam em domínios diferentes.
 
 ## Arquitetura
 
 ```
 src/
+├── environments/      → apiUrl (environment.development.ts: localhost:8080; environment.ts: Render)
 ├── styles/
-│   └── tokens/         → design tokens SCSS (_colors, _spacing, _typography, _radius, _breakpoints)
-│   └── patterns/        → mixins de layout reaproveitados entre telas (auth-page, app-shell, request-list)
+│   ├── tokens/        → _colors, _spacing, _typography, _radius, _breakpoints
+│   └── patterns/      → mixins reaproveitados (page, card, form, details, dropdown, request-list...)
 └── app/
     ├── core/
-    │   ├── auth/         → AuthService (mockado, interface pronta para API real)
-    │   ├── guards/        → authGuard, roleGuard, professionalStatusGuard
-    │   ├── interceptors/  → csrfInterceptor + utilitário de cookies
-    │   ├── models/        → interfaces/enums de domínio (User, ServiceRequest, Proposal, Specialty...)
-    │   └── services/      → RequestService e ProposalService (máquinas de estado) + utilitário de simulação de rede
-    ├── shared/
-    │   └── ui/            → design system: Button, Input, Select, Textarea, Card, Badge, Modal, Toast,
-    │                         StatusBadge, ProposalCard, VerifiedBadge, Skeleton, EmptyState, ErrorState
-    ├── features/
-    │   ├── auth/          → login, seleção de cadastro, acesso negado
-    │   ├── patient/        → dashboard, nova/editar solicitação, detalhe + propostas, histórico, perfil
-    │   ├── professional/   → cadastro c/ upload de documento, aguardando validação, home por especialidade,
-    │   │                     envio/edição de proposta, minhas propostas, perfil
-    │   └── admin/          → dashboard de pendentes, aprovação/reprovação de profissionais
-    └── mocks/              → *.mock.ts (usuários, especialidades, solicitações, propostas, credenciais)
+    │   ├── auth/          → AuthService, AuthTokenStore, sessão expirada
+    │   ├── chat/          → ChatService (HTTP + STOMP), não lidas, modelos e utilitários
+    │   ├── guards/        → autenticação, perfil e status de validação
+    │   ├── interceptors/  → authInterceptor
+    │   ├── forms/         → formulários reaproveitados e validadores (período, atuação, endereço, documentos)
+    │   ├── lists/         → paginação (createPagination)
+    │   ├── formatting/    → períodos e tempo relativo
+    │   ├── models/        → interfaces e enums de domínio
+    │   └── services/      → serviços de cada domínio
+    ├── shared/ui/         → design system (button, forms, paginator, confirm-dialog, profile-card,
+    │                        notification-bell, star-rating, layout/app-shell, user-menu...)
+    └── features/
+        ├── auth/          → login, confirmação de e-mail, senha, recuperar conta, sessão expirada
+        ├── patient/       → dashboard, solicitações, histórico, cadastro, perfil
+        ├── professional/  → home, disponíveis, propostas, atuações, cadastro, perfil
+        ├── admin/         → validação, disputas, ocorrências, denúncias, gerais
+        ├── attendance/    → painel e relato de problema do atendimento
+        ├── chat/          → lista, conversa, painel de informações, avatar
+        ├── validation/    → Documentos (etapas e reenvio)
+        ├── profile/ ratings/ reports/ bans/ occurrences/ user-blocks/ security/ public/ home/
 ```
 
-### Por que os services concentram a lógica de status
+### Convenções
 
-`RequestService` e `ProposalService` são os únicos lugares que sabem transicionar status (`markReceivingProposals`, `markInProgress`, `acceptProposal` etc.) e decidir quem pode editar/cancelar o quê (`canEdit`, `canCancel`). Os componentes de tela apenas chamam esses métodos e reagem ao resultado — isso deixa a regra de negócio testável isoladamente (ver `*.service.spec.ts`) e evita que a mesma regra seja reimplementada (e diverja) em várias telas.
-
-### Estados de UI
-
-Toda tela com dado assíncrono trata 4 estados — loading (skeleton), vazio (mensagem + CTA), erro (mensagem + "tentar novamente") e preenchido — usando os componentes `ui-skeleton`, `ui-empty-state` e `ui-error-state` do design system.
+- As **regras de negócio ficam no back**. O front só mostra o que a API permite e trata os erros que ela devolve.
+- Toda tela com dado assíncrono trata **carregando, vazio, erro e preenchido**.
+- **Listas paginadas**: 5 itens por padrão, com opções em múltiplos de 5 (`createPagination` + `ui-paginator`).
+- **Formulários inválidos**: ao enviar, os campos com erro ficam vermelhos e o foco vai para o primeiro (`InvalidFieldFocusDirective`).
+- **Confirmações** usam `ui-confirm-dialog`, com os botões no par "Sim, …" / "Não, …".
+- **Cores só pelos tokens**, e os textos da interface são em português.
 
 ## Rodando o projeto
 
+Com a API rodando em `http://localhost:8080` (ver o README do back-end):
+
 ```bash
 npm install
-ng serve
+npm start
 ```
 
-Acesse `http://localhost:4200`. Contas de teste (senha `quickcare123` para todas, ver `src/app/mocks/credentials.mock.ts`):
-
-| Perfil | E-mail | Observação |
-| --- | --- | --- |
-| Paciente | `ana.souza@email.com` | possui solicitações em vários status |
-| Profissional aprovado | `mariana.alves@email.com` | nutricionista, pode enviar propostas |
-| Profissional pendente | `fernanda.costa@email.com` | cai na tela de aguardando validação |
-| Profissional reprovado | `ricardo.nunes@email.com` | cai na tela de aguardando validação com motivo |
-| Admin | `patricia.gomes@quickcare.com` | acessa o dashboard de pendentes |
+Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev` com a senha `quickcare123`, por exemplo `paciente@quickcare.dev`, `profissional@quickcare.dev`, `ambos@quickcare.dev` e `admin@quickcare.dev`.
 
 ### Testes
 
 ```bash
-ng test
+npm test
 ```
-
-Cobre as transições de status e as regras de permissão de `RequestService` e `ProposalService`.
 
 ### Build
 
 ```bash
-ng build
+npm run build
 ```
+
+O `npm start` usa `environment.development.ts`, que aponta para a API local. O build de produção usa `environment.ts`, que aponta para a API no Render. O front é publicado na Vercel.

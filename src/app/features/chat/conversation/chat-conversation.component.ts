@@ -14,8 +14,10 @@ import {
   conversationKey,
   mergeMessage,
   messageKey,
+  profileLink,
   validateAttachment,
 } from '../../../core/chat/chat.utils';
+import { ChatUnreadService } from '../../../core/chat/chat-unread.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { ConfirmDialogComponent } from '../../../shared/ui/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/ui/feedback/empty-state/empty-state.component';
@@ -49,6 +51,7 @@ const ATTACHMENT_REFRESH_INTERVAL_MS = 60_000;
 })
 export class ChatConversationComponent {
   private readonly chatService = inject(ChatService);
+  private readonly chatUnread = inject(ChatUnreadService);
   private readonly authService = inject(AuthService);
   private readonly route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);
@@ -72,13 +75,13 @@ export class ChatConversationComponent {
   protected readonly messageToDelete = signal<ChatMessage | null>(null);
   protected readonly deleting = signal(false);
   protected readonly infoOpen = signal(typeof window !== 'undefined' && window.innerWidth >= 1200);
-  protected readonly connected = this.chatService.connected;
   protected readonly accept = CHAT_ATTACHMENT_ACCEPT;
   protected readonly deleteConsequences = ['A mensagem some para todos os participantes da conversa.'];
 
   protected readonly canSend = computed(() => !!this.draft().trim() || !!this.selectedFile());
   protected readonly timeline = computed(() => buildTimeline(this.messages(), this.conversation(), this.meId));
   protected readonly isProfessional = computed(() => this.authService.role() === 'professional');
+  protected readonly viewerRole = this.authService.role;
   protected readonly basePath = computed(() => (this.isProfessional() ? '/professional/mensagens' : '/patient/mensagens'));
   protected readonly headerPerson = computed(() => this.conversation()?.others[0] ?? null);
   protected readonly subtitle = computed(() => {
@@ -97,6 +100,7 @@ export class ChatConversationComponent {
     // A rota reaproveita este componente ao trocar de conversa, entao reagimos aos parametros.
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const channel = params.get('canal');
+      this.chatUnread.close(this.requestId(), this.professionalUserId());
       this.requestId.set(Number(params.get('solicitacaoId')));
       this.professionalUserId.set(channel && channel !== 'grupo' ? Number(channel) : null);
       this.conversation.set(null);
@@ -110,6 +114,7 @@ export class ChatConversationComponent {
     this.chatService.connect();
     this.destroyRef.onDestroy(() => {
       this.loadSubscription?.unsubscribe();
+      this.chatUnread.close(this.requestId(), this.professionalUserId());
       this.chatService.disconnect();
     });
 
@@ -149,9 +154,15 @@ export class ChatConversationComponent {
         this.conversation.set(conversation);
         this.messages.set(messages);
         this.viewState.set('ready');
+        this.chatUnread.open(id, professionalUserId);
       },
       error: (error: ChatError) => this.viewState.set(error.status === 403 ? 'forbidden' : 'error'),
     });
+  }
+
+  protected profileLinkOf(userId: number | null | undefined): (string | number)[] | null {
+    const person = this.conversation()?.participants.find((item) => item.userId === userId);
+    return profileLink(person, this.authService.role(), this.meId);
   }
 
   protected scrollToBottom(): void {

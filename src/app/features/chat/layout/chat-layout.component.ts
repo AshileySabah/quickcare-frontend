@@ -14,6 +14,7 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
 import { ChatParticipant, Conversation } from '../../../core/chat/chat.model';
 import { ChatService } from '../../../core/chat/chat.service';
+import { ChatUnreadService } from '../../../core/chat/chat-unread.service';
 import {
   channelSegment,
   conversationKey,
@@ -60,10 +61,8 @@ export class ChatLayoutComponent {
   protected readonly conversations = signal<Conversation[]>([]);
   protected readonly search = signal('');
   protected readonly openId = signal<number | null>(null);
-  /** Canal aberto (solicitacao + grupo ou profissional); nulo quando nenhum esta aberto. */
   protected readonly openKey = signal<string | null>(null);
-  /** Mensagens novas em conversas que nao estao abertas, por canal. So vale nesta sessao da tela. */
-  protected readonly unread = signal<Record<string, number>>({});
+  protected readonly unread = inject(ChatUnreadService).counts;
 
   protected readonly basePath = computed(() =>
     this.authService.role() === 'professional'
@@ -108,13 +107,6 @@ export class ChatLayoutComponent {
           ),
         ),
       );
-
-      if (message.senderId !== this.meId && key !== this.openKey()) {
-        this.unread.update((counts) => ({
-          ...counts,
-          [key]: (counts[key] ?? 0) + 1,
-        }));
-      }
     });
 
     this.router.events
@@ -158,14 +150,6 @@ export class ChatLayoutComponent {
     const key = id !== null && channel ? `${id}/${channel}` : null;
     this.openId.set(id);
     this.openKey.set(key);
-
-    if (key !== null && this.unread()[key]) {
-      this.unread.update((counts) => {
-        const next = { ...counts };
-        delete next[key];
-        return next;
-      });
-    }
   }
 
   protected keyOf(conversation: Conversation): string {

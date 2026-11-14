@@ -34,7 +34,8 @@ export type NotificationType =
   | 'bloqueio_removido'
   | 'solicitacao_alterada_admin'
   | 'cadastro_aprovado'
-  | 'etapa_reprovada';
+  | 'etapa_reprovada'
+  | 'mensagem_recebida';
 
 export interface AppNotification {
   id: string;

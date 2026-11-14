@@ -136,6 +136,7 @@ function buildPreview(
 export function toConversation(api: ConversationApi, currentUserId: number): Conversation {
   const participants: ChatParticipant[] = api.participantes.map((p) => ({
     userId: p.usuarioId,
+    ...(p.perfilId != null ? { profileId: p.perfilId } : {}),
     name: p.nome,
     role: p.papel === 'PACIENTE' ? 'patient' : 'professional',
     avatarUrl: p.avatarUrl ?? null,
@@ -192,6 +193,25 @@ export function sortConversations(list: Conversation[]): Conversation[] {
     const bt = b.preview?.sentAt.getTime() ?? -Infinity;
     return bt === at ? b.requestId - a.requestId || conversationKey(a).localeCompare(conversationKey(b)) : bt - at;
   });
+}
+
+export function profileLink(
+  person: Pick<ChatParticipant, 'userId' | 'profileId' | 'role'> | null | undefined,
+  viewerRole: string | null,
+  currentUserId: number,
+): (string | number)[] | null {
+  if (!person || person.userId === currentUserId || person.profileId == null) {
+    return null;
+  }
+  if (viewerRole === 'patient') {
+    return person.role === 'professional' ? ['/patient/profissionais', person.profileId] : null;
+  }
+  if (viewerRole === 'professional') {
+    return person.role === 'patient'
+      ? ['/professional/pacientes', person.profileId]
+      : ['/profissionais', person.profileId];
+  }
+  return null;
 }
 
 export function roleLabel(role: ChatParticipant['role']): string {

@@ -8,6 +8,7 @@ import {
   initials,
   mergeMessage,
   normalizeText,
+  profileLink,
   shortTime,
   sortConversations,
   toChatMessage,
@@ -202,6 +203,43 @@ describe('chat.utils', () => {
     expect(shortTime(new Date('2026-10-10T08:05:00'), now)).toMatch(/08:05/);
     expect(shortTime(new Date('2026-10-09T23:00:00'), now)).toBe('Ontem');
     expect(shortTime(new Date('2026-10-01T10:00:00'), now)).toBe('01/10');
+  });
+
+  describe('profileLink', () => {
+    const paciente = { userId: 1, profileId: 10, role: 'patient' as const };
+    const enfermeira = { userId: 2, profileId: 20, role: 'professional' as const };
+    const cuidador = { userId: 3, profileId: 30, role: 'professional' as const };
+
+    it('o paciente abre o perfil do profissional', () => {
+      expect(profileLink(enfermeira, 'patient', 1)).toEqual(['/patient/profissionais', 20]);
+    });
+
+    it('o profissional abre o perfil do paciente e o perfil público de outro profissional', () => {
+      expect(profileLink(paciente, 'professional', 2)).toEqual(['/professional/pacientes', 10]);
+      expect(profileLink(cuidador, 'professional', 2)).toEqual(['/profissionais', 30]);
+    });
+
+    it('não há link para o próprio usuário nem para quem não tem perfil', () => {
+      expect(profileLink(enfermeira, 'professional', 2)).toBeNull();
+      expect(profileLink({ ...cuidador, profileId: null }, 'patient', 1)).toBeNull();
+      expect(profileLink(undefined, 'patient', 1)).toBeNull();
+    });
+
+    it('lê o id do perfil vindo da API', () => {
+      const conversation = toConversation(
+        {
+          solicitacaoId: 74,
+          tipo: 'INDIVIDUAL',
+          profissionalUsuarioId: 2,
+          participantes: [
+            { usuarioId: 1, perfilId: 10, nome: 'Helena', papel: 'PACIENTE' },
+            { usuarioId: 2, perfilId: 20, nome: 'Rafaela', papel: 'PROFISSIONAL' },
+          ],
+        },
+        1,
+      );
+      expect(conversation.others[0].profileId).toBe(20);
+    });
   });
 
   describe('buildTimeline', () => {

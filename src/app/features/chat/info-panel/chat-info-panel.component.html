@@ -33,12 +33,24 @@
     <h3 class="info__heading">Participantes <small>{{ conversation().participants.length }}</small></h3>
     <ul class="info__people">
       @for (person of conversation().participants; track person.userId) {
-        <li class="info__person">
-          <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
-          <span class="info__who">
-            <strong>{{ person.userId === meId() ? 'Você' : person.name }}</strong>
-            <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }}</small>
-          </span>
+        <li>
+          @if (linkOf(person); as link) {
+            <a class="info__person info__person--link" [routerLink]="link" title="Ver perfil">
+              <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
+              <span class="info__who">
+                <strong>{{ person.name }}</strong>
+                <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }} · ver perfil</small>
+              </span>
+            </a>
+          } @else {
+            <div class="info__person">
+              <app-chat-avatar [name]="person.name" [url]="person.avatarUrl" [userId]="person.userId" [size]="36"></app-chat-avatar>
+              <span class="info__who">
+                <strong>{{ person.userId === meId() ? 'Você' : person.name }}</strong>
+                <small>{{ roleLabel(person.role) }}{{ person.active === false ? ' · saiu da conversa' : '' }}</small>
+              </span>
+            </div>
+          }
         </li>
       }
     </ul>

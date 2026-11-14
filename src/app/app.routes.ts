@@ -201,6 +201,7 @@ export const routes: Routes = [
       },
       {
         path: 'mensagens',
+        data: { fullScreen: true },
         loadComponent: () =>
           import('./features/chat/layout/chat-layout.component').then(
             (m) => m.ChatLayoutComponent,
@@ -319,6 +320,7 @@ export const routes: Routes = [
       },
       {
         path: 'mensagens',
+        data: { fullScreen: true },
         loadComponent: () =>
           import('./features/chat/layout/chat-layout.component').then(
             (m) => m.ChatLayoutComponent,

@@ -21,6 +21,7 @@ export interface ChatMessageDeletedApi {
 /** Participante devolvido por GET /conversas (ParticipanteResponse). */
 export interface ChatParticipantApi {
   usuarioId: number;
+  perfilId?: number | null;
   nome: string;
   papel: 'PACIENTE' | 'PROFISSIONAL';
   avatarUrl?: string | null;
@@ -69,6 +70,11 @@ export interface ChatMessage {
   professionalUserId?: number | null;
 }
 
+export interface ChatUnreadApi {
+  total: number;
+  canais: { solicitacaoId: number; profissionalUsuarioId: number | null; quantidade: number }[];
+}
+
 export type ChatEvent =
   | { type: 'message'; message: ChatMessage }
   | { type: 'deleted'; id: number };
@@ -77,6 +83,7 @@ export type ChatRole = 'patient' | 'professional';
 
 export interface ChatParticipant {
   userId: number;
+  profileId?: number | null;
   name: string;
   role: ChatRole;
   avatarUrl: string | null;

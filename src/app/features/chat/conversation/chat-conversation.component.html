@@ -39,6 +39,15 @@
                 [groupCount]="current.participants.length"
                 [size]="44"
               ></app-chat-avatar>
+            } @else if (profileLinkOf(headerPerson()?.userId); as link) {
+              <a class="chat__person" [routerLink]="link" title="Ver perfil" aria-label="Ver perfil">
+                <app-chat-avatar
+                  [name]="headerPerson()?.name ?? current.title"
+                  [url]="headerPerson()?.avatarUrl ?? null"
+                  [userId]="headerPerson()?.userId ?? 0"
+                  [size]="44"
+                ></app-chat-avatar>
+              </a>
             } @else {
               <app-chat-avatar
                 [name]="headerPerson()?.name ?? current.title"
@@ -49,18 +58,16 @@
             }
             <div class="chat__heading">
               <h2 class="chat__title">
-                {{
-                  current.isGroup
-                    ? "Grupo · Solicitação #" + requestId()
-                    : current.title
-                }}
+                @if (current.isGroup) {
+                  Grupo · Solicitação #{{ requestId() }}
+                } @else if (profileLinkOf(headerPerson()?.userId); as link) {
+                  <a class="chat__person-name" [routerLink]="link" title="Ver perfil">{{ current.title }}</a>
+                } @else {
+                  {{ current.title }}
+                }
               </h2>
               <p class="chat__subtitle">{{ subtitle() }}</p>
             </div>
-            <span class="chat__status" [class.chat__status--on]="connected()">
-              <span class="chat__dot"></span>
-              {{ connected() ? "Ao vivo" : "Conectando…" }}
-            </span>
             @if (current.readOnly) {
               <span class="chat__tag">Somente leitura</span>
             }
@@ -104,22 +111,42 @@
                   @if (item.showAvatarSpace) {
                     <span class="chat__slot">
                       @if (item.senderName) {
-                        <app-chat-avatar
-                          [name]="item.senderName"
-                          [url]="item.senderAvatarUrl"
-                          [userId]="item.senderId"
-                          [size]="32"
-                        ></app-chat-avatar>
+                        @if (profileLinkOf(item.senderId); as link) {
+                          <a class="chat__person" [routerLink]="link" [title]="'Ver perfil de ' + item.senderName">
+                            <app-chat-avatar
+                              [name]="item.senderName"
+                              [url]="item.senderAvatarUrl"
+                              [userId]="item.senderId"
+                              [size]="32"
+                            ></app-chat-avatar>
+                          </a>
+                        } @else {
+                          <app-chat-avatar
+                            [name]="item.senderName"
+                            [url]="item.senderAvatarUrl"
+                            [userId]="item.senderId"
+                            [size]="32"
+                          ></app-chat-avatar>
+                        }
                       }
                     </span>
                   }
                   <div class="chat__bubble">
                     @if (item.senderName) {
-                      <span
-                        class="chat__sender"
-                        [style.color]="item.senderColor"
-                        >{{ item.senderName }}</span
-                      >
+                      @if (profileLinkOf(item.senderId); as link) {
+                        <a
+                          class="chat__sender chat__person-name"
+                          [routerLink]="link"
+                          [style.color]="item.senderColor"
+                          >{{ item.senderName }}</a
+                        >
+                      } @else {
+                        <span
+                          class="chat__sender"
+                          [style.color]="item.senderColor"
+                          >{{ item.senderName }}</span
+                        >
+                      }
                     }
                     @if (item.message.attachment; as attachment) {
                       <div class="chat__attachment">
@@ -304,6 +331,7 @@
       [conversation]="current"
       [messages]="messages()"
       [meId]="meId"
+      [viewerRole]="viewerRole()"
       (closed)="infoOpen.set(false)"
     ></app-chat-info-panel>
   }

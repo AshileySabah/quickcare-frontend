@@ -3,10 +3,10 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { AuthService } from '../../../core/auth/auth.service';
-import { ProfessionalCategoryInfo, Specialty, User } from '../../../core/models';
+import { ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { ProfileService } from '../../../core/services/profile.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
@@ -44,7 +44,7 @@ describe('ProfessionalRegisterComponent', () => {
 
   function render() {
     authService = jasmine.createSpyObj<AuthService>('AuthService', ['registerProfessional', 'createProfessionalProfile']);
-    authService.registerProfessional.and.returnValue(of({} as User));
+    authService.registerProfessional.and.returnValue(of({ email: 'bruna@example.com', confirmationPending: true }));
     TestBed.configureTestingModule({
       imports: [ProfessionalRegisterComponent],
       providers: [
@@ -125,6 +125,15 @@ describe('ProfessionalRegisterComponent', () => {
     );
   });
 
+  it('depois de criar a conta, leva para a tela que pede a confirmação do e-mail', () => {
+    const fixture = render();
+    fill(fixture);
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+
+    submit(fixture);
+
+    expect(navigate).toHaveBeenCalledWith(['/cadastro/confirme-seu-email'], { queryParams: { email: 'bruna@example.com' } });
+  });
   it('preenchendo a atuação pela tela, criar conta envia o cadastro', () => {
     const fixture = render();
     const form = fill(fixture);

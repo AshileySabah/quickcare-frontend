@@ -81,6 +81,17 @@ export class InvalidPasswordResetLinkError extends Error {}
 
 export class ClosedAccountError extends Error {}
 
+export class EmailNotConfirmedError extends Error {}
+
+export interface RegistrationResult {
+  email: string;
+  confirmationPending: boolean;
+}
+
+function toRegistrationResult(response: CadastroApiResponse): RegistrationResult {
+  return { email: response.email, confirmationPending: response.confirmacaoEmailPendente === true };
+}
+
 interface Session {
   user: User;
   profiles: ProfileSummary[];
@@ -142,12 +153,32 @@ export class AuthService {
         map((response) => this.startSession(response)),
         catchError((error: unknown) => {
           const normalized = normalizeError(error, 'Não foi possível entrar. Tente novamente.');
-          return throwError(() =>
-            error instanceof HttpErrorResponse && error.status === 423
-              ? new ClosedAccountError(normalized.message)
-              : normalized,
-          );
+          if (error instanceof HttpErrorResponse && error.status === 423) {
+            return throwError(() => new ClosedAccountError(normalized.message));
+          }
+          if (error instanceof HttpErrorResponse && error.status === 412) {
+            return throwError(() => new EmailNotConfirmedError(normalized.message));
+          }
+          return throwError(() => normalized);
         }),
+      );
+  }
+
+  confirmEmail(token: string): Observable<User> {
+    return this.http
+      .post<LoginApiResponse>(`${environment.apiUrl}/auth/confirmacao-email/confirmar`, { token }, { withCredentials: true })
+      .pipe(
+        map((response) => this.startSession(response, true)),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível confirmar o e-mail.'))),
+      );
+  }
+
+  resendEmailConfirmation(email: string, password: string): Observable<string> {
+    return this.http
+      .post<MensagemApiResponse>(`${environment.apiUrl}/auth/confirmacao-email/reenviar`, { email, senha: password })
+      .pipe(
+        map((response) => response.mensagem),
+        catchError((error: unknown) => throwError(() => normalizeError(error, 'Não foi possível reenviar o link.'))),
       );
   }
 
@@ -378,7 +409,7 @@ export class AuthService {
     return patient;
   }
 
-  registerPatient(input: PatientRegistration): Observable<User> {
+  registerPatient(input: PatientRegistration): Observable<RegistrationResult> {
     const dados = { ...accountPayload(input), ...patientProfilePayload(input) };
 
     return this.http
@@ -388,7 +419,7 @@ export class AuthService {
         { withCredentials: true },
       )
       .pipe(
-        switchMap(() => this.login(input.email, input.password)),
+        map(toRegistrationResult),
         catchError((error: unknown) =>
           throwError(() =>
             normalizeError(
@@ -400,7 +431,7 @@ export class AuthService {
       );
   }
 
-  registerProfessional(input: ProfessionalRegistration): Observable<User> {
+  registerProfessional(input: ProfessionalRegistration): Observable<RegistrationResult> {
     const dados = { ...accountPayload(input), ...professionalProfilePayload(input) };
 
     return this.http
@@ -410,7 +441,7 @@ export class AuthService {
         { withCredentials: true },
       )
       .pipe(
-        switchMap(() => this.login(input.email, input.password)),
+        map(toRegistrationResult),
         catchError((error: unknown) =>
           throwError(() =>
             normalizeError(

@@ -1,7 +1,6 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
 import {
   cnpjValidator,
   cpfValidator,
@@ -33,7 +32,7 @@ import {
   toPracticeAreaInput,
   uniquePracticeAreasValidator,
 } from '../../../core/forms/practice-area-form';
-import { DocumentType, Gender, IdentityDocumentType, ProfessionalCategoryInfo, Specialty, User } from '../../../core/models';
+import { DocumentType, Gender, IdentityDocumentType, ProfessionalCategoryInfo, Specialty } from '../../../core/models';
 import { ProfileService } from '../../../core/services/profile.service';
 import { SpecialtyService } from '../../../core/services/specialty.service';
 import { UfService } from '../../../core/services/uf.service';
@@ -277,35 +276,48 @@ export class ProfessionalRegisterComponent implements OnInit {
       documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
     };
 
-    const request$: Observable<User> = this.isNewProfile
-      ? this.authService.createProfessionalProfile(profile)
-      : this.authService.registerProfessional({
-          ...profile,
-          name,
-          email,
-          phone,
-          cpf,
-          identityDocumentType: identityDocumentType as IdentityDocumentType,
-          identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
-          identityDocumentUf: identityDocumentUf || undefined,
-          password,
-          avatar: this.avatarBlob() ?? undefined,
-        });
+    if (this.isNewProfile) {
+      this.authService.createProfessionalProfile(profile).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.toastService.success('Perfil de profissional criado! Ele passa pela validação do cadastro.');
+          this.router.navigateByUrl('/professional');
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+          this.toastService.error(error.message);
+        },
+      });
+      return;
+    }
 
-    request$.subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.success(
-          this.isNewProfile
-            ? 'Perfil de profissional criado! Ele passa pela validação do cadastro.'
-            : 'Cadastro realizado com sucesso!',
-        );
-        this.router.navigateByUrl('/professional');
-      },
-      error: (error: Error) => {
-        this.isSubmitting.set(false);
-        this.toastService.error(error.message);
-      },
-    });
+    this.authService
+      .registerProfessional({
+        ...profile,
+        name,
+        email,
+        phone,
+        cpf,
+        identityDocumentType: identityDocumentType as IdentityDocumentType,
+        identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
+        identityDocumentUf: identityDocumentUf || undefined,
+        password,
+        avatar: this.avatarBlob() ?? undefined,
+      })
+      .subscribe({
+        next: (result) => {
+          this.isSubmitting.set(false);
+          if (result.confirmationPending) {
+            this.router.navigate(['/cadastro/confirme-seu-email'], { queryParams: { email: result.email } });
+            return;
+          }
+          this.toastService.success('Perfil de profissional criado! Entre com seu e-mail e senha.');
+          this.router.navigateByUrl('/login');
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+          this.toastService.error(error.message);
+        },
+      });
   }
 }

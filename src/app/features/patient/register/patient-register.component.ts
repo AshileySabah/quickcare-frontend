@@ -1,7 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Observable } from 'rxjs';
 import { cpfValidator, identityDocumentValidator, normalizeIdentityNumber } from '../../../core/forms/document-validators';
 import { passwordsMatchValidator, strongPasswordValidator } from '../../../core/forms/password-validators';
 import { AuthService, PatientProfileInput } from '../../../core/auth/auth.service';
@@ -15,7 +14,7 @@ import {
   prefillFromOtherProfile,
   profileFieldErrorsFor,
 } from '../../../core/forms/profile-form';
-import { DocumentType, Gender, IdentityDocumentType, User } from '../../../core/models';
+import { DocumentType, Gender, IdentityDocumentType } from '../../../core/models';
 import { ProfileService } from '../../../core/services/profile.service';
 import { UfService } from '../../../core/services/uf.service';
 import { EmergencyContactGroup } from '../../../core/forms/emergency-contact-form';
@@ -175,35 +174,48 @@ export class PatientRegisterComponent {
       documents: documents.map((document) => ({ file: document.file, type: document.type as DocumentType })),
     };
 
-    const request$: Observable<User> = this.isNewProfile
-      ? this.authService.createPatientProfile(profile)
-      : this.authService.registerPatient({
-          ...profile,
-          name,
-          email,
-          phone,
-          cpf,
-          identityDocumentType: identityDocumentType as IdentityDocumentType,
-          identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
-          identityDocumentUf: identityDocumentUf || undefined,
-          password,
-          avatar: this.avatarBlob() ?? undefined,
-        });
+    if (this.isNewProfile) {
+      this.authService.createPatientProfile(profile).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.toastService.success('Perfil de paciente criado! Ele passa pela validação do cadastro.');
+          this.router.navigateByUrl('/patient');
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+          this.toastService.error(error.message);
+        },
+      });
+      return;
+    }
 
-    request$.subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.success(
-          this.isNewProfile
-            ? 'Perfil de paciente criado! Ele passa pela validação do cadastro.'
-            : 'Cadastro realizado com sucesso!',
-        );
-        this.router.navigateByUrl('/patient');
-      },
-      error: (error: Error) => {
-        this.isSubmitting.set(false);
-        this.toastService.error(error.message);
-      },
-    });
+    this.authService
+      .registerPatient({
+        ...profile,
+        name,
+        email,
+        phone,
+        cpf,
+        identityDocumentType: identityDocumentType as IdentityDocumentType,
+        identityDocumentNumber: normalizeIdentityNumber(identityDocumentNumber),
+        identityDocumentUf: identityDocumentUf || undefined,
+        password,
+        avatar: this.avatarBlob() ?? undefined,
+      })
+      .subscribe({
+        next: (result) => {
+          this.isSubmitting.set(false);
+          if (result.confirmationPending) {
+            this.router.navigate(['/cadastro/confirme-seu-email'], { queryParams: { email: result.email } });
+            return;
+          }
+          this.toastService.success('Perfil de paciente criado! Entre com seu e-mail e senha.');
+          this.router.navigateByUrl('/login');
+        },
+        error: (error: Error) => {
+          this.isSubmitting.set(false);
+          this.toastService.error(error.message);
+        },
+      });
   }
 }

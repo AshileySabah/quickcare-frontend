@@ -1,0 +1,18 @@
+<ui-auth-layout
+  sideTitle="Falta só confirmar seu e-mail"
+  sideText="Assim garantimos que o e-mail é seu e que você vai receber os avisos dos seus atendimentos."
+>
+  <h1 class="auth-layout__title">Enviamos um link para seu e-mail</h1>
+  <p class="auth-layout__subtitle">
+    @if (email) {
+      Abra a mensagem que enviamos para <strong>{{ email }}</strong> e clique em "Confirmar e entrar".
+    } @else {
+      Abra a mensagem que enviamos e clique em "Confirmar e entrar".
+    }
+    O link vale por 12 horas. Se o e-mail não for confirmado nesse prazo, os dados do cadastro são apagados.
+  </p>
+  <p class="auth-layout__subtitle">
+    Não chegou? Confira a caixa de spam ou entre com seu e-mail e senha para pedir um novo link.
+  </p>
+  <ui-button [fullWidth]="true" routerLink="/login">Ir para o login</ui-button>
+</ui-auth-layout>

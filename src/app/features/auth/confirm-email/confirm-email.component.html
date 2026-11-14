@@ -1,0 +1,20 @@
+<ui-auth-layout
+  sideTitle="Confirmação de e-mail"
+  sideText="Depois de confirmar, você entra direto na sua conta."
+>
+  @switch (state()) {
+    @case ('validating') {
+      <h1 class="auth-layout__title">Confirmando seu e-mail</h1>
+      <p class="auth-layout__subtitle" aria-live="polite">Verificando o link…</p>
+    }
+
+    @case ('invalid-link') {
+      <h1 class="auth-layout__title">Link inválido ou expirado</h1>
+      <p class="auth-layout__subtitle">{{ stateMessage() }}</p>
+      <p class="auth-layout__subtitle">
+        Se o cadastro ainda estiver no prazo de 12 horas, entre com seu e-mail e senha para receber um novo link.
+      </p>
+      <ui-button [fullWidth]="true" routerLink="/login">Ir para o login</ui-button>
+    }
+  }
+</ui-auth-layout>

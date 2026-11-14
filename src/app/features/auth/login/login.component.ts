@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, ClosedAccountError } from '../../../core/auth/auth.service';
+import { AuthService, ClosedAccountError, EmailNotConfirmedError } from '../../../core/auth/auth.service';
 import { homeRouteFor } from '../../../core/auth/home-route';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { GridItemComponent } from '../../../shared/ui/layout/grid/grid-item.component';
@@ -28,6 +28,8 @@ export class LoginComponent {
   protected readonly isSubmitting = signal(false);
   protected readonly isRecovering = signal(false);
   protected readonly closedAccountMessage = signal<string | null>(null);
+  protected readonly emailNotConfirmedMessage = signal<string | null>(null);
+  protected readonly isResending = signal(false);
 
   protected readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -64,6 +66,7 @@ export class LoginComponent {
 
     this.isSubmitting.set(true);
     this.closedAccountMessage.set(null);
+    this.emailNotConfirmedMessage.set(null);
     const { email, password } = this.form.getRawValue();
 
     this.authService.login(email, password).subscribe({
@@ -77,6 +80,25 @@ export class LoginComponent {
           this.closedAccountMessage.set(error.message);
           return;
         }
+        if (error instanceof EmailNotConfirmedError) {
+          this.emailNotConfirmedMessage.set(error.message);
+          return;
+        }
+        this.toastService.error(error.message);
+      },
+    });
+  }
+
+  protected resendConfirmation(): void {
+    const { email, password } = this.form.getRawValue();
+    this.isResending.set(true);
+    this.authService.resendEmailConfirmation(email, password).subscribe({
+      next: (message) => {
+        this.isResending.set(false);
+        this.toastService.success(message);
+      },
+      error: (error: Error) => {
+        this.isResending.set(false);
         this.toastService.error(error.message);
       },
     });

@@ -1,0 +1,30 @@
+{
+  "name": "quickcare-e2e-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suíte isolada de testes End-to-End (E2E) do QuickCare com Playwright + TypeScript (Local e Remoto)",
+  "scripts": {
+    "test:01:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/01-publico-e-navegacao playwright test tests/01-publico-e-navegacao.spec.ts",
+    "test:local": "cross-env TARGET_ENV=local playwright test",
+    "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
+    "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
+    "test:local:ui": "cross-env TARGET_ENV=local playwright test --ui",
+    "test:remote": "cross-env TARGET_ENV=remote playwright test --grep @smoke",
+    "test:remote:auth": "cross-env TARGET_ENV=remote playwright test --grep \"@smoke|@auth\"",
+    "test:remote:full": "cross-env TARGET_ENV=remote playwright test",
+    "test:remote:headed": "cross-env TARGET_ENV=remote E2E_SLOW_MO=500 playwright test --grep @smoke --headed",
+    "test:remote:ui": "cross-env TARGET_ENV=remote playwright test --ui",
+    "test:record:local": "cross-env TARGET_ENV=local E2E_VIDEO=on playwright test",
+    "test:record:remote": "cross-env TARGET_ENV=remote E2E_VIDEO=on playwright test --grep @smoke",
+    "report": "playwright show-report",
+    "report:01": "playwright show-report relatorios/01-publico-e-navegacao/html-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^20.17.24",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.3"
+  }
+}

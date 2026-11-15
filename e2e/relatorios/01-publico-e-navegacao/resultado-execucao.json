@@ -1,0 +1,329 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/01-publico-e-navegacao.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\01-publico-e-navegacao\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\01-publico-e-navegacao\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "01-publico-e-navegacao.spec.ts",
+      "file": "01-publico-e-navegacao.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "01 - Vitrine Pública e Navegação Inicial @smoke",
+          "file": "01-publico-e-navegacao.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-01.1: deve renderizar a Home institucional e navegar pelos CTAs principais",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2034,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar a página inicial (/) e validar seções institucionais",
+                          "duration": 646
+                        },
+                        {
+                          "title": "Acionar CTA \"Quero ser atendido\" e validar rota /cadastro/paciente",
+                          "duration": 396
+                        },
+                        {
+                          "title": "Retornar à Home e acionar CTA \"Quero atender\" para /cadastro/profissional",
+                          "duration": 627
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:19:21.450Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-home-institucional.png — Página inicial do QuickCare com banner principal e CTAs visíveis",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--4008c-vegar-pelos-CTAs-principais-chromium-remote\\attachments\\ct01-01-home-institucional-png-—-Página-inicial-do-QuickCare-com-banner-principal-e-CTAs-visíveis-e70188cc68a093402d0a5335893d482f388e6e56.png"
+                        },
+                        {
+                          "name": "ct01-02-cta-cadastro-paciente.png — Redirecionamento do CTA de paciente para /cadastro/paciente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--4008c-vegar-pelos-CTAs-principais-chromium-remote\\attachments\\ct01-02-cta-cadastro-paciente-png-—-Redirecionamento-do-CTA-de-paciente-para-cadastro-paciente-d371206ae093da4db5df951baf61f348cbe3fa94.png"
+                        },
+                        {
+                          "name": "ct01-03-cta-cadastro-profissional.png — Redirecionamento do CTA de profissional para /cadastro/profissional",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--4008c-vegar-pelos-CTAs-principais-chromium-remote\\attachments\\ct01-03-cta-cadastro-profissional-png-—-Redirecionamento-do-CTA-de-profissional-para-cadastro-profissional-2039dde33d02bd31fcb004474f03e4c1f498a4f6.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a7a9696713c69c8f40e9-a74fe8c3b534477e4623",
+              "file": "01-publico-e-navegacao.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-01.2: deve carregar a Consulta Pública de Profissionais e permitir interagir com os filtros",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 23472,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /consulta/profissionais e aguardar carregamento da vitrine pública",
+                          "duration": 9165
+                        },
+                        {
+                          "title": "Aplicar filtros de modalidade (Online) e cidade (São Paulo)",
+                          "duration": 4470
+                        },
+                        {
+                          "title": "Limpar filtros e confirmar restauração do estado padrão",
+                          "duration": 9603
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:19:23.621Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-consulta-profissionais-inicial.png — Listagem pública de profissionais validados carregada via API",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--5e91a-ir-interagir-com-os-filtros-chromium-remote\\attachments\\ct02-01-consulta-profissionais-inicial-png-—-Listagem-pública-de-profissionais-validados-carregada-via-API-3af52f7db7c46d0d8a306a89de1a4166164b0c00.png"
+                        },
+                        {
+                          "name": "ct02-02-consulta-profissionais-filtros-aplicados.png — Filtros Online e São Paulo aplicados na busca pública de profissionais",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--5e91a-ir-interagir-com-os-filtros-chromium-remote\\attachments\\ct02-02-consulta-profissionais-filtros-aplicados-png-—-Filtros-Online-e-São-Paulo-aplicados-na-busca-pública-de-profissionais-446a6559ba6eadda316daeb652cc4e8083c5a9f7.png"
+                        },
+                        {
+                          "name": "ct02-03-consulta-profissionais-filtros-limpos.png — Estado dos filtros restaurado após acionar o botão Limpar filtros",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--5e91a-ir-interagir-com-os-filtros-chromium-remote\\attachments\\ct02-03-consulta-profissionais-filtros-limpos-png-—-Estado-dos-filtros-restaurado-após-acionar-o-botão-Limpar-filtros-a3f5a6e4ecba1df4fb5595d3bbecdf1f1dccc30a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a7a9696713c69c8f40e9-c0ff6303ebebd1c96b47",
+              "file": "01-publico-e-navegacao.spec.ts",
+              "line": 62,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-01.3: deve carregar a Consulta Pública de Solicitações preservando o sigilo dos pacientes",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1606,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /consulta/solicitacoes e verificar aviso de anonimização LGPD e listagem",
+                          "duration": 1387
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:19:47.107Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-01-consulta-solicitacoes-sigilo.png — Consulta pública de solicitações abertas exibindo aviso de anonimização e vagas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\01-publico-e-navegacao-01--8dd2a-ando-o-sigilo-dos-pacientes-chromium-remote\\attachments\\ct03-01-consulta-solicitacoes-sigilo-png-—-Consulta-pública-de-solicitações-abertas-exibindo-aviso-de-anonimização-e-vagas-c86e125d41b72047adad20c639ee6395851b0615.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a7a9696713c69c8f40e9-07fc48398f5ca0ac49fd",
+              "file": "01-publico-e-navegacao.spec.ts",
+              "line": 121,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-15T23:19:20.297Z",
+    "duration": 28659.037,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

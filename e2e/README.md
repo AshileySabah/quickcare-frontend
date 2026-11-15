@@ -1,0 +1,51 @@
+# Suíte de Testes End-to-End (E2E) — QuickCare (Playwright + TypeScript)
+
+Esta pasta contém a suíte **100% isolada e desacoplada** de testes End-to-End (E2E) do **QuickCare**, desenvolvida incrementalmente com **Playwright + TypeScript**, Page Object Model e geração estruturada de relatórios e evidências visuais em `relatorios/`.
+
+> **Isolamento garantido:** Nenhum arquivo fora desta pasta `e2e/` (`package.json`, `angular.json`, `tsconfig.json`, `src/` ou testes existentes em Jasmine/Karma e Cypress) foi modificado. Caso deseje descartar esta suíte no futuro, basta apagar a pasta `e2e/` ou retornar para a branch `main`.
+
+---
+
+## 1. Instalação Inicial
+
+```powershell
+cd D:\GIT\Github\quickcare-fixed\quickcare-frontend\e2e
+npm install
+npx playwright install chromium
+```
+
+---
+
+## 2. Execução e Relatórios por Suíte
+
+### Teste 01 — Vitrine Pública e Navegação Inicial (`01-publico-e-navegacao.spec.ts`)
+Valida a Home institucional (`/`), redirecionamento dos CTAs principais (`/cadastro/paciente` e `/cadastro/profissional`), a Consulta Pública de Profissionais (`/consulta/profissionais`) com filtros dinâmicos e a Consulta Pública de Solicitações (`/consulta/solicitacoes`) com preservação de sigilo LGPD.
+
+```powershell
+# Executar o Teste 01 no ambiente remoto e atualizar evidências + relatório HTML/JSON
+npm run test:01:remote
+
+# Abrir o relatório HTML interativo salvo do Teste 01
+npm run report:01
+```
+
+**Evidências salvas e versionadas em:**
+- `relatorios/01-publico-e-navegacao/RELATORIO_TESTE_01.md` — Relatório técnico completo com data/hora, métricas, tabela de casos de teste e prints embutidos.
+- `relatorios/01-publico-e-navegacao/prints/` — Capturas de tela em alta resolução de cada etapa executada.
+- `relatorios/01-publico-e-navegacao/resultado-execucao.json` — Metadados brutos da execução (tempos em ms, status, steps).
+- `relatorios/01-publico-e-navegacao/html-report/` — Relatório HTML autocontido do Playwright.
+
+---
+
+## 3. Comandos Gerais
+
+```powershell
+# Rodar suíte remota (headless)
+npm run test:remote
+
+# Rodar suíte remota com navegador Chrome visível (slowMo = 500ms)
+npm run test:remote:headed
+
+# Abrir painel interativo Playwright UI Mode
+npm run test:remote:ui
+```

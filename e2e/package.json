@@ -5,6 +5,7 @@
   "description": "Suíte isolada de testes End-to-End (E2E) do QuickCare com Playwright + TypeScript (Local e Remoto)",
   "scripts": {
     "test:01:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/01-publico-e-navegacao playwright test tests/01-publico-e-navegacao.spec.ts",
+    "test:02:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/02-login-validacoes playwright test tests/02-login-validacoes.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -18,6 +19,7 @@
     "test:record:remote": "cross-env TARGET_ENV=remote E2E_VIDEO=on playwright test --grep @smoke",
     "report": "playwright show-report",
     "report:01": "playwright show-report relatorios/01-publico-e-navegacao/html-report",
+    "report:02": "playwright show-report relatorios/02-login-validacoes/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -35,6 +35,19 @@ npm run report:01
 - `relatorios/01-publico-e-navegacao/resultado-execucao.json` — Metadados brutos da execução (tempos em ms, status, steps).
 - `relatorios/01-publico-e-navegacao/html-report/` — Relatório HTML autocontido do Playwright.
 
+### Teste 02 — Tela de Login e Validações de Formulário (`02-login-validacoes.spec.ts`)
+Valida submissão vazia, exigência individual de e-mail e senha, formato inválido de e-mail, comprimento mínimo da senha, alternância de visibilidade da senha, links auxiliares (`/esqueci-senha` e `/cadastro`) e rejeição HTTP de credenciais inexistentes pela API com feedback visual (*toast*).
+
+```powershell
+# Executar o Teste 02 no ambiente remoto e atualizar evidências + relatório HTML/JSON
+npm run test:02:remote
+
+# Abrir o relatório HTML interativo salvo do Teste 02
+npm run report:02
+```
+
+**Evidências salvas e versionadas em:** `relatorios/02-login-validacoes/` (`RELATORIO_TESTE_02.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
+
 ---
 
 ## 3. Comandos Gerais

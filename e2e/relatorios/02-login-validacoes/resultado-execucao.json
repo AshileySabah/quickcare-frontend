@@ -1,0 +1,455 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/02-login-validacoes.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\02-login-validacoes\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\02-login-validacoes\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "02-login-validacoes.spec.ts",
+      "file": "02-login-validacoes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "02 - Tela de Login e Validações de Formulário @smoke",
+          "file": "02-login-validacoes.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-02.1: deve exibir erros obrigatórios ao submeter o formulário completamente vazio",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3299,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /login e acionar \"Entrar\" sem preencher campos",
+                          "duration": 2995
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:47.197Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-login-campos-vazios.png — Mensagens de campo obrigatório exibidas para e-mail e senha ao submeter formulário vazio",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-e5347-mulário-completamente-vazio-chromium-remote\\attachments\\ct01-login-campos-vazios-png-—-Mensagens-de-campo-obrigatório-exibidas-para-e-mail-e-senha-ao-submeter-formulário-vazio-51adc195de743eec1f7fa49b8c67253dc0c5905a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-4d3c083d0286dff26ff3",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-02.2: deve exigir senha quando apenas o e-mail é preenchido",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 708,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Preencher e-mail válido, deixar senha em branco e submeter",
+                          "duration": 465
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:50.622Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-login-sem-senha.png — Validação exigindo preenchimento da senha quando somente o e-mail é informado",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-dac76-penas-o-e-mail-é-preenchido-chromium-remote\\attachments\\ct02-login-sem-senha-png-—-Validação-exigindo-preenchimento-da-senha-quando-somente-o-e-mail-é-informado-315d5a638733b439d4cb3663143534f21fab24be.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-a4e124afe6ca583e224f",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-02.3: deve exigir e-mail quando apenas a senha é preenchida",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 726,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Preencher senha, deixar e-mail em branco e submeter",
+                          "duration": 499
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:51.341Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-login-sem-email.png — Validação exigindo preenchimento do e-mail quando somente a senha é informada",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-c8f32-apenas-a-senha-é-preenchida-chromium-remote\\attachments\\ct03-login-sem-email-png-—-Validação-exigindo-preenchimento-do-e-mail-quando-somente-a-senha-é-informada-37baa3e7658dc90f73e69d6f6f745be18563acc8.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-e16a8626b440e34da0ec",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 56,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-02.4: deve validar formato inválido de e-mail e tamanho mínimo da senha",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 687,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Informar e-mail sem domínio e senha com menos de 6 caracteres",
+                          "duration": 449
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:52.080Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct04-login-formato-email-e-senha-curta.png — Validação simultânea de formato inválido de e-mail e comprimento mínimo da senha",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-11a80-l-e-tamanho-mínimo-da-senha-chromium-remote\\attachments\\ct04-login-formato-email-e-senha-curta-png-—-Validação-simultânea-de-formato-inválido-de-e-mail-e-comprimento-mínimo-da-senha-a83afadf2c2729a14cf5641ec6667b822ebdcf9f.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-484698c1f56f53eed1cd",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 78,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-02.5: deve alternar a visibilidade do campo de senha e navegar para links auxiliares",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1486,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Alternar botão Mostrar/Ocultar senha e verificar tipo do input",
+                          "duration": 622
+                        },
+                        {
+                          "title": "Navegar pelo link \"Esqueci minha senha\" para /esqueci-senha",
+                          "duration": 225
+                        },
+                        {
+                          "title": "Retornar a /login e navegar pelo link \"Cadastre-se\" para /cadastro",
+                          "duration": 384
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:52.778Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct05-01-login-senha-revelada.png — Campo de senha com texto revelado após acionar o controle Mostrar senha",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-9d9ac-vegar-para-links-auxiliares-chromium-remote\\attachments\\ct05-01-login-senha-revelada-png-—-Campo-de-senha-com-texto-revelado-após-acionar-o-controle-Mostrar-senha-7a69738df86c512a60ecf1900b08d17a16815bc3.png"
+                        },
+                        {
+                          "name": "ct05-02-link-esqueci-senha.png — Tela de recuperação de senha acessada a partir do link auxiliar no login",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-9d9ac-vegar-para-links-auxiliares-chromium-remote\\attachments\\ct05-02-link-esqueci-senha-png-—-Tela-de-recuperação-de-senha-acessada-a-partir-do-link-auxiliar-no-login-66c5fe0b52650c60dbc784245709c49d1854ae46.png"
+                        },
+                        {
+                          "name": "ct05-03-link-cadastre-se.png — Tela de seleção de perfil de cadastro acessada pelo link Cadastre-se",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-9d9ac-vegar-para-links-auxiliares-chromium-remote\\attachments\\ct05-03-link-cadastre-se-png-—-Tela-de-seleção-de-perfil-de-cadastro-acessada-pelo-link-Cadastre-se-5fbacf1b0366d72828d1059701b3a8ee6695fca9.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-94e3ec05c297bf412bb1",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 104,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-02.6: deve rejeitar credenciais inexistentes com feedback visual de erro na API",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2132,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Submeter conta não cadastrada e validar exibição do toast de erro",
+                          "duration": 1631
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:31:54.275Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct06-login-credenciais-invalidas-toast.png — Toast de erro exibido após rejeição HTTP de credenciais inválidas pela API",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\02-login-validacoes-02---T-90afb-dback-visual-de-erro-na-API-chromium-remote\\attachments\\ct06-login-credenciais-invalidas-toast-png-—-Toast-de-erro-exibido-após-rejeição-HTTP-de-credenciais-inválidas-pela-API-551c9a5de0efcfc3be2f00bf4dea91d0d716aa6a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4cc530a5231a3a673400-bfb231a3b2839b1e6e57",
+              "file": "02-login-validacoes.spec.ts",
+              "line": 160,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-15T23:31:46.262Z",
+    "duration": 10493.002,
+    "expected": 6,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

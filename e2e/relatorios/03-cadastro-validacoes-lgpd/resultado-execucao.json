@@ -1,0 +1,376 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/03-cadastro-validacoes-lgpd.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\03-cadastro-validacoes-lgpd\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\03-cadastro-validacoes-lgpd\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "03-cadastro-validacoes-lgpd.spec.ts",
+      "file": "03-cadastro-validacoes-lgpd.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "03 - Cadastro, Regras de Validação e Consentimento LGPD @smoke",
+          "file": "03-cadastro-validacoes-lgpd.spec.ts",
+          "line": 7,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-03.1: deve exibir a escolha de perfil em /cadastro e direcionar para paciente ou profissional",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2051,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /cadastro e validar opções de perfil disponíveis",
+                          "duration": 658
+                        },
+                        {
+                          "title": "Selecionar \"Sou paciente\" e confirmar abertura de /cadastro/paciente",
+                          "duration": 266
+                        },
+                        {
+                          "title": "Retornar a /cadastro e selecionar \"Sou profissional de saúde\"",
+                          "duration": 703
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:38:48.859Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-selecao-perfil-cadastro.png — Tela inicial de escolha do tipo de conta (Paciente ou Profissional de saúde)",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-71552-ra-paciente-ou-profissional-chromium-remote\\attachments\\ct01-01-selecao-perfil-cadastro-png-—-Tela-inicial-de-escolha-do-tipo-de-conta-Paciente-ou-Profissional-de-saúde--a71aca88b12dac6db8306379c12e1d6add5d812b.png"
+                        },
+                        {
+                          "name": "ct01-02-tela-cadastro-profissional.png — Formulário de cadastro de profissional de saúde carregado a partir de /cadastro",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-71552-ra-paciente-ou-profissional-chromium-remote\\attachments\\ct01-02-tela-cadastro-profissional-png-—-Formulário-de-cadastro-de-profissional-de-saúde-carregado-a-partir-de-cadastro-724114d24c8419fd3b008f318ed2c687be85e73a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a25617ec6e96cb23770b-6b188a1e52f82afad8f6",
+              "file": "03-cadastro-validacoes-lgpd.spec.ts",
+              "line": 8,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-03.2: deve bloquear submissão vazia exigindo documentos comprobatórios e aceite expresso da LGPD",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1580,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Submeter formulário vazio em /cadastro/paciente e validar exigência documental",
+                          "duration": 956
+                        },
+                        {
+                          "title": "Validar exigência obrigatória das declarações de veracidade e consentimento LGPD",
+                          "duration": 256
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:38:51.100Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-documentos-obrigatorios.png — Validação bloqueando o cadastro sem envio de documento comprobatório de CPF",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-d9b07-s-e-aceite-expresso-da-LGPD-chromium-remote\\attachments\\ct02-01-documentos-obrigatorios-png-—-Validação-bloqueando-o-cadastro-sem-envio-de-documento-comprobatório-de-CPF-4c69c0978ea303dac8a465ce27276e00f8c80c9c.png"
+                        },
+                        {
+                          "name": "ct02-02-declaracoes-lgpd-obrigatorias.png — Mensagens obrigatórias exigindo confirmação de veracidade e consentimento LGPD",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-d9b07-s-e-aceite-expresso-da-LGPD-chromium-remote\\attachments\\ct02-02-declaracoes-lgpd-obrigatorias-png-—-Mensagens-obrigatórias-exigindo-confirmação-de-veracidade-e-consentimento-LGPD-5c61b3677b6c0d8769d54c4b52f811a47c5c1090.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a25617ec6e96cb23770b-5a32a3de07b5a6400894",
+              "file": "03-cadastro-validacoes-lgpd.spec.ts",
+              "line": 51,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-03.3: deve aplicar máscara automática de CPF e rejeitar dígitos verificadores inválidos",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1124,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Informar sequência numérica repetida (11111111111) e verificar máscara e erro",
+                          "duration": 753
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:38:52.696Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-cpf-mascara-digito-invalido.png — Máscara 111.111.111-11 aplicada automaticamente e rejeição pelo cálculo de dígitos verificadores",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-b069a-tos-verificadores-inválidos-chromium-remote\\attachments\\ct03-cpf-mascara-digito-invalido-png-—-Máscara-111-111-111-11-aplicada-automaticamente-e-rejeição-pelo-cálculo-de-dígitos-verificadores-72e28055a471dbff1eb69697079d2d58b9bddb14.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a25617ec6e96cb23770b-29892f8e9c9d591f1412",
+              "file": "03-cadastro-validacoes-lgpd.spec.ts",
+              "line": 92,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-03.4: deve validar requisitos de senha forte, confirmação divergente e limite máximo na data de nascimento",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1698,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Confirmar restrição de data máxima no campo Data de nascimento",
+                          "duration": 692
+                        },
+                        {
+                          "title": "Digitar senha fraca e validar alerta e checklist dinâmico de complexidade",
+                          "duration": 397
+                        },
+                        {
+                          "title": "Informar senha forte válida com confirmação divergente e validar erro de correspondência",
+                          "duration": 320
+                        }
+                      ],
+                      "startTime": "2026-11-15T23:38:53.838Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct04-01-senha-fraca-requisitos.png — Checklist dinâmico indicando ausência de letra maiúscula e caractere especial na senha",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-0c183-áximo-na-data-de-nascimento-chromium-remote\\attachments\\ct04-01-senha-fraca-requisitos-png-—-Checklist-dinâmico-indicando-ausência-de-letra-maiúscula-e-caractere-especial-na-senha-388b4967ed97455365f7d543aafeee08cbd5f299.png"
+                        },
+                        {
+                          "name": "ct04-02-confirmacao-senha-divergente.png — Todos os requisitos de senha forte atendidos e validação acusando divergência na confirmação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\03-cadastro-validacoes-lgp-0c183-áximo-na-data-de-nascimento-chromium-remote\\attachments\\ct04-02-confirmacao-senha-divergente-png-—-Todos-os-requisitos-de-senha-forte-atendidos-e-validação-acusando-divergência-na-confirmação-b3cba2857ea76006f2d7fdd1375b4f064e52dd74.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a25617ec6e96cb23770b-e5bd7c61c8629d7f0846",
+              "file": "03-cadastro-validacoes-lgpd.spec.ts",
+              "line": 117,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-15T23:38:47.593Z",
+    "duration": 8090.8859999999995,
+    "expected": 4,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

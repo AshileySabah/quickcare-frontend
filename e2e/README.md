@@ -48,6 +48,19 @@ npm run report:02
 
 **Evidências salvas e versionadas em:** `relatorios/02-login-validacoes/` (`RELATORIO_TESTE_02.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
 
+### Teste 03 — Cadastro, Regras de Validação e Consentimento LGPD (`03-cadastro-validacoes-lgpd.spec.ts`)
+Valida a escolha de perfil em `/cadastro` (Paciente e Profissional de saúde), bloqueio de submissão sem documentos comprobatórios nem aceite expresso da LGPD, máscara e cálculo de dígitos verificadores de CPF, limite máximo na data de nascimento, requisitos de senha forte e divergência na confirmação de senha.
+
+```powershell
+# Executar o Teste 03 no ambiente remoto e atualizar evidências + relatório HTML/JSON
+npm run test:03:remote
+
+# Abrir o relatório HTML interativo salvo do Teste 03
+npm run report:03
+```
+
+**Evidências salvas e versionadas em:** `relatorios/03-cadastro-validacoes-lgpd/` (`RELATORIO_TESTE_03.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
+
 ---
 
 ## 3. Comandos Gerais

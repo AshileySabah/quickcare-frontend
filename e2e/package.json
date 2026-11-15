@@ -6,6 +6,7 @@
   "scripts": {
     "test:01:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/01-publico-e-navegacao playwright test tests/01-publico-e-navegacao.spec.ts",
     "test:02:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/02-login-validacoes playwright test tests/02-login-validacoes.spec.ts",
+    "test:03:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/03-cadastro-validacoes-lgpd playwright test tests/03-cadastro-validacoes-lgpd.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -20,6 +21,7 @@
     "report": "playwright show-report",
     "report:01": "playwright show-report relatorios/01-publico-e-navegacao/html-report",
     "report:02": "playwright show-report relatorios/02-login-validacoes/html-report",
+    "report:03": "playwright show-report relatorios/03-cadastro-validacoes-lgpd/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

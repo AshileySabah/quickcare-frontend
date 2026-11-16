@@ -1,0 +1,416 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/04-autenticacao-guards-perfis.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\04-autenticacao-guards-perfis\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\04-autenticacao-guards-perfis\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "04-autenticacao-guards-perfis.spec.ts",
+      "file": "04-autenticacao-guards-perfis.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "04 - Proteção de Rotas (Guards), Autenticação por Perfil e Multiconta",
+          "file": "04-autenticacao-guards-perfis.spec.ts",
+          "line": 12,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-04.1: deve redirecionar visitante não autenticado para /login ao tentar acessar rotas protegidas @smoke",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3768,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Tentar acessar /patient, /professional e /admin/validacao sem sessão ativa",
+                          "duration": 3311
+                        }
+                      ],
+                      "startTime": "2026-11-16T00:45:12.115Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-guard-redireciona-visitante-login.png — Visitante não autenticado bloqueado pelo authGuard e redirecionado para /login",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-dd904-ssar-rotas-protegidas-smoke-chromium-remote\\attachments\\ct01-guard-redireciona-visitante-login-png-—-Visitante-não-autenticado-bloqueado-pelo-authGuard-e-redirecionado-para-login-7314869963173308e548fd5e0c86a09bc1fb1c50.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9748f8f0acd8f0aa3f6e-ccf22e8cb4cd34dcc4ca",
+              "file": "04-autenticacao-guards-perfis.spec.ts",
+              "line": 13,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-04.2: deve autenticar Paciente, bloquear acesso ao painel Admin (/acesso-negado) e realizar Logout @auth",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10226,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Realizar login como Paciente e validar carregamento do painel /patient",
+                          "duration": 4872
+                        },
+                        {
+                          "title": "Tentar acessar /admin/validacao com perfil Paciente e validar bloqueio RBAC (/acesso-negado)",
+                          "duration": 2080
+                        },
+                        {
+                          "title": "Retornar ao painel do Paciente e encerrar sessão pelo menu da conta (Logout)",
+                          "duration": 2577
+                        }
+                      ],
+                      "startTime": "2026-11-16T00:45:16.086Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-painel-paciente-logado.png — Painel do Paciente carregado após autenticação JWT bem-sucedida",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-c465b-gado-e-realizar-Logout-auth-chromium-remote\\attachments\\ct02-01-painel-paciente-logado-png-—-Painel-do-Paciente-carregado-após-autenticação-JWT-bem-sucedida-633d195db4cc59bac12fe2984209920491ca7d9b.png"
+                        },
+                        {
+                          "name": "ct02-02-paciente-bloqueado-em-admin-acesso-negado.png — roleGuard bloqueando tentativa de acesso de Paciente à área administrativa (/acesso-negado)",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-c465b-gado-e-realizar-Logout-auth-chromium-remote\\attachments\\ct02-02-paciente-bloqueado-em-admin-acesso-negado-png-—-roleGuard-bloqueando-tentativa-de-acesso-de-Paciente-à-área-administrativa-acesso-negado--9299235569fbbf26162bc94df29897397ccdc5e0.png"
+                        },
+                        {
+                          "name": "ct02-03-sessao-encerrada-logout.png — Sessão encerrada com sucesso após acionar Sair no menu do usuário",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-c465b-gado-e-realizar-Logout-auth-chromium-remote\\attachments\\ct02-03-sessao-encerrada-logout-png-—-Sessão-encerrada-com-sucesso-após-acionar-Sair-no-menu-do-usuário-253daace575ec8cc49d7c76adbf5c54441521bdc.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9748f8f0acd8f0aa3f6e-58ccb2ff7388ed44cdc1",
+              "file": "04-autenticacao-guards-perfis.spec.ts",
+              "line": 35,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-04.3: deve autenticar Profissional de saúde e carregar seu painel restrito @auth",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6278,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Realizar login como Profissional e validar área restrita /professional",
+                          "duration": 6052
+                        }
+                      ],
+                      "startTime": "2026-11-16T00:45:26.337Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-painel-profissional-logado.png — Ambiente restrito do Profissional de saúde carregado após autenticação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-4ad7e-ar-seu-painel-restrito-auth-chromium-remote\\attachments\\ct03-painel-profissional-logado-png-—-Ambiente-restrito-do-Profissional-de-saúde-carregado-após-autenticação-8191bff1b700dd4ced8799eed3cd11c80fc792a4.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9748f8f0acd8f0aa3f6e-ccd357d9c90df20d5fe9",
+              "file": "04-autenticacao-guards-perfis.spec.ts",
+              "line": 93,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-04.4: deve permitir alternância entre perfis Paciente e Profissional em conta multiconta @auth",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10687,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar conta multiconta e verificar presença do seletor de perfis no cabeçalho",
+                          "duration": 3641
+                        },
+                        {
+                          "title": "Alternar entre os perfis pelo seletor e validar mudança de contexto e rota",
+                          "duration": 6771
+                        }
+                      ],
+                      "startTime": "2026-11-16T00:45:32.629Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct04-01-multiconta-perfil-inicial.png — Conta multiconta autenticada exibindo o seletor Perfil em uso (Paciente / Profissional) no cabeçalho",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-84ede-al-em-conta-multiconta-auth-chromium-remote\\attachments\\ct04-01-multiconta-perfil-inicial-png-—-Conta-multiconta-autenticada-exibindo-o-seletor-Perfil-em-uso-Paciente-Profissional-no-cabeçalho-42be650168910d66d701118982fcfbb8c64e6205.png"
+                        },
+                        {
+                          "name": "ct04-02-multiconta-perfil-alternado.png — Contexto alternado dinamicamente para o perfil Profissional sem necessidade de novo login",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-84ede-al-em-conta-multiconta-auth-chromium-remote\\attachments\\ct04-02-multiconta-perfil-alternado-png-—-Contexto-alternado-dinamicamente-para-o-perfil-Profissional-sem-necessidade-de-novo-login-3851cc525c0b85d63188bdd76796e1ee8394d167.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9748f8f0acd8f0aa3f6e-9ffda0182a3d24cd6098",
+              "file": "04-autenticacao-guards-perfis.spec.ts",
+              "line": 121,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-04.5: deve autenticar Administrador e carregar a fila de Validação cadastral @auth",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4574,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Realizar login como Administrador e validar painel /admin/validacao",
+                          "duration": 4355
+                        }
+                      ],
+                      "startTime": "2026-11-16T00:45:43.331Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct05-painel-admin-validacao-cadastral.png — Painel administrativo de Validação cadastral carregado com filtros por perfil e situação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\04-autenticacao-guards-per-ed52c-de-Validação-cadastral-auth-chromium-remote\\attachments\\ct05-painel-admin-validacao-cadastral-png-—-Painel-administrativo-de-Validação-cadastral-carregado-com-filtros-por-perfil-e-situação-8601fe2abafa17be926c34ba1342db53b6d8f929.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "9748f8f0acd8f0aa3f6e-db8231a45e1ee9074a81",
+              "file": "04-autenticacao-guards-perfis.spec.ts",
+              "line": 186,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T00:45:10.506Z",
+    "duration": 37665.006,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

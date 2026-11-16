@@ -61,6 +61,19 @@ npm run report:03
 
 **Evidências salvas e versionadas em:** `relatorios/03-cadastro-validacoes-lgpd/` (`RELATORIO_TESTE_03.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
 
+### Teste 04 — Proteção de Rotas (Guards), Autenticação por Perfil e Multiconta (`04-autenticacao-guards-perfis.spec.ts`)
+Valida o bloqueio de visitantes não autenticados (`authGuard`), autenticação real de Paciente, bloqueio RBAC ao tentar acessar área administrativa (`roleGuard` -> `/acesso-negado`), encerramento seguro de sessão (Logout), autenticação de Profissional de saúde, alternância dinâmica em conta Multiconta (`Paciente <-> Profissional`) e acesso de Administrador à fila de Validação cadastral.
+
+```powershell
+# Executar o Teste 04 no ambiente remoto (lê credenciais de .env.remote) e atualizar evidências
+npm run test:04:remote
+
+# Abrir o relatório HTML interativo salvo do Teste 04
+npm run report:04
+```
+
+**Evidências salvas e versionadas em:** `relatorios/04-autenticacao-guards-perfis/` (`RELATORIO_TESTE_04.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
+
 ---
 
 ## 3. Comandos Gerais

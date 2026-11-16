@@ -23,6 +23,7 @@
     "test:17:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/17-chat-central-e-recursos-avancados playwright test tests/17-chat-central-e-recursos-avancados.spec.ts",
     "test:18:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/18-admin-fila-e-dossies-validacao playwright test tests/18-admin-fila-e-dossies-validacao.spec.ts",
     "test:19:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/19-admin-disputas-denuncias-ocorrencias playwright test tests/19-admin-disputas-denuncias-ocorrencias.spec.ts",
+    "test:20:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/20-admin-consultas-gerais-auditoria playwright test tests/20-admin-consultas-gerais-auditoria.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -54,6 +55,7 @@
     "report:17": "playwright show-report relatorios/17-chat-central-e-recursos-avancados/html-report",
     "report:18": "playwright show-report relatorios/18-admin-fila-e-dossies-validacao/html-report",
     "report:19": "playwright show-report relatorios/19-admin-disputas-denuncias-ocorrencias/html-report",
+    "report:20": "playwright show-report relatorios/20-admin-consultas-gerais-auditoria/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -227,6 +227,16 @@ npm run report:19
 
 **Evidências salvas e versionadas em:** `relatorios/19-admin-disputas-denuncias-ocorrencias/`.
 
+### Teste 20 — Admin: Consultas Gerais de Auditoria (`20-admin-consultas-gerais-auditoria.spec.ts`)
+Valida as 4 abas de auditoria global em `/admin/gerais`: Usuários (+ detalhe do perfil), Solicitações (+ detalhe `#id`), Propostas e Bloqueios entre usuários.
+
+```powershell
+npm run test:20:remote
+npm run report:20
+```
+
+**Evidências salvas e versionadas em:** `relatorios/20-admin-consultas-gerais-auditoria/`.
+
 ---
 
 ## 3. Comandos Gerais

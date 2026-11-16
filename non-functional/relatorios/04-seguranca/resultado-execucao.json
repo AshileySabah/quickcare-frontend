@@ -1,0 +1,108 @@
+{
+  "suite": "NF-04",
+  "category": "Segurança",
+  "iso25010Characteristic": "Security — Confidentiality, Integrity, Authenticity & Accountability",
+  "environment": "local",
+  "executedAt": "16/11/2026, 01:58:30",
+  "totalVectors": 12,
+  "blockedVectors": 12,
+  "overallPassed": true,
+  "cases": [
+    {
+      "id": "SEC-01",
+      "category": "BOLA / IDOR",
+      "description": "Paciente A tenta ler solicitação #3 pertencente ao Paciente B",
+      "expectedBehavior": "HTTP 403 ou 404 (Negado)",
+      "observedStatus": "HTTP 404",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-02",
+      "category": "BOLA / IDOR",
+      "description": "Paciente A tenta sobrescrever (PUT) solicitação #3 do Paciente B",
+      "expectedBehavior": "HTTP 400, 403 ou 404 (Negado)",
+      "observedStatus": "HTTP 400",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-03",
+      "category": "BOLA / IDOR",
+      "description": "Paciente A tenta cancelar (PATCH) solicitação #3 do Paciente B",
+      "expectedBehavior": "HTTP 403 ou 404 (Negado)",
+      "observedStatus": "HTTP 404",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-04",
+      "category": "RBAC Vertical",
+      "description": "Paciente tenta acessar fila restrita de validação administrativa (/admin/validacoes)",
+      "expectedBehavior": "HTTP 401 ou 403 (Negado)",
+      "observedStatus": "HTTP 403",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-05",
+      "category": "RBAC Horizontal",
+      "description": "Profissional puro tenta listar painel privado de solicitações de paciente (/solicitacoes)",
+      "expectedBehavior": "HTTP 403 (Negado)",
+      "observedStatus": "HTTP 403",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-06",
+      "category": "Autenticação",
+      "description": "Requisição anônima sem token JWT para /auth/me",
+      "expectedBehavior": "HTTP 401 ou 403 (Negado)",
+      "observedStatus": "HTTP 401",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-07",
+      "category": "Criptografia JWT",
+      "description": "Adulteração do payload JWT (claim sub alterado para Admin mantendo assinatura original)",
+      "expectedBehavior": "HTTP 401 ou 403 (Assinatura Inválida)",
+      "observedStatus": "HTTP 401",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-08",
+      "category": "Criptografia JWT",
+      "description": "Ataque de downgrade de algoritmo JWT (\"alg\": \"none\" sem assinatura)",
+      "expectedBehavior": "HTTP 401 ou 403 (Rejeitado)",
+      "observedStatus": "HTTP 401",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-09",
+      "category": "Injeção (SQLi)",
+      "description": "Injeção SQL no parâmetro cidade (' OR '1'='1' --) em /publico/profissionais",
+      "expectedBehavior": "Parametrização segura sem erro 500 nem vazamento de stacktrace",
+      "observedStatus": "HTTP 200 (Sem leak SQL)",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-10",
+      "category": "Injeção (SQLi)",
+      "description": "Bypass de autenticação via SQL Injection no campo e-mail de /auth/login",
+      "expectedBehavior": "HTTP 400 ou 401 (Bloqueado)",
+      "observedStatus": "HTTP 400",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-11",
+      "category": "Privacidade / Anti-Enumeração",
+      "description": "Comparação de resposta em /auth/senha/esqueci para e-mail existente vs inexistente",
+      "expectedBehavior": "Mesmo HTTP Status e mesma mensagem neutra",
+      "observedStatus": "HTTP 200 == HTTP 200",
+      "blockedOrProtected": true
+    },
+    {
+      "id": "SEC-12",
+      "category": "LGPD & Guard SPA",
+      "description": "Ocultação de PII sensível em /publico/solicitacoes + bloqueio /acesso-negado no Frontend",
+      "expectedBehavior": "Zero vazamento PII + redirecionamento para /acesso-negado",
+      "observedStatus": "PII Oculto + Guard Ativo",
+      "blockedOrProtected": true
+    }
+  ]
+}

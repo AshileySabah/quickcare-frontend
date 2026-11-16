@@ -1,0 +1,55 @@
+{
+  "suite": "NF-05",
+  "category": "Usabilidade",
+  "iso25010Characteristic": "Usability — Operability, Learnability & User Error Protection",
+  "environment": "local",
+  "executedAt": "16/11/2026, 02:07:18",
+  "overallPassed": true,
+  "checks": [
+    {
+      "id": "UX-01",
+      "heuristic": "Nielsen #5 e #9 — Prevenção e Recuperação de Erros",
+      "scenario": "Submissão incompleta preserva texto já preenchido pelo paciente e exibe orientação clara em português",
+      "metricLabel": "Preservação de dados (%)",
+      "measuredValue": 100,
+      "targetMaxOrMin": "100% preservado",
+      "passed": true
+    },
+    {
+      "id": "UX-02",
+      "heuristic": "ISO 9241-11 — Eficiência (Esforço de Interação)",
+      "scenario": "Quantidade de interações do paciente para concluir abertura de atendimento online",
+      "metricLabel": "Interações / Cliques",
+      "measuredValue": 8,
+      "targetMaxOrMin": "<= 10 interações",
+      "passed": true
+    },
+    {
+      "id": "UX-03",
+      "heuristic": "ISO 9241-11 — Eficiência Temporal",
+      "scenario": "Tempo ponta a ponta de preenchimento e confirmação da solicitação de atendimento",
+      "metricLabel": "Tempo de Conclusão (s)",
+      "measuredValue": 0.49,
+      "targetMaxOrMin": "<= 8,0 s",
+      "passed": true
+    },
+    {
+      "id": "UX-04",
+      "heuristic": "Nielsen #6 — Reconhecimento em vez de Memorização",
+      "scenario": "Acesso direto e filtragem visual da busca de profissionais com especialidades explícitas",
+      "metricLabel": "Tempo até Lista Visível (s)",
+      "measuredValue": 0.84,
+      "targetMaxOrMin": "<= 3,0 s",
+      "passed": true
+    },
+    {
+      "id": "UX-05",
+      "heuristic": "Nielsen #4 & Design Responsivo Mobile-First",
+      "scenario": "Adaptação em tela smartphone (390x844) sem rolagem horizontal indevida nas rotas críticas",
+      "metricLabel": "Telas Sem Overflow (%)",
+      "measuredValue": 100,
+      "targetMaxOrMin": "100%",
+      "passed": true
+    }
+  ]
+}

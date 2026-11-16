@@ -1,0 +1,258 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/14-profissional-historico-e-perfil-paciente.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\14-profissional-historico-e-perfil-paciente\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\14-profissional-historico-e-perfil-paciente\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "14-profissional-historico-e-perfil-paciente.spec.ts",
+      "file": "14-profissional-historico-e-perfil-paciente.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "14 - Profissional: Histórico e Visualização do Perfil do Paciente @auth",
+          "file": "14-profissional-historico-e-perfil-paciente.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-14.1: deve carregar o Histórico de propostas encerradas em /professional/historico e aplicar filtros",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 14915,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Profissional e acessar /professional/historico",
+                          "duration": 13825
+                        },
+                        {
+                          "title": "Filtrar histórico textual e restaurar listagem em Limpar filtros",
+                          "duration": 537
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:39:24.911Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-historico-propostas-profissional.png — Aba Histórico do Profissional listando propostas recusadas, canceladas ou concluídas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\14-profissional-historico--ac175-historico-e-aplicar-filtros-chromium-remote\\attachments\\ct01-01-historico-propostas-profissional-png-—-Aba-Histórico-do-Profissional-listando-propostas-recusadas-canceladas-ou-concluídas-73de72a00bc474f7c994c0e84632b6ac2e9c704b.png"
+                        },
+                        {
+                          "name": "ct01-02-historico-profissional-filtrado.png — Filtro textual aplicado ao histórico de propostas do Profissional",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\14-profissional-historico--ac175-historico-e-aplicar-filtros-chromium-remote\\attachments\\ct01-02-historico-profissional-filtrado-png-—-Filtro-textual-aplicado-ao-histórico-de-propostas-do-Profissional-0091545bbcdfb9809aa04dd0b6124ee83470ed66.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0d371daa74d6faa8d54-0474a4b96969cf7a3ddc",
+              "file": "14-profissional-historico-e-perfil-paciente.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-14.2: deve proteger /professional/pacientes/:id sem vínculo e abrir o perfil de paciente com proposta aceita",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5908,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Validar bloqueio de sigilo ao tentar acessar ID de paciente sem aceite (/professional/pacientes/999999999)",
+                          "duration": 5384
+                        },
+                        {
+                          "title": "Localizar paciente com histórico de aceite e abrir seu perfil em /professional/pacientes/:id",
+                          "duration": 212
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:39:39.989Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-sigilo-perfil-paciente-sem-aceite.png — Proteção de privacidade impedindo acesso a perfil de paciente sem proposta aceita",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\14-profissional-historico--63ad9-aciente-com-proposta-aceita-chromium-remote\\attachments\\ct02-01-sigilo-perfil-paciente-sem-aceite-png-—-Proteção-de-privacidade-impedindo-acesso-a-perfil-de-paciente-sem-proposta-aceita-acfec2a929f701bbac96ce19ca03166478f9d853.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "f0d371daa74d6faa8d54-06fcbd92a201a517c43c",
+              "file": "14-profissional-historico-e-perfil-paciente.spec.ts",
+              "line": 58,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:39:23.492Z",
+    "duration": 22776.487,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

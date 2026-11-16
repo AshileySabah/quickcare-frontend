@@ -167,6 +167,16 @@ npm run report:13
 
 **Evidências salvas e versionadas em:** `relatorios/13-profissional-gestao-propostas/`.
 
+### Teste 14 — Profissional: Histórico e Visualização do Perfil do Paciente (`14-profissional-historico-e-perfil-paciente.spec.ts`)
+Valida a aba `/professional/historico` com filtragem de propostas encerradas, a regra de sigilo em `/professional/pacientes/:id` antes do aceite e a abertura do perfil do paciente vinculado.
+
+```powershell
+npm run test:14:remote
+npm run report:14
+```
+
+**Evidências salvas e versionadas em:** `relatorios/14-profissional-historico-e-perfil-paciente/`.
+
 ---
 
 ## 3. Comandos Gerais

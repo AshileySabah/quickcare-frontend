@@ -1,0 +1,100 @@
+{
+  "suite": "NF-07",
+  "category": "Confiabilidade",
+  "iso25010Characteristic": "Reliability — Maturity & Operational Consistency",
+  "environment": "local",
+  "executedAt": "16/11/2026, 02:08:53",
+  "totalSoakRequests": 640,
+  "overallSuccessRatePct": 100,
+  "initialP50AvgMs": 28.49,
+  "finalP50AvgMs": 27.77,
+  "transactionalCheck": {
+    "consistent": true,
+    "stepsVerified": [
+      "Criação HTTP 201 (ID #58, status=ABERTA)",
+      "3 leituras consecutivas determinísticas (mesmo ID, schema e estado)",
+      "Transição atômica ABERTA -> CANCELADA confirmada"
+    ]
+  },
+  "dockerAfter": [
+    {
+      "name": "quickcare-backend",
+      "cpuPct": "4.55%",
+      "memUsage": "690MiB / 15.51GiB",
+      "memPct": "4.34%"
+    },
+    {
+      "name": "quickcare-postgres",
+      "cpuPct": "0.00%",
+      "memUsage": "156.5MiB / 15.51GiB",
+      "memPct": "0.99%"
+    }
+  ],
+  "overallPassed": true,
+  "windows": [
+    {
+      "windowIndex": 1,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 28.02,
+      "p95Ms": 133.85,
+      "throughputRps": 213.92
+    },
+    {
+      "windowIndex": 2,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 28.95,
+      "p95Ms": 135.24,
+      "throughputRps": 220.24
+    },
+    {
+      "windowIndex": 3,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 25.45,
+      "p95Ms": 117.41,
+      "throughputRps": 255.41
+    },
+    {
+      "windowIndex": 4,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 23.33,
+      "p95Ms": 136.76,
+      "throughputRps": 258.34
+    },
+    {
+      "windowIndex": 5,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 22.8,
+      "p95Ms": 133.26,
+      "throughputRps": 256.96
+    },
+    {
+      "windowIndex": 6,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 23.87,
+      "p95Ms": 121.37,
+      "throughputRps": 269.62
+    },
+    {
+      "windowIndex": 7,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 23.81,
+      "p95Ms": 117.95,
+      "throughputRps": 267
+    },
+    {
+      "windowIndex": 8,
+      "totalRequests": 80,
+      "successRatePct": 100,
+      "p50Ms": 31.72,
+      "p95Ms": 153.46,
+      "throughputRps": 202.65
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/11-paciente-meu-perfil-e-documentos.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\11-paciente-meu-perfil-e-documentos\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\11-paciente-meu-perfil-e-documentos\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "11-paciente-meu-perfil-e-documentos.spec.ts",
+      "file": "11-paciente-meu-perfil-e-documentos.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "11 - Paciente: Meu Perfil e Documentos Cadastrais @auth",
+          "file": "11-paciente-meu-perfil-e-documentos.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-11.1: deve carregar a tela Meu perfil (/patient/perfil) com dados pessoais, contatos, saúde e declarações travadas",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 6585,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Paciente e acessar /patient/perfil pelo menu da conta",
+                          "duration": 5717
+                        },
+                        {
+                          "title": "Validar cartões de saúde, endereço e declarações LGPD bloqueadas contra edição indevida",
+                          "duration": 230
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:03:37.248Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-meu-perfil-paciente-dados-basicos.png — Tela Meu perfil do Paciente exibindo dados básicos preenchidos e aviso de campos protegidos",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\11-paciente-meu-perfil-e-d-2c8b0-aúde-e-declarações-travadas-chromium-remote\\attachments\\ct01-01-meu-perfil-paciente-dados-basicos-png-—-Tela-Meu-perfil-do-Paciente-exibindo-dados-básicos-preenchidos-e-aviso-de-campos-protegidos-a3b6a95ebd25469c1cd9c4574f3257ca172d9eeb.png"
+                        },
+                        {
+                          "name": "ct01-02-meu-perfil-paciente-saude-e-declaracoes.png — Seções complementares do perfil do Paciente e declarações LGPD travadas após cadastro",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\11-paciente-meu-perfil-e-d-2c8b0-aúde-e-declarações-travadas-chromium-remote\\attachments\\ct01-02-meu-perfil-paciente-saude-e-declaracoes-png-—-Seções-complementares-do-perfil-do-Paciente-e-declarações-LGPD-travadas-após-cadastro-0164f158d1b5b5bf0312c27c7901d8aa9ebd3024.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "37cbb6a5d5b1d57573c4-eaf9a16352525d7ef44e",
+              "file": "11-paciente-meu-perfil-e-documentos.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-11.2: deve carregar a página Documentos (/patient/documentos) e filtrar as etapas de validação cadastral",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7678,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /patient/documentos e verificar resumo cadastral e etapas validadas",
+                          "duration": 6975
+                        },
+                        {
+                          "title": "Alternar chips de filtro de status (Aprovados / Em análise / Todos)",
+                          "duration": 419
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:03:43.978Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-documentos-validacao-paciente.png — Página Documentos exibindo status consolidado da validação cadastral e etapas enviadas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\11-paciente-meu-perfil-e-d-cb984-apas-de-validação-cadastral-chromium-remote\\attachments\\ct02-01-documentos-validacao-paciente-png-—-Página-Documentos-exibindo-status-consolidado-da-validação-cadastral-e-etapas-enviadas-84a8bb53ed1a567e24e515bf1605020048eba165.png"
+                        },
+                        {
+                          "name": "ct02-02-documentos-filtro-aprovados.png — Filtro por status Aprovados ativo nas etapas documentais do Paciente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\11-paciente-meu-perfil-e-d-cb984-apas-de-validação-cadastral-chromium-remote\\attachments\\ct02-02-documentos-filtro-aprovados-png-—-Filtro-por-status-Aprovados-ativo-nas-etapas-documentais-do-Paciente-38e0ee64d21a638fa7b1fd5080d816918f0dea21.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "37cbb6a5d5b1d57573c4-425f0210d4530c116a8d",
+              "file": "11-paciente-meu-perfil-e-documentos.spec.ts",
+              "line": 64,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:03:35.946Z",
+    "duration": 15952.062999999998,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -137,6 +137,16 @@ npm run report:10
 
 **Evidências salvas e versionadas em:** `relatorios/10-paciente-historico-e-busca-profissionais/`.
 
+### Teste 11 — Paciente: Meu Perfil e Documentos (`11-paciente-meu-perfil-e-documentos.spec.ts`)
+Valida o carregamento de `/patient/perfil` (dados básicos, emergência, saúde, endereço e declarações LGPD bloqueadas) e `/patient/documentos` (situação cadastral e filtros por status das etapas).
+
+```powershell
+npm run test:11:remote
+npm run report:11
+```
+
+**Evidências salvas e versionadas em:** `relatorios/11-paciente-meu-perfil-e-documentos/`.
+
 ---
 
 ## 3. Comandos Gerais

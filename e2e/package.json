@@ -14,6 +14,7 @@
     "test:08:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/08-paciente-validacao-edicao-solicitacao playwright test tests/08-paciente-validacao-edicao-solicitacao.spec.ts",
     "test:09:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/09-paciente-recusa-proposta playwright test tests/09-paciente-recusa-proposta.spec.ts",
     "test:10:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/10-paciente-historico-e-busca-profissionais playwright test tests/10-paciente-historico-e-busca-profissionais.spec.ts",
+    "test:11:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/11-paciente-meu-perfil-e-documentos playwright test tests/11-paciente-meu-perfil-e-documentos.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -36,6 +37,7 @@
     "report:08": "playwright show-report relatorios/08-paciente-validacao-edicao-solicitacao/html-report",
     "report:09": "playwright show-report relatorios/09-paciente-recusa-proposta/html-report",
     "report:10": "playwright show-report relatorios/10-paciente-historico-e-busca-profissionais/html-report",
+    "report:11": "playwright show-report relatorios/11-paciente-meu-perfil-e-documentos/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -1,0 +1,77 @@
+{
+  "suite": "NF-09",
+  "category": "Disponibilidade",
+  "iso25010Characteristic": "Reliability — Availability (SLI/SLO & Health Probes)",
+  "environment": "local",
+  "executedAt": "16/11/2026, 02:09:59",
+  "sloTargetPct": 99.5,
+  "globalAvailabilitySliPct": 100,
+  "healthyInternalComponents": [
+    "db",
+    "diskSpace",
+    "livenessState",
+    "ping",
+    "readinessState",
+    "ssl"
+  ],
+  "overallPassed": true,
+  "results": [
+    {
+      "name": "Actuator Health (Geral + DB)",
+      "url": "http://localhost:8080/actuator/health",
+      "probesTotal": 30,
+      "probesUp": 30,
+      "availabilityPct": 100,
+      "firstProbeColdMs": 53.2,
+      "warmAvgMs": 7.89,
+      "componentsUp": [
+        "db",
+        "diskSpace",
+        "livenessState",
+        "ping",
+        "readinessState",
+        "ssl"
+      ]
+    },
+    {
+      "name": "Probe Liveness (Kubernetes/Container)",
+      "url": "http://localhost:8080/actuator/health/liveness",
+      "probesTotal": 30,
+      "probesUp": 30,
+      "availabilityPct": 100,
+      "firstProbeColdMs": 7.32,
+      "warmAvgMs": 6.2,
+      "componentsUp": []
+    },
+    {
+      "name": "Probe Readiness (Tráfego Pronto)",
+      "url": "http://localhost:8080/actuator/health/readiness",
+      "probesTotal": 30,
+      "probesUp": 30,
+      "availabilityPct": 100,
+      "firstProbeColdMs": 8.47,
+      "warmAvgMs": 5.96,
+      "componentsUp": []
+    },
+    {
+      "name": "API Busca de Profissionais",
+      "url": "http://localhost:8080/publico/profissionais",
+      "probesTotal": 30,
+      "probesUp": 30,
+      "availabilityPct": 100,
+      "firstProbeColdMs": 251.74,
+      "warmAvgMs": 168.62,
+      "componentsUp": []
+    },
+    {
+      "name": "Frontend Web App (SPA)",
+      "url": "http://localhost:4200/",
+      "probesTotal": 30,
+      "probesUp": 30,
+      "availabilityPct": 100,
+      "firstProbeColdMs": 5.61,
+      "warmAvgMs": 2.08,
+      "componentsUp": []
+    }
+  ]
+}

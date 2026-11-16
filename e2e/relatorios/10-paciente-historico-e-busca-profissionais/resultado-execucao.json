@@ -1,0 +1,259 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/10-paciente-historico-e-busca-profissionais.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\10-paciente-historico-e-busca-profissionais\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\10-paciente-historico-e-busca-profissionais\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "10-paciente-historico-e-busca-profissionais.spec.ts",
+      "file": "10-paciente-historico-e-busca-profissionais.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "10 - Paciente: Histórico e Busca Interna de Profissionais @auth",
+          "file": "10-paciente-historico-e-busca-profissionais.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-10.1: deve carregar o Histórico de solicitações encerradas em /patient/historico e permitir filtragem",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8181,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Paciente e acessar a aba /patient/historico",
+                          "duration": 6982
+                        },
+                        {
+                          "title": "Aplicar busca textual no histórico e restaurar listagem em Limpar filtros",
+                          "duration": 600
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:00:27.770Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-historico-solicitacoes-paciente.png — Aba Histórico de solicitações exibindo solicitações concluídas ou canceladas do Paciente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\10-paciente-historico-e-bu-0e80d-torico-e-permitir-filtragem-chromium-remote\\attachments\\ct01-01-historico-solicitacoes-paciente-png-—-Aba-Histórico-de-solicitações-exibindo-solicitações-concluídas-ou-canceladas-do-Paciente-bc8ad99b638e83a2dfef7c551603a8e045b3004d.png"
+                        },
+                        {
+                          "name": "ct01-02-historico-solicitacoes-filtrado.png — Filtro textual aplicado sobre o histórico de solicitações encerradas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\10-paciente-historico-e-bu-0e80d-torico-e-permitir-filtragem-chromium-remote\\attachments\\ct01-02-historico-solicitacoes-filtrado-png-—-Filtro-textual-aplicado-sobre-o-histórico-de-solicitações-encerradas-df3f27107db57229b6e9c239f0710fce6fde2ac7.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4a25e423c43caeb07b24-250f098b9a3fb37fcad1",
+              "file": "10-paciente-historico-e-busca-profissionais.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-10.2: deve buscar profissionais logado em /patient/profissionais e abrir o perfil interno com ações de moderação",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 18761,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /patient/profissionais como Paciente autenticado e selecionar um profissional",
+                          "duration": 18494
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:00:36.105Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-busca-interna-profissionais-paciente.png — Busca interna de profissionais validados acessível pelo menu Encontrar profissionais",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\10-paciente-historico-e-bu-32159-erno-com-ações-de-moderação-chromium-remote\\attachments\\ct02-01-busca-interna-profissionais-paciente-png-—-Busca-interna-de-profissionais-validados-acessível-pelo-menu-Encontrar-profissionais-be27e33d8c90a73e4fa073f687ecd6824150323b.png"
+                        },
+                        {
+                          "name": "ct02-02-perfil-profissional-visao-interna-paciente.png — Perfil do profissional na visão interna do Paciente com detalhes, avaliações e controle de bloqueio",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\10-paciente-historico-e-bu-32159-erno-com-ações-de-moderação-chromium-remote\\attachments\\ct02-02-perfil-profissional-visao-interna-paciente-png-—-Perfil-do-profissional-na-visão-interna-do-Paciente-com-detalhes-avaliações-e-controle-de-bloqueio-9f0ea24a75d257b936de9df1c0ec1bdfbe73995d.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "4a25e423c43caeb07b24-94786c1479e14f2a71c3",
+              "file": "10-paciente-historico-e-busca-profissionais.spec.ts",
+              "line": 58,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:00:26.715Z",
+    "duration": 28363.332000000002,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

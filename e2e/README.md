@@ -127,6 +127,16 @@ npm run report:09
 
 **Evidências salvas e versionadas em:** `relatorios/09-paciente-recusa-proposta/`.
 
+### Teste 10 — Paciente: Histórico e Busca Interna de Profissionais (`10-paciente-historico-e-busca-profissionais.spec.ts`)
+Valida a aba `/patient/historico` com filtragem textual de solicitações encerradas e a busca interna `/patient/profissionais` com abertura do perfil completo `/patient/profissionais/:id` e ações disponíveis ao paciente logado.
+
+```powershell
+npm run test:10:remote
+npm run report:10
+```
+
+**Evidências salvas e versionadas em:** `relatorios/10-paciente-historico-e-busca-profissionais/`.
+
 ---
 
 ## 3. Comandos Gerais

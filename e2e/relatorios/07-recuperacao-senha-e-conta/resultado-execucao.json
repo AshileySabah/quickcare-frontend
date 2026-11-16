@@ -1,0 +1,302 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/07-recuperacao-senha-e-conta.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\07-recuperacao-senha-e-conta\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\07-recuperacao-senha-e-conta\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "07-recuperacao-senha-e-conta.spec.ts",
+      "file": "07-recuperacao-senha-e-conta.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "07 - Recuperação de Senha e Recuperação de Conta @smoke",
+          "file": "07-recuperacao-senha-e-conta.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-07.1: deve validar campo obrigatório, formato inválido de e-mail e resposta neutra anti-enumeração em /esqueci-senha",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5288,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Submeter formulário vazio e formato inválido em /esqueci-senha",
+                          "duration": 3247
+                        },
+                        {
+                          "title": "Submeter e-mail sintaticamente válido e validar confirmação neutra (anti-enumeração)",
+                          "duration": 1537
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:49:21.744Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-esqueci-senha-validacao-formato.png — Validação impedindo envio com formato inválido de e-mail em /esqueci-senha",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\07-recuperacao-senha-e-con-43164-enumeração-em-esqueci-senha-chromium-remote\\attachments\\ct01-01-esqueci-senha-validacao-formato-png-—-Validação-impedindo-envio-com-formato-inválido-de-e-mail-em-esqueci-senha-2e2492f9d12cb302e82dc29a724488d9c868fe55.png"
+                        },
+                        {
+                          "name": "ct01-02-esqueci-senha-confirmacao-neutra.png — Tela Verifique seu e-mail exibida sem revelar se o endereço existe na base",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\07-recuperacao-senha-e-con-43164-enumeração-em-esqueci-senha-chromium-remote\\attachments\\ct01-02-esqueci-senha-confirmacao-neutra-png-—-Tela-Verifique-seu-e-mail-exibida-sem-revelar-se-o-endereço-existe-na-base-bdf4655dd08b287008f2ce3f1085b223c114c886.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "821c5b1900a1f2540a10-6345f846d953955a68c3",
+              "file": "07-recuperacao-senha-e-conta.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-07.2: deve bloquear acesso direto ou com token inválido em /redefinir-senha oferecendo novo pedido",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2324,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /redefinir-senha sem token válido e validar mensagem Link inválido ou expirado",
+                          "duration": 2004
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:49:27.257Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-redefinir-senha-token-invalido.png — Bloqueio seguro de redefinição de senha quando o token é ausente ou inválido",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\07-recuperacao-senha-e-con-714db-enha-oferecendo-novo-pedido-chromium-remote\\attachments\\ct02-redefinir-senha-token-invalido-png-—-Bloqueio-seguro-de-redefinição-de-senha-quando-o-token-é-ausente-ou-inválido-f96b519d1d326cb5727e596c78f13ad00704e25e.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "821c5b1900a1f2540a10-7c2ce08d2929e2d9b3f1",
+              "file": "07-recuperacao-senha-e-conta.spec.ts",
+              "line": 57,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-07.3: deve bloquear link inválido em /recuperar-conta e direcionar de volta para o login",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2464,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /recuperar-conta sem token válido e acionar Ir para o login",
+                          "duration": 2088
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:49:29.600Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-recuperar-conta-link-invalido.png — Tratamento seguro de token inválido em /recuperar-conta com orientação ao usuário",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\07-recuperacao-senha-e-con-08d55-ionar-de-volta-para-o-login-chromium-remote\\attachments\\ct03-recuperar-conta-link-invalido-png-—-Tratamento-seguro-de-token-inválido-em-recuperar-conta-com-orientação-ao-usuário-cd02c32ec96e52946fb9b939f3d445bf3378b635.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "821c5b1900a1f2540a10-87b522a9d3478882e626",
+              "file": "07-recuperacao-senha-e-conta.spec.ts",
+              "line": 82,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T02:49:20.607Z",
+    "duration": 11723.887999999999,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

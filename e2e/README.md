@@ -97,6 +97,16 @@ npm run report:06
 
 **Evidências salvas e versionadas em:** `relatorios/06-perfil-publico-profissional/`.
 
+### Teste 07 — Recuperação de Senha e Conta (`07-recuperacao-senha-e-conta.spec.ts`)
+Valida o fluxo `/esqueci-senha` (campos obrigatórios, formato inválido e resposta neutra anti-enumeração), bloqueio de token inválido em `/redefinir-senha` e tratamento seguro em `/recuperar-conta`.
+
+```powershell
+npm run test:07:remote
+npm run report:07
+```
+
+**Evidências salvas e versionadas em:** `relatorios/07-recuperacao-senha-e-conta/`.
+
 ---
 
 ## 3. Comandos Gerais

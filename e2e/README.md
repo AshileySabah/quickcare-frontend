@@ -217,6 +217,16 @@ npm run report:18
 
 **Evidências salvas e versionadas em:** `relatorios/18-admin-fila-e-dossies-validacao/`.
 
+### Teste 19 — Admin: Mediação e Disciplina (Disputas, Denúncias e Ocorrências) (`19-admin-disputas-denuncias-ocorrencias.spec.ts`)
+Valida os módulos administrativos de mediação e disciplina em `/admin/disputas`, `/admin/denuncias` e `/admin/ocorrencias` com seus filtros de situação e perfil.
+
+```powershell
+npm run test:19:remote
+npm run report:19
+```
+
+**Evidências salvas e versionadas em:** `relatorios/19-admin-disputas-denuncias-ocorrencias/`.
+
 ---
 
 ## 3. Comandos Gerais

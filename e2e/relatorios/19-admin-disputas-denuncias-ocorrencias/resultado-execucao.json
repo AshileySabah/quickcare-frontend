@@ -1,0 +1,293 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/19-admin-disputas-denuncias-ocorrencias.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\19-admin-disputas-denuncias-ocorrencias\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\19-admin-disputas-denuncias-ocorrencias\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+      "file": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "19 - Admin: Mediação e Disciplina (Disputas, Denúncias e Ocorrências) @auth",
+          "file": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-19.1: deve carregar o painel de Disputas (/admin/disputas) e alternar os filtros de situação",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7410,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /admin/disputas e verificar filtros e estados da fila",
+                          "duration": 6843
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:59:52.045Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-admin-painel-disputas.png — Módulo administrativo de Disputas carregado com filtros por situação do relato",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\19-admin-disputas-denuncia-e5065-rnar-os-filtros-de-situação-chromium-remote\\attachments\\ct01-admin-painel-disputas-png-—-Módulo-administrativo-de-Disputas-carregado-com-filtros-por-situação-do-relato-e9a1452af5e9eb3304b0b0aa3553a31432c2e1c4.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92079fdbd52266bd606e-43c144161546be2eb9cf",
+              "file": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-19.2: deve carregar o painel de Denúncias (/admin/denuncias) e alternar filtros de julgamento",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7313,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /admin/denuncias e interagir com filtros de situação",
+                          "duration": 7030
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:59:59.603Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-admin-painel-denuncias.png — Módulo administrativo de Denúncias carregado com filtros de acompanhamento e histórico",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\19-admin-disputas-denuncia-1db09-ernar-filtros-de-julgamento-chromium-remote\\attachments\\ct02-admin-painel-denuncias-png-—-Módulo-administrativo-de-Denúncias-carregado-com-filtros-de-acompanhamento-e-histórico-716538efaf6c61ed45d558b906040a30924eef8e.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92079fdbd52266bd606e-75ebd297f341822331ee",
+              "file": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+              "line": 43,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-19.3: deve carregar Ocorrências e bloqueios (/admin/ocorrencias) com busca e filtros de recursos",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 24959,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /admin/ocorrencias e validar controles de busca e situação disciplinar",
+                          "duration": 24724
+                        }
+                      ],
+                      "startTime": "2026-11-16T04:00:06.933Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-admin-ocorrencias-e-bloqueios.png — Módulo disciplinar de Ocorrências e bloqueios com regra de 3 ocorrências em 90 dias",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\19-admin-disputas-denuncia-f66d3-busca-e-filtros-de-recursos-chromium-remote\\attachments\\ct03-admin-ocorrencias-e-bloqueios-png-—-Módulo-disciplinar-de-Ocorrências-e-bloqueios-com-regra-de-3-ocorrências-em-90-dias-4d5724f8a22e05c97f885fac9b81a51ac4ef6975.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "92079fdbd52266bd606e-8112700e6db58ba1befe",
+              "file": "19-admin-disputas-denuncias-ocorrencias.spec.ts",
+              "line": 76,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:59:50.761Z",
+    "duration": 41458.5,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

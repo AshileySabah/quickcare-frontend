@@ -107,6 +107,16 @@ npm run report:07
 
 **Evidências salvas e versionadas em:** `relatorios/07-recuperacao-senha-e-conta/`.
 
+### Teste 08 — Paciente: Validações e Edição de Solicitação (`08-paciente-validacao-edicao-solicitacao.spec.ts`)
+Valida bloqueio de campos vazios e exigência condicional de endereço em `/patient/novo`, além do fluxo completo de criação, edição (`/patient/solicitacoes/:id/editar`), confirmação de persistência e autolimpeza.
+
+```powershell
+npm run test:08:remote
+npm run report:08
+```
+
+**Evidências salvas e versionadas em:** `relatorios/08-paciente-validacao-edicao-solicitacao/`.
+
 ---
 
 ## 3. Comandos Gerais

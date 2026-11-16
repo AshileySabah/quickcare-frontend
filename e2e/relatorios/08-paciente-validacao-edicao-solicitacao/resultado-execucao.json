@@ -1,0 +1,267 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/08-paciente-validacao-edicao-solicitacao.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\08-paciente-validacao-edicao-solicitacao\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\08-paciente-validacao-edicao-solicitacao\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "08-paciente-validacao-edicao-solicitacao.spec.ts",
+      "file": "08-paciente-validacao-edicao-solicitacao.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "08 - Paciente: Validações e Edição de Solicitação @auth",
+          "file": "08-paciente-validacao-edicao-solicitacao.spec.ts",
+          "line": 16,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-08.1: deve bloquear submissão vazia em /patient/novo e exigir endereço apenas na modalidade Presencial",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7155,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Paciente e submeter formulário vazio em /patient/novo",
+                          "duration": 6078
+                        },
+                        {
+                          "title": "Alternar modalidade entre Presencial e Online validando exibição condicional do endereço",
+                          "duration": 205
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:53:07.068Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-nova-solicitacao-erros-obrigatorios.png — Validação bloqueando criação de solicitação com campos obrigatórios vazios",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\08-paciente-validacao-edic-6fc60-as-na-modalidade-Presencial-chromium-remote\\attachments\\ct01-01-nova-solicitacao-erros-obrigatorios-png-—-Validação-bloqueando-criação-de-solicitação-com-campos-obrigatórios-vazios-62ff58235e219740d46defc47e91fc54ff1433cf.png"
+                        },
+                        {
+                          "name": "ct01-02-modalidade-presencial-exige-endereco.png — Bloco de endereço exibido e exigido dinamicamente quando a modalidade é Presencial",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\08-paciente-validacao-edic-6fc60-as-na-modalidade-Presencial-chromium-remote\\attachments\\ct01-02-modalidade-presencial-exige-endereco-png-—-Bloco-de-endereço-exibido-e-exigido-dinamicamente-quando-a-modalidade-é-Presencial-5db7fbde4b851fd5600387a7f12073fcfc31dc5a.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0a440912f66d01499728-f01ea49922bf114e186c",
+              "file": "08-paciente-validacao-edicao-solicitacao.spec.ts",
+              "line": 17,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-08.2: deve criar uma solicitação aberta, editar seus dados em /editar, confirmar alterações e executar autolimpeza",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 120000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 30636,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Paciente e publicar solicitação inicial para teste de edição",
+                          "duration": 13259
+                        },
+                        {
+                          "title": "Acionar botão Editar, alterar descrição e quantidade e salvar alterações",
+                          "duration": 5704
+                        },
+                        {
+                          "title": "Confirmar persistência dos dados editados no detalhe e cancelar para autolimpeza",
+                          "duration": 11438
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:53:14.375Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-tela-editar-solicitacao-preenchida.png — Formulário Editar solicitação preenchido com nova descrição e quantidade alterada para 2 vagas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\08-paciente-validacao-edic-cd63f-ções-e-executar-autolimpeza-chromium-remote\\attachments\\ct02-01-tela-editar-solicitacao-preenchida-png-—-Formulário-Editar-solicitação-preenchido-com-nova-descrição-e-quantidade-alterada-para-2-vagas-5b89c8fdc13cf56b6d6b5297b2852a2d25e1a629.png"
+                        },
+                        {
+                          "name": "ct02-02-detalhe-solicitacao-apos-edicao.png — Detalhe da solicitação comprovando a gravação da nova descrição e quantidade atualizada",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\08-paciente-validacao-edic-cd63f-ções-e-executar-autolimpeza-chromium-remote\\attachments\\ct02-02-detalhe-solicitacao-apos-edicao-png-—-Detalhe-da-solicitação-comprovando-a-gravação-da-nova-descrição-e-quantidade-atualizada-57742b2fcb47e9d675f7b700b4160c7e053cdabd.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0a440912f66d01499728-509a9b09baa286e86efd",
+              "file": "08-paciente-validacao-edicao-solicitacao.spec.ts",
+              "line": 70,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T02:53:05.755Z",
+    "duration": 39490.184,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

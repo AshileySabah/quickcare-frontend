@@ -11,6 +11,7 @@
     "test:05:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/05-jornada-completa-multiusuario playwright test tests/05-jornada-completa-multiusuario.spec.ts",
     "test:06:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/06-perfil-publico-profissional playwright test tests/06-perfil-publico-profissional.spec.ts",
     "test:07:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/07-recuperacao-senha-e-conta playwright test tests/07-recuperacao-senha-e-conta.spec.ts",
+    "test:08:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/08-paciente-validacao-edicao-solicitacao playwright test tests/08-paciente-validacao-edicao-solicitacao.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -30,6 +31,7 @@
     "report:05": "playwright show-report relatorios/05-jornada-completa-multiusuario/html-report",
     "report:06": "playwright show-report relatorios/06-perfil-publico-profissional/html-report",
     "report:07": "playwright show-report relatorios/07-recuperacao-senha-e-conta/html-report",
+    "report:08": "playwright show-report relatorios/08-paciente-validacao-edicao-solicitacao/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

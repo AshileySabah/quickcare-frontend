@@ -1,0 +1,33 @@
+{
+  "name": "quickcare-non-functional-tests",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Suite isolada de Testes Nao Funcionais (ISO/IEC 25010) da plataforma QuickCare",
+  "scripts": {
+    "nf:01:local": "cross-env TEST_ENV=local npx tsx src/suites/01-desempenho.ts",
+    "nf:01:remote": "cross-env TEST_ENV=remote npx tsx src/suites/01-desempenho.ts",
+    "nf:02:local": "cross-env TEST_ENV=local npx tsx src/suites/02-carga.ts",
+    "nf:03:local": "cross-env TEST_ENV=local npx tsx src/suites/03-estresse.ts",
+    "nf:04:local": "cross-env TEST_ENV=local npx tsx src/suites/04-seguranca.ts",
+    "nf:04:remote": "cross-env TEST_ENV=remote npx tsx src/suites/04-seguranca.ts",
+    "nf:05:local": "cross-env TEST_ENV=local npx tsx src/suites/05-usabilidade.ts",
+    "nf:05:remote": "cross-env TEST_ENV=remote npx tsx src/suites/05-usabilidade.ts",
+    "nf:06:local": "cross-env TEST_ENV=local npx tsx src/suites/06-acessibilidade.ts",
+    "nf:06:remote": "cross-env TEST_ENV=remote npx tsx src/suites/06-acessibilidade.ts",
+    "nf:07:local": "cross-env TEST_ENV=local npx tsx src/suites/07-confiabilidade.ts",
+    "nf:07:remote": "cross-env TEST_ENV=remote npx tsx src/suites/07-confiabilidade.ts",
+    "nf:08:local": "cross-env TEST_ENV=local npx tsx src/suites/08-recuperacao.ts",
+    "nf:09:local": "cross-env TEST_ENV=local npx tsx src/suites/09-disponibilidade.ts",
+    "nf:09:remote": "cross-env TEST_ENV=remote npx tsx src/suites/09-disponibilidade.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.10",
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.7",
+    "playwright": "^1.51.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

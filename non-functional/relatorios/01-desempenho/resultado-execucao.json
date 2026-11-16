@@ -1,0 +1,234 @@
+{
+  "suite": "NF-01",
+  "category": "Desempenho",
+  "iso25010Characteristic": "Performance Efficiency — Time Behaviour",
+  "environment": "local",
+  "frontendUrl": "http://localhost:4200",
+  "backendUrl": "http://localhost:8080",
+  "executedAt": "16/11/2026, 01:50:50",
+  "overallPassed": true,
+  "apiResults": [
+    {
+      "id": "pub_prof",
+      "label": "Busca Profissionais (Geral)",
+      "endpoint": "/publico/profissionais",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 2183.57,
+        "throughputRps": 27.48,
+        "minMs": 110.88,
+        "avgMs": 177.46,
+        "stdDevMs": 38.9,
+        "p50Ms": 175.51,
+        "p90Ms": 234.16,
+        "p95Ms": 242.54,
+        "p99Ms": 255.98,
+        "maxMs": 255.98,
+        "ttfbAvgMs": 176.54,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 500,
+      "passed": true
+    },
+    {
+      "id": "pub_prof_filtro",
+      "label": "Busca Profissionais (SP/Presencial)",
+      "endpoint": "/publico/profissionais?uf=SP&modalidade=PRESENCIAL",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 1699.01,
+        "throughputRps": 35.31,
+        "minMs": 89.4,
+        "avgMs": 138.26,
+        "stdDevMs": 26.72,
+        "p50Ms": 135.91,
+        "p90Ms": 170.26,
+        "p95Ms": 176.66,
+        "p99Ms": 223.52,
+        "maxMs": 223.52,
+        "ttfbAvgMs": 137.82,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 500,
+      "passed": true
+    },
+    {
+      "id": "pub_solic",
+      "label": "Busca Pública Solicitações",
+      "endpoint": "/publico/solicitacoes",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 208.43,
+        "throughputRps": 287.87,
+        "minMs": 7.9,
+        "avgMs": 16.51,
+        "stdDevMs": 6.39,
+        "p50Ms": 15.5,
+        "p90Ms": 24.93,
+        "p95Ms": 29.08,
+        "p99Ms": 38.21,
+        "maxMs": 38.21,
+        "ttfbAvgMs": 15.97,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 300,
+      "passed": true
+    },
+    {
+      "id": "especialidades",
+      "label": "Catálogo Especialidades",
+      "endpoint": "/especialidades",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 130.51,
+        "throughputRps": 459.74,
+        "minMs": 3.42,
+        "avgMs": 10.22,
+        "stdDevMs": 5.89,
+        "p50Ms": 8.99,
+        "p90Ms": 15.37,
+        "p95Ms": 20.89,
+        "p99Ms": 35.81,
+        "maxMs": 35.81,
+        "ttfbAvgMs": 9.83,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 200,
+      "passed": true
+    },
+    {
+      "id": "pac_solic",
+      "label": "Painel Solicitações (Paciente)",
+      "endpoint": "/solicitacoes",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 364.84,
+        "throughputRps": 164.46,
+        "minMs": 14.87,
+        "avgMs": 29.34,
+        "stdDevMs": 10.24,
+        "p50Ms": 28.06,
+        "p90Ms": 45.1,
+        "p95Ms": 50.45,
+        "p99Ms": 60.01,
+        "maxMs": 60.01,
+        "ttfbAvgMs": 29.01,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 350,
+      "passed": true
+    },
+    {
+      "id": "prof_disp",
+      "label": "Demandas Disponíveis (Profissional)",
+      "endpoint": "/solicitacoes/disponiveis",
+      "stats": {
+        "totalRequests": 60,
+        "successCount": 60,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 373.54,
+        "throughputRps": 160.63,
+        "minMs": 19.52,
+        "avgMs": 29.93,
+        "stdDevMs": 5.99,
+        "p50Ms": 29.3,
+        "p90Ms": 39.69,
+        "p95Ms": 40.24,
+        "p99Ms": 45.34,
+        "maxMs": 45.34,
+        "ttfbAvgMs": 29.46,
+        "statusHistogram": {
+          "200": 60
+        }
+      },
+      "slaP95Ms": 400,
+      "passed": true
+    }
+  ],
+  "pageResults": [
+    {
+      "route": "/",
+      "label": "Home Pública",
+      "ttfbMs": 3.9,
+      "fcpMs": 376,
+      "domInteractiveMs": 16.5,
+      "loadCompleteMs": 312.5,
+      "dataRenderMs": 393.39,
+      "slaRenderMs": 2500,
+      "passed": true
+    },
+    {
+      "route": "/consulta/profissionais",
+      "label": "Busca de Profissionais",
+      "ttfbMs": 2.7,
+      "fcpMs": 420,
+      "domInteractiveMs": 13.9,
+      "loadCompleteMs": 290.5,
+      "dataRenderMs": 543.18,
+      "slaRenderMs": 2500,
+      "passed": true
+    },
+    {
+      "route": "/consulta/solicitacoes",
+      "label": "Busca de Solicitações",
+      "ttfbMs": 4,
+      "fcpMs": 504,
+      "domInteractiveMs": 16.9,
+      "loadCompleteMs": 377.6,
+      "dataRenderMs": 529.84,
+      "slaRenderMs": 2500,
+      "passed": true
+    },
+    {
+      "route": "/entrar",
+      "label": "Tela de Login",
+      "ttfbMs": 4,
+      "fcpMs": 384,
+      "domInteractiveMs": 17.5,
+      "loadCompleteMs": 370,
+      "dataRenderMs": 431.5,
+      "slaRenderMs": 2000,
+      "passed": true
+    }
+  ],
+  "dockerMetrics": [
+    {
+      "name": "quickcare-backend",
+      "cpuPct": "0.39%",
+      "memUsage": "644.7MiB / 15.51GiB",
+      "memPct": "4.06%"
+    },
+    {
+      "name": "quickcare-postgres",
+      "cpuPct": "0.00%",
+      "memUsage": "150.9MiB / 15.51GiB",
+      "memPct": "0.95%"
+    }
+  ]
+}

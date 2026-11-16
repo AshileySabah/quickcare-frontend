@@ -1,0 +1,269 @@
+{
+  "suite": "NF-08",
+  "category": "Recuperação",
+  "iso25010Characteristic": "Reliability — Recoverability & Fault Tolerance",
+  "environment": "local-docker",
+  "executedAt": "16/11/2026, 02:09:28",
+  "rtoSeconds": 21.96,
+  "rpoDataLossRecords": 0,
+  "rpoZeroVerified": true,
+  "uiGracefulDegradation": true,
+  "witnessRequestId": 59,
+  "restartTriggerSec": 4.45,
+  "recoveryDoneSec": 26.41,
+  "overallPassed": true,
+  "timeline": [
+    {
+      "elapsedSec": 0.16,
+      "up": true,
+      "latencyMs": 5.4,
+      "phase": "PRE_FALHA"
+    },
+    {
+      "elapsedSec": 0.57,
+      "up": true,
+      "latencyMs": 5.33,
+      "phase": "PRE_FALHA"
+    },
+    {
+      "elapsedSec": 0.99,
+      "up": true,
+      "latencyMs": 5.78,
+      "phase": "PRE_FALHA"
+    },
+    {
+      "elapsedSec": 2.31,
+      "up": false,
+      "latencyMs": 8.22,
+      "phase": "QUEDA_ATIVA"
+    },
+    {
+      "elapsedSec": 2.31,
+      "up": false,
+      "latencyMs": 4.99,
+      "phase": "QUEDA_ATIVA"
+    },
+    {
+      "elapsedSec": 5.8,
+      "up": false,
+      "latencyMs": 10.52,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 6.42,
+      "up": false,
+      "latencyMs": 4.89,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 7.02,
+      "up": false,
+      "latencyMs": 5.58,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 7.63,
+      "up": false,
+      "latencyMs": 6.97,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 8.26,
+      "up": false,
+      "latencyMs": 8.4,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 8.88,
+      "up": false,
+      "latencyMs": 6.99,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 9.49,
+      "up": false,
+      "latencyMs": 6.24,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 10.11,
+      "up": false,
+      "latencyMs": 5.77,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 10.73,
+      "up": false,
+      "latencyMs": 4.8,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 11.35,
+      "up": false,
+      "latencyMs": 6.51,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 11.97,
+      "up": false,
+      "latencyMs": 15.44,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 12.59,
+      "up": false,
+      "latencyMs": 4.1,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 13.2,
+      "up": false,
+      "latencyMs": 4.84,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 13.8,
+      "up": false,
+      "latencyMs": 4.65,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 14.41,
+      "up": false,
+      "latencyMs": 5.2,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 15.03,
+      "up": false,
+      "latencyMs": 4.49,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 15.65,
+      "up": false,
+      "latencyMs": 7.05,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 16.26,
+      "up": false,
+      "latencyMs": 6.55,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 16.87,
+      "up": false,
+      "latencyMs": 6.73,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 17.49,
+      "up": false,
+      "latencyMs": 5.19,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 18.09,
+      "up": false,
+      "latencyMs": 6.1,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 18.7,
+      "up": false,
+      "latencyMs": 5.1,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 19.31,
+      "up": false,
+      "latencyMs": 5.38,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 19.92,
+      "up": false,
+      "latencyMs": 9.39,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 20.54,
+      "up": false,
+      "latencyMs": 4.46,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 21.16,
+      "up": false,
+      "latencyMs": 5.31,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 21.79,
+      "up": false,
+      "latencyMs": 12.7,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 22.4,
+      "up": false,
+      "latencyMs": 4.87,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 23.01,
+      "up": false,
+      "latencyMs": 4.55,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 23.63,
+      "up": false,
+      "latencyMs": 5.5,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 24.24,
+      "up": false,
+      "latencyMs": 4.99,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 24.85,
+      "up": false,
+      "latencyMs": 5.22,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 25.79,
+      "up": false,
+      "latencyMs": 339.82,
+      "phase": "REINICIALIZACAO"
+    },
+    {
+      "elapsedSec": 26.41,
+      "up": true,
+      "latencyMs": 8.8,
+      "phase": "RECUPERADO"
+    },
+    {
+      "elapsedSec": 26.83,
+      "up": true,
+      "latencyMs": 8,
+      "phase": "RECUPERADO"
+    },
+    {
+      "elapsedSec": 27.24,
+      "up": true,
+      "latencyMs": 7.03,
+      "phase": "RECUPERADO"
+    },
+    {
+      "elapsedSec": 27.66,
+      "up": true,
+      "latencyMs": 7.07,
+      "phase": "RECUPERADO"
+    }
+  ]
+}

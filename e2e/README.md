@@ -177,6 +177,16 @@ npm run report:14
 
 **Evidências salvas e versionadas em:** `relatorios/14-profissional-historico-e-perfil-paciente/`.
 
+### Teste 15 — Profissional: Meu Perfil e Áreas de Atuação (`15-profissional-meu-perfil-e-atuacoes.spec.ts`)
+Valida `/professional/perfil` (dados cadastrais, forma de atendimento, raio km, seguro profissional) e o gerenciador de Áreas de Atuação e Especialidades.
+
+```powershell
+npm run test:15:remote
+npm run report:15
+```
+
+**Evidências salvas e versionadas em:** `relatorios/15-profissional-meu-perfil-e-atuacoes/`.
+
 ---
 
 ## 3. Comandos Gerais

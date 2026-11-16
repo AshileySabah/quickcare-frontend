@@ -1,0 +1,259 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/15-profissional-meu-perfil-e-atuacoes.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\15-profissional-meu-perfil-e-atuacoes\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\15-profissional-meu-perfil-e-atuacoes\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "15-profissional-meu-perfil-e-atuacoes.spec.ts",
+      "file": "15-profissional-meu-perfil-e-atuacoes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "15 - Profissional: Meu Perfil e Áreas de Atuação @auth",
+          "file": "15-profissional-meu-perfil-e-atuacoes.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-15.1: deve carregar Meu perfil (/professional/perfil) com modalidade, endereço e seguro profissional",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8328,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Profissional e acessar /professional/perfil",
+                          "duration": 7503
+                        },
+                        {
+                          "title": "Validar cartões de forma de atendimento, endereço e declaração de seguro profissional",
+                          "duration": 213
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:39:54.715Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-meu-perfil-profissional-cabecalho.png — Tela Meu perfil do Profissional com resumo de avaliações e informações básicas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\15-profissional-meu-perfil-cd40b-ereço-e-seguro-profissional-chromium-remote\\attachments\\ct01-01-meu-perfil-profissional-cabecalho-png-—-Tela-Meu-perfil-do-Profissional-com-resumo-de-avaliações-e-informações-básicas-5bb9b93c3313ba40983f1f740d963b325268acf2.png"
+                        },
+                        {
+                          "name": "ct01-02-forma-atendimento-e-raio-profissional.png — Configuração de modalidade de atendimento e raio geográfico em Meu perfil",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\15-profissional-meu-perfil-cd40b-ereço-e-seguro-profissional-chromium-remote\\attachments\\ct01-02-forma-atendimento-e-raio-profissional-png-—-Configuração-de-modalidade-de-atendimento-e-raio-geográfico-em-Meu-perfil-b107bd22d54d43537763df1f0ecd33681ecb3eaf.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "46c5de4a1af556fa8704-bf00a5be36e0fe818898",
+              "file": "15-profissional-meu-perfil-e-atuacoes.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-15.2: deve exibir o gerenciador de Atuação profissional e permitir abrir e cancelar inclusão sem sujar dados",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8098,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Inspecionar atuações cadastradas e testar abertura/cancelamento de Nova atuação",
+                          "duration": 7860
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:40:03.183Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-gerenciador-atuacoes-aprovadas.png — Gerenciador de Atuação profissional listando categorias, especialidades e status do registro",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\15-profissional-meu-perfil-fc142-ar-inclusão-sem-sujar-dados-chromium-remote\\attachments\\ct02-01-gerenciador-atuacoes-aprovadas-png-—-Gerenciador-de-Atuação-profissional-listando-categorias-especialidades-e-status-do-registro-39d348888d3c5b68c861efc1234fd54cb1e664da.png"
+                        },
+                        {
+                          "name": "ct02-02-formulario-incluir-nova-atuacao.png — Formulário de inclusão de nova área de atuação aberto no perfil do Profissional",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\15-profissional-meu-perfil-fc142-ar-inclusão-sem-sujar-dados-chromium-remote\\attachments\\ct02-02-formulario-incluir-nova-atuacao-png-—-Formulário-de-inclusão-de-nova-área-de-atuação-aberto-no-perfil-do-Profissional-d0eef1e4d3449b088edbdf1c3df8fdce793d0a3e.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "46c5de4a1af556fa8704-ae701d96b12fcc7c8aef",
+              "file": "15-profissional-meu-perfil-e-atuacoes.spec.ts",
+              "line": 60,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:39:53.582Z",
+    "duration": 17950.941000000003,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

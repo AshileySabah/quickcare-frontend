@@ -1,0 +1,219 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/09-paciente-recusa-proposta.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\09-paciente-recusa-proposta\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\09-paciente-recusa-proposta\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "09-paciente-recusa-proposta.spec.ts",
+      "file": "09-paciente-recusa-proposta.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "09 - Paciente: Recusa de Proposta Recebida @fluxo",
+          "file": "09-paciente-recusa-proposta.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-09.1: deve permitir ao Paciente recusar uma proposta recebida no modal de confirmação, refletir na visão do Profissional e executar autolimpeza",
+              "ok": true,
+              "tags": [
+                "fluxo"
+              ],
+              "tests": [
+                {
+                  "timeout": 150000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 58458,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Identificar especialidade liberada do Profissional e publicar solicitação pelo Paciente",
+                          "duration": 15794
+                        },
+                        {
+                          "title": "Profissional envia proposta pendente para a solicitação",
+                          "duration": 14007
+                        },
+                        {
+                          "title": "Paciente aciona Recusar, valida modal de confirmação e confirma a recusa",
+                          "duration": 13627
+                        },
+                        {
+                          "title": "Profissional visualiza aviso de proposta recusada com opção de reenvio e Paciente faz autolimpeza",
+                          "duration": 13039
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:57:01.005Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-modal-confirmacao-recusar-proposta.png — Modal de confirmação exibido ao Paciente antes de recusar formalmente a proposta recebida",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\09-paciente-recusa-propost-ca082-onal-e-executar-autolimpeza-chromium-remote\\attachments\\ct01-01-modal-confirmacao-recusar-proposta-png-—-Modal-de-confirmação-exibido-ao-Paciente-antes-de-recusar-formalmente-a-proposta-recebida-08b33c868a5d38da1880f8a820e0ddd33258851f.png"
+                        },
+                        {
+                          "name": "ct01-02-proposta-recusada-visao-paciente.png — Detalhe da solicitação após confirmação da recusa sem bloquear novas propostas para a vaga",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\09-paciente-recusa-propost-ca082-onal-e-executar-autolimpeza-chromium-remote\\attachments\\ct01-02-proposta-recusada-visao-paciente-png-—-Detalhe-da-solicitação-após-confirmação-da-recusa-sem-bloquear-novas-propostas-para-a-vaga-aa7973ece84dadb7545756809d1b067b6d204638.png"
+                        },
+                        {
+                          "name": "ct01-03-aviso-recusa-reenvio-visao-profissional.png — Visão do Profissional informando a recusa pelo Paciente e disponibilizando formulário de Reenviar proposta",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\09-paciente-recusa-propost-ca082-onal-e-executar-autolimpeza-chromium-remote\\attachments\\ct01-03-aviso-recusa-reenvio-visao-profissional-png-—-Visão-do-Profissional-informando-a-recusa-pelo-Paciente-e-disponibilizando-formulário-de-Reenviar-proposta-5d708415cfc5bac6038b5a1cd659c4d22bca8e64.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1f1c8920ed2ec7782a36-6bd605adf7e1e03cf0b1",
+              "file": "09-paciente-recusa-proposta.spec.ts",
+              "line": 18,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T02:56:59.479Z",
+    "duration": 60515.444,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

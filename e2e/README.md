@@ -117,6 +117,16 @@ npm run report:08
 
 **Evidências salvas e versionadas em:** `relatorios/08-paciente-validacao-edicao-solicitacao/`.
 
+### Teste 09 — Paciente: Recusa de Proposta Recebida (`09-paciente-recusa-proposta.spec.ts`)
+Valida o fluxo multiusuário específico de recusa de proposta pelo Paciente no modal de confirmação, verificando a notificação *"O paciente recusou a sua proposta anterior"* na visão do Profissional e executando autolimpeza.
+
+```powershell
+npm run test:09:remote
+npm run report:09
+```
+
+**Evidências salvas e versionadas em:** `relatorios/09-paciente-recusa-proposta/`.
+
 ---
 
 ## 3. Comandos Gerais

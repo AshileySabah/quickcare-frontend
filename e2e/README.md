@@ -74,6 +74,19 @@ npm run report:04
 
 **Evidências salvas e versionadas em:** `relatorios/04-autenticacao-guards-perfis/` (`RELATORIO_TESTE_04.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
 
+### Teste 05 — Jornada Completa Multiusuário: Solicitação -> Proposta -> Aceite -> Chat WebSocket (`05-jornada-completa-multiusuario.spec.ts`)
+Abre **dois contextos isolados do navegador simultaneamente** (Paciente + Profissional), descobre dinamicamente a atuação aprovada do profissional, cria uma solicitação compatível, registra proposta, confirma o aceite formal, valida a troca bidirecional de mensagens em tempo real via **STOMP/WebSocket** e executa autolimpeza cancelando a solicitação ao final.
+
+```powershell
+# Executar o Teste 05 no ambiente remoto e atualizar evidências
+npm run test:05:remote
+
+# Abrir o relatório HTML interativo salvo do Teste 05
+npm run report:05
+```
+
+**Evidências salvas e versionadas em:** `relatorios/05-jornada-completa-multiusuario/` (`RELATORIO_TESTE_05.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
+
 ---
 
 ## 3. Comandos Gerais

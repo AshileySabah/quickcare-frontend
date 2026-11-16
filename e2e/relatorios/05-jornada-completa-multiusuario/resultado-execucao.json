@@ -1,0 +1,257 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/05-jornada-completa-multiusuario.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\05-jornada-completa-multiusuario\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\05-jornada-completa-multiusuario\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "05-jornada-completa-multiusuario.spec.ts",
+      "file": "05-jornada-completa-multiusuario.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "05 - Jornada Completa Multiusuário (Solicitação -> Proposta -> Aceite -> Chat WebSocket) @fluxo",
+          "file": "05-jornada-completa-multiusuario.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-05.1: deve conectar Paciente e Profissional em dois navegadores isolados da solicitação ao Chat em tempo real com autolimpeza",
+              "ok": true,
+              "tags": [
+                "fluxo"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 103038,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Profissional e identificar atuação e modalidade compatíveis",
+                          "duration": 7480
+                        },
+                        {
+                          "title": "Autenticar Paciente em contexto isolado e publicar nova solicitação compatível",
+                          "duration": 10947
+                        },
+                        {
+                          "title": "Profissional visualiza a solicitação aberta e submete proposta de atendimento",
+                          "duration": 14843
+                        },
+                        {
+                          "title": "Paciente analisa a proposta recebida e confirma o aceite formal",
+                          "duration": 15999
+                        },
+                        {
+                          "title": "Paciente e Profissional trocam mensagens bidirecionais em tempo real via WebSocket",
+                          "duration": 40766
+                        },
+                        {
+                          "title": "Autolimpeza: Paciente cancela a solicitação de teste para não poluir a base ativa",
+                          "duration": 10457
+                        }
+                      ],
+                      "startTime": "2026-11-16T01:15:54.926Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-paciente-preenche-nova-solicitacao.png — Formulário de nova solicitação preenchido pelo Paciente com categoria e especialidade compatíveis",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct01-01-paciente-preenche-nova-solicitacao-png-—-Formulário-de-nova-solicitação-preenchido-pelo-Paciente-com-categoria-e-especialidade-compatíveis-af33ad0a0ddf873f3ace225dde6a83fe5476a3a3.png"
+                        },
+                        {
+                          "name": "ct01-02-solicitacao-criada-aguardando-proposta.png — Solicitação #12 recém-criada pelo Paciente aguardando propostas",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct01-02-solicitacao-criada-aguardando-proposta-png-—-Solicitação-12-recém-criada-pelo-Paciente-aguardando-propostas-ad3a19935e7a88f9fb7a1f70019660d4bc9aeed0.png"
+                        },
+                        {
+                          "name": "ct02-01-profissional-preenche-proposta.png — Formulário de proposta preenchido pelo Profissional com valor, período e abordagem",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct02-01-profissional-preenche-proposta-png-—-Formulário-de-proposta-preenchido-pelo-Profissional-com-valor-período-e-abordagem-202cfa306bb095ad842c5a99b8116c437684493c.png"
+                        },
+                        {
+                          "name": "ct02-02-proposta-enviada-pelo-profissional.png — Proposta registrada pelo Profissional com status Pendente aguardando decisão do Paciente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct02-02-proposta-enviada-pelo-profissional-png-—-Proposta-registrada-pelo-Profissional-com-status-Pendente-aguardando-decisão-do-Paciente-1530259e62fba3c151dc3bf4915ba1cf870c5ee2.png"
+                        },
+                        {
+                          "name": "ct03-01-modal-confirmacao-aceite-proposta.png — Diálogo de confirmação de aceite da proposta exibindo regras e consequências",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct03-01-modal-confirmacao-aceite-proposta-png-—-Diálogo-de-confirmação-de-aceite-da-proposta-exibindo-regras-e-consequências-1953644ec03f46e7e1b8c41cbe7a76e247c492be.png"
+                        },
+                        {
+                          "name": "ct03-02-proposta-aceita-botao-conversar-liberado.png — Proposta aceita pelo Paciente liberando o botão Conversar para o Chat privado",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct03-02-proposta-aceita-botao-conversar-liberado-png-—-Proposta-aceita-pelo-Paciente-liberando-o-botão-Conversar-para-o-Chat-privado-6f5a3eb197e49f5906299c21884a9673156c664d.png"
+                        },
+                        {
+                          "name": "ct04-01-chat-websocket-visao-paciente.png — Visão do Paciente no Chat exibindo mensagem enviada e resposta recebida em tempo real via STOMP/WebSocket",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct04-01-chat-websocket-visao-paciente-png-—-Visão-do-Paciente-no-Chat-exibindo-mensagem-enviada-e-resposta-recebida-em-tempo-real-via-STOMP-WebSocket-87c30d18efadb17bf0f85c080f3f8a1892975f0c.png"
+                        },
+                        {
+                          "name": "ct04-02-chat-websocket-visao-profissional.png — Visão simultânea do Profissional no Chat comprovando sincronização bidirecional instantânea",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct04-02-chat-websocket-visao-profissional-png-—-Visão-simultânea-do-Profissional-no-Chat-comprovando-sincronização-bidirecional-instantânea-5cd471f2a49a27093b40ac0343d8aa438bd2f1be.png"
+                        },
+                        {
+                          "name": "ct05-autolimpeza-solicitacao-cancelada.png — Solicitação de teste cancelada automaticamente ao final da bateria preservando a higiene do ambiente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\05-jornada-completa-multiu-dd105--tempo-real-com-autolimpeza-chromium-remote\\attachments\\ct05-autolimpeza-solicitacao-cancelada-png-—-Solicitação-de-teste-cancelada-automaticamente-ao-final-da-bateria-preservando-a-higiene-do-ambiente-9acebe1e34933f3f6cf84c5311afb0f0100a57d7.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "79a42f3532bc21c5d09d-b41c8f849f07f170c4b3",
+              "file": "05-jornada-completa-multiusuario.spec.ts",
+              "line": 22,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T01:15:52.860Z",
+    "duration": 105715.064,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

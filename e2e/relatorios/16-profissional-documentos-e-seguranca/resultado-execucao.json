@@ -1,0 +1,255 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/16-profissional-documentos-e-seguranca.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\16-profissional-documentos-e-seguranca\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\16-profissional-documentos-e-seguranca\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "16-profissional-documentos-e-seguranca.spec.ts",
+      "file": "16-profissional-documentos-e-seguranca.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "16 - Profissional: Documentos Regulatórios e Segurança @auth",
+          "file": "16-profissional-documentos-e-seguranca.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-16.1: deve carregar Documentos (/professional/documentos) exibindo registro profissional e filtros de validação",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7490,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Profissional, acessar /professional/documentos e alternar filtros de status",
+                          "duration": 6851
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:40:21.271Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-documentos-regulatorios-profissional.png — Página Documentos do Profissional com etapas de CPF, identidade e registro do conselho",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\16-profissional-documentos-5c992-onal-e-filtros-de-validação-chromium-remote\\attachments\\ct01-01-documentos-regulatorios-profissional-png-—-Página-Documentos-do-Profissional-com-etapas-de-CPF-identidade-e-registro-do-conselho-92758c3241605e398e6e308aa4f5f7ea8216447a.png"
+                        },
+                        {
+                          "name": "ct01-02-documentos-profissional-filtro-aprovados.png — Etapas documentais do Profissional filtradas pelo status Aprovados",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\16-profissional-documentos-5c992-onal-e-filtros-de-validação-chromium-remote\\attachments\\ct01-02-documentos-profissional-filtro-aprovados-png-—-Etapas-documentais-do-Profissional-filtradas-pelo-status-Aprovados-b72bb930d9e8414c08cd501be05c43f7446fb7b0.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6c1f8cfef3fa1f56a4ec-68744a5669dec1b30033",
+              "file": "16-profissional-documentos-e-seguranca.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-16.2: deve carregar Segurança (/professional/seguranca) e validar proteção de troca de senha e lista de bloqueados",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7118,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /professional/seguranca e validar seções de e-mail, senha e usuários bloqueados",
+                          "duration": 6927
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:40:28.912Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-seguranca-profissional-validacao-senha.png — Validação obrigatória de senha atual em /professional/seguranca",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\16-profissional-documentos-3a56d-senha-e-lista-de-bloqueados-chromium-remote\\attachments\\ct02-01-seguranca-profissional-validacao-senha-png-—-Validação-obrigatória-de-senha-atual-em-professional-seguranca-39a8d2c45338f39fee2a556ef04603dbf0681e34.png"
+                        },
+                        {
+                          "name": "ct02-02-seguranca-profissional-usuarios-bloqueados.png — Seção de gestão de usuários bloqueados e encerramento de conta do Profissional",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\16-profissional-documentos-3a56d-senha-e-lista-de-bloqueados-chromium-remote\\attachments\\ct02-02-seguranca-profissional-usuarios-bloqueados-png-—-Seção-de-gestão-de-usuários-bloqueados-e-encerramento-de-conta-do-Profissional-d8d38e5530b22a6859bf3be81776eada19197cd4.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "6c1f8cfef3fa1f56a4ec-aaef704ab675daead1e2",
+              "file": "16-profissional-documentos-e-seguranca.spec.ts",
+              "line": 53,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:40:20.070Z",
+    "duration": 16152.740999999998,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

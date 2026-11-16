@@ -187,6 +187,16 @@ npm run report:15
 
 **Evidências salvas e versionadas em:** `relatorios/15-profissional-meu-perfil-e-atuacoes/`.
 
+### Teste 16 — Profissional: Documentos Regulatórios e Segurança (`16-profissional-documentos-e-seguranca.spec.ts`)
+Valida `/professional/documentos` (CPF, identidade, registro profissional e filtros de status) e `/professional/seguranca` (e-mail, validações de senha e bloqueios).
+
+```powershell
+npm run test:16:remote
+npm run report:16
+```
+
+**Evidências salvas e versionadas em:** `relatorios/16-profissional-documentos-e-seguranca/`.
+
 ---
 
 ## 3. Comandos Gerais

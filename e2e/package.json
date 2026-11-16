@@ -19,6 +19,7 @@
     "test:13:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/13-profissional-gestao-propostas playwright test tests/13-profissional-gestao-propostas.spec.ts",
     "test:14:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/14-profissional-historico-e-perfil-paciente playwright test tests/14-profissional-historico-e-perfil-paciente.spec.ts",
     "test:15:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/15-profissional-meu-perfil-e-atuacoes playwright test tests/15-profissional-meu-perfil-e-atuacoes.spec.ts",
+    "test:16:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/16-profissional-documentos-e-seguranca playwright test tests/16-profissional-documentos-e-seguranca.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -46,6 +47,7 @@
     "report:13": "playwright show-report relatorios/13-profissional-gestao-propostas/html-report",
     "report:14": "playwright show-report relatorios/14-profissional-historico-e-perfil-paciente/html-report",
     "report:15": "playwright show-report relatorios/15-profissional-meu-perfil-e-atuacoes/html-report",
+    "report:16": "playwright show-report relatorios/16-profissional-documentos-e-seguranca/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

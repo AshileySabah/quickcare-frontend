@@ -157,6 +157,16 @@ npm run report:12
 
 **Evidências salvas e versionadas em:** `relatorios/12-paciente-seguranca-notificacoes-novo-perfil/`.
 
+### Teste 13 — Profissional: Gestão de Propostas (`13-profissional-gestao-propostas.spec.ts`)
+Valida erros obrigatórios de proposta, envio, listagem em `/professional/propostas`, edição em `/professional/propostas/:id/editar`, cancelamento de proposta pendente e autolimpeza.
+
+```powershell
+npm run test:13:remote
+npm run report:13
+```
+
+**Evidências salvas e versionadas em:** `relatorios/13-profissional-gestao-propostas/`.
+
 ---
 
 ## 3. Comandos Gerais

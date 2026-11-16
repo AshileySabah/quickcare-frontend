@@ -1,0 +1,224 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/13-profissional-gestao-propostas.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\13-profissional-gestao-propostas\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\13-profissional-gestao-propostas\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "13-profissional-gestao-propostas.spec.ts",
+      "file": "13-profissional-gestao-propostas.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "13 - Profissional: Gestão de Propostas (Validar, Enviar, Editar e Cancelar) @fluxo",
+          "file": "13-profissional-gestao-propostas.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-13.1: deve validar campos obrigatórios da proposta, enviar, editar em /professional/propostas/:id/editar, cancelar proposta e fazer autolimpeza",
+              "ok": true,
+              "tags": [
+                "fluxo"
+              ],
+              "tests": [
+                {
+                  "timeout": 150000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 72062,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Profissional e Paciente e publicar solicitação compatível",
+                          "duration": 16044
+                        },
+                        {
+                          "title": "Validar bloqueio de proposta vazia e submeter proposta inicial em /professional/solicitacoes/:id",
+                          "duration": 21984
+                        },
+                        {
+                          "title": "Acessar /professional/propostas, editar proposta em /editar e confirmar atualização",
+                          "duration": 20892
+                        },
+                        {
+                          "title": "Cancelar proposta pendente pelo Profissional e executar autolimpeza da solicitação",
+                          "duration": 11182
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:23:11.620Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-validacao-campos-obrigatorios-proposta.png — Validação impedindo submissão de proposta sem preço, período e descrição da abordagem",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\13-profissional-gestao-pro-6b1bf-roposta-e-fazer-autolimpeza-chromium-remote\\attachments\\ct01-01-validacao-campos-obrigatorios-proposta-png-—-Validação-impedindo-submissão-de-proposta-sem-preço-período-e-descrição-da-abordagem-27190b54f12f4ce8ef7db93bf3e6534b6b7caecc.png"
+                        },
+                        {
+                          "name": "ct01-02-minhas-propostas-antes-edicao.png — Aba Minhas propostas exibindo a proposta recém-enviada pelo Profissional",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\13-profissional-gestao-pro-6b1bf-roposta-e-fazer-autolimpeza-chromium-remote\\attachments\\ct01-02-minhas-propostas-antes-edicao-png-—-Aba-Minhas-propostas-exibindo-a-proposta-recém-enviada-pelo-Profissional-fe777a277ffe537a1330e1c5d80d36d93d211e31.png"
+                        },
+                        {
+                          "name": "ct01-03-tela-editar-proposta-profissional.png — Formulário Editar proposta preenchido com novo valor R$ 245,00 e descrição revisada",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\13-profissional-gestao-pro-6b1bf-roposta-e-fazer-autolimpeza-chromium-remote\\attachments\\ct01-03-tela-editar-proposta-profissional-png-—-Formulário-Editar-proposta-preenchido-com-novo-valor-R-245-00-e-descrição-revisada-5e4d02208a6734ac55c9ff31660a99906175c4f3.png"
+                        },
+                        {
+                          "name": "ct01-04-proposta-cancelada-enviada-ao-historico.png — Proposta pendente cancelada pelo Profissional e transferida automaticamente ao histórico",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\13-profissional-gestao-pro-6b1bf-roposta-e-fazer-autolimpeza-chromium-remote\\attachments\\ct01-04-proposta-cancelada-enviada-ao-historico-png-—-Proposta-pendente-cancelada-pelo-Profissional-e-transferida-automaticamente-ao-histórico-39a89e550004dcbecd0affa64273f25574416268.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "0cb0c751fc6ef994ac40-38084855b23649e55651",
+              "file": "13-profissional-gestao-propostas.spec.ts",
+              "line": 18,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:23:10.455Z",
+    "duration": 73644.854,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

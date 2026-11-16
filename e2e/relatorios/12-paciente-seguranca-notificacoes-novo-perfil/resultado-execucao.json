@@ -1,0 +1,263 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/12-paciente-seguranca-notificacoes-novo-perfil.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\12-paciente-seguranca-notificacoes-novo-perfil\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\12-paciente-seguranca-notificacoes-novo-perfil\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "12-paciente-seguranca-notificacoes-novo-perfil.spec.ts",
+      "file": "12-paciente-seguranca-notificacoes-novo-perfil.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "12 - Paciente: Segurança, Bloqueios, Notificações e 2º Perfil @auth",
+          "file": "12-paciente-seguranca-notificacoes-novo-perfil.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-12.1: deve validar seções de Segurança (/patient/seguranca), troca de senha, bloqueados e modal de encerramento sem encerrar conta",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 8970,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /patient/seguranca e validar e-mail, validação de troca de senha e usuários bloqueados",
+                          "duration": 8085
+                        },
+                        {
+                          "title": "Abrir diálogo de Encerrar conta para verificar avisos de segurança e fechar sem confirmar",
+                          "duration": 328
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:19:08.079Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-seguranca-paciente-validacao-senha.png — Tela Segurança do Paciente validando obrigatoriedade dos campos antes da troca de senha",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\12-paciente-seguranca-noti-873ed-rramento-sem-encerrar-conta-chromium-remote\\attachments\\ct01-01-seguranca-paciente-validacao-senha-png-—-Tela-Segurança-do-Paciente-validando-obrigatoriedade-dos-campos-antes-da-troca-de-senha-e8bd8092d37998583c1aeef3bbc01abef7d5b8b8.png"
+                        },
+                        {
+                          "name": "ct01-02-modal-encerrar-conta-protegido-por-senha.png — Diálogo de encerramento exigindo senha atual e informando prazo de recuperação de 30 dias",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\12-paciente-seguranca-noti-873ed-rramento-sem-encerrar-conta-chromium-remote\\attachments\\ct01-02-modal-encerrar-conta-protegido-por-senha-png-—-Diálogo-de-encerramento-exigindo-senha-atual-e-informando-prazo-de-recuperação-de-30-dias-964211330a87896cdf17c8a2c4c8714079c4d22c.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c7e59103838667d4c167-a72cda0bf4c50e46ba3a",
+              "file": "12-paciente-seguranca-notificacoes-novo-perfil.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-12.2: deve abrir o painel de Notificações no cabeçalho e carregar a tela de expansão para 2º perfil (/criar-perfil/profissional)",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5612,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acionar o sino de notificações no cabeçalho do Paciente",
+                          "duration": 4889
+                        },
+                        {
+                          "title": "Verificar opção de criação de 2º perfil no menu da conta única (/criar-perfil/profissional)",
+                          "duration": 418
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:19:17.195Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-painel-notificacoes-paciente.png — Painel suspenso de Notificações aberto a partir do sino no cabeçalho do Paciente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\12-paciente-seguranca-noti-96dc7--criar-perfil-profissional--chromium-remote\\attachments\\ct02-01-painel-notificacoes-paciente-png-—-Painel-suspenso-de-Notificações-aberto-a-partir-do-sino-no-cabeçalho-do-Paciente-de7ae43dd28d04a13e2a99f7b9f560e816afe374.png"
+                        },
+                        {
+                          "name": "ct02-02-expansao-segundo-perfil-profissional.png — Formulário /criar-perfil/profissional reaproveitando dados da conta do Paciente para tornar-se multiconta",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\12-paciente-seguranca-noti-96dc7--criar-perfil-profissional--chromium-remote\\attachments\\ct02-02-expansao-segundo-perfil-profissional-png-—-Formulário-criar-perfil-profissional-reaproveitando-dados-da-conta-do-Paciente-para-tornar-se-multiconta-a21a6cbcc6ed3f11027bd97fac827415bdedef6c.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "c7e59103838667d4c167-4a03a299afb9ee07e1a9",
+              "file": "12-paciente-seguranca-notificacoes-novo-perfil.spec.ts",
+              "line": 66,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:19:06.918Z",
+    "duration": 16359.822999999999,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

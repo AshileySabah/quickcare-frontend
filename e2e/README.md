@@ -147,6 +147,16 @@ npm run report:11
 
 **Evidências salvas e versionadas em:** `relatorios/11-paciente-meu-perfil-e-documentos/`.
 
+### Teste 12 — Paciente: Segurança, Bloqueios, Notificações e 2º Perfil (`12-paciente-seguranca-notificacoes-novo-perfil.spec.ts`)
+Valida `/patient/seguranca` (e-mail, validações de troca de senha, usuários bloqueados e modal seguro de encerramento), sino de notificações e expansão para segundo perfil (`/criar-perfil/profissional`).
+
+```powershell
+npm run test:12:remote
+npm run report:12
+```
+
+**Evidências salvas e versionadas em:** `relatorios/12-paciente-seguranca-notificacoes-novo-perfil/`.
+
 ---
 
 ## 3. Comandos Gerais

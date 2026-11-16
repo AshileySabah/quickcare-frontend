@@ -1,0 +1,77 @@
+{
+  "suite": "NF-06",
+  "category": "Acessibilidade",
+  "iso25010Characteristic": "Usability — Accessibility (WCAG 2.1 AA, Keyboard & Screen Reader)",
+  "environment": "local",
+  "executedAt": "16/11/2026, 02:07:36",
+  "keyboardNavigation": {
+    "emailFocusedViaTab": true,
+    "loginCompletedWithoutMouse": true,
+    "tabSequenceSample": [
+      "A",
+      "INPUT[email]"
+    ]
+  },
+  "averageWcagCompliancePct": 98.62,
+  "overallPassed": true,
+  "audits": [
+    {
+      "screen": "Home Pública",
+      "route": "/",
+      "wcagPassedRules": 19,
+      "wcagViolationsTotal": 0,
+      "criticalViolations": 0,
+      "complianceScorePct": 100,
+      "hasH1": true,
+      "labeledInputsPct": 100,
+      "violationIds": []
+    },
+    {
+      "screen": "Busca de Profissionais",
+      "route": "/consulta/profissionais",
+      "wcagPassedRules": 27,
+      "wcagViolationsTotal": 0,
+      "criticalViolations": 0,
+      "complianceScorePct": 100,
+      "hasH1": true,
+      "labeledInputsPct": 100,
+      "violationIds": []
+    },
+    {
+      "screen": "Login",
+      "route": "/entrar",
+      "wcagPassedRules": 24,
+      "wcagViolationsTotal": 0,
+      "criticalViolations": 0,
+      "complianceScorePct": 100,
+      "hasH1": true,
+      "labeledInputsPct": 100,
+      "violationIds": []
+    },
+    {
+      "screen": "Seleção de Cadastro",
+      "route": "/cadastro",
+      "wcagPassedRules": 17,
+      "wcagViolationsTotal": 0,
+      "criticalViolations": 0,
+      "complianceScorePct": 100,
+      "hasH1": true,
+      "labeledInputsPct": 100,
+      "violationIds": []
+    },
+    {
+      "screen": "Painel do Paciente",
+      "route": "/patient",
+      "wcagPassedRules": 27,
+      "wcagViolationsTotal": 2,
+      "criticalViolations": 1,
+      "complianceScorePct": 93.1,
+      "hasH1": true,
+      "labeledInputsPct": 100,
+      "violationIds": [
+        "aria-roles (critical)",
+        "color-contrast (serious)"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/17-chat-central-e-recursos-avancados.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\17-chat-central-e-recursos-avancados\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\17-chat-central-e-recursos-avancados\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "17-chat-central-e-recursos-avancados.spec.ts",
+      "file": "17-chat-central-e-recursos-avancados.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "17 - Central de Mensagens e Recursos Avançados do Chat @fluxo",
+          "file": "17-chat-central-e-recursos-avancados.spec.ts",
+          "line": 18,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-17.1: deve validar busca lateral na Central de Mensagens, busca interna, painel de informações e exclusão de mensagem em tempo real",
+              "ok": true,
+              "tags": [
+                "fluxo"
+              ],
+              "tests": [
+                {
+                  "timeout": 180000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 105846,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Estabelecer conversa ativa entre Paciente e Profissional",
+                          "duration": 45970
+                        },
+                        {
+                          "title": "Validar Central de Mensagens (/patient/mensagens) e filtro lateral de conversas",
+                          "duration": 2996
+                        },
+                        {
+                          "title": "Validar Busca nesta conversa e Painel de Informações da conversa",
+                          "duration": 40492
+                        },
+                        {
+                          "title": "Apagar mensagem enviada pelo Paciente e validar atualização em tempo real no Profissional + autolimpeza",
+                          "duration": 13546
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:57:26.337Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-central-mensagens-busca-lateral.png — Central de Mensagens filtrando conversas pela barra lateral de busca",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\17-chat-central-e-recursos-2f67b-o-de-mensagem-em-tempo-real-chromium-remote\\attachments\\ct01-01-central-mensagens-busca-lateral-png-—-Central-de-Mensagens-filtrando-conversas-pela-barra-lateral-de-busca-66cb403d16b3cce5ec6e74cd59beeeed9515e7ec.png"
+                        },
+                        {
+                          "name": "ct01-02-chat-busca-interna-mensagens.png — Recurso Buscar nesta conversa localizando ocorrências exatas dentro do histórico do canal",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\17-chat-central-e-recursos-2f67b-o-de-mensagem-em-tempo-real-chromium-remote\\attachments\\ct01-02-chat-busca-interna-mensagens-png-—-Recurso-Buscar-nesta-conversa-localizando-ocorrências-exatas-dentro-do-histórico-do-canal-98887eb8172fddc5bbe0eaead9da4ef5379c071b.png"
+                        },
+                        {
+                          "name": "ct01-03-chat-painel-informacoes-conversa.png — Painel lateral Informações da conversa exibindo participantes e dados da solicitação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\17-chat-central-e-recursos-2f67b-o-de-mensagem-em-tempo-real-chromium-remote\\attachments\\ct01-03-chat-painel-informacoes-conversa-png-—-Painel-lateral-Informações-da-conversa-exibindo-participantes-e-dados-da-solicitação-76f6920828ecd9e5b021b81e8bc5dfaaa01495a6.png"
+                        },
+                        {
+                          "name": "ct01-04-chat-mensagem-apagada-tempo-real.png — Visão do Profissional atualizada instantaneamente via WebSocket exibindo Mensagem apagada",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\17-chat-central-e-recursos-2f67b-o-de-mensagem-em-tempo-real-chromium-remote\\attachments\\ct01-04-chat-mensagem-apagada-tempo-real-png-—-Visão-do-Profissional-atualizada-instantaneamente-via-WebSocket-exibindo-Mensagem-apagada-41860574c9530d8f1c6eb6628aaaa28d9cb4f45e.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "8c9c326ba5011d0a1b65-bdc6830fd908fcea9c35",
+              "file": "17-chat-central-e-recursos-avancados.spec.ts",
+              "line": 19,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:57:24.846Z",
+    "duration": 107892.366,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

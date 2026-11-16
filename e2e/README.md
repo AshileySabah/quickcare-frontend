@@ -197,6 +197,16 @@ npm run report:16
 
 **Evidências salvas e versionadas em:** `relatorios/16-profissional-documentos-e-seguranca/`.
 
+### Teste 17 — Central de Mensagens e Recursos Avançados do Chat (`17-chat-central-e-recursos-avancados.spec.ts`)
+Valida a central `/mensagens` (busca lateral de conversas), lupa *Buscar nesta conversa*, painel *Informações da conversa* e **Apagar mensagem** em tempo real via WebSocket com autolimpeza.
+
+```powershell
+npm run test:17:remote
+npm run report:17
+```
+
+**Evidências salvas e versionadas em:** `relatorios/17-chat-central-e-recursos-avancados/`.
+
 ---
 
 ## 3. Comandos Gerais

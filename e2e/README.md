@@ -87,6 +87,16 @@ npm run report:05
 
 **Evidências salvas e versionadas em:** `relatorios/05-jornada-completa-multiusuario/` (`RELATORIO_TESTE_05.md`, `prints/`, `resultado-execucao.json` e `html-report/`).
 
+### Teste 06 — Perfil Público Detalhado do Profissional (`06-perfil-publico-profissional.spec.ts`)
+Valida a navegação da vitrine pública para o perfil detalhado (`/consulta/profissionais/:id`), exibição de atuações, registro profissional, localização, resumo de avaliações, funcionamento do link *Voltar*, conversão pelo CTA *"Quero ser atendido"* e tratamento amigável de ID inexistente (*Perfil não encontrado*).
+
+```powershell
+npm run test:06:remote
+npm run report:06
+```
+
+**Evidências salvas e versionadas em:** `relatorios/06-perfil-publico-profissional/`.
+
 ---
 
 ## 3. Comandos Gerais

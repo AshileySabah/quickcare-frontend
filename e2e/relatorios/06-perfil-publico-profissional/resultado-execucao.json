@@ -1,0 +1,311 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/06-perfil-publico-profissional.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\06-perfil-publico-profissional\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\06-perfil-publico-profissional\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "06-perfil-publico-profissional.spec.ts",
+      "file": "06-perfil-publico-profissional.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "06 - Perfil Público Detalhado do Profissional @smoke",
+          "file": "06-perfil-publico-profissional.spec.ts",
+          "line": 8,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-06.1: deve abrir o perfil público de um profissional validado exibindo atuações, credenciais e avaliações",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15835,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Selecionar o primeiro profissional da vitrine /consulta/profissionais",
+                          "duration": 12806
+                        },
+                        {
+                          "title": "Validar cabeçalho de identidade, detalhes profissionais e resumo de avaliações",
+                          "duration": 2051
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:34:32.328Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-selecao-card-vitrine-profissionais.png — Vitrine pública exibindo o card do profissional \"Bruno Castro\" antes da navegação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\06-perfil-publico-profissi-96475-es-credenciais-e-avaliações-chromium-remote\\attachments\\ct01-01-selecao-card-vitrine-profissionais-png-—-Vitrine-pública-exibindo-o-card-do-profissional-Bruno-Castro-antes-da-navegação-f8a326cec78a5b5d94726c171ff6896a73fcdf13.png"
+                        },
+                        {
+                          "name": "ct01-02-perfil-publico-detalhado-profissional.png — Perfil público completo renderizado com atuações, registro, localização e estrelas de avaliação",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\06-perfil-publico-profissi-96475-es-credenciais-e-avaliações-chromium-remote\\attachments\\ct01-02-perfil-publico-detalhado-profissional-png-—-Perfil-público-completo-renderizado-com-atuações-registro-localização-e-estrelas-de-avaliação-677d0599e341e229f71f2df548bd4f856368e575.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e820247bd97772e86de7-d081bb77ae1b90aa02cf",
+              "file": "06-perfil-publico-profissional.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-06.2: deve permitir acionar o CTA \"Quero ser atendido\" e retornar à vitrine pelo link Voltar",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 23069,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Abrir perfil público de profissional e validar retorno à listagem pelo ui-back-link",
+                          "duration": 11384
+                        },
+                        {
+                          "title": "Reabrir perfil público como visitante e acionar CTA \"Quero ser atendido\"",
+                          "duration": 11327
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:34:48.325Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-retorno-vitrine-link-voltar.png — Retorno para /consulta/profissionais após acionar o link Voltar no perfil público",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\06-perfil-publico-profissi-a1fe8--à-vitrine-pelo-link-Voltar-chromium-remote\\attachments\\ct02-01-retorno-vitrine-link-voltar-png-—-Retorno-para-consulta-profissionais-após-acionar-o-link-Voltar-no-perfil-público-71aa5442eb8a75ef0a013220c297ea32565653f2.png"
+                        },
+                        {
+                          "name": "ct02-02-cta-quero-ser-atendido-cadastro.png — Direcionamento do visitante para /cadastro/paciente a partir do CTA do perfil público",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\06-perfil-publico-profissi-a1fe8--à-vitrine-pelo-link-Voltar-chromium-remote\\attachments\\ct02-02-cta-quero-ser-atendido-cadastro-png-—-Direcionamento-do-visitante-para-cadastro-paciente-a-partir-do-CTA-do-perfil-público-f8dd2dcda1adc20870a407300d1d2add5d623b84.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e820247bd97772e86de7-1f1c0228c2fbacb958e6",
+              "file": "06-perfil-publico-profissional.spec.ts",
+              "line": 58,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-06.3: deve tratar ID inexistente de profissional exibindo estado vazio informativo",
+              "ok": true,
+              "tags": [
+                "smoke"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1501,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Acessar /consulta/profissionais/999999999 e verificar estado not-found amigável",
+                          "duration": 1292
+                        }
+                      ],
+                      "startTime": "2026-11-16T02:35:11.414Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct03-perfil-publico-inexistente-not-found.png — Estado amigável de Perfil não encontrado exibido ao consultar identificador inexistente",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\06-perfil-publico-profissi-dc56d-do-estado-vazio-informativo-chromium-remote\\attachments\\ct03-perfil-publico-inexistente-not-found-png-—-Estado-amigável-de-Perfil-não-encontrado-exibido-ao-consultar-identificador-inexistente-91ab99ed81560f998ac59415170bf84e3675d15b.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "e820247bd97772e86de7-25c48e381204ee258e0c",
+              "file": "06-perfil-publico-profissional.spec.ts",
+              "line": 106,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T02:34:31.218Z",
+    "duration": 41967.371999999996,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

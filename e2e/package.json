@@ -9,6 +9,7 @@
     "test:03:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/03-cadastro-validacoes-lgpd playwright test tests/03-cadastro-validacoes-lgpd.spec.ts",
     "test:04:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/04-autenticacao-guards-perfis playwright test tests/04-autenticacao-guards-perfis.spec.ts",
     "test:05:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/05-jornada-completa-multiusuario playwright test tests/05-jornada-completa-multiusuario.spec.ts",
+    "test:06:remote": "cross-env TARGET_ENV=remote E2E_REPORT_DIR=relatorios/06-perfil-publico-profissional playwright test tests/06-perfil-publico-profissional.spec.ts",
     "test:local": "cross-env TARGET_ENV=local playwright test",
     "test:local:smoke": "cross-env TARGET_ENV=local playwright test --grep @smoke",
     "test:local:headed": "cross-env TARGET_ENV=local E2E_SLOW_MO=500 playwright test --headed",
@@ -26,6 +27,7 @@
     "report:03": "playwright show-report relatorios/03-cadastro-validacoes-lgpd/html-report",
     "report:04": "playwright show-report relatorios/04-autenticacao-guards-perfis/html-report",
     "report:05": "playwright show-report relatorios/05-jornada-completa-multiusuario/html-report",
+    "report:06": "playwright show-report relatorios/06-perfil-publico-profissional/html-report",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

@@ -1,0 +1,255 @@
+{
+  "config": {
+    "argv": [
+      "C:\\nvm4w\\nodejs\\node.exe",
+      "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "tests/18-admin-fila-e-dossies-validacao.spec.ts"
+    ],
+    "configFile": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\playwright.config.ts",
+    "rootDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "chromium-remote",
+        "name": "chromium-remote",
+        "testDir": "D:/GIT/Github/quickcare-fixed/quickcare-frontend/e2e/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "chromium-remote",
+        "testDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "snapshotDir": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\tests",
+        "testIgnore": [],
+        "testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+        "timeout": 90000,
+        "use": {
+          "baseURL": "https://quickcare-frontend.vercel.app",
+          "locale": "pt-BR",
+          "timezoneId": "America/Sao_Paulo",
+          "viewport": {
+            "width": 1280,
+            "height": 720
+          },
+          "actionTimeout": 15000,
+          "navigationTimeout": 45000,
+          "launchOptions": {
+            "slowMo": 0
+          },
+          "screenshot": "only-on-failure",
+          "trace": "retain-on-failure",
+          "video": "retain-on-failure",
+          "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/159.0.8154.6 Safari/537.36",
+          "screen": {
+            "width": 1920,
+            "height": 1080
+          },
+          "deviceScaleFactor": 1,
+          "isMobile": false,
+          "hasTouch": false,
+          "defaultBrowserType": "chromium"
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": "chromium-remote"
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "html",
+        {
+          "outputFolder": "relatorios\\18-admin-fila-e-dossies-validacao\\html-report",
+          "open": "never"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "relatorios\\18-admin-fila-e-dossies-validacao\\resultado-execucao.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.65.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "18-admin-fila-e-dossies-validacao.spec.ts",
+      "file": "18-admin-fila-e-dossies-validacao.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "18 - Admin: Fila e Dossiês de Validação Cadastral @auth",
+          "file": "18-admin-fila-e-dossies-validacao.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "CT-E2E-18.1: deve filtrar cadastros de Profissionais por situação e abrir o dossiê completo em /admin/profissionais/:id",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12212,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Autenticar Administrador, filtrar Profissionais Aprovados e abrir primeiro dossiê",
+                          "duration": 11562
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:59:21.732Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct01-01-admin-fila-profissionais-aprovados.png — Fila de Validação cadastral filtrando Profissionais com situação Aprovados",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\18-admin-fila-e-dossies-va-032ea-o-em-admin-profissionais-id-chromium-remote\\attachments\\ct01-01-admin-fila-profissionais-aprovados-png-—-Fila-de-Validação-cadastral-filtrando-Profissionais-com-situação-Aprovados-00d3d324c80761b1c22a19c21358306c8fb0ca6c.png"
+                        },
+                        {
+                          "name": "ct01-02-admin-dossie-validacao-profissional.png — Dossiê administrativo de Profissional exibindo metadados, atuações e histórico de documentos",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\18-admin-fila-e-dossies-va-032ea-o-em-admin-profissionais-id-chromium-remote\\attachments\\ct01-02-admin-dossie-validacao-profissional-png-—-Dossiê-administrativo-de-Profissional-exibindo-metadados-atuações-e-histórico-de-documentos-8f300454322509ee85944f400518d59acd9ece07.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2a8c911b3a1edb9818-43f4665c5947ba0e0fc2",
+              "file": "18-admin-fila-e-dossies-validacao.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "CT-E2E-18.2: deve alternar para a fila de Pacientes e inspecionar um dossiê em /admin/pacientes/:id",
+              "ok": true,
+              "tags": [
+                "auth"
+              ],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium-remote",
+                  "projectName": "chromium-remote",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7793,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "steps": [
+                        {
+                          "title": "Selecionar filtro Pacientes -> Todos e abrir dossiê /admin/pacientes/:id",
+                          "duration": 7609
+                        }
+                      ],
+                      "startTime": "2026-11-16T03:59:34.140Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "ct02-01-admin-fila-pacientes-todos.png — Fila administrativa alternada para o perfil Pacientes listando todos os cadastros",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\18-admin-fila-e-dossies-va-ca06f-ossiê-em-admin-pacientes-id-chromium-remote\\attachments\\ct02-01-admin-fila-pacientes-todos-png-—-Fila-administrativa-alternada-para-o-perfil-Pacientes-listando-todos-os-cadastros-fbf0de3c8d2fa9b550c2402ec75280e370be72a7.png"
+                        },
+                        {
+                          "name": "ct02-02-admin-dossie-validacao-paciente.png — Dossiê administrativo de Paciente com etapas de CPF e documento de identidade",
+                          "contentType": "image/png",
+                          "path": "D:\\GIT\\Github\\quickcare-fixed\\quickcare-frontend\\e2e\\test-results\\18-admin-fila-e-dossies-va-ca06f-ossiê-em-admin-pacientes-id-chromium-remote\\attachments\\ct02-02-admin-dossie-validacao-paciente-png-—-Dossiê-administrativo-de-Paciente-com-etapas-de-CPF-e-documento-de-identidade-255990b8ec33b352410d4e9bfdf577cbd3e346f6.png"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "be2a8c911b3a1edb9818-dcd6592df4ce8ee87241",
+              "file": "18-admin-fila-e-dossies-validacao.spec.ts",
+              "line": 53,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-11-16T03:59:20.196Z",
+    "duration": 21980.986999999997,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

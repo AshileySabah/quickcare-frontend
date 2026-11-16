@@ -207,6 +207,16 @@ npm run report:17
 
 **Evidências salvas e versionadas em:** `relatorios/17-chat-central-e-recursos-avancados/`.
 
+### Teste 18 — Admin: Fila e Dossiês de Validação Cadastral (`18-admin-fila-e-dossies-validacao.spec.ts`)
+Valida os filtros de perfil e situação em `/admin/validacao` e a inspeção em modo seguro de leitura dos dossiês `/admin/profissionais/:id` e `/admin/pacientes/:id`.
+
+```powershell
+npm run test:18:remote
+npm run report:18
+```
+
+**Evidências salvas e versionadas em:** `relatorios/18-admin-fila-e-dossies-validacao/`.
+
 ---
 
 ## 3. Comandos Gerais

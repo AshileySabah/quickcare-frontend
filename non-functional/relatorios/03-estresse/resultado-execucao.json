@@ -1,0 +1,177 @@
+{
+  "suite": "NF-03",
+  "category": "Estresse",
+  "iso25010Characteristic": "Performance Efficiency — Capacity Limit & Breaking Point Analysis",
+  "environment": "local-docker",
+  "backendUrl": "http://localhost:8080",
+  "executedAt": "16/11/2026, 01:56:15",
+  "maxThroughputRps": 108.41,
+  "maxThroughputUsers": 350,
+  "inflectionPointUsers": 50,
+  "breakingPointUsers": 250,
+  "postStressBackendRecovered": true,
+  "stepResults": [
+    {
+      "concurrentUsers": 50,
+      "totalRequests": 100,
+      "stats": {
+        "totalRequests": 100,
+        "successCount": 100,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 1871.05,
+        "throughputRps": 53.45,
+        "minMs": 60.64,
+        "avgMs": 814.67,
+        "stdDevMs": 627.34,
+        "p50Ms": 363.34,
+        "p90Ms": 1497.85,
+        "p95Ms": 1498.81,
+        "p99Ms": 1503.5,
+        "maxMs": 1511.19,
+        "ttfbAvgMs": 814.24,
+        "statusHistogram": {
+          "200": 100
+        }
+      },
+      "slaBreachPct": 0,
+      "dockerSnapshot": [
+        {
+          "name": "quickcare-backend",
+          "cpuPct": "164.73%",
+          "memUsage": "719.8MiB / 15.51GiB",
+          "memPct": "4.53%"
+        },
+        {
+          "name": "quickcare-postgres",
+          "cpuPct": "38.65%",
+          "memUsage": "166.9MiB / 15.51GiB",
+          "memPct": "1.05%"
+        }
+      ],
+      "state": "DEGRADADO"
+    },
+    {
+      "concurrentUsers": 150,
+      "totalRequests": 300,
+      "stats": {
+        "totalRequests": 300,
+        "successCount": 300,
+        "errorCount": 0,
+        "errorRatePct": 0,
+        "durationTotalMs": 3424.34,
+        "throughputRps": 87.61,
+        "minMs": 81.07,
+        "avgMs": 1337.1,
+        "stdDevMs": 481.04,
+        "p50Ms": 1640.01,
+        "p90Ms": 1689.73,
+        "p95Ms": 1719.19,
+        "p99Ms": 1855.73,
+        "maxMs": 2956.14,
+        "ttfbAvgMs": 1336.65,
+        "statusHistogram": {
+          "200": 300
+        }
+      },
+      "slaBreachPct": 0.67,
+      "dockerSnapshot": [
+        {
+          "name": "quickcare-backend",
+          "cpuPct": "717.53%",
+          "memUsage": "722.2MiB / 15.51GiB",
+          "memPct": "4.55%"
+        },
+        {
+          "name": "quickcare-postgres",
+          "cpuPct": "167.23%",
+          "memUsage": "166.9MiB / 15.51GiB",
+          "memPct": "1.05%"
+        }
+      ],
+      "state": "DEGRADADO"
+    },
+    {
+      "concurrentUsers": 250,
+      "totalRequests": 500,
+      "stats": {
+        "totalRequests": 500,
+        "successCount": 441,
+        "errorCount": 59,
+        "errorRatePct": 11.8,
+        "durationTotalMs": 6175.5,
+        "throughputRps": 80.97,
+        "minMs": 192.23,
+        "avgMs": 2380.52,
+        "stdDevMs": 675.48,
+        "p50Ms": 2601.67,
+        "p90Ms": 3014.14,
+        "p95Ms": 3124.51,
+        "p99Ms": 3130.6,
+        "maxMs": 3133.79,
+        "ttfbAvgMs": 2380.01,
+        "statusHistogram": {
+          "200": 441,
+          "ERR:TIMEOUT": 59
+        }
+      },
+      "slaBreachPct": 77.8,
+      "dockerSnapshot": [
+        {
+          "name": "quickcare-backend",
+          "cpuPct": "717.33%",
+          "memUsage": "720.5MiB / 15.51GiB",
+          "memPct": "4.54%"
+        },
+        {
+          "name": "quickcare-postgres",
+          "cpuPct": "214.66%",
+          "memUsage": "167.4MiB / 15.51GiB",
+          "memPct": "1.05%"
+        }
+      ],
+      "state": "SATURADO / FALHA"
+    },
+    {
+      "concurrentUsers": 350,
+      "totalRequests": 700,
+      "stats": {
+        "totalRequests": 700,
+        "successCount": 327,
+        "errorCount": 373,
+        "errorRatePct": 53.29,
+        "durationTotalMs": 6457.11,
+        "throughputRps": 108.41,
+        "minMs": 191.71,
+        "avgMs": 2798.61,
+        "stdDevMs": 523.09,
+        "p50Ms": 3004.58,
+        "p90Ms": 3235.95,
+        "p95Ms": 3250.11,
+        "p99Ms": 3256.96,
+        "maxMs": 3257.68,
+        "ttfbAvgMs": 2798.37,
+        "statusHistogram": {
+          "200": 327,
+          "ERR:TIMEOUT": 373
+        }
+      },
+      "slaBreachPct": 94.71,
+      "dockerSnapshot": [
+        {
+          "name": "quickcare-backend",
+          "cpuPct": "696.89%",
+          "memUsage": "721.4MiB / 15.51GiB",
+          "memPct": "4.54%"
+        },
+        {
+          "name": "quickcare-postgres",
+          "cpuPct": "154.46%",
+          "memUsage": "167.2MiB / 15.51GiB",
+          "memPct": "1.05%"
+        }
+      ],
+      "state": "SATURADO / FALHA"
+    }
+  ]
+}

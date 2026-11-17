@@ -112,7 +112,16 @@ src/
 
 ### Sistema completo com Docker (recomendado)
 
-Clone este repositório e o `quickcare-backend` lado a lado, na mesma pasta, e rode `docker compose up --build` dentro do `quickcare-backend`. O compose builda este front com a configuração `docker` (API em `http://localhost:8080`), serve com nginx em http://localhost:4200 e sobe também a API, o banco e o Mailpit. O passo a passo completo está no README do back-end.
+Clone este repositório e o `quickcare-backend` lado a lado, na mesma pasta, e rode `docker compose up --build` dentro do `quickcare-backend`:
+
+```bash
+git clone --branch les-mvp https://github.com/AshileySabah/quickcare-backend.git quickcare-backend
+git clone --branch les-mvp https://github.com/AshileySabah/quickcare-frontend.git quickcare-frontend
+cd quickcare-backend
+docker compose up --build
+```
+
+O compose builda este front com a configuração `docker` (API em `http://localhost:8080`), serve com nginx em http://localhost:4200 e sobe também a API, o banco e o Mailpit. O passo a passo completo está no README do back-end.
 
 ### Só o front, para desenvolvimento
 

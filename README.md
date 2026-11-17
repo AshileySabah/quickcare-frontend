@@ -106,7 +106,17 @@ npm install
 npm start
 ```
 
-Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev` com a senha `Senha@123`, por exemplo `paciente@quickcare.dev`, `profissional@quickcare.dev`, `ambos@quickcare.dev` e `admin@quickcare.dev`.
+Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev`, todas com a senha `Senha@123`:
+
+| Conta | Situação |
+| --- | --- |
+| `admin@quickcare.dev` | admin |
+| `paciente@quickcare.dev` | paciente aprovado |
+| `profissional@quickcare.dev` | profissional aprovado |
+| `fernanda@quickcare.dev` | enfermeira de Curativos aprovada (segunda profissional da demonstração) |
+| `ambos@quickcare.dev` | conta com os dois perfis |
+| `paciente.pendente@quickcare.dev`, `profissional.pendente@quickcare.dev` | aguardando validação |
+| `chat.paciente@`, `chat.enfermeira@`, `chat.cuidador@quickcare.dev` | cenário pronto de chat com grupo e dois profissionais |
 
 ### Testes
 

@@ -2,7 +2,18 @@
 
 Front-end do QuickCare, um marketplace de profissionais de saúde orientado a demanda. Em vez de o paciente navegar por uma lista de profissionais e escolher às cegas, ele descreve o que precisa uma única vez, e os profissionais aprovados para aquela área enviam propostas. O paciente recebe opções já filtradas, e o profissional só vê demandas reais dentro da área em que está habilitado.
 
-Projeto de TCC do curso de Análise e Desenvolvimento de Sistemas (FATEC). A API fica no repositório `quickcare-backend`, e o README de lá detalha as regras de negócio.
+Projeto de TCC do curso de Análise e Desenvolvimento de Sistemas (FATEC). A API fica no repositório `quickcare-backend`, e o README de lá detalha as regras de negócio e como subir o sistema completo.
+
+## Equipe e links
+
+| Nome completo | RA | Turno |
+| --- | --- | --- |
+| _a preencher_ | _a preencher_ | _a preencher_ |
+| _a preencher_ | _a preencher_ | _a preencher_ |
+
+- Vídeo de apresentação: _a preencher_
+- Protótipo no Figma: _a preencher_
+- Sistema publicado: https://quickcare-frontend.vercel.app
 
 ## Como funciona
 
@@ -99,14 +110,24 @@ src/
 
 ## Rodando o projeto
 
-Com a API rodando em `http://localhost:8080` (ver o README do back-end):
+### Sistema completo com Docker (recomendado)
+
+Clone este repositório e o `quickcare-backend` lado a lado, na mesma pasta, e rode `docker compose up --build` dentro do `quickcare-backend`. O compose builda este front com a configuração `docker` (API em `http://localhost:8080`), serve com nginx em http://localhost:4200 e sobe também a API, o banco e o Mailpit. O passo a passo completo está no README do back-end.
+
+### Só o front, para desenvolvimento
+
+Pré-requisitos: **Node.js 22 LTS** (testado com 22.18.0) e **npm 10** (testado com 10.9.3), com a API rodando em `http://localhost:8080`.
 
 ```bash
 npm install
 npm start
 ```
 
-Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev`, todas com a senha `Senha@123`:
+Acesse `http://localhost:4200`.
+
+### Contas de teste
+
+A massa local do back cria contas `*@quickcare.dev`, todas com a senha `Senha@123`:
 
 | Conta | Situação |
 | --- | --- |
@@ -130,4 +151,4 @@ npm test
 npm run build
 ```
 
-O `npm start` usa `environment.development.ts`, que aponta para a API local. O build de produção usa `environment.ts`, que aponta para a API no Render. O front é publicado na Vercel.
+O `npm start` usa `environment.development.ts`, que aponta para a API local. O build de produção usa `environment.ts`, que aponta para a API no Render. O front é publicado na Vercel. A configuração `docker` (`ng build --configuration docker`) usa `environment.docker.ts`, que aponta para `http://localhost:8080`, e é a que o `Dockerfile` usa.

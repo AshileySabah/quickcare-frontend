@@ -106,7 +106,7 @@ npm install
 npm start
 ```
 
-Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev` com a senha `quickcare123`, por exemplo `paciente@quickcare.dev`, `profissional@quickcare.dev`, `ambos@quickcare.dev` e `admin@quickcare.dev`.
+Acesse `http://localhost:4200`. A massa local do back cria contas `*@quickcare.dev` com a senha `Senha@123`, por exemplo `paciente@quickcare.dev`, `profissional@quickcare.dev`, `ambos@quickcare.dev` e `admin@quickcare.dev`.
 
 ### Testes
 

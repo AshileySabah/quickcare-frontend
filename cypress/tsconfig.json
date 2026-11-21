@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noPropertyAccessFromIndexSignature": false,
+    "isolatedModules": false,
+    "sourceMap": false,
+    "types": ["cypress"],
+    "lib": ["ES2022", "DOM"]
+  },
+  "include": ["**/*.ts", "../cypress.config.ts"]
+}

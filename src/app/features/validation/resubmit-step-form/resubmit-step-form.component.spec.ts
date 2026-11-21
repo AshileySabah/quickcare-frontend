@@ -159,6 +159,34 @@ describe('ResubmitStepFormComponent', () => {
     );
   });
 
+  it('documento de identidade salvo inválido não trava o reenvio de outra etapa', () => {
+    const fixture = render(step('aprovada'));
+    (fixture.componentInstance as unknown as { form: { patchValue(value: object): void } }).form.patchValue({
+      identityDocumentNumber: '12345678911',
+      cnpj: '11222333000181',
+    });
+
+    submit(fixture);
+
+    expect(validationService.resubmit).toHaveBeenCalledWith('professional', 'CNPJ', {
+      document: undefined,
+      cnpj: '11222333000181',
+    }, undefined);
+  });
+
+  it('na etapa de identidade, documento inválido impede o reenvio', () => {
+    const identidade: ValidationStep = { ...step('aprovada'), key: 'IDENTIDADE', type: 'IDENTIDADE', label: 'Identidade' };
+    const fixture = render(identidade, 'IDENTIDADE');
+    (fixture.componentInstance as unknown as { form: { patchValue(value: object): void } }).form.patchValue({
+      identityDocumentNumber: '12345678911',
+    });
+
+    submit(fixture);
+
+    expect(validationService.resubmit).not.toHaveBeenCalled();
+    expect(fixture.nativeElement.textContent).toContain('Número de CNH inválido.');
+  });
+
   it('sem mudar dado, pode só trocar o documento', () => {
     const fixture = render(step('aprovada'));
     const document = new File(['x'], 'cartao-legivel.pdf', { type: 'application/pdf' });

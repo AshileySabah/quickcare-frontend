@@ -7,7 +7,7 @@
       </div>
 
       <div class="step-card__tools">
-        @if (isPending()) {
+        @if (displayPreValidation() && isPending()) {
           <ui-button variant="info-outline" size="sm" [loading]="isPreValidating()" (click)="preValidate.emit()">
             Pré-validar esta etapa
           </ui-button>
@@ -48,7 +48,11 @@
           [rows]="4"
           [required]="true"
           [maxLength]="1000"
-          hint="Obrigatória para aprovar ou reprovar. A pré-validação, se usada, já preenche um texto que você pode editar."
+          [hint]="
+            displayPreValidation()
+              ? 'Obrigatória para aprovar ou reprovar. A pré-validação, se usada, já preenche um texto que você pode editar.'
+              : 'Obrigatória para aprovar ou reprovar.'
+          "
           [errorMessage]="justificationError()"
         ></ui-textarea>
 

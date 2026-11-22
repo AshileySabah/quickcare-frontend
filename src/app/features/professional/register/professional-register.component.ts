@@ -1,5 +1,5 @@
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   cnpjValidator,
@@ -52,17 +52,6 @@ import { SelectOption } from '../../../shared/ui/forms/select/select.component';
 import { ToastService } from '../../../shared/ui/feedback/toast/toast.service';
 import { AuthLayoutComponent } from '../../../shared/ui/layout/auth-layout/auth-layout.component';
 import { InvalidFieldFocusDirective } from '../../../shared/ui/forms/invalid-field-focus.directive';
-
-function invalidControls(control: AbstractControl, path = 'form'): { caminho: string; status: string; erros: unknown }[] {
-  const own = control.errors || control.status === 'PENDING' ? [{ caminho: path, status: control.status, erros: control.errors }] : [];
-  if (control instanceof FormGroup || control instanceof FormArray) {
-    return [
-      ...own,
-      ...Object.entries(control.controls).flatMap(([key, child]) => invalidControls(child as AbstractControl, `${path}.${key}`)),
-    ];
-  }
-  return control.invalid ? [{ caminho: path, status: control.status, erros: control.errors }] : own;
-}
 
 @Component({
   selector: 'app-professional-register',
@@ -217,21 +206,6 @@ export class ProfessionalRegisterComponent implements OnInit {
     }
     const missingDocument = missingDocumentMessage(documents, requiredDocuments);
     this.documentsError.set(missingDocument);
-
-    console.log('[cadastro profissional] criar conta', {
-      valido: this.form.valid,
-      status: this.form.status,
-      invalidos: invalidControls(this.form),
-      documentoFaltando: missingDocument,
-      documentos: documents.map((document) => ({ tipo: document.type, arquivo: document.file?.name })),
-      atuacoes: this.form.controls.practiceAreas.controls.map((group) => ({
-        ...group.getRawValue(),
-        document: group.controls.document.value?.name ?? null,
-        status: group.status,
-        erros: group.errors,
-      })),
-      valores: { ...this.form.getRawValue(), password: '***', confirmPassword: '***' },
-    });
 
     if (this.form.invalid || missingDocument) {
       this.form.markAllAsTouched();

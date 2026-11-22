@@ -121,20 +121,17 @@ export class ResubmitStepFormComponent implements OnInit {
     }.`;
   });
 
-  protected readonly form = this.fb.nonNullable.group(
-    {
-      cpf: [''],
-      identityDocumentType: [''],
-      identityDocumentNumber: [''],
-      identityDocumentUf: [''],
-      birthDate: [''],
-      gender: [''],
-      cnpj: [''],
-      registrationNumber: [''],
-      registrationUf: [''],
-    },
-    { validators: identityDocumentValidator() },
-  );
+  protected readonly form = this.fb.nonNullable.group({
+    cpf: [''],
+    identityDocumentType: [''],
+    identityDocumentNumber: [''],
+    identityDocumentUf: [''],
+    birthDate: [''],
+    gender: [''],
+    cnpj: [''],
+    registrationNumber: [''],
+    registrationUf: [''],
+  });
 
   private initialValue = this.form.getRawValue();
 
@@ -172,6 +169,11 @@ export class ResubmitStepFormComponent implements OnInit {
       const control = this.form.get(name);
       control?.setValidators(validators);
       control?.updateValueAndValidity();
+    }
+
+    if (this.type() === 'IDENTIDADE') {
+      this.form.setValidators(identityDocumentValidator());
+      this.form.updateValueAndValidity();
     }
   }
 

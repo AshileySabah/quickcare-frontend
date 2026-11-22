@@ -10,7 +10,11 @@
     "cy:open": "node cypress/cypress-cli.mjs open --e2e --browser chrome",
     "cy:run": "node cypress/cypress-cli.mjs run --e2e",
     "e2e": "start-server-and-test start http://localhost:4200 cy:run",
-    "e2e:open": "start-server-and-test start http://localhost:4200 cy:open"
+    "e2e:open": "start-server-and-test start http://localhost:4200 cy:open",
+    "demo:cy:open": "node cypress/cypress-cli.mjs open --e2e --browser chrome --config-file cypress.demo.config.ts",
+    "demo:cy:run": "node cypress/cypress-cli.mjs run --e2e --browser chrome --no-runner-ui --config-file cypress.demo.config.ts",
+    "demo": "start-server-and-test start http://localhost:4200 demo:cy:run",
+    "demo:open": "start-server-and-test start http://localhost:4200 demo:cy:open"
   },
   "private": true,
   "dependencies": {

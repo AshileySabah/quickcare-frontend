@@ -24,7 +24,7 @@ describe('Documentos · paciente', () => {
   it('abre o documento enviado em outra guia', () => {
     cy.intercept(route('GET', '/validacao/arquivos/cpf.pdf'), { statusCode: 200, body: '%PDF', headers: { 'content-type': 'application/pdf' } }).as('arquivo');
     cy.visitAs('/patient/documentos', sessaoPaciente());
-    cy.window().then((win) => cy.stub(win, 'open').returns({ location: { href: '' }, close: () => undefined }).as('abrir'));
+    cy.window().then((win) => cy.stub(win, 'open').as('abrir').returns({ location: { href: '' }, close: () => undefined }));
     card('CPF').find('[aria-label="Abrir cpf.pdf em outra guia"]').click();
     cy.wait('@arquivo');
     cy.get('@abrir').should('have.been.called');

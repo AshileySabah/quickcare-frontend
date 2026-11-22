@@ -10,7 +10,7 @@ declare global {
       fillField(label: string, value: string): Chainable<JQuery<HTMLElement>>;
       selectField(label: string, value: string): Chainable<JQuery<HTMLElement>>;
       multiSelect(label: string, options: string[]): Chainable<JQuery<HTMLElement>>;
-      button(text: string | RegExp): Chainable<JQuery<HTMLElement>>;
+      button(text: string | RegExp): Chainable<JQuery<HTMLButtonElement>>;
       dialog(title: string): Chainable<JQuery<HTMLElement>>;
       toast(text: string | RegExp): Chainable<JQuery<HTMLElement>>;
       attachFile(label: string, fileName?: string, mimeType?: string): Chainable<JQuery<HTMLElement>>;

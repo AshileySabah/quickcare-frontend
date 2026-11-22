@@ -1,4 +1,4 @@
-import { api, apiError, route } from '../../support/api';
+import { api, apiError, flags, route } from '../../support/api';
 import {
   etapa,
   etapasPadrao,
@@ -234,5 +234,27 @@ describe('Admin · pré-validação', () => {
     abrirDetalhe();
     cy.button('Pré-validar todas as etapas').click();
     cy.wait(['@pre', '@pre', '@pre']);
+  });
+
+  it('flag displayPreValidacao desligada esconde toda a pré-validação', () => {
+    flags({ displayPreValidacao: false }).as('flags');
+    abrirDetalhe();
+    cy.wait('@flags');
+    etapaCard('CPF').should('be.visible');
+    cy.contains('Pré-validação com APIs de terceiros').should('not.exist');
+    cy.contains('button', 'Pré-validar todas as etapas').should('not.exist');
+    cy.contains('button', 'Pré-validar esta etapa').should('not.exist');
+    etapaCard('CPF').within(() => {
+      cy.contains('Obrigatória para aprovar ou reprovar.').should('be.visible');
+      cy.contains('A pré-validação, se usada').should('not.exist');
+    });
+  });
+
+  it('sem resposta da flag a pré-validação continua disponível', () => {
+    flags({}, 500).as('flags');
+    abrirDetalhe();
+    cy.wait('@flags');
+    cy.button('Pré-validar todas as etapas').should('be.visible');
+    etapaCard('CPF').within(() => cy.button('Pré-validar esta etapa').should('be.visible'));
   });
 });

@@ -76,7 +76,7 @@
           </ui-card>
         }
 
-        @if (pendingSteps().length > 0) {
+        @if (displayPreValidation() && pendingSteps().length > 0) {
           <div class="validation-detail__batch">
             <div>
               <p class="validation-detail__batch-title">Pré-validação com APIs de terceiros (opcional)</p>

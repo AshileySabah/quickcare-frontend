@@ -2,6 +2,7 @@ import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PracticeArea, ValidationDetail, ValidationProfile, ValidationStep } from '../../../core/models';
+import { FeatureFlagService } from '../../../core/services/feature-flag.service';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
@@ -37,6 +38,7 @@ type PageState = 'loading' | 'error' | 'not-found' | 'filled';
 export class AdminValidationDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly validationService = inject(ValidationService);
+  protected readonly displayPreValidation = inject(FeatureFlagService).displayPreValidation;
 
   protected readonly profile = this.route.snapshot.data['profile'] as ValidationProfile;
   private readonly validationId = this.route.snapshot.paramMap.get('id') ?? '';

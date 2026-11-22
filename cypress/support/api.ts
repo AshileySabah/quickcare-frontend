@@ -49,11 +49,16 @@ export function apiSequence(method: Method, pathname: string | RegExp, responses
   });
 }
 
+export function flags(valores: { displayPreValidacao?: boolean } = {}, statusCode = 200) {
+  return cy.intercept({ method: 'GET', pathname: '/api/flags' }, { statusCode, body: { displayPreValidacao: true, ...valores } });
+}
+
 export function stubDefaults(): void {
   cy.intercept({ url: new RegExp(`^${escapeRegExp(API_ORIGIN)}/`) }, (req) => {
     req.reply({ statusCode: 404, body: { status: 404, message: `Sem mock para ${req.method} ${req.url}` } });
   });
   cy.intercept({ hostname: 'viacep.com.br' }, { statusCode: 200, body: { erro: true } });
+  flags();
 
   api('GET', '/notificacoes', []);
   api('GET', '/notificacoes/nao-lidas', { paciente: 0, profissional: 0 });

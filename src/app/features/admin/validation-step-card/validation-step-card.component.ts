@@ -8,6 +8,7 @@ import {
   ValidationProfile,
   ValidationStep,
 } from '../../../core/models';
+import { FeatureFlagService } from '../../../core/services/feature-flag.service';
 import { ValidationService } from '../../../core/services/validation.service';
 import { ButtonComponent, ButtonVariant } from '../../../shared/ui/button/button.component';
 import { CardComponent } from '../../../shared/ui/layout/card/card.component';
@@ -62,6 +63,7 @@ export class ValidationStepCardComponent {
   private readonly fb = inject(FormBuilder);
   private readonly validationService = inject(ValidationService);
   private readonly toastService = inject(ToastService);
+  protected readonly displayPreValidation = inject(FeatureFlagService).displayPreValidation;
 
   profile = input.required<ValidationProfile>();
   validationId = input.required<string>();
